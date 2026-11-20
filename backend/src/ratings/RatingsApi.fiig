@@ -32,10 +32,4 @@ adapter http ratingsApi {
         Ok(rows) -> 200 rows
         Err(error) -> common.apiErrorResponse(error)
     }
-    GET "/items/{itemId}" -> showItem(session: string | None from cookie "sid", itemId: string)
-        produces "application/json"
-    {
-        Ok(detail) -> 200 detail
-        Err(error) -> common.apiErrorResponse(error)
-    }
 }

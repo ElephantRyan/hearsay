@@ -1,3 +1,4 @@
+use abs.recommendations.books
 use abs.recommendations.common
 use abs.recommendations.sessions
 
@@ -5,6 +6,6 @@ use abs.recommendations.sessions
 // what a missing book means is the workflow's to say.
 activity loadUserAndBook(session: string | None, itemId: string) -> Result<UserAndBook, common.ApiError> {
     me = sessions.currentUser(session)?
-    book = fetchBook(itemId)?
+    book = books.latestBook(itemId)?
     return Ok(UserAndBook(user: me, book: book))
 }

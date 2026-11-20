@@ -1,0 +1,5 @@
+// What a viewer may see of one book's ratings, for its page: everyone's
+// recommended ones, plus the viewer's own.
+activity visibleRatingsOf(itemId: string, viewerId: string) -> List<RatingRow> {
+    return visibleRowsForItem(itemId, viewerId)
+}

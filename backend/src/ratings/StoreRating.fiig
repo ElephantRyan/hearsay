@@ -1,3 +1,4 @@
+use abs.recommendations.books
 use abs.recommendations.common
 
 // Validates, stores, and returns what is now stored (an update keeps the
@@ -7,7 +8,7 @@ activity storeRating(found: UserAndBook, input: RatingInput) -> Result<Rating, c
     now = Clock.now()
     rating = mapErr(e in createRating(found.user.userId, NewRating(itemId: found.book.itemId, score: input.score, note: input.note or "", recommended: input.recommended), now)): apiErrorOfRating(e)?
     upsertUser(found.user.userId, found.user.username, now)
-    saveBook(found.book, now)
+    books.rememberBook(found.book, now)
     saveRating(rating)
     stored = findRating(found.user.userId, found.book.itemId)
     match stored {

@@ -1,5 +1,7 @@
+use abs.recommendations.ratings
+
 // The average score over the recommended rows, or 0.00 for none.
-rule averageOf(rows: List<RatingRow>) -> decimal {
+rule averageOf(rows: List<ratings.RatingRow>) -> decimal {
     recommended = filter(r in rows): r.recommended
     if recommended.length() == 0 {
         return math.divide(

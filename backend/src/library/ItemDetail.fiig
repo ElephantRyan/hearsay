@@ -1,4 +1,5 @@
 use abs.recommendations.absclient as client
+use abs.recommendations.ratings
 
 // One book with the ratings the viewer may see: everyone's recommended ones
 // and the viewer's own, private or not.
@@ -6,5 +7,5 @@ model ItemDetail {
     book: client.Book
     average: decimal
     count: int
-    ratings: List<RatingRow>
+    ratings: List<ratings.RatingRow>
 }

@@ -1,6 +1,7 @@
 use abs.recommendations.absclient as client
 use abs.recommendations.absclient.AbsApi
 use abs.recommendations.accounts
+use abs.recommendations.library
 use abs.recommendations.ratings
 use abs.recommendations.recommendations
 use abs.recommendations.sessions
@@ -25,11 +26,11 @@ test privateRatingsStayPrivate {
     expect ratings.storeRating(annDune, ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
     expect ratings.loadUserAndBook(bob, "dune") is Ok(bobDune)
     expect ratings.storeRating(bobDune, ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
-    expect ratings.loadItemDetail(bob, "dune") is Ok(bobSees)
+    expect library.loadItemDetail(bob, "dune") is Ok(bobSees)
     expect bobSees.ratings.length() == 1
     expect bobSees.count == 1
     expect bobSees.average == 6.00
-    expect ratings.loadItemDetail(ann, "dune") is Ok(annSees)
+    expect library.loadItemDetail(ann, "dune") is Ok(annSees)
     expect annSees.ratings.length() == 2
     expect annSees.count == 1
     expect annSees.average == 6.00
