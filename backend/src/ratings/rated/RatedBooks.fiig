@@ -9,7 +9,7 @@ capability RatedBooks {
         idempotent
     {
         return Database.queryMany(
-            "SELECT * FROM rating_row WHERE userId = ? ORDER BY updatedAt DESC",
+            "SELECT * FROM rating_row WHERE user_id = ? ORDER BY updated_at DESC",
             userId,
         )
     }
@@ -30,7 +30,7 @@ capability RatedBooks {
         idempotent
     {
         return Database.queryMany(
-            "SELECT * FROM rating_row WHERE itemId = ? AND (recommended = 1 OR userId = ?) ORDER BY updatedAt DESC",
+            "SELECT * FROM rating_row WHERE item_id = ? AND (recommended = 1 OR user_id = ?) ORDER BY updated_at DESC",
             itemId,
             viewerId,
         )

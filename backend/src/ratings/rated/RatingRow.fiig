@@ -1,5 +1,5 @@
 // A rating joined with who made it and the book it is about, as the
-// rating_row view returns it (gateways/create_schema.fiig).
+// rating_row view returns it (migrations/0003_rating_row_columns.sql).
 model RatingRow {
     userId: string
     username: string
