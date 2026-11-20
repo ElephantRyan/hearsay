@@ -5,7 +5,7 @@ gateway findBook(itemId: string) -> catalog.Book | None
     idempotent
 {
     return Database.queryOne(
-        "SELECT item_id AS itemId, library_id AS libraryId, title, authors FROM book WHERE item_id = ?",
+        "SELECT item_id, library_id, title, authors FROM book WHERE item_id = ?",
         itemId,
     )
 }

@@ -3,6 +3,6 @@ gateway allSyncStates() -> List<SyncState>
     idempotent
 {
     return Database.queryMany(
-        "SELECT user_id AS userId, library_id AS libraryId, collection_id AS collectionId, last_synced_at AS lastSyncedAt, last_error AS lastError FROM sync_state",
+        "SELECT user_id, library_id, collection_id, last_synced_at, last_error FROM sync_state",
     )
 }

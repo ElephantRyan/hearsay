@@ -7,7 +7,7 @@ gateway findSession(tokenHash: string, now: int) -> accounts.Identity | None
     idempotent
 {
     return Database.queryOne(
-        "SELECT user_id AS userId, username, user_type AS userType FROM session WHERE token_hash = ? AND expires_at > ?",
+        "SELECT user_id, username, user_type FROM session WHERE token_hash = ? AND expires_at > ?",
         tokenHash,
         now,
     )
