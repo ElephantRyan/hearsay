@@ -1,4 +1,0 @@
-model AbsLoginBody {
-    username: string
-    password: string
-}

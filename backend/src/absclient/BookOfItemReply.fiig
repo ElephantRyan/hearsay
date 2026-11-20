@@ -1,0 +1,40 @@
+// GET /api/items/{id}'s body as a Book. ABS's nesting is private to this
+// file: nothing else needs it.
+conversion bookOfItemReply(body: bytes) -> Result<Book, AbsError> {
+    item: AbsItem = mapErr(e in json.decode(body)): AbsError.Unreadable(failure: e)?
+    line: string = ""
+    for author in item.media.metadata.authors {
+        if line == "" {
+            line = author.name
+        } else {
+            line = "${line}, ${author.name}"
+        }
+    }
+    return Ok(
+        Book(itemId: item.id, libraryId: item.libraryId, title: item.media.metadata.title, authors: line),
+    )
+}
+
+private {
+    // The reply, trimmed to what the app shows.
+    model AbsItem {
+        id: string
+        libraryId: string
+        media: AbsMedia
+    }
+
+    model AbsMedia {
+        metadata: AbsMetadata
+    }
+
+    model AbsMetadata {
+        title: string
+        subtitle: string | None
+        authors: List<AbsAuthor>
+    }
+
+    model AbsAuthor {
+        id: string
+        name: string
+    }
+}

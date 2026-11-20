@@ -11,3 +11,10 @@ rule absLoginRequest(base: string, username: string, password: string) -> http.R
         timeoutMillis: 10000,
     )
 }
+
+private {
+    model AbsLoginBody {
+        username: string
+        password: string
+    }
+}

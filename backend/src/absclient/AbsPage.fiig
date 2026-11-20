@@ -1,7 +1,0 @@
-// One page of GET /api/libraries/{id}/items?minified=1. Pages count from 0.
-model AbsPage {
-    total: int
-    limit: int
-    page: int
-    results: List<AbsListedItem>
-}

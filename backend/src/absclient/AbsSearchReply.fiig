@@ -1,4 +1,0 @@
-// GET /api/libraries/{id}/search: only the `book` hits are read; authors, series and tags are ignored.
-model AbsSearchReply {
-    book: List<AbsSearchHit>
-}

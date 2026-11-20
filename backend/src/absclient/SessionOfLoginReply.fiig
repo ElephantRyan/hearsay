@@ -1,0 +1,24 @@
+// POST /login's body as the session it gives us.
+conversion sessionOfLoginReply(body: bytes) -> Result<AbsSession, AbsError> {
+    reply: AbsLoginReply = mapErr(e in json.decode(body)): AbsError.Unreadable(failure: e)?
+    return Ok(
+        AbsSession(userId: reply.user.id, username: reply.user.username, userType: reply.user.type, accessToken: reply.user.accessToken, refreshToken: reply.user.refreshToken),
+    )
+}
+
+private {
+    model AbsLoginReply {
+        user: AbsLoginUser
+    }
+
+    // The part of `user` this app reads (ABS 2.37.2). Members it doesn't
+    // declare, such as the legacy never-expiring `token`, are ignored on
+    // decode.
+    model AbsLoginUser {
+        id: string
+        username: string
+        type: string
+        accessToken: string
+        refreshToken: string
+    }
+}

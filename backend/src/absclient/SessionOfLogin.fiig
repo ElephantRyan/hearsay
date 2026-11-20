@@ -1,9 +1,0 @@
-conversion sessionOfLogin(reply: AbsLoginReply) -> AbsSession {
-    return AbsSession(
-        userId: reply.user.id,
-        username: reply.user.username,
-        userType: reply.user.type,
-        accessToken: reply.user.accessToken,
-        refreshToken: reply.user.refreshToken,
-    )
-}
