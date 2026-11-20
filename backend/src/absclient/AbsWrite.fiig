@@ -2,7 +2,7 @@ use fiig.http
 
 // The only requests this client sends that change something in ABS, and only
 // for collections: callers pass a method and a JSON body, never a free path
-// (the path is built from ids that passed validId).
+// (the path is built from ids that passed absPathId).
 rule absWrite(method: http.Method, url: string, token: string, body: bytes | None) -> http.Request {
     return http.Request(
         method: method,

@@ -1,9 +1,0 @@
-// A `map(...)` body can call nothing but formulas and methods (ADR 0093 §2),
-// and bookOfListed is a conversion, so the list is built with a loop.
-conversion booksOfListed(items: List<AbsListedItem>) -> List<Book> {
-    books: List<Book> = []
-    for item in items {
-        books = append(books, bookOfListed(item))
-    }
-    return books
-}

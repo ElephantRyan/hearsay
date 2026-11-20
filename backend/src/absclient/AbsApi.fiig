@@ -26,10 +26,8 @@ capability AbsApi {
     gateway item(accessToken: string, itemId: string) -> Result<Book, AbsError>
         requires HttpClient
     {
-        if not validId(itemId) {
-            return Err(AbsError.NotFound)
-        }
-        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemId}", accessToken)))?
+        itemIdSegment = absPathId(itemId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemIdSegment}", accessToken)))?
         found: AbsItem = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
         return Ok(bookOfItem(found))
     }
@@ -37,10 +35,8 @@ capability AbsApi {
     gateway itemAsService(itemId: string) -> Result<Book, AbsError>
         requires HttpClient
     {
-        if not validId(itemId) {
-            return Err(AbsError.NotFound)
-        }
-        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemId}", AbsService.token.reveal())))?
+        itemIdSegment = absPathId(itemId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemIdSegment}", AbsService.token.reveal())))?
         found: AbsItem = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
         return Ok(bookOfItem(found))
     }
@@ -63,33 +59,29 @@ capability AbsApi {
     gateway pageAsService(libraryId: string, page: int, size: int) -> Result<BookPage, AbsError>
         requires HttpClient
     {
-        if not validId(libraryId) {
-            return Err(AbsError.NotFound)
-        }
-        reply = absReply(HttpClient.send(absGet(Abs.url, absListPath(libraryId, page, size), AbsService.token.reveal())))?
+        libraryIdSegment = absPathId(libraryId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, absListPath(libraryIdSegment, page, size), AbsService.token.reveal())))?
         found: AbsPage = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
         return Ok(
-            BookPage(total: found.total, page: found.page, limit: found.limit, books: booksOfListed(found.results)),
+            BookPage(total: found.total, page: found.page, limit: found.limit, books: map(item in found.results): bookOfListed(item)),
         )
     }
 
     gateway searchAsService(libraryId: string, query: string, size: int) -> Result<BookPage, AbsError>
         requires HttpClient
     {
-        if not validId(libraryId) {
-            return Err(AbsError.NotFound)
-        }
-        reply = absReply(HttpClient.send(absGet(Abs.url, absSearchPath(libraryId, query, size), AbsService.token.reveal())))?
+        libraryIdSegment = absPathId(libraryId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, absSearchPath(libraryIdSegment, query, size), AbsService.token.reveal())))?
         found: AbsSearchReply = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
         return Ok(
-            BookPage(total: found.book.length(), page: 0, limit: size, books: booksOfHits(found.book)),
+            BookPage(total: found.book.length(), page: 0, limit: size, books: map(hit in found.book): bookOfListed(hit.libraryItem)),
         )
     }
 
     gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, AbsError>
         requires HttpClient
     {
-        if not validId(libraryId) or not allValidIds(bookIds) {
+        if not validId(libraryId) or not all(id in bookIds): validId(id) {
             return Err(AbsError.NotFound)
         }
         body = json.encode(
@@ -103,21 +95,20 @@ capability AbsApi {
     gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, AbsError>
         requires HttpClient
     {
-        if not validId(collectionId) or not allValidIds(bookIds) {
+        collectionIdSegment = absPathId(collectionId)?
+        if not all(id in bookIds): validId(id) {
             return Err(AbsError.NotFound)
         }
         body = json.encode(AbsCollectionPatch(name: name, description: description, books: bookIds))
-        reply = absReply(HttpClient.send(absWrite(http.Method.Patch, "${Abs.url}/api/collections/${collectionId}", AbsService.token.reveal(), body)))?
+        reply = absReply(HttpClient.send(absWrite(http.Method.Patch, "${Abs.url}/api/collections/${collectionIdSegment}", AbsService.token.reveal(), body)))?
         return Ok(reply.status)
     }
 
     gateway deleteCollectionAsService(collectionId: string) -> Result<int, AbsError>
         requires HttpClient
     {
-        if not validId(collectionId) {
-            return Err(AbsError.NotFound)
-        }
-        reply = absReply(HttpClient.send(absWrite(http.Method.Delete, "${Abs.url}/api/collections/${collectionId}", AbsService.token.reveal(), None)))?
+        collectionIdSegment = absPathId(collectionId)?
+        reply = absReply(HttpClient.send(absWrite(http.Method.Delete, "${Abs.url}/api/collections/${collectionIdSegment}", AbsService.token.reveal(), None)))?
         return Ok(reply.status)
     }
 }

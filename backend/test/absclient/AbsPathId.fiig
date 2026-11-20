@@ -1,0 +1,10 @@
+test absPathIdPassesAbsIdsAndRefusesEverythingElse {
+    expect absPathId("58b7c908-fc73-44d4-b572-b8c09e348ce4") is Ok(uuid)
+    expect uuid == "58b7c908-fc73-44d4-b572-b8c09e348ce4"
+    expect absPathId("li_abc123") is Ok(older)
+    expect older == "li_abc123"
+    expect absPathId("") is Err(AbsError.NotFound)
+    expect absPathId("..") is Err(AbsError.NotFound)
+    expect absPathId("../users") is Err(AbsError.NotFound)
+    expect absPathId("a/b") is Err(AbsError.NotFound)
+}
