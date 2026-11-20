@@ -1,0 +1,4 @@
+activity loadSignInModes() -> SignInModes {
+    mode = Server.authMode
+    return SignInModes(password: mode != "oidc", oidc: mode != "abs")
+}

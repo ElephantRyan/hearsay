@@ -1,0 +1,4 @@
+activity picksOf(session: string | None, userId: string) -> Result<List<RatingRow>, ApiError> {
+    currentUser(session)?
+    return Ok(bestFirst(recommendedRows(), userId))
+}

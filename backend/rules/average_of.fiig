@@ -1,0 +1,8 @@
+// The average score over the recommended rows, or 0.00 for none.
+rule averageOf(rows: List<RatingRow>) -> decimal {
+    recommended = filter(r in rows): r.recommended
+    if recommended.length() == 0 {
+        return math.divide(math.toDecimal(0), math.toDecimal(1), places: 2, rounding: Rounding.HalfUp)
+    }
+    return math.divide(math.toDecimal(sum(r in recommended): r.score), math.toDecimal(recommended.length()), places: 2, rounding: Rounding.HalfUp)
+}

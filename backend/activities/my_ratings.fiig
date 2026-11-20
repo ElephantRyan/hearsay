@@ -1,0 +1,11 @@
+activity myRatings(session: string | None, sort: string | None) -> Result<List<RatingRow>, ApiError> {
+    me = currentUser(session)?
+    match parseOrder(sort) {
+        None -> {
+            return Err(ApiError.Invalid("sort", "must be score, newest or title"))
+        }
+        order -> {
+            return Ok(sortRatings(ratingRowsByUser(me.userId), order))
+        }
+    }
+}

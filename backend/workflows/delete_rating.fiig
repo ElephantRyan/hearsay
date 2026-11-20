@@ -1,0 +1,3 @@
+workflow deleteMyRating(session: string | None, itemId: string) -> Result<int, ApiError> {
+    return removeRating(session, itemId)
+}

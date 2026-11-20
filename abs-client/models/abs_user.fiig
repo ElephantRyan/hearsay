@@ -1,0 +1,6 @@
+// GET /api/me: who ABS says the token belongs to.
+model AbsUser {
+    id: string
+    username: string
+    type: string
+}

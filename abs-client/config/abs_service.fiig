@@ -1,0 +1,6 @@
+// The ABS token this server uses for its own calls: looking up books, and
+// (when AUTH_MODE allows Authentik) finding a person's account by email.
+// Declared once here so every package that needs it shares one setting.
+config AbsService {
+    token: Secret from env "ABS_SERVICE_TOKEN"
+}

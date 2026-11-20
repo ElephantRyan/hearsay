@@ -1,0 +1,26 @@
+{
+  "toolchain": "dev",
+  "dependencies": [
+    {
+      "path": "abs.client",
+      "version": "0.1.0",
+      "hash": "sha256:93091b74313bc1b5abd8d818bee60f3f74f03ba894b76e69ad48631d4353601e",
+      "source": "../abs-client"
+    },
+    {
+      "path": "abs.signin",
+      "version": "0.1.0",
+      "hash": "sha256:cf790aed0908ab540584162400f52ef0cda8cea6d15a2333661561134d61867d",
+      "source": "../signin"
+    },
+    {
+      "path": "fiig.http",
+      "version": "1.0.0",
+      "hash": "sha256:5fa94eb0587f3505dc709f840203ca707812f96995d5f17d557a3635dcc77fde",
+      "source": "builtin:http",
+      "capabilities": [
+        "Socket"
+      ]
+    }
+  ]
+}

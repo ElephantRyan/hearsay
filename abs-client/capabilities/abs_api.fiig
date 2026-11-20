@@ -1,0 +1,117 @@
+// The Audiobookshelf client, written in fiig over fiig.http (ADR 0074) so a
+// test can fake either this or the HTTP underneath it. Reads only, plus
+// login; mirroring into collections (PLAN.md M6) will add its own writes.
+// Each gateway sends, lets absReply judge the answer, then decodes; the
+// decode lines repeat until fiig has generics (docs/writing-a-client.md).
+use fiig.http
+use fiig.http.HttpClient
+
+capability AbsApi {
+    gateway login(username: string, password: string) -> Result<AbsSession, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absLoginRequest(Abs.url, username, password)))?
+        login: AbsLoginReply = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(sessionOfLogin(login))
+    }
+
+    gateway me(accessToken: string) -> Result<AbsUser, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/me", accessToken)))?
+        user: AbsUser = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(user)
+    }
+
+    gateway item(accessToken: string, itemId: string) -> Result<Book, AbsError>
+        requires HttpClient
+    {
+        if not validId(itemId) {
+            return Err(AbsError.NotFound)
+        }
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemId}", accessToken)))?
+        found: AbsItem = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(bookOfItem(found))
+    }
+
+    gateway itemAsService(itemId: string) -> Result<Book, AbsError>
+        requires HttpClient
+    {
+        if not validId(itemId) {
+            return Err(AbsError.NotFound)
+        }
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemId}", AbsService.token.reveal())))?
+        found: AbsItem = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(bookOfItem(found))
+    }
+
+    gateway status() -> Result<int, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/status", "")))?
+        return Ok(reply.status)
+    }
+
+    gateway librariesAsService() -> Result<List<AbsLibrary>, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/libraries", AbsService.token.reveal())))?
+        found: AbsLibrariesReply = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(found.libraries)
+    }
+
+    gateway pageAsService(libraryId: string, page: int, size: int) -> Result<BookPage, AbsError>
+        requires HttpClient
+    {
+        if not validId(libraryId) {
+            return Err(AbsError.NotFound)
+        }
+        reply = absReply(HttpClient.send(absGet(Abs.url, absListPath(libraryId, page, size), AbsService.token.reveal())))?
+        found: AbsPage = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(BookPage(total: found.total, page: found.page, limit: found.limit, books: booksOfListed(found.results)))
+    }
+
+    gateway searchAsService(libraryId: string, query: string, size: int) -> Result<BookPage, AbsError>
+        requires HttpClient
+    {
+        if not validId(libraryId) {
+            return Err(AbsError.NotFound)
+        }
+        reply = absReply(HttpClient.send(absGet(Abs.url, absSearchPath(libraryId, query, size), AbsService.token.reveal())))?
+        found: AbsSearchReply = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(BookPage(total: found.book.length(), page: 0, limit: size, books: booksOfHits(found.book)))
+    }
+
+    gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, AbsError>
+        requires HttpClient
+    {
+        if not validId(libraryId) or not allValidIds(bookIds) {
+            return Err(AbsError.NotFound)
+        }
+        body = json.encode(AbsCollectionBody(libraryId: libraryId, name: name, description: description, books: bookIds))
+        reply = absReply(HttpClient.send(absWrite(http.Method.Post, "${Abs.url}/api/collections", AbsService.token.reveal(), body)))?
+        created: AbsCollection = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(created.id)
+    }
+
+    gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, AbsError>
+        requires HttpClient
+    {
+        if not validId(collectionId) or not allValidIds(bookIds) {
+            return Err(AbsError.NotFound)
+        }
+        body = json.encode(AbsCollectionPatch(name: name, description: description, books: bookIds))
+        reply = absReply(HttpClient.send(absWrite(http.Method.Patch, "${Abs.url}/api/collections/${collectionId}", AbsService.token.reveal(), body)))?
+        return Ok(reply.status)
+    }
+
+    gateway deleteCollectionAsService(collectionId: string) -> Result<int, AbsError>
+        requires HttpClient
+    {
+        if not validId(collectionId) {
+            return Err(AbsError.NotFound)
+        }
+        reply = absReply(HttpClient.send(absWrite(http.Method.Delete, "${Abs.url}/api/collections/${collectionId}", AbsService.token.reveal(), None)))?
+        return Ok(reply.status)
+    }
+}

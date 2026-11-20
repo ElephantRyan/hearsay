@@ -1,0 +1,12 @@
+gateway saveSyncState(state: SyncState) -> int
+    requires Database
+{
+    return Database.execute(
+        "INSERT INTO sync_state (user_id, library_id, collection_id, last_synced_at, last_error) VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id, library_id) DO UPDATE SET collection_id = excluded.collection_id, last_synced_at = excluded.last_synced_at, last_error = excluded.last_error",
+        state.userId,
+        state.libraryId,
+        state.collectionId,
+        state.lastSyncedAt,
+        state.lastError,
+    )
+}

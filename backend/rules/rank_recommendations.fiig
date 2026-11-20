@@ -1,0 +1,22 @@
+// Ranks books by the average score of their recommended ratings, highest
+// first. Ties go to the book with more ratings, then to the most recently
+// rated. Private ratings are not counted (PLAN.md section 4). The average is
+// the one rule to change if the formula should.
+rule rankRecommendations(rows: List<RatingRow>) -> List<RecommendedBook> {
+    recommended = filter(r in rows): r.recommended
+    groups = groupBy(r in recommended): r.itemId
+    books: List<RecommendedBook> = []
+    for itemId, group in groups {
+        first = group.at(0)
+        books = append(books, RecommendedBook(
+            itemId: itemId,
+            libraryId: first.libraryId,
+            title: first.title,
+            authors: first.authors,
+            average: math.divide(math.toDecimal(sum(r in group): r.score), math.toDecimal(group.length()), places: 2, rounding: Rounding.HalfUp),
+            count: group.length(),
+            latest: max(r in group): r.updatedAt,
+        ))
+    }
+    return sorted(book in books): book.average descending then book.count descending then book.latest descending
+}

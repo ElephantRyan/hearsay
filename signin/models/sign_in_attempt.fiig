@@ -1,0 +1,7 @@
+// What a person (or their browser) presents to prove who they are. Each
+// provider handles its own variant and answers WrongMethod to the others,
+// so the caller can pick a provider by config and never inspect the attempt.
+enum SignInAttempt {
+    Password(username: string, password: string)
+    AuthorizationCode(code: string, codeVerifier: string)
+}

@@ -1,0 +1,10 @@
+// What a sync did (or, in a dry run, would do) for one person in one library.
+// `action` is created, updated, recreated, removed or failed, with a
+// "would-" prefix in a dry run.
+model SyncResult {
+    userId: string
+    libraryId: string
+    action: string
+    books: int
+    error: string | None
+}

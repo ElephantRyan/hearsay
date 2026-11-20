@@ -1,0 +1,5 @@
+model Recommender {
+    userId: string
+    username: string
+    count: int
+}

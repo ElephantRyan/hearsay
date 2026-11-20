@@ -1,0 +1,5 @@
+gateway deleteSession(tokenHash: string) -> int
+    requires Database
+{
+    return Database.execute("DELETE FROM session WHERE token_hash = ?", tokenHash)
+}

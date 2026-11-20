@@ -1,0 +1,12 @@
+use abs.client
+
+// Short, safe text for a failed collection write. Never a token or a body.
+conversion failedText(error: client.AbsError) -> string {
+    match error {
+        client.AbsError.NotFound -> "Audiobookshelf has no such collection or library"
+        client.AbsError.Unauthorized -> "Audiobookshelf refused the server's token"
+        client.AbsError.Rejected(status) -> "Audiobookshelf answered ${status}"
+        client.AbsError.Unreachable(failure) -> "Audiobookshelf is unreachable"
+        client.AbsError.Unreadable(failure) -> "Audiobookshelf's reply was unreadable"
+    }
+}

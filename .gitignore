@@ -1,0 +1,10 @@
+# secrets and local state
+.env
+.env.*
+abs-login.json
+*.db
+
+# build and tooling output
+node_modules/
+dist/
+*.log

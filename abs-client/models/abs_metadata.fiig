@@ -1,0 +1,5 @@
+model AbsMetadata {
+    title: string
+    subtitle: string | None
+    authors: List<AbsAuthor>
+}

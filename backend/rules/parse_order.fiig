@@ -1,0 +1,18 @@
+rule parseOrder(text: string | None) -> RatingOrder | None {
+    return orderNamed(text or "newest")
+}
+
+private {
+    orderNamed(name: string) -> RatingOrder | None {
+        if name == "score" {
+            return RatingOrder.Score
+        }
+        if name == "newest" {
+            return RatingOrder.Newest
+        }
+        if name == "title" {
+            return RatingOrder.Title
+        }
+        return None
+    }
+}

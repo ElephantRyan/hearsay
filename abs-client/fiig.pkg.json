@@ -1,0 +1,14 @@
+{
+    "path": "abs.client",
+    "kind": "library",
+    "version": "0.1.0",
+    "dependencies": {
+        "fiig.http": "1.0.0"
+    },
+    "capabilities": [
+        "Socket"
+    ],
+    "workspaces": [
+        ".."
+    ]
+}

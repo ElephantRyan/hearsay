@@ -1,0 +1,15 @@
+// A rating joined with who made it and the book it is about, as the
+// rating_row view returns it (gateways/create_schema.fiig).
+model RatingRow {
+    userId: string
+    username: string
+    itemId: string
+    libraryId: string
+    title: string
+    authors: string
+    score: int
+    note: string
+    recommended: bool
+    createdAt: int
+    updatedAt: int
+}

@@ -1,0 +1,11 @@
+// True when every id is one validId accepts. A book list goes into a JSON body,
+// not a path, but an id that isn't an ABS id is a bug worth refusing early.
+// A loop, because an `all(...)` body can't call a rule (GAPS G31).
+conversion allValidIds(ids: List<string>) -> bool {
+    for id in ids {
+        if not validId(id) {
+            return false
+        }
+    }
+    return true
+}

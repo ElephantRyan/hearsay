@@ -1,0 +1,10 @@
+// The one collection we made in ABS for one person's recommendations in one
+// library. This table is the whole of what we consider ours: nothing else in
+// ABS is ever listed, changed or deleted.
+model SyncState {
+    userId: string
+    libraryId: string
+    collectionId: string
+    lastSyncedAt: int
+    lastError: string | None
+}

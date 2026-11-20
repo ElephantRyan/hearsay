@@ -1,0 +1,14 @@
+// Step one of Authentik sign-in: fresh state and PKCE verifier (256 random
+// bits each, ADR 0068), and the URL to send the browser to. Only `oidc` and
+// `both` modes have this route.
+use abs.signin.authentik.AuthentikSignIn
+
+activity beginSignIn() -> Result<OidcStart, ApiError> {
+    if Server.authMode == "abs" {
+        return Err(ApiError.NotFound("Authentik sign-in on this server"))
+    }
+    state = Random.bytes(count: 32).toBase64Url()
+    verifier = Random.bytes(count: 32).toBase64Url()
+    url = mapErr(e in AuthentikSignIn.beginUrl(state, verifier)): apiErrorOfSignIn(e)?
+    return Ok(OidcStart(url: url, pending: "${state}.${verifier}"))
+}

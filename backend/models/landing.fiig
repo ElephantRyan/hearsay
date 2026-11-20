@@ -1,0 +1,6 @@
+// Where the browser goes after the sign-in callback: the frontend, signed in
+// when `session` is set, or with an error code in the query when it isn't.
+model Landing {
+    location: string
+    session: Session | None
+}

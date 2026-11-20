@@ -1,0 +1,10 @@
+gateway findRating(userId: string, itemId: string) -> Rating | None
+    requires Database
+    idempotent
+{
+    return Database.queryOne(
+        "SELECT user_id AS userId, item_id AS itemId, score, note, recommended, created_at AS createdAt, updated_at AS updatedAt FROM rating WHERE user_id = ? AND item_id = ?",
+        userId,
+        itemId,
+    )
+}

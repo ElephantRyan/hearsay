@@ -1,0 +1,10 @@
+// Who has published recommendations, and how many each, most first.
+rule recommendersOf(rows: List<RatingRow>) -> List<Recommender> {
+    recommended = filter(r in rows): r.recommended
+    groups = groupBy(r in recommended): r.userId
+    people: List<Recommender> = []
+    for userId, group in groups {
+        people = append(people, Recommender(userId: userId, username: group.at(0).username, count: group.length()))
+    }
+    return sorted(person in people): person.count descending then person.username
+}

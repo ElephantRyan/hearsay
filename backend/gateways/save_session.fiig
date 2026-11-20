@@ -1,0 +1,14 @@
+use abs.signin
+
+gateway saveSession(tokenHash: string, identity: signin.Identity, expiresAt: int) -> int
+    requires Database
+{
+    return Database.execute(
+        "INSERT INTO session (token_hash, user_id, username, user_type, expires_at) VALUES (?, ?, ?, ?, ?)",
+        tokenHash,
+        identity.userId,
+        identity.username,
+        identity.userType,
+        expiresAt,
+    )
+}

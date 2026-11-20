@@ -1,0 +1,19 @@
+// A book from a library listing or a search hit. These carry one author line
+// (`authorName`), where GET /api/items/{id} carries a list of authors.
+conversion bookOfListed(item: AbsListedItem) -> Book {
+    return Book(
+        itemId: item.id,
+        libraryId: item.libraryId,
+        title: item.media.metadata.title,
+        authors: authorLine(item.media.metadata.authorName),
+    )
+}
+
+private {
+    authorLine(name: string | None) -> string {
+        match name {
+            None -> ""
+            given -> given
+        }
+    }
+}

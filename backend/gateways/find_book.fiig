@@ -1,0 +1,11 @@
+use abs.client
+
+gateway findBook(itemId: string) -> client.Book | None
+    requires Database
+    idempotent
+{
+    return Database.queryOne(
+        "SELECT item_id AS itemId, library_id AS libraryId, title, authors FROM book WHERE item_id = ?",
+        itemId,
+    )
+}

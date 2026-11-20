@@ -1,0 +1,3 @@
+workflow listMyRatings(session: string | None, sort: string | None) -> Result<List<RatingRow>, ApiError> {
+    return myRatings(session, sort)
+}

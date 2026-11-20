@@ -1,0 +1,3 @@
+workflow putRating(session: string | None, itemId: string, input: RatingInput) -> Result<Rating, ApiError> {
+    return rateItem(session, itemId, input)
+}

@@ -1,0 +1,8 @@
+// All of one user's ratings, private ones included; the caller only asks for
+// the signed-in user's own.
+gateway ratingRowsByUser(userId: string) -> List<RatingRow>
+    requires Database
+    idempotent
+{
+    return Database.queryMany("SELECT * FROM rating_row WHERE userId = ? ORDER BY updatedAt DESC", userId)
+}

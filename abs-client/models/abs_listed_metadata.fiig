@@ -1,0 +1,4 @@
+model AbsListedMetadata {
+    title: string
+    authorName: string | None
+}

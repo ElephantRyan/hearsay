@@ -1,0 +1,8 @@
+// Every way an API call can fail, as values the adapter maps to a status.
+enum ApiError {
+    Unauthenticated
+    Refused(reason: string)
+    Invalid(field: string, reason: string)
+    NotFound(what: string)
+    Unavailable(detail: string)
+}

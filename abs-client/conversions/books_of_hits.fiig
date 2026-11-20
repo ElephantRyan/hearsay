@@ -1,0 +1,7 @@
+conversion booksOfHits(hits: List<AbsSearchHit>) -> List<Book> {
+    books: List<Book> = []
+    for hit in hits {
+        books = append(books, bookOfListed(hit.libraryItem))
+    }
+    return books
+}

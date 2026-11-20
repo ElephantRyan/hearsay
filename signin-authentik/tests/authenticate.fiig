@@ -1,0 +1,67 @@
+use abs.client.Abs
+use abs.client.AbsService
+use abs.signin
+use fiig.http
+use fiig.http.HttpClient
+
+// One fake plays Authentik and ABS, answering by URL. Replies are shaped like
+// the live servers': the OIDC discovery and userinfo shapes are the standard
+// ones; /api/users is the real ABS 2.37.2 shape, extra `token` member included.
+test authenticateFindsTheAbsUserByEmail {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()))
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                expect request.method == http.Method.Post
+                match request.body {
+                    None -> {
+                        expect false
+                    }
+                    sent -> {
+                        match sent.utf8() {
+                            None -> {
+                                expect false
+                            }
+                            form -> {
+                                expect form.contains("grant_type=authorization_code")
+                                expect form.contains("code=code-1")
+                                expect form.contains("code_verifier=verifier-1")
+                                expect form.contains("client_id=cid")
+                                expect form.contains("client_secret=csec")
+                            }
+                        }
+                    }
+                }
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"access_token\":\"at-1\",\"token_type\":\"Bearer\",\"id_token\":\"ignored\"}".utf8()))
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                expect http.headerValue(request.headers, "authorization") == "Bearer at-1"
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-1\",\"email\":\"Ryan@Example.com\",\"email_verified\":false,\"preferred_username\":\"ryan\"}".utf8()))
+            }
+            if request.url == "https://abs.test/api/users" {
+                expect http.headerValue(request.headers, "authorization") == "Bearer svc-token"
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-9\",\"username\":\"someone\",\"type\":\"user\",\"email\":null,\"token\":\"never-printed\"},{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"email\":\"ryan@example.com\",\"token\":\"never-printed\"}]}".utf8()))
+            }
+            expect false
+            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()))
+        }
+    }
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Ok(identity)
+    expect identity == signin.Identity(userId: "u-1", username: "ryan", userType: "admin")
+    expect calls(HttpClient.send) == 4
+}

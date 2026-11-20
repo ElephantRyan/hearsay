@@ -1,0 +1,3 @@
+model AbsLibrariesReply {
+    libraries: List<AbsLibrary>
+}

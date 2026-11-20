@@ -1,0 +1,31 @@
+use abs.signin
+use abs.signin.authentik.AuthentikSignIn
+use abs.signin.password.AbsPasswordSignIn
+
+test authModeGatesTheSignInRoutes {
+    fake Server {
+        authMode: "abs"
+        sessionMaxAge: 3600
+        frontendUrl: "https://app.test"
+    }
+    fake AbsPasswordSignIn {
+        gateway authenticate(attempt: signin.SignInAttempt) -> Result<signin.Identity, signin.SignInError> {
+            expect false
+            return Err(signin.SignInError.WrongMethod)
+        }
+    }
+    fake AuthentikSignIn {
+        gateway beginUrl(state: string, codeVerifier: string) -> Result<string, signin.SignInError> {
+            expect false
+            return Err(signin.SignInError.WrongMethod)
+        }
+        gateway authenticate(attempt: signin.SignInAttempt) -> Result<signin.Identity, signin.SignInError> {
+            expect false
+            return Err(signin.SignInError.WrongMethod)
+        }
+    }
+    expect beginSignIn() is Err(ApiError.NotFound(what))
+    expect finishSignIn("c", "s", None, "s.v").location == "https://app.test/sign-in?error=disabled"
+    expect calls(AuthentikSignIn.beginUrl) == 0
+}
+

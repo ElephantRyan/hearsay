@@ -1,0 +1,8 @@
+// Proves who a person is with whichever provider the rule picks, then
+// returns only the Identity.
+use abs.signin
+
+activity signIn(attempt: signin.SignInAttempt) -> Result<signin.Identity, signin.SignInError> {
+    Provider = signInProvider(attempt)
+    return Provider.authenticate(attempt)
+}

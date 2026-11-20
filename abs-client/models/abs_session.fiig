@@ -1,0 +1,9 @@
+// What a successful ABS login gives us. Tokens are held in memory only
+// (PLAN.md section 5: we never store the user's password).
+model AbsSession {
+    userId: string
+    username: string
+    userType: string
+    accessToken: string
+    refreshToken: string
+}

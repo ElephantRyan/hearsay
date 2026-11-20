@@ -1,0 +1,27 @@
+use fiig.http
+use fiig.http.HttpClient
+
+test absRefusalsAreValues {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://abs.test/login" {
+                return Ok(http.Reply(status: 401, headers: [], body: "Invalid username or password".utf8()))
+            }
+            if request.url == "https://abs.test/api/items/gone" {
+                return Ok(http.Reply(status: 404, headers: [], body: "Not Found".utf8()))
+            }
+            if request.url == "https://abs.test/api/items/odd" {
+                return Ok(http.Reply(status: 200, headers: [], body: "<html>not json</html>".utf8()))
+            }
+            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()))
+        }
+    }
+    expect AbsApi.login("ryan", "wrong") is Err(AbsError.Unauthorized)
+    expect AbsApi.item("tok", "gone") is Err(AbsError.NotFound)
+    expect AbsApi.item("tok", "odd") is Err(AbsError.Unreadable(_))
+    expect AbsApi.me("tok") is Err(AbsError.Rejected(status))
+    expect status == 500
+}

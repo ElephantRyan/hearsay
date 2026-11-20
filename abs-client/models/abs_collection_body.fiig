@@ -1,0 +1,8 @@
+// POST /api/collections: a new collection holding these library items, in
+// this order.
+model AbsCollectionBody {
+    libraryId: string
+    name: string
+    description: string
+    books: List<string>
+}

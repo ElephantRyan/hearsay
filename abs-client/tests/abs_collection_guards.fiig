@@ -1,0 +1,33 @@
+use fiig.http
+use fiig.http.HttpClient
+
+// Writes are the dangerous calls, so bad ids stop before any request: a path
+// built from "../users" would be a write-capable request to the wrong place.
+test absCollectionWritesRefuseBadIdsAndMapFailures {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://abs.test/api/collections/gone" {
+                return Ok(http.Reply(status: 404, headers: [], body: "Not Found".utf8()))
+            }
+            if request.url == "https://abs.test/api/collections/denied" {
+                return Ok(http.Reply(status: 403, headers: [], body: "Forbidden".utf8()))
+            }
+            return Ok(http.Reply(status: 200, headers: [], body: "{\"id\":\"x\"}".utf8()))
+        }
+    }
+    expect AbsApi.deleteCollectionAsService("../users") is Err(AbsError.NotFound)
+    expect AbsApi.updateCollectionAsService("a/b", "n", "d", []) is Err(AbsError.NotFound)
+    expect AbsApi.createCollectionAsService("lib/../x", "n", "d", []) is Err(AbsError.NotFound)
+    expect AbsApi.createCollectionAsService("lib-1", "n", "d", ["ok-id", "../bad"]) is Err(AbsError.NotFound)
+    expect calls(HttpClient.send) == 0
+
+    expect AbsApi.deleteCollectionAsService("gone") is Err(AbsError.NotFound)
+    expect AbsApi.updateCollectionAsService("denied", "n", "d", []) is Err(AbsError.Rejected(status))
+    expect status == 403
+}

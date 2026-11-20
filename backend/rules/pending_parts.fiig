@@ -1,0 +1,16 @@
+// Splits the "state.verifier" cookie; anything else is None.
+rule readPendingParts(pending: string | None) -> PendingParts | None {
+    match pending {
+        None -> None
+        text -> partsOf(text.split("."))
+    }
+}
+
+private {
+    partsOf(pieces: List<string>) -> PendingParts | None {
+        if pieces.length() != 2 {
+            return None
+        }
+        return PendingParts(state: pieces.at(0), verifier: pieces.at(1))
+    }
+}

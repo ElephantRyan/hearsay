@@ -1,0 +1,24 @@
+// One book with the ratings the viewer may see. A book nobody has rated yet
+// is fetched from ABS, so the page can offer the first rating.
+use abs.client
+use abs.client.AbsApi
+
+activity loadItemDetail(session: string | None, itemId: string) -> Result<ItemDetail, ApiError> {
+    me = currentUser(session)?
+    rows = visibleRowsForItem(itemId, me.userId)
+    book = cachedOrFetched(itemId)?
+    return Ok(ItemDetail(book: book, average: averageOf(rows), count: count(r in rows): r.recommended, ratings: rows))
+}
+
+private {
+    cachedOrFetched(itemId: string) -> Result<client.Book, ApiError> {
+        match findBook(itemId) {
+            None -> {
+                return mapErr(e in AbsApi.itemAsService(itemId)): apiErrorOfAbs(e)
+            }
+            cached -> {
+                return Ok(cached)
+            }
+        }
+    }
+}

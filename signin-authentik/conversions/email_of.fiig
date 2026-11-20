@@ -1,0 +1,8 @@
+use abs.signin
+
+conversion emailOf(info: OidcUserInfo) -> Result<string, signin.SignInError> {
+    match info.email {
+        None -> Err(signin.SignInError.Refused("the identity provider gave no email, so your Audiobookshelf account can't be found"))
+        given -> Ok(given)
+    }
+}

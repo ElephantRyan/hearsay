@@ -1,0 +1,4 @@
+// Where the Audiobookshelf server is (PLAN.md section 8).
+config Abs {
+    url: string from env "ABS_URL"
+}

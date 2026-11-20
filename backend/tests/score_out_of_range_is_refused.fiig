@@ -1,0 +1,8 @@
+test scoreOutOfRangeIsRefused {
+    low = NewRating(itemId: "a", score: 0, note: "", recommended: true)
+    high = NewRating(itemId: "a", score: 11, note: "", recommended: true)
+    expect createRating("u1", low, 1000) is Err(_)
+    expect createRating("u1", high, 1000) is Err(_)
+    ok = NewRating(itemId: "a", score: 10, note: "", recommended: true)
+    expect createRating("u1", ok, 1000) is Ok(_)
+}

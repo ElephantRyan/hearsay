@@ -1,0 +1,36 @@
+use abs.client.Abs
+use abs.client.AbsService
+use abs.signin
+use fiig.http
+use fiig.http.HttpClient
+
+test noAbsAccountMeansSignInToAbsFirst {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()))
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"access_token\":\"at-1\"}".utf8()))
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-2\",\"email\":\"new@example.com\"}".utf8()))
+            }
+            return Ok(http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()))
+        }
+    }
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.NoAccount)
+}

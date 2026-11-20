@@ -1,0 +1,3 @@
+workflow listRecommendations(session: string | None, userId: string | None, libraryId: string | None, minScore: int | None) -> Result<List<RecommendedBook>, ApiError> {
+    return recommendations(session, userId, libraryId, minScore)
+}

@@ -1,0 +1,3 @@
+workflow listRecommenderUsers(session: string | None) -> Result<List<Recommender>, ApiError> {
+    return listRecommenders(session)
+}

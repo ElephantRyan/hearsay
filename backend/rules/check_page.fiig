@@ -1,0 +1,9 @@
+// Page numbers count from 0, as ABS's do. A missing one is the first page; a
+// silly one is an error the caller can fix.
+rule checkPage(page: int | None) -> Result<int, ApiError> {
+    chosen = page or 0
+    if chosen < 0 or chosen > 100000 {
+        return Err(ApiError.Invalid("page", "must be 0 or more"))
+    }
+    return Ok(chosen)
+}

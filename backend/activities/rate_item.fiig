@@ -1,0 +1,24 @@
+// Create or update the signed-in user's rating of a book. The book is
+// fetched from ABS on every write: that proves the id exists (PLAN.md
+// section 3) and refreshes the cached title.
+use abs.client
+use abs.client.AbsApi
+
+activity rateItem(session: string | None, itemId: string, input: RatingInput) -> Result<Rating, ApiError> {
+    me = currentUser(session)?
+    book = mapErr(e in AbsApi.itemAsService(itemId)): apiErrorOfAbs(e)?
+    now = Clock.now()
+    rating = mapErr(e in createRating(me.userId, NewRating(itemId: itemId, score: input.score, note: input.note or "", recommended: input.recommended), now)): apiErrorOfRating(e)?
+    upsertUser(me.userId, me.username, now)
+    saveBook(book, now)
+    saveRating(rating)
+    stored = findRating(me.userId, itemId)
+    match stored {
+        None -> {
+            return Ok(rating)
+        }
+        found -> {
+            return Ok(found)
+        }
+    }
+}

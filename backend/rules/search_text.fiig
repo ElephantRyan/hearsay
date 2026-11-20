@@ -1,0 +1,20 @@
+// What a person typed in the search box: None for blank (browse instead),
+// an error for something absurdly long, else the trimmed text.
+rule searchText(q: string | None) -> Result<string | None, ApiError> {
+    match q {
+        None -> Ok(None)
+        typed -> checkTyped(typed.trim())
+    }
+}
+
+private {
+    checkTyped(text: string) -> Result<string | None, ApiError> {
+        if text.isBlank() {
+            return Ok(None)
+        }
+        if text.length() > 100 {
+            return Err(ApiError.Invalid("q", "must be at most 100 characters"))
+        }
+        return Ok(text)
+    }
+}

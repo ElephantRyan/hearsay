@@ -1,0 +1,5 @@
+gateway deleteSyncState(userId: string, libraryId: string) -> int
+    requires Database
+{
+    return Database.execute("DELETE FROM sync_state WHERE user_id = ? AND library_id = ?", userId, libraryId)
+}

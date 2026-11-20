@@ -1,0 +1,8 @@
+// A book in the browse list, with the viewer's own score if they rated it.
+model BrowseItem {
+    itemId: string
+    libraryId: string
+    title: string
+    authors: string
+    myScore: int | None
+}

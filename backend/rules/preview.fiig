@@ -1,0 +1,3 @@
+rule preview(plans: List<SyncPlan>) -> List<SyncResult> {
+    return map(p in plans): SyncResult(userId: p.userId, libraryId: p.libraryId, action: "would-${p.action}", books: p.bookIds.length(), error: None)
+}

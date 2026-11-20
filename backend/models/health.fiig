@@ -1,0 +1,4 @@
+model Health {
+    ok: bool
+    abs: string
+}

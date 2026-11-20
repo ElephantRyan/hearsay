@@ -1,0 +1,11 @@
+use abs.client
+
+conversion apiErrorOfAbs(error: client.AbsError) -> ApiError {
+    match error {
+        client.AbsError.NotFound -> ApiError.NotFound("book with that id in Audiobookshelf")
+        client.AbsError.Unauthorized -> ApiError.Unavailable("this server's Audiobookshelf token was refused; tell the server's admin")
+        client.AbsError.Rejected(status) -> ApiError.Unavailable("Audiobookshelf answered ${status}")
+        client.AbsError.Unreachable(failure) -> ApiError.Unavailable("Audiobookshelf is unreachable")
+        client.AbsError.Unreadable(failure) -> ApiError.Unavailable("Audiobookshelf's reply was unreadable")
+    }
+}

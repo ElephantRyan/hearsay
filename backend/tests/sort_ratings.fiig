@@ -1,0 +1,7 @@
+test sortRatingsByScoreNewestAndTitle {
+    a = RatingRow(userId: "u1", username: "n", itemId: "a", libraryId: "l", title: "Zebra", authors: "x", score: 5, note: "", recommended: false, createdAt: 1, updatedAt: 3)
+    b = RatingRow(userId: "u1", username: "n", itemId: "b", libraryId: "l", title: "Apple", authors: "x", score: 9, note: "", recommended: false, createdAt: 2, updatedAt: 1)
+    expect sortRatings([a, b], RatingOrder.Score) == [b, a]
+    expect sortRatings([a, b], RatingOrder.Newest) == [a, b]
+    expect sortRatings([a, b], RatingOrder.Title) == [b, a]
+}

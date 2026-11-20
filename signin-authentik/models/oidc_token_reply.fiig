@@ -1,0 +1,6 @@
+// The token endpoint's reply. The id_token is ignored: fiig can't verify
+// RS256 signatures yet, so identity comes from the userinfo endpoint, which
+// is fetched over TLS straight from the issuer.
+model OidcTokenReply {
+    accessToken: string from json "access_token"
+}

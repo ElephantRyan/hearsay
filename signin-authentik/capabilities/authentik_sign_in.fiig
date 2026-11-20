@@ -1,0 +1,47 @@
+// Sign-in through Authentik (OIDC authorization code + PKCE). A gateway
+// requires exactly one capability (ADR 0010), so this one does its own HTTP
+// to the identity provider and to ABS, reusing abs.client's pure helpers
+// (absGet, absReply, usersMatchingEmail) rather than calling AbsApi.
+//
+// `beginUrl` is outside the SignIn interface: only the OIDC path has a
+// redirect step. The caller makes `state` and `codeVerifier` (Random.bytes),
+// keeps them in a short-lived cookie, and passes them back at the callback.
+use abs.client
+use abs.client.Abs
+use abs.client.AbsService
+use abs.signin
+use fiig.http
+use fiig.http.HttpClient
+
+capability AuthentikSignIn {
+    gateway beginUrl(state: string, codeVerifier: string) -> Result<string, signin.SignInError>
+        requires HttpClient
+    {
+        found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(Oidc.issuer), "")))?
+        endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable("discovery document")?
+        return Ok(authorizeUrl(endpoints.authorizationEndpoint, Oidc.clientId, Oidc.redirectUri, state, pkceChallenge(codeVerifier)))
+    }
+
+    gateway authenticate(attempt: signin.SignInAttempt) -> Result<signin.Identity, signin.SignInError>
+        requires HttpClient
+    {
+        match attempt {
+            signin.SignInAttempt.Password(username, password) -> Err(signin.SignInError.WrongMethod)
+            signin.SignInAttempt.AuthorizationCode(code, codeVerifier) -> {
+                found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(Oidc.issuer), "")))?
+                endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable("discovery document")?
+
+                exchanged = oidcReply(HttpClient.send(tokenRequest(endpoints.tokenEndpoint, code, codeVerifier, Oidc.redirectUri, Oidc.clientId, Oidc.clientSecret.reveal())))?
+                token: OidcTokenReply = mapErr(e in json.decode(exchanged.body)): unreadable("token reply")?
+
+                profile = oidcReply(HttpClient.send(oidcGet(endpoints.userinfoEndpoint, token.accessToken)))?
+                info: OidcUserInfo = mapErr(e in json.decode(profile.body)): unreadable("user info")?
+                email = emailOf(info)?
+
+                listed = serviceReply(client.absReply(HttpClient.send(client.absGet(Abs.url, "/api/users", AbsService.token.reveal()))))?
+                everyone: client.AbsUsersReply = mapErr(e in json.decode(listed.body)): unreadable("list of Audiobookshelf users")?
+                return identityOfMatches(client.usersMatchingEmail(everyone.users, email))
+            }
+        }
+    }
+}

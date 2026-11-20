@@ -1,0 +1,8 @@
+// A book as the API shows it: ABS owns the metadata, we cache only what a
+// list needs. `authors` is one display line, "A, B".
+model Book {
+    itemId: string
+    libraryId: string
+    title: string
+    authors: string
+}

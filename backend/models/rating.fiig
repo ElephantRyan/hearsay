@@ -1,0 +1,10 @@
+// One user's rating of one ABS library item. Times are Unix milliseconds.
+model Rating {
+    userId: string
+    itemId: string
+    score: int
+    note: string
+    recommended: bool
+    createdAt: int
+    updatedAt: int
+}

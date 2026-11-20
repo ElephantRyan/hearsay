@@ -1,0 +1,10 @@
+// One row of GET /api/users (admin only). The live reply also carries each
+// user's never-expiring `token`; this model does not declare it, so decoding
+// drops it and nothing here can print it. Users who never set an email have
+// none.
+model AbsUserEntry {
+    id: string
+    username: string
+    type: string
+    email: string | None
+}

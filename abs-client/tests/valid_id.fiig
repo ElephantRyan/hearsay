@@ -1,0 +1,14 @@
+test validIdAllowsOnlyIdCharacters {
+    expect validId("58b7c908-fc73-44d4-b572-b8c09e348ce4")
+    expect validId("li_abc123")
+    expect not validId("")
+    expect not validId("../users")
+    expect not validId("..%2Fusers")
+    expect not validId("a/b")
+    expect not validId("a?x=1")
+    expect not validId("a b")
+    expect not validId("a#b")
+    expect not validId("id\n")
+    expect not validId("é")
+    expect not validId("0123456789012345678901234567890123456789012345678901234567890123456789")
+}

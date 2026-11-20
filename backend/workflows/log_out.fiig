@@ -1,0 +1,3 @@
+workflow endSession(session: string | None) -> int {
+    return logOut(session)
+}

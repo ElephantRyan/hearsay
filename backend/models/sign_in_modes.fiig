@@ -1,0 +1,5 @@
+// Which sign-in methods this server offers, so the page can show only those.
+model SignInModes {
+    password: bool
+    oidc: bool
+}

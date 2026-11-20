@@ -1,0 +1,10 @@
+// A book's standing across everyone who recommended it.
+model RecommendedBook {
+    itemId: string
+    libraryId: string
+    title: string
+    authors: string
+    average: decimal
+    count: int
+    latest: int
+}

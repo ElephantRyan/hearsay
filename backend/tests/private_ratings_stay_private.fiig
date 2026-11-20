@@ -1,0 +1,37 @@
+use abs.client
+use abs.client.AbsApi
+use abs.signin
+
+test privateRatingsStayPrivate {
+    fake Server {
+        sessionMaxAge: 3600
+    }
+    fake AbsApi {
+        gateway itemAsService(itemId: string) -> Result<client.Book, client.AbsError> {
+            return Ok(client.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert"))
+        }
+    }
+    ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    bob = startSession(signin.Identity(userId: "u2", username: "bob", userType: "user")).token
+    expect rateItem(ann, "dune", RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
+    expect rateItem(bob, "dune", RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
+
+    expect loadItemDetail(bob, "dune") is Ok(bobSees)
+    expect bobSees.ratings.length() == 1
+    expect bobSees.count == 1
+    expect bobSees.average == 6.00
+
+    expect loadItemDetail(ann, "dune") is Ok(annSees)
+    expect annSees.ratings.length() == 2
+    expect annSees.count == 1
+    expect annSees.average == 6.00
+
+    expect recommendations(bob, None, None, None) is Ok(listed)
+    expect listed.length() == 1
+    expect listed.at(0).average == 6.00
+    expect listRecommenders(bob) is Ok(people)
+    expect people.length() == 1
+    expect people.at(0).username == "bob"
+    expect picksOf(bob, "u1") is Ok(annsPicks)
+    expect annsPicks.length() == 0
+}

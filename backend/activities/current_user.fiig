@@ -1,0 +1,21 @@
+// Who the session cookie belongs to. Every route that needs a signed-in
+// person starts here.
+use abs.signin
+
+activity currentUser(token: string | None) -> Result<signin.Identity, ApiError> {
+    match token {
+        None -> {
+            return Err(ApiError.Unauthenticated)
+        }
+        found -> {
+            match findSession(tokenHash(found), Clock.now()) {
+                None -> {
+                    return Err(ApiError.Unauthenticated)
+                }
+                identity -> {
+                    return Ok(identity)
+                }
+            }
+        }
+    }
+}

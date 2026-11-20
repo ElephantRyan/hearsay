@@ -1,0 +1,3 @@
+conversion signedOut() -> HttpResponse<None> {
+    return HttpResponse(status: 204, cookies: [Cookie(name: "sid", value: "", maxAge: 0)])
+}

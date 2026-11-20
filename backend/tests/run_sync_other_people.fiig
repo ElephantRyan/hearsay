@@ -1,0 +1,25 @@
+use abs.client
+use abs.client.AbsApi
+use abs.signin
+
+test aPersonCannotSyncSomeoneElsesList {
+    fake Server {
+        sessionMaxAge: 3600
+        mirrorEnabled: true
+    }
+    fake AbsApi {
+        gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+            expect false
+            return Err(client.AbsError.NotFound)
+        }
+        gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+            return Ok(200)
+        }
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
+            return Ok(200)
+        }
+    }
+    ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    expect runSync(ann, "u2", false) is Err(ApiError.Refused(why))
+    expect calls(AbsApi.createCollectionAsService) == 0
+}

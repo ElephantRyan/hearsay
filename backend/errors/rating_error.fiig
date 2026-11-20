@@ -1,0 +1,4 @@
+// Every way a rating can be refused, as values the caller must handle.
+enum RatingError {
+    Invalid(field: string, reason: string)
+}

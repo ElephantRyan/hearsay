@@ -1,0 +1,6 @@
+// The orders GET /ratings/mine offers.
+enum RatingOrder {
+    Score
+    Newest
+    Title
+}

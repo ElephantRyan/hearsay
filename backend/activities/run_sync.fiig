@@ -1,0 +1,21 @@
+// POST /sync: plan, and (only when asked) carry out. A dry run returns what
+// would happen and touches neither ABS nor our tables.
+activity runSync(session: string | None, userId: string | None, dryRun: bool | None) -> Result<List<SyncResult>, ApiError> {
+    me = currentUser(session)?
+    if not Server.mirrorEnabled {
+        return Err(ApiError.NotFound("collection mirroring on this server"))
+    }
+    rows = recommendedRows()
+    states = allSyncStates()
+    targets = syncTargets(me, userId, rows, states)?
+    plans = planSync(rows, states, targets)
+    if wantsDryRun(dryRun) {
+        return Ok(preview(plans))
+    }
+    now = Clock.now()
+    results: List<SyncResult> = []
+    for plan in plans {
+        results = append(results, applyPlan(plan, now))
+    }
+    return Ok(results)
+}

@@ -1,0 +1,3 @@
+model AbsMedia {
+    metadata: AbsMetadata
+}

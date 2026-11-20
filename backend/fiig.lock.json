@@ -1,0 +1,38 @@
+{
+  "toolchain": "dev",
+  "dependencies": [
+    {
+      "path": "abs.client",
+      "version": "0.1.0",
+      "hash": "sha256:93091b74313bc1b5abd8d818bee60f3f74f03ba894b76e69ad48631d4353601e",
+      "source": "../abs-client"
+    },
+    {
+      "path": "abs.signin",
+      "version": "0.1.0",
+      "hash": "sha256:cf790aed0908ab540584162400f52ef0cda8cea6d15a2333661561134d61867d",
+      "source": "../signin"
+    },
+    {
+      "path": "abs.signin.authentik",
+      "version": "0.1.0",
+      "hash": "sha256:ee11bd95ddf4be121dba711c6eee77767e5fe62389967841e8335273e57d2ccb",
+      "source": "../signin-authentik"
+    },
+    {
+      "path": "abs.signin.password",
+      "version": "0.1.0",
+      "hash": "sha256:ae535cfb59b86dc722ffa3e67719993f819c915635b6442ee4169b4061a80545",
+      "source": "../signin-password"
+    },
+    {
+      "path": "fiig.http",
+      "version": "1.0.0",
+      "hash": "sha256:5fa94eb0587f3505dc709f840203ca707812f96995d5f17d557a3635dcc77fde",
+      "source": "builtin:http",
+      "capabilities": [
+        "Socket"
+      ]
+    }
+  ]
+}

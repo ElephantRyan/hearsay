@@ -1,0 +1,5 @@
+model AbsListedItem {
+    id: string
+    libraryId: string
+    media: AbsListedMedia
+}

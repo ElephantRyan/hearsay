@@ -1,0 +1,16 @@
+use fiig.http
+
+// GET /api/libraries/{id}/search. `q` is whatever a person typed, so it is
+// percent-encoded; the id is checked by the caller with validId.
+conversion absSearchPath(libraryId: string, query: string, size: int) -> string {
+    return "/api/libraries/${libraryId}/search?${queryString(http.formEncode([http.Header(name: "q", value: query), http.Header(name: "limit", value: "${size}")]))}"
+}
+
+private {
+    queryString(encoded: bytes) -> string {
+        match encoded.utf8() {
+            None -> ""
+            text -> text
+        }
+    }
+}

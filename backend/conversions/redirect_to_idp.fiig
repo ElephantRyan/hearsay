@@ -1,0 +1,10 @@
+// 302 to Authentik, plus a ten-minute cookie holding state and verifier. It
+// is HttpOnly and SameSite=Lax by default, and Lax cookies ride along on the
+// top-level redirect back from Authentik (ADR 0069 §4).
+conversion redirectToIdp(start: OidcStart) -> HttpResponse<None> {
+    return HttpResponse(
+        status: 302,
+        headers: ["Location": start.url, "Cache-Control": "no-store"],
+        cookies: [Cookie(name: "oidc", value: start.pending, maxAge: 600)],
+    )
+}

@@ -1,0 +1,4 @@
+model PendingParts {
+    state: string
+    verifier: string
+}

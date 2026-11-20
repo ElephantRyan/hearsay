@@ -1,0 +1,8 @@
+gateway allSyncStates() -> List<SyncState>
+    requires Database
+    idempotent
+{
+    return Database.queryMany(
+        "SELECT user_id AS userId, library_id AS libraryId, collection_id AS collectionId, last_synced_at AS lastSyncedAt, last_error AS lastError FROM sync_state",
+    )
+}

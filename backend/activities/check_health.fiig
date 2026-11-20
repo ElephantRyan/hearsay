@@ -1,0 +1,14 @@
+use abs.client.AbsApi
+
+// Liveness plus ABS reachability. The service is up if it answers; `abs`
+// says whether ABS's public /status does.
+activity checkHealth() -> Health {
+    match AbsApi.status() {
+        Ok(_) -> {
+            return Health(ok: true, abs: "reachable")
+        }
+        Err(_) -> {
+            return Health(ok: true, abs: "unreachable")
+        }
+    }
+}

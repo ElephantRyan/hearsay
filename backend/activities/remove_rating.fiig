@@ -1,0 +1,8 @@
+activity removeRating(session: string | None, itemId: string) -> Result<int, ApiError> {
+    me = currentUser(session)?
+    removed = deleteRating(me.userId, itemId)
+    if removed == 0 {
+        return Err(ApiError.NotFound("rating of yours for that book"))
+    }
+    return Ok(removed)
+}

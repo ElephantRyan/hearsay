@@ -1,0 +1,19 @@
+{
+    "path": "abs.signin.authentik",
+    "kind": "library",
+    "version": "0.1.0",
+    "dependencies": {
+        "abs.client": "0.1.0",
+        "abs.signin": "0.1.0",
+        "fiig.http": "1.0.0"
+    },
+    "capabilities": [
+        "Socket"
+    ],
+    "provides": {
+        "abs.signin.SignIn": "AuthentikSignIn"
+    },
+    "workspaces": [
+        ".."
+    ]
+}

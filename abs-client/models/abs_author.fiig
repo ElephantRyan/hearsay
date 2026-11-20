@@ -1,0 +1,4 @@
+model AbsAuthor {
+    id: string
+    name: string
+}

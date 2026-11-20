@@ -1,0 +1,6 @@
+// GET /api/items/{id}, trimmed to what the app shows.
+model AbsItem {
+    id: string
+    libraryId: string
+    media: AbsMedia
+}

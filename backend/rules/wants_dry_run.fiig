@@ -1,0 +1,5 @@
+// Anything but an explicit `dryRun=false` is a dry run: writing to ABS is
+// something a caller must say out loud.
+rule wantsDryRun(dryRun: bool | None) -> bool {
+    return dryRun or true
+}

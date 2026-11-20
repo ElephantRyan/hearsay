@@ -1,0 +1,3 @@
+workflow syncCollections(session: string | None, userId: string | None, dryRun: bool | None) -> Result<List<SyncResult>, ApiError> {
+    return runSync(session, userId, dryRun)
+}
