@@ -1,6 +1,6 @@
-use abs.recommendations.signin
+use abs.recommendations.accounts
 
-gateway saveSession(tokenHash: string, identity: signin.Identity, expiresAt: int) -> int
+gateway saveSession(tokenHash: string, identity: accounts.Identity, expiresAt: int) -> int
     requires Database
 {
     return Database.execute(

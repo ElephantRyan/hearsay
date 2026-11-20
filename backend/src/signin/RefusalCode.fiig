@@ -1,0 +1,12 @@
+use abs.recommendations.accounts
+
+// A short code for the frontend to show a message for; never the provider's
+// own words.
+rule refusalCode(error: accounts.SignInError) -> string {
+    match error {
+        accounts.SignInError.WrongMethod -> "method"
+        accounts.SignInError.NoAccount -> "no-account"
+        accounts.SignInError.Refused(reason) -> "refused"
+        accounts.SignInError.Unavailable(detail) -> "unavailable"
+    }
+}

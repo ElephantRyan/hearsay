@@ -1,6 +1,6 @@
 use abs.recommendations.absclient.Abs
 use abs.recommendations.absclient.AbsService
-use abs.recommendations.signin
+use abs.recommendations.accounts
 use fiig.http
 use fiig.http.HttpClient
 
@@ -69,9 +69,9 @@ test authenticateFindsTheAbsUserByEmail {
         }
     }
 
-    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
     expect AuthentikSignIn.authenticate(attempt) is Ok(identity)
-    expect identity == signin.Identity(userId: "u-1", username: "ryan", userType: "admin")
+    expect identity == accounts.Identity(userId: "u-1", username: "ryan", userType: "admin")
     expect calls(HttpClient.send) == 4
 }
 
@@ -109,8 +109,8 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
         }
     }
 
-    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Unavailable(detail))
+    attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Unavailable(detail))
     expect detail.contains("token was refused")
     expect not detail.contains("password")
 }
@@ -151,8 +151,8 @@ test twoAbsAccountsWithOneEmailIsRefused {
         }
     }
 
-    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Refused(why))
+    attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Refused(why))
     expect why.contains("more than one")
 }
 
@@ -192,8 +192,8 @@ test noAbsAccountMeansSignInToAbsFirst {
         }
     }
 
-    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.NoAccount)
+    attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.NoAccount)
 }
 
 test noEmailFromTheProviderIsRefused {
@@ -230,8 +230,8 @@ test noEmailFromTheProviderIsRefused {
         }
     }
 
-    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Refused(why))
+    attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Refused(why))
     expect why.contains("no email")
 }
 
@@ -255,8 +255,8 @@ test passwordAttemptIsTheWrongMethod {
         }
     }
 
-    attempt = signin.SignInAttempt.Password("ryan", "pw")
-    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.WrongMethod)
+    attempt = accounts.SignInAttempt.Password("ryan", "pw")
+    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.WrongMethod)
     expect calls(HttpClient.send) == 0
 }
 
@@ -296,8 +296,8 @@ test providerOutageIsUnavailable {
         }
     }
 
-    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Unavailable(detail))
+    attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Unavailable(detail))
     expect detail == "the identity provider answered 503"
 }
 
@@ -337,8 +337,8 @@ test rejectedCodeIsRefused {
         }
     }
 
-    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Refused(why))
+    attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Refused(why))
     expect why == "the identity provider did not accept this sign-in"
 }
 

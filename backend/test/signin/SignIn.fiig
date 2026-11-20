@@ -1,0 +1,29 @@
+use abs.recommendations.accounts
+use abs.recommendations.signin.authentik.AuthentikSignIn
+use abs.recommendations.signin.password.AbsPasswordSignIn
+
+// signInProvider can return either provider, so both are faked (ADR 0091 §4);
+// the one the attempt should not reach fails the test if it is called.
+test signInUsesTheChosenProvider {
+    fake AbsPasswordSignIn {
+        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+            return Ok(accounts.Identity(userId: "u-pw", username: "ryan", userType: "user"))
+        }
+    }
+    fake AuthentikSignIn {
+        gateway beginUrl(state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
+            return Ok("https://idp.test/")
+        }
+
+        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+            return Ok(accounts.Identity(userId: "u-oidc", username: "ryan", userType: "user"))
+        }
+    }
+
+    expect signIn(accounts.SignInAttempt.Password("ryan", "pw")) is Ok(byPassword)
+    expect byPassword.userId == "u-pw"
+    expect signIn(accounts.SignInAttempt.AuthorizationCode("c", "v")) is Ok(byCode)
+    expect byCode.userId == "u-oidc"
+    expect calls(AbsPasswordSignIn.authenticate) == 1
+    expect calls(AuthentikSignIn.authenticate) == 1
+}

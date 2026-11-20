@@ -1,6 +1,8 @@
-// ADR 0043 §1: declared only because the application chooses between
-// implementations, by AUTH_MODE. No provider's source mentions it; each
-// one's manifest says which capability group fulfills it.
-interface SignIn {
-    authenticate(attempt: SignInAttempt) -> Result<Identity, SignInError>
+// Proves who a person is with whichever provider the rule picks, then
+// returns only the Identity.
+use abs.recommendations.accounts
+
+activity signIn(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+    Provider = signInProvider(attempt)
+    return Provider.authenticate(attempt)
 }

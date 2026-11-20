@@ -1,8 +1,8 @@
 use abs.recommendations.absclient as client
-use abs.recommendations.signin
+use abs.recommendations.accounts
 
-conversion identityOfSession(session: client.AbsSession) -> signin.Identity {
-    return signin.Identity(
+conversion identityOfSession(session: client.AbsSession) -> accounts.Identity {
+    return accounts.Identity(
         userId: session.userId,
         username: session.username,
         userType: session.userType,

@@ -1,18 +1,18 @@
 use abs.recommendations.absclient as client
-use abs.recommendations.signin
+use abs.recommendations.accounts
 
 // Exactly one ABS account must carry the email. None means the person has
 // never been through ABS's own OpenID login (ABS creates the account then),
 // and more than one means we can't tell whose ratings these are.
-conversion identityOfMatches(matches: List<client.AbsUserEntry>) -> Result<signin.Identity, signin.SignInError> {
+conversion identityOfMatches(matches: List<client.AbsUserEntry>) -> Result<accounts.Identity, accounts.SignInError> {
     if matches.length() == 0 {
-        return Err(signin.SignInError.NoAccount)
+        return Err(accounts.SignInError.NoAccount)
     }
     if matches.length() > 1 {
         return Err(
-            signin.SignInError.Refused("more than one Audiobookshelf account has your email; ask the server's admin"),
+            accounts.SignInError.Refused("more than one Audiobookshelf account has your email; ask the server's admin"),
         )
     }
     user = matches.at(0)
-    return Ok(signin.Identity(userId: user.id, username: user.username, userType: user.type))
+    return Ok(accounts.Identity(userId: user.id, username: user.username, userType: user.type))
 }

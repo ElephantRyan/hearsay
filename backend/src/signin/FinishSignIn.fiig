@@ -3,7 +3,9 @@
 // callback wasn't started by this browser (CSRF), and nothing is exchanged.
 // Every outcome is a place to send the browser, so a failure never leaves
 // someone staring at JSON.
-use abs.recommendations.signin
+use abs.recommendations.accounts
+use abs.recommendations.sessions
+use abs.recommendations.sessions.Server
 
 activity finishSignIn(code: string | None, state: string | None, error: string | None, pending: string | None) -> Landing {
     if Server.authMode == "abs" {
@@ -46,13 +48,13 @@ private {
     }
 
     exchange(code: string, verifier: string) -> Landing {
-        proven = signIn(signin.SignInAttempt.AuthorizationCode(code, verifier))
+        proven = signIn(accounts.SignInAttempt.AuthorizationCode(code, verifier))
         match proven {
             Err(failure) -> {
                 return failedLanding(refusalCode(failure))
             }
             Ok(identity) -> {
-                session = startSession(identity)
+                session = sessions.startSession(identity)
                 return Landing(location: Server.frontendUrl, session: session)
             }
         }

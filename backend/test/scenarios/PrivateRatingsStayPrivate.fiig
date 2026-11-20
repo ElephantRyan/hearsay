@@ -1,6 +1,6 @@
 use abs.recommendations.absclient as client
 use abs.recommendations.absclient.AbsApi
-use abs.recommendations.signin
+use abs.recommendations.accounts
 use abs.recommendations.ratings
 use abs.recommendations.recommendations
 use abs.recommendations.sessions
@@ -18,8 +18,8 @@ test privateRatingsStayPrivate {
         }
     }
 
-    ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
-    bob = sessions.startSession(signin.Identity(userId: "u2", username: "bob", userType: "user")).token
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
+    bob = sessions.startSession(accounts.Identity(userId: "u2", username: "bob", userType: "user")).token
     // ratings are stored through putRating's two steps: another package's workflow is out of a test's reach (ADR 0079 §1)
     expect ratings.loadUserAndBook(ann, "dune") is Ok(annDune)
     expect ratings.storeRating(annDune, ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)

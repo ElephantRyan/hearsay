@@ -1,5 +1,5 @@
-use abs.recommendations.signin.authentik.AuthentikSignIn
 use abs.recommendations.common
+use abs.recommendations.signin.authentik.AuthentikSignIn
 
 // Where to send the browser to sign in with Authentik. The provider's failures
 // become the app's errors here.

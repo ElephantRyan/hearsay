@@ -1,8 +1,8 @@
-use abs.recommendations.signin
+use abs.recommendations.accounts
 
 // The identity behind a live session, or None if the token is unknown or past
 // its expiry.
-gateway findSession(tokenHash: string, now: int) -> signin.Identity | None
+gateway findSession(tokenHash: string, now: int) -> accounts.Identity | None
     requires Database
     idempotent
 {

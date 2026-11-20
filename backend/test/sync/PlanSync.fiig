@@ -1,4 +1,3 @@
-use abs.recommendations.signin
 use abs.recommendations.ratings
 
 test planSyncCreatesUpdatesAndRemoves {

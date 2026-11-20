@@ -1,6 +1,6 @@
 use abs.recommendations.absclient as client
 use abs.recommendations.absclient.AbsApi
-use abs.recommendations.signin
+use abs.recommendations.accounts
 use abs.recommendations.common
 use abs.recommendations.ratings
 use abs.recommendations.sessions
@@ -38,7 +38,7 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
         }
     }
 
-    ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     // ratings are stored through putRating's two steps: another package's workflow is out of a test's reach (ADR 0079 §1)
     expect ratings.loadUserAndBook(ann, "a") is Ok(annA)
     expect ratings.storeRating(annA, ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
@@ -92,7 +92,7 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
         }
     }
 
-    ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect syncCollections(ann, None, false) is Err(common.ApiError.NotFound(what))
     // disabled means disabled for everyone: a stranger learns nothing about sessions
     expect syncCollections(None, None, false) is Err(common.ApiError.NotFound(missing))
@@ -118,7 +118,7 @@ test aPersonCannotSyncSomeoneElsesList {
         }
     }
 
-    ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect syncCollections(ann, "u2", false) is Err(common.ApiError.Refused(why))
     expect calls(AbsApi.createCollectionAsService) == 0
 }

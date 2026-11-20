@@ -1,4 +1,3 @@
-use abs.recommendations.absclient as client
 use abs.recommendations.common
 use abs.recommendations.sessions
 

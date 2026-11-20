@@ -2,10 +2,10 @@
 // and the database holds only as its SHA-256 (ADR 0075 §4). maxAge is read
 // from config by the activity that opens it, since the conversion that sets
 // the cookie can't read config (ADR 0071 §2).
-use abs.recommendations.signin
+use abs.recommendations.accounts
 
 model Session {
     token: string
-    identity: signin.Identity
+    identity: accounts.Identity
     maxAge: int
 }

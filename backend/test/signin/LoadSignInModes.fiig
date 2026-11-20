@@ -1,3 +1,5 @@
+use abs.recommendations.sessions.Server
+
 test signInModesFollowAuthMode {
     fake Server {
         authMode: "oidc"

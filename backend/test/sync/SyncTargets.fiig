@@ -1,4 +1,4 @@
-use abs.recommendations.signin
+use abs.recommendations.accounts
 use abs.recommendations.common
 use abs.recommendations.ratings
 
@@ -10,8 +10,8 @@ test syncTargetsAreSelfUnlessAdmin {
     states = [
         SyncState(userId: "u3", libraryId: "l", collectionId: "c", lastSyncedAt: 1, lastError: None),
     ]
-    ann = signin.Identity(userId: "u1", username: "Ann", userType: "user")
-    boss = signin.Identity(userId: "u0", username: "Boss", userType: "admin")
+    ann = accounts.Identity(userId: "u1", username: "Ann", userType: "user")
+    boss = accounts.Identity(userId: "u0", username: "Boss", userType: "admin")
     expect syncTargets(ann, None, rows, states) is Ok(own)
     expect own == ["u1"]
     expect syncTargets(ann, "u1", rows, states) is Ok(self)

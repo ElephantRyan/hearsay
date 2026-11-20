@@ -1,8 +1,8 @@
-use abs.recommendations.signin
+use abs.recommendations.accounts
 
-conversion emailOf(info: OidcUserInfo) -> Result<string, signin.SignInError> {
+conversion emailOf(info: OidcUserInfo) -> Result<string, accounts.SignInError> {
     match info.email {
-        None -> Err(signin.SignInError.Refused("the identity provider gave no email, so your Audiobookshelf account can't be found"))
+        None -> Err(accounts.SignInError.Refused("the identity provider gave no email, so your Audiobookshelf account can't be found"))
         given -> Ok(given)
     }
 }
