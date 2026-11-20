@@ -1,6 +1,4 @@
-use abs.recommendations.sessions.Server
-
 // Whether this server was set up to write collections into ABS at all.
 activity mirrorEnabled() -> bool {
-    return Server.mirrorEnabled
+    return SyncConfig.mirrorEnabled
 }

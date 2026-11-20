@@ -1,15 +1,17 @@
 use abs.recommendations.accounts
 use abs.recommendations.sessions
-use abs.recommendations.sessions.Server
+use abs.recommendations.sessions.SessionConfig
 use abs.recommendations.signin.authentik.AuthentikSignIn
 use abs.recommendations.signin.password.AbsPasswordSignIn
 
 // The callback only exchanges the code when the state matches the cookie.
 // Authentik is faked; a call to it from a mismatched callback fails the test.
 test oidcCallbackChecksStateBeforeExchanging {
-    fake Server {
-        authMode: "both"
+    fake SessionConfig {
         sessionMaxAge: 3600
+    }
+    fake SignInConfig {
+        authMode: "both"
         frontendUrl: "https://app.test"
     }
     fake AbsPasswordSignIn {
@@ -63,9 +65,11 @@ test oidcCallbackChecksStateBeforeExchanging {
 }
 
 test finishSignInIsOffInPasswordOnlyMode {
-    fake Server {
-        authMode: "abs"
+    fake SessionConfig {
         sessionMaxAge: 3600
+    }
+    fake SignInConfig {
+        authMode: "abs"
         frontendUrl: "https://app.test"
     }
     fake AbsPasswordSignIn {

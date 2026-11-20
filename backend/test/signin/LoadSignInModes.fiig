@@ -1,9 +1,6 @@
-use abs.recommendations.sessions.Server
-
 test signInModesFollowAuthMode {
-    fake Server {
+    fake SignInConfig {
         authMode: "oidc"
-        sessionMaxAge: 3600
         frontendUrl: "x"
     }
 

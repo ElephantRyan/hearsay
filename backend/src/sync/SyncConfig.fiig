@@ -1,0 +1,4 @@
+// Whether this server may write collections into ABS at all (PLAN.md section 8).
+config SyncConfig {
+    mirrorEnabled: bool from env "MIRROR_ENABLED" = false
+}

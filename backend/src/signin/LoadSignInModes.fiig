@@ -1,6 +1,4 @@
-use abs.recommendations.sessions.Server
-
 activity loadSignInModes() -> SignInModes {
-    mode = Server.authMode
+    mode = SignInConfig.authMode
     return SignInModes(password: mode != "oidc", oidc: mode != "abs")
 }

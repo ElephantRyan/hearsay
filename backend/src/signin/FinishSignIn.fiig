@@ -5,10 +5,9 @@
 // someone staring at JSON.
 use abs.recommendations.accounts
 use abs.recommendations.sessions
-use abs.recommendations.sessions.Server
 
 activity finishSignIn(code: string | None, state: string | None, error: string | None, pending: string | None) -> Landing {
-    if Server.authMode == "abs" {
+    if SignInConfig.authMode == "abs" {
         return failedLanding("disabled")
     }
     match error {
@@ -23,7 +22,10 @@ activity finishSignIn(code: string | None, state: string | None, error: string |
 
 private {
     failedLanding(reason: string) -> Landing {
-        return Landing(location: "${Server.frontendUrl}/sign-in?error=${reason}", session: None)
+        return Landing(
+            location: "${SignInConfig.frontendUrl}/sign-in?error=${reason}",
+            session: None,
+        )
     }
 
     landAfterExchange(code: string | None, state: string | None, pending: string | None) -> Landing {
@@ -55,7 +57,7 @@ private {
             }
             Ok(identity) -> {
                 session = sessions.startSession(identity)
-                return Landing(location: Server.frontendUrl, session: session)
+                return Landing(location: SignInConfig.frontendUrl, session: session)
             }
         }
     }

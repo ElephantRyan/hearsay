@@ -2,7 +2,7 @@ use abs.recommendations.accounts
 use abs.recommendations.common
 
 test sessionsExpireAndEndWithLogOut {
-    fake Server {
+    fake SessionConfig {
         sessionMaxAge: 3600
     }
 

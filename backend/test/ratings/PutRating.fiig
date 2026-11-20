@@ -3,12 +3,12 @@ use abs.recommendations.absclient.AbsApi
 use abs.recommendations.accounts
 use abs.recommendations.common
 use abs.recommendations.sessions
-use abs.recommendations.sessions.Server
+use abs.recommendations.sessions.SessionConfig
 
 // Signs in as a fake identity, then rates through the real activity with ABS
 // faked. The book is fetched on every write, so a changed title is cached.
 test ratingFlowCachesTheBookAndKeepsCreatedAt {
-    fake Server {
+    fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsApi {

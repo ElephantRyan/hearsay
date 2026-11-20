@@ -1,0 +1,7 @@
+// What a deployment decides about signing in (PLAN.md section 8). authMode is
+// `oidc`, `abs` or `both`: which sign-in routes answer. frontendUrl is where a
+// finished OIDC sign-in lands.
+config SignInConfig {
+    authMode: string from env "AUTH_MODE" = "both"
+    frontendUrl: string from env "FRONTEND_URL" = "http://localhost:5173"
+}

@@ -4,10 +4,10 @@ use abs.recommendations.accounts
 use abs.recommendations.ratings
 use abs.recommendations.recommendations
 use abs.recommendations.sessions
-use abs.recommendations.sessions.Server
+use abs.recommendations.sessions.SessionConfig
 
 test privateRatingsStayPrivate {
-    fake Server {
+    fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsApi {
