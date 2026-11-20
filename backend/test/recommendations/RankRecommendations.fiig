@@ -1,4 +1,4 @@
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
 
 test rankingOrdersByAverageThenCountThenRecency {
     rows = [
@@ -24,8 +24,8 @@ test rankingOrdersByAverageThenCountThenRecency {
 }
 
 private {
-    row(userId: string, itemId: string, score: int, recommended: bool, at: int) -> ratings.RatingRow {
-        return ratings.RatingRow(
+    row(userId: string, itemId: string, score: int, recommended: bool, at: int) -> rated.RatingRow {
+        return rated.RatingRow(
             userId: userId,
             username: "name-${userId}",
             itemId: itemId,

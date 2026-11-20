@@ -1,11 +1,11 @@
 use abs.recommendations.accounts
 use abs.recommendations.common
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
 
 test syncTargetsAreSelfUnlessAdmin {
     rows = [
-        ratings.RatingRow(userId: "u1", username: "Ann", itemId: "a", libraryId: "l", title: "A", authors: "x", score: 7, note: "", recommended: true, createdAt: 1, updatedAt: 1),
-        ratings.RatingRow(userId: "u2", username: "Bob", itemId: "b", libraryId: "l", title: "B", authors: "x", score: 7, note: "", recommended: false, createdAt: 1, updatedAt: 1),
+        rated.RatingRow(userId: "u1", username: "Ann", itemId: "a", libraryId: "l", title: "A", authors: "x", score: 7, note: "", recommended: true, createdAt: 1, updatedAt: 1),
+        rated.RatingRow(userId: "u2", username: "Bob", itemId: "b", libraryId: "l", title: "B", authors: "x", score: 7, note: "", recommended: false, createdAt: 1, updatedAt: 1),
     ]
     states = [
         SyncState(userId: "u3", libraryId: "l", collectionId: "c", lastSyncedAt: 1, lastError: None),

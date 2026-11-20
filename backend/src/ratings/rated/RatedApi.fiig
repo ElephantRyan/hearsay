@@ -1,0 +1,14 @@
+use abs.recommendations.common
+
+// What the signed-in person has rated.
+adapter http ratedApi {
+    GET "/ratings/mine?sort={sort}" -> listMyRatings(
+        session: string | None from cookie "sid",
+        sort: string | None,
+    )
+        produces "application/json"
+    {
+        Ok(rows) -> 200 rows
+        Err(error) -> common.apiErrorResponse(error)
+    }
+}

@@ -23,13 +23,4 @@ adapter http ratingsApi {
         Ok(_) -> 204
         Err(error) -> common.apiErrorResponse(error)
     }
-    GET "/ratings/mine?sort={sort}" -> listMyRatings(
-        session: string | None from cookie "sid",
-        sort: string | None,
-    )
-        produces "application/json"
-    {
-        Ok(rows) -> 200 rows
-        Err(error) -> common.apiErrorResponse(error)
-    }
 }

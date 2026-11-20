@@ -10,5 +10,5 @@ export ABS_SERVICE_TOKEN="${ABS_SERVICE_TOKEN:-placeholder}"
 A=abs.recommendations
 exec "$F" serve -caps caps.json -env-file .env . \
     $A.sessions.sessionsApi $A.signin.signinApi $A.signin.oidc.oidcApi \
-    $A.ratings.ratingsApi $A.library.libraryApi $A.recommendations.recommendationsApi \
+    $A.ratings.ratingsApi $A.ratings.rated.ratedApi $A.library.libraryApi $A.recommendations.recommendationsApi \
     $A.sync.syncApi $A.health.healthApi

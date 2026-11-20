@@ -1,10 +1,10 @@
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
 
 // Ranks books by the average score of their recommended ratings, highest
 // first. Ties go to the book with more ratings, then to the most recently
 // rated. Private ratings are not counted (PLAN.md section 4). The average is
 // the one rule to change if the formula should.
-rule rankRecommendations(rows: List<ratings.RatingRow>) -> List<RecommendedBook> {
+rule rankRecommendations(rows: List<rated.RatingRow>) -> List<RecommendedBook> {
     recommended = filter(r in rows): r.recommended
     groups = groupBy(r in recommended): r.itemId
     books: List<RecommendedBook> = []

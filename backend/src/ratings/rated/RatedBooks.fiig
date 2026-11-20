@@ -1,0 +1,38 @@
+// What has been rated, read from the rating_row view (a rating with its book).
+// The view is ratings' own; other domains read it only through this group
+// (ADR 0079 §6a), and a test can fake it.
+capability RatedBooks {
+    // All of one user's ratings, private ones included; the caller only asks for
+    // the signed-in user's own.
+    gateway byUser(userId: string) -> List<RatingRow>
+        requires Database
+        idempotent
+    {
+        return Database.queryMany(
+            "SELECT * FROM rating_row WHERE userId = ? ORDER BY updatedAt DESC",
+            userId,
+        )
+    }
+
+    // Every recommended rating with its book, for ranking and for the list of
+    // recommenders. Private ratings never leave the database through here.
+    gateway recommended() -> List<RatingRow>
+        requires Database
+        idempotent
+    {
+        return Database.queryMany("SELECT * FROM rating_row WHERE recommended = 1")
+    }
+
+    // What a viewer may see of one book: everyone's recommended ratings, plus
+    // their own whether recommended or not.
+    gateway visibleFor(itemId: string, viewerId: string) -> List<RatingRow>
+        requires Database
+        idempotent
+    {
+        return Database.queryMany(
+            "SELECT * FROM rating_row WHERE itemId = ? AND (recommended = 1 OR userId = ?) ORDER BY updatedAt DESC",
+            itemId,
+            viewerId,
+        )
+    }
+}

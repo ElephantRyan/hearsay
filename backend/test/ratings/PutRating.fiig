@@ -3,6 +3,7 @@ use abs.recommendations.absclient.catalog
 use abs.recommendations.absclient.catalog.AbsCatalog
 use abs.recommendations.accounts
 use abs.recommendations.common
+use abs.recommendations.ratings.rated
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
 
@@ -36,10 +37,9 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
     expect field == "score"
     expect putRating(token, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(common.ApiError.NotFound(what))
     expect putRating(None, "dune", RatingInput(score: 5, note: None, recommended: true)) is Err(common.ApiError.Unauthenticated)
-    expect listMyRatings(token, None) is Ok(mine)
+    expect rated.loadMyRatings(token) is Ok(mine)
     expect mine.length() == 1
     expect mine.at(0).title == "Dune"
-    expect listMyRatings(token, "bogus") is Err(common.ApiError.Invalid(sortField, sortReason))
     expect deleteMyRating(token, "dune") is Ok(removed)
     expect removed == 1
     expect deleteMyRating(token, "dune") is Err(common.ApiError.NotFound(missing))

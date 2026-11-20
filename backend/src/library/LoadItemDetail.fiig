@@ -2,12 +2,13 @@
 // is fetched from ABS, so the page can offer the first rating.
 use abs.recommendations.books
 use abs.recommendations.common
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
+use abs.recommendations.ratings.rated.RatedBooks
 use abs.recommendations.sessions
 
 activity loadItemDetail(session: string | None, itemId: string) -> Result<ItemDetail, common.ApiError> {
     me = sessions.currentUser(session)?
-    rows = ratings.visibleRatingsOf(itemId, me.userId)
+    rows = RatedBooks.visibleFor(itemId, me.userId)
     book = books.cachedBook(itemId)?
     return Ok(
         ItemDetail(book: book, average: averageOf(rows), count: count(r in rows): r.recommended, ratings: rows),
@@ -16,7 +17,7 @@ activity loadItemDetail(session: string | None, itemId: string) -> Result<ItemDe
 
 private {
     // The average score over the recommended rows, or 0.00 for none.
-    averageOf(rows: List<ratings.RatingRow>) -> decimal {
+    averageOf(rows: List<rated.RatingRow>) -> decimal {
         recommended = filter(r in rows): r.recommended
         if recommended.length() == 0 {
             return math.divide(

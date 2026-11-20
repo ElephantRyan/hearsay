@@ -1,0 +1,17 @@
+use abs.recommendations.accounts
+use abs.recommendations.common
+use abs.recommendations.sessions
+use abs.recommendations.sessions.SessionConfig
+
+test myRatingsRefuseAnUnknownSort {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+
+    token = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
+    expect listMyRatings(token, None) is Ok(none)
+    expect none.length() == 0
+    expect listMyRatings(token, "bogus") is Err(common.ApiError.Invalid(field, reason))
+    expect field == "sort"
+    expect listMyRatings(None, None) is Err(common.ApiError.Unauthenticated)
+}

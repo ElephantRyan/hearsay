@@ -1,11 +1,11 @@
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
 
 // Works out, without touching anything, what each named person's collections
 // should become. One collection per person per library, "<name> Recommends",
 // holding their recommended books best first. A library where they have
 // recommendations and we have no collection is a create; both is an update;
 // a collection of ours with nothing left to hold is a remove.
-rule planSync(rows: List<ratings.RatingRow>, states: List<SyncState>, userIds: List<string>) -> List<SyncPlan> {
+rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: List<string>) -> List<SyncPlan> {
     plans: List<SyncPlan> = []
     for userId in userIds {
         mine = filter(r in rows): r.userId == userId and r.recommended

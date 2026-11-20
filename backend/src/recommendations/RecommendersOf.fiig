@@ -1,7 +1,7 @@
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
 
 // Who has published recommendations, and how many each, most first.
-rule recommendersOf(rows: List<ratings.RatingRow>) -> List<Recommender> {
+rule recommendersOf(rows: List<rated.RatingRow>) -> List<Recommender> {
     recommended = filter(r in rows): r.recommended
     groups = groupBy(r in recommended): r.userId
     people: List<Recommender> = []

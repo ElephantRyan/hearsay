@@ -2,13 +2,14 @@
 // the viewer's own scores. The inputs are already checked by the workflow.
 use abs.recommendations.absclient.catalog
 use abs.recommendations.common
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
+use abs.recommendations.ratings.rated.RatedBooks
 use abs.recommendations.sessions
 
 activity loadBrowseResult(session: string | None, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, common.ApiError> {
     me = sessions.currentUser(session)?
     found = fetchBooks(libraryId, page, size, typed)?
-    mine = ratings.ratingRowsOf(me.userId)
+    mine = RatedBooks.byUser(me.userId)
     return Ok(
         BrowseResult(total: found.total, page: found.page, limit: found.limit, items: withMyScores(found.books, mine)),
     )
@@ -27,7 +28,7 @@ private {
     }
 
     // Marks each book with the viewer's own score, if they have one.
-    withMyScores(books: List<catalog.Book>, mine: List<ratings.RatingRow>) -> List<BrowseItem> {
+    withMyScores(books: List<catalog.Book>, mine: List<rated.RatingRow>) -> List<BrowseItem> {
         scores: Map<string, int> = [:]
         for row in mine {
             scores = scores.put(row.itemId, row.score)

@@ -1,9 +1,9 @@
 use abs.recommendations.common
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated.RatedBooks
 use abs.recommendations.sessions
 
 activity recommendations(session: string | None, userId: string | None, libraryId: string | None, minScore: int | None) -> Result<List<RecommendedBook>, common.ApiError> {
     sessions.currentUser(session)?
-    rows = filterRows(ratings.recommendedRatings(), userId, libraryId)
+    rows = filterRows(RatedBooks.recommended(), userId, libraryId)
     return Ok(atLeast(rankRecommendations(rows), minScore))
 }

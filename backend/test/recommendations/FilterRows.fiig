@@ -1,9 +1,9 @@
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated
 
 test filtersAndMinScore {
     rows = [
-        ratings.RatingRow(userId: "u1", username: "ann", itemId: "a", libraryId: "lib-1", title: "A", authors: "x", score: 9, note: "", recommended: true, createdAt: 1, updatedAt: 1),
-        ratings.RatingRow(userId: "u2", username: "bob", itemId: "b", libraryId: "lib-2", title: "B", authors: "x", score: 6, note: "", recommended: true, createdAt: 2, updatedAt: 2),
+        rated.RatingRow(userId: "u1", username: "ann", itemId: "a", libraryId: "lib-1", title: "A", authors: "x", score: 9, note: "", recommended: true, createdAt: 1, updatedAt: 1),
+        rated.RatingRow(userId: "u2", username: "bob", itemId: "b", libraryId: "lib-2", title: "B", authors: "x", score: 6, note: "", recommended: true, createdAt: 2, updatedAt: 2),
     ]
     expect filterRows(rows, None, None).length() == 2
     expect filterRows(rows, "u1", None).length() == 1

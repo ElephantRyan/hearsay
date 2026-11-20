@@ -1,8 +1,8 @@
 use abs.recommendations.common
-use abs.recommendations.ratings
+use abs.recommendations.ratings.rated.RatedBooks
 use abs.recommendations.sessions
 
 activity listRecommenders(session: string | None) -> Result<List<Recommender>, common.ApiError> {
     sessions.currentUser(session)?
-    return Ok(recommendersOf(ratings.recommendedRatings()))
+    return Ok(recommendersOf(RatedBooks.recommended()))
 }
