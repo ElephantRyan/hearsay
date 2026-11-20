@@ -1,13 +1,12 @@
 // One page of a library, or the hits of a search when `typed` is given, with
 // the viewer's own scores. The inputs are already checked by the workflow.
 use abs.recommendations.absclient.catalog
-use abs.recommendations.accounts
 use abs.recommendations.common
 use abs.recommendations.ratings
 use abs.recommendations.sessions
 
 activity loadBrowseResult(session: string | None, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, common.ApiError> {
-    me: accounts.Identity = sessions.currentUser(session)?
+    me = sessions.currentUser(session)?
     found = fetchBooks(libraryId, page, size, typed)?
     mine = ratings.ratingRowsOf(me.userId)
     return Ok(
