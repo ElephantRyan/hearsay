@@ -1,3 +1,6 @@
+use abs.recommendations.absclient
+use abs.recommendations.absclient.Abs
+use abs.recommendations.absclient.AbsService
 use fiig.http
 use fiig.http.HttpClient
 
@@ -66,12 +69,12 @@ test absRefusesHostileIdsWithoutCallingAbs {
         }
     }
 
-    expect AbsCatalog.itemAsService("../../api/users") is Err(AbsError.NotFound)
-    expect AbsCatalog.itemAsService("a/b") is Err(AbsError.NotFound)
-    expect AbsCatalog.itemAsService("") is Err(AbsError.NotFound)
-    expect AbsCatalog.item("tok", "x?y=1") is Err(AbsError.NotFound)
-    expect AbsCatalog.pageAsService("../users", 0, 10) is Err(AbsError.NotFound)
-    expect AbsCatalog.searchAsService("lib/../x", "q", 10) is Err(AbsError.NotFound)
+    expect AbsCatalog.itemAsService("../../api/users") is Err(absclient.AbsError.NotFound)
+    expect AbsCatalog.itemAsService("a/b") is Err(absclient.AbsError.NotFound)
+    expect AbsCatalog.itemAsService("") is Err(absclient.AbsError.NotFound)
+    expect AbsCatalog.item("tok", "x?y=1") is Err(absclient.AbsError.NotFound)
+    expect AbsCatalog.pageAsService("../users", 0, 10) is Err(absclient.AbsError.NotFound)
+    expect AbsCatalog.searchAsService("lib/../x", "q", 10) is Err(absclient.AbsError.NotFound)
     expect calls(HttpClient.send) == 0
 }
 
@@ -120,6 +123,6 @@ test absCatalogRefusalsAreValues {
         }
     }
 
-    expect AbsCatalog.item("tok", "gone") is Err(AbsError.NotFound)
-    expect AbsCatalog.item("tok", "odd") is Err(AbsError.Unreadable(_))
+    expect AbsCatalog.item("tok", "gone") is Err(absclient.AbsError.NotFound)
+    expect AbsCatalog.item("tok", "odd") is Err(absclient.AbsError.Unreadable(_))
 }

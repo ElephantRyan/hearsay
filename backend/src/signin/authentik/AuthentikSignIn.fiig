@@ -9,6 +9,7 @@
 use abs.recommendations.absclient as client
 use abs.recommendations.absclient.Abs
 use abs.recommendations.absclient.AbsService
+use abs.recommendations.absclient.members
 use abs.recommendations.accounts
 use fiig.http
 use fiig.http.HttpClient
@@ -38,8 +39,8 @@ capability AuthentikSignIn provides accounts.SignIn {
                 info: OidcUserInfo = mapErr(e in json.decode(profile.body)): unreadable("user info")?
                 email = emailOf(info)?
                 listed = serviceReply(client.absReply(HttpClient.send(client.absGet(Abs.url, "/api/users", AbsService.token.reveal()))))?
-                everyone: client.AbsUsersReply = mapErr(e in json.decode(listed.body)): unreadable("list of Audiobookshelf users")?
-                return identityOfMatches(client.usersMatchingEmail(everyone.users, email))
+                everyone: members.AbsUsersReply = mapErr(e in json.decode(listed.body)): unreadable("list of Audiobookshelf users")?
+                return identityOfMatches(members.usersMatchingEmail(everyone.users, email))
             }
         }
     }

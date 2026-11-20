@@ -1,7 +1,7 @@
-use abs.recommendations.absclient as client
+use abs.recommendations.absclient.members
 use abs.recommendations.accounts
 
-conversion identityOfSession(session: client.AbsSession) -> accounts.Identity {
+conversion identityOfSession(session: members.AbsSession) -> accounts.Identity {
     return accounts.Identity(
         userId: session.userId,
         username: session.username,

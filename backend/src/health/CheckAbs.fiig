@@ -1,7 +1,7 @@
 // M3's exit check: sign in, ask ABS who we are, and look up one book.
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsCatalog
-use abs.recommendations.absclient.AbsMembers
+use abs.recommendations.absclient.catalog.AbsCatalog
+use abs.recommendations.absclient.members.AbsMembers
 
 activity checkAbs(username: string, password: string, itemId: string) -> Result<AbsCheck, client.AbsError> {
     session = AbsMembers.login(username, password)?

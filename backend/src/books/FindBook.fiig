@@ -1,6 +1,6 @@
-use abs.recommendations.absclient as client
+use abs.recommendations.absclient.catalog
 
-gateway findBook(itemId: string) -> client.Book | None
+gateway findBook(itemId: string) -> catalog.Book | None
     requires Database
     idempotent
 {

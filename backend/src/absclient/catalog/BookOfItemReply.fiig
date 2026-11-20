@@ -1,7 +1,9 @@
+use abs.recommendations.absclient
+
 // GET /api/items/{id}'s body as a Book. ABS's nesting is private to this
 // file: nothing else needs it.
-conversion bookOfItemReply(body: bytes) -> Result<Book, AbsError> {
-    item: AbsItem = mapErr(e in json.decode(body)): AbsError.Unreadable(failure: e)?
+conversion bookOfItemReply(body: bytes) -> Result<Book, absclient.AbsError> {
+    item: AbsItem = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(failure: e)?
     line: string = ""
     for author in item.media.metadata.authors {
         if line == "" {

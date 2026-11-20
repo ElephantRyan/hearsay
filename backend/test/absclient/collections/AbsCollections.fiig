@@ -1,3 +1,6 @@
+use abs.recommendations.absclient
+use abs.recommendations.absclient.Abs
+use abs.recommendations.absclient.AbsService
 use fiig.http
 use fiig.http.HttpClient
 
@@ -22,13 +25,13 @@ test absCollectionWritesRefuseBadIdsAndMapFailures {
         }
     }
 
-    expect AbsCollections.deleteCollectionAsService("../users") is Err(AbsError.NotFound)
-    expect AbsCollections.updateCollectionAsService("a/b", "n", "d", []) is Err(AbsError.NotFound)
-    expect AbsCollections.createCollectionAsService("lib/../x", "n", "d", []) is Err(AbsError.NotFound)
-    expect AbsCollections.createCollectionAsService("lib-1", "n", "d", ["ok-id", "../bad"]) is Err(AbsError.NotFound)
+    expect AbsCollections.deleteCollectionAsService("../users") is Err(absclient.AbsError.NotFound)
+    expect AbsCollections.updateCollectionAsService("a/b", "n", "d", []) is Err(absclient.AbsError.NotFound)
+    expect AbsCollections.createCollectionAsService("lib/../x", "n", "d", []) is Err(absclient.AbsError.NotFound)
+    expect AbsCollections.createCollectionAsService("lib-1", "n", "d", ["ok-id", "../bad"]) is Err(absclient.AbsError.NotFound)
     expect calls(HttpClient.send) == 0
-    expect AbsCollections.deleteCollectionAsService("gone") is Err(AbsError.NotFound)
-    expect AbsCollections.updateCollectionAsService("denied", "n", "d", []) is Err(AbsError.Rejected(status))
+    expect AbsCollections.deleteCollectionAsService("gone") is Err(absclient.AbsError.NotFound)
+    expect AbsCollections.updateCollectionAsService("denied", "n", "d", []) is Err(absclient.AbsError.Rejected(status))
     expect status == 403
 }
 

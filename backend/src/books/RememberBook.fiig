@@ -1,6 +1,6 @@
-use abs.recommendations.absclient as client
+use abs.recommendations.absclient.catalog
 
 // Keeps our copy of a book current, so lists need no ABS call per card.
-activity rememberBook(book: client.Book, now: int) -> int {
+activity rememberBook(book: catalog.Book, now: int) -> int {
     return saveBook(book, now)
 }

@@ -1,8 +1,8 @@
-use abs.recommendations.absclient as client
+use abs.recommendations.absclient.catalog
 
 // The cached copy of what ABS says about a book, refreshed on every rating
 // write so lists need no ABS call per card.
-gateway saveBook(book: client.Book, now: int) -> int
+gateway saveBook(book: catalog.Book, now: int) -> int
     requires Database
 {
     return Database.execute(

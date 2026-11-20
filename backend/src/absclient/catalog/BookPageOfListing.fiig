@@ -1,7 +1,9 @@
+use abs.recommendations.absclient
+
 // One page of GET /api/libraries/{id}/items?minified=1 as a BookPage. Pages
 // count from 0.
-conversion bookPageOfListing(body: bytes) -> Result<BookPage, AbsError> {
-    found: AbsPage = mapErr(e in json.decode(body)): AbsError.Unreadable(failure: e)?
+conversion bookPageOfListing(body: bytes) -> Result<BookPage, absclient.AbsError> {
+    found: AbsPage = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(failure: e)?
     return Ok(
         BookPage(total: found.total, page: found.page, limit: found.limit, books: map(item in found.results): bookOfListed(item)),
     )

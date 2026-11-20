@@ -1,0 +1,43 @@
+use abs.recommendations.absclient
+use abs.recommendations.absclient.Abs
+use abs.recommendations.absclient.AbsService
+use fiig.http
+use fiig.http.HttpClient
+
+// The only writes this client makes to ABS: the collections that mirror
+// recommendations (PLAN.md M6). Every id is checked before a path is built.
+capability AbsCollections {
+    gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, absclient.AbsError>
+        requires HttpClient
+    {
+        if not absclient.validId(libraryId) or not all(id in bookIds): absclient.validId(id) {
+            return Err(absclient.AbsError.NotFound)
+        }
+        body = json.encode(
+            AbsCollectionBody(libraryId: libraryId, name: name, description: description, books: bookIds),
+        )
+        reply = absclient.absReply(HttpClient.send(absWrite(http.Method.Post, "${Abs.url}/api/collections", AbsService.token.reveal(), body)))?
+        created: AbsCollection = mapErr(e in json.decode(reply.body)): absclient.AbsError.Unreadable(failure: e)?
+        return Ok(created.id)
+    }
+
+    gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, absclient.AbsError>
+        requires HttpClient
+    {
+        collectionIdSegment = absclient.absPathId(collectionId)?
+        if not all(id in bookIds): absclient.validId(id) {
+            return Err(absclient.AbsError.NotFound)
+        }
+        body = json.encode(AbsCollectionPatch(name: name, description: description, books: bookIds))
+        reply = absclient.absReply(HttpClient.send(absWrite(http.Method.Patch, "${Abs.url}/api/collections/${collectionIdSegment}", AbsService.token.reveal(), body)))?
+        return Ok(reply.status)
+    }
+
+    gateway deleteCollectionAsService(collectionId: string) -> Result<int, absclient.AbsError>
+        requires HttpClient
+    {
+        collectionIdSegment = absclient.absPathId(collectionId)?
+        reply = absclient.absReply(HttpClient.send(absWrite(http.Method.Delete, "${Abs.url}/api/collections/${collectionIdSegment}", AbsService.token.reveal(), None)))?
+        return Ok(reply.status)
+    }
+}

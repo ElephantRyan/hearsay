@@ -1,8 +1,8 @@
-use abs.recommendations.absclient as client
+use abs.recommendations.absclient.catalog
 use abs.recommendations.common
 
 // What ABS says about a book right now, for a step that must not act on a
 // stale or missing copy (rating it).
-activity latestBook(itemId: string) -> Result<client.Book, common.ApiError> {
+activity latestBook(itemId: string) -> Result<catalog.Book, common.ApiError> {
     return fetchBook(itemId)
 }

@@ -1,3 +1,5 @@
+use abs.recommendations.absclient
+use abs.recommendations.absclient.Abs
 use fiig.http
 use fiig.http.HttpClient
 
@@ -63,7 +65,7 @@ test absMemberRefusalsAreValues {
         }
     }
 
-    expect AbsMembers.login("ryan", "wrong") is Err(AbsError.Unauthorized)
-    expect AbsMembers.me("tok") is Err(AbsError.Rejected(status))
+    expect AbsMembers.login("ryan", "wrong") is Err(absclient.AbsError.Unauthorized)
+    expect AbsMembers.me("tok") is Err(absclient.AbsError.Rejected(status))
     expect status == 500
 }

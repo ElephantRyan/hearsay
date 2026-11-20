@@ -1,8 +1,8 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsCatalog
+use abs.recommendations.absclient.catalog
+use abs.recommendations.absclient.catalog.AbsCatalog
 use abs.recommendations.common
 
-gateway fetchLibraries() -> Result<List<client.AbsLibrary>, common.ApiError>
+gateway fetchLibraries() -> Result<List<catalog.AbsLibrary>, common.ApiError>
     requires AbsCatalog
 {
     return mapErr(e in AbsCatalog.librariesAsService()): apiErrorOfLibrary(e)

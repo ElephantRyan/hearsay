@@ -1,9 +1,9 @@
-use abs.recommendations.absclient as client
+use abs.recommendations.absclient.catalog
 use abs.recommendations.accounts
 
 // Who is asking, and the book they asked about: the first step of every
 // feature that works on one book.
 model UserAndBook {
     user: accounts.Identity
-    book: client.Book
+    book: catalog.Book
 }
