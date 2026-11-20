@@ -1,0 +1,10 @@
+use abs.recommendations.signin.authentik.AuthentikSignIn
+use abs.recommendations.common
+
+// Where to send the browser to sign in with Authentik. The provider's failures
+// become the app's errors here.
+gateway fetchAuthorizeUrl(state: string, verifier: string) -> Result<string, common.ApiError>
+    requires AuthentikSignIn
+{
+    return mapErr(e in AuthentikSignIn.beginUrl(state, verifier)): apiErrorOfSignIn(e)
+}

@@ -1,0 +1,20 @@
+use abs.recommendations.signin
+use abs.recommendations.common
+
+test sessionsExpireAndEndWithLogOut {
+    fake Server {
+        sessionMaxAge: 3600
+    }
+
+    identity = signin.Identity(userId: "u1", username: "ann", userType: "user")
+    session = startSession(identity)
+    expect currentUser(session.token) is Ok(found)
+    expect found == identity
+    expect currentUser("not-a-token") is Err(common.ApiError.Unauthenticated)
+    expect currentUser(None) is Err(common.ApiError.Unauthenticated)
+    saveSession(tokenHash("old"), identity, 1)
+    expect currentUser("old") is Err(common.ApiError.Unauthenticated)
+    expect logOut(session.token) == 1
+    expect currentUser(session.token) is Err(common.ApiError.Unauthenticated)
+    expect logOut(None) == 0
+}

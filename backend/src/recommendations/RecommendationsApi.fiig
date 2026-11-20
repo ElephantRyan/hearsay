@@ -1,0 +1,32 @@
+use abs.recommendations.common
+
+// The recommendations routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// every domain's adapter together.
+adapter http recommendationsApi {
+    GET "/recommendations?userId={userId}&libraryId={libraryId}&minScore={minScore}" -> listRecommendations(
+        session: string | None from cookie "sid",
+        userId: string | None,
+        libraryId: string | None,
+        minScore: int | None,
+    )
+        produces "application/json"
+    {
+        Ok(books) -> 200 books
+        Err(error) -> common.apiErrorResponse(error)
+    }
+    GET "/recommendations/users" -> listRecommenderUsers(session: string | None from cookie "sid")
+        produces "application/json"
+    {
+        Ok(people) -> 200 people
+        Err(error) -> common.apiErrorResponse(error)
+    }
+    GET "/recommendations/users/{userId}" -> listPicksOf(
+        session: string | None from cookie "sid",
+        userId: string,
+    )
+        produces "application/json"
+    {
+        Ok(rows) -> 200 rows
+        Err(error) -> common.apiErrorResponse(error)
+    }
+}

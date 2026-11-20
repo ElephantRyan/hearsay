@@ -1,0 +1,10 @@
+use abs.recommendations.common
+
+// Removing a rating you never made is "not found", not a silent success.
+workflow deleteMyRating(session: string | None, itemId: string) -> Result<int, common.ApiError> {
+    removed = removeRating(session, itemId)?
+    if removed == 0 {
+        return Err(common.ApiError.NotFound("rating of yours for that book"))
+    }
+    return Ok(removed)
+}

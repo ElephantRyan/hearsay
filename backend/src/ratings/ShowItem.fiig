@@ -1,0 +1,5 @@
+use abs.recommendations.common
+
+workflow showItem(session: string | None, itemId: string) -> Result<ItemDetail, common.ApiError> {
+    return loadItemDetail(session, itemId)
+}

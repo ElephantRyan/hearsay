@@ -1,0 +1,13 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.common
+
+// The same as apiErrorOfAbs, except a 404 here means the library, not a book.
+conversion apiErrorOfLibrary(error: client.AbsError) -> common.ApiError {
+    match error {
+        client.AbsError.NotFound -> common.ApiError.NotFound("library with that id")
+        client.AbsError.Unauthorized -> common.apiErrorOfAbs(error)
+        client.AbsError.Rejected(status) -> common.apiErrorOfAbs(error)
+        client.AbsError.Unreachable(failure) -> common.apiErrorOfAbs(error)
+        client.AbsError.Unreadable(failure) -> common.apiErrorOfAbs(error)
+    }
+}

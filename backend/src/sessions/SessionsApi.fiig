@@ -1,0 +1,46 @@
+use abs.recommendations.common
+
+// The sessions routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// every domain's adapter together.
+adapter http sessionsApi {
+    GET "/auth/modes" -> showSignInModes()
+        produces "application/json"
+    {
+        Ok(modes) -> 200 modes
+        Err(error) -> common.apiErrorResponse(error)
+    }
+    GET "/auth/login" -> startOidc()
+        produces "application/json"
+    {
+        Ok(start) -> redirectToIdp(start)
+        Err(error) -> common.apiErrorResponse(error)
+    }
+    GET "/auth/callback?code={code}&state={state}&error={error}" -> finishOidc(
+        code: string | None,
+        state: string | None,
+        error: string | None,
+        pending: string | None from cookie "oidc",
+    )
+        produces "application/json"
+    {
+        landing -> landed(landing)
+    }
+    POST "/session" -> passwordSignIn(input: PasswordLogin)
+        consumes "application/json"
+        produces "application/json"
+    {
+        Ok(session) -> signedIn(session)
+        Err(error) -> common.apiErrorResponse(error)
+    }
+    DELETE "/session" -> endSession(session: string | None from cookie "sid")
+        produces "application/json"
+    {
+        _ -> signedOut()
+    }
+    GET "/me" -> whoAmI(session: string | None from cookie "sid")
+        produces "application/json"
+    {
+        Ok(identity) -> 200 identity
+        Err(error) -> common.apiErrorResponse(error)
+    }
+}

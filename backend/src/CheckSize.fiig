@@ -1,8 +1,0 @@
-// How many books a page holds: 24 unless asked, never more than 100.
-rule checkSize(size: int | None) -> Result<int, ApiError> {
-    chosen = size or 24
-    if chosen < 1 or chosen > 100 {
-        return Err(ApiError.Invalid("size", "must be from 1 to 100"))
-    }
-    return Ok(chosen)
-}

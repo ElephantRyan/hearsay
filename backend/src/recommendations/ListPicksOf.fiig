@@ -1,0 +1,6 @@
+use abs.recommendations.common
+use abs.recommendations.ratings
+
+workflow listPicksOf(session: string | None, userId: string) -> Result<List<ratings.RatingRow>, common.ApiError> {
+    return picksOf(session, userId)
+}

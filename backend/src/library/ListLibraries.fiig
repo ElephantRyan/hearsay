@@ -1,0 +1,11 @@
+// The libraries a person can browse. Only book libraries: podcasts have no
+// place in a book-recommendation list.
+use abs.recommendations.absclient as client
+use abs.recommendations.common
+use abs.recommendations.sessions
+
+activity listLibraries(session: string | None) -> Result<List<client.AbsLibrary>, common.ApiError> {
+    sessions.currentUser(session)?
+    all = fetchLibraries()?
+    return Ok(filter(library in all): library.mediaType == "book")
+}

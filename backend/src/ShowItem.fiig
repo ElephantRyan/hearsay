@@ -1,3 +1,0 @@
-workflow showItem(session: string | None, itemId: string) -> Result<ItemDetail, ApiError> {
-    return loadItemDetail(session, itemId)
-}

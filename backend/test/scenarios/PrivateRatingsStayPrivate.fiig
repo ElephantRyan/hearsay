@@ -1,6 +1,10 @@
 use abs.recommendations.absclient as client
 use abs.recommendations.absclient.AbsApi
 use abs.recommendations.signin
+use abs.recommendations.ratings
+use abs.recommendations.recommendations
+use abs.recommendations.sessions
+use abs.recommendations.sessions.Server
 
 test privateRatingsStayPrivate {
     fake Server {
@@ -14,24 +18,24 @@ test privateRatingsStayPrivate {
         }
     }
 
-    ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
-    bob = startSession(signin.Identity(userId: "u2", username: "bob", userType: "user")).token
-    expect putRating(ann, "dune", RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
-    expect putRating(bob, "dune", RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
-    expect loadItemDetail(bob, "dune") is Ok(bobSees)
+    ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    bob = sessions.startSession(signin.Identity(userId: "u2", username: "bob", userType: "user")).token
+    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
+    expect ratings.putRating(bob, "dune", ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
+    expect ratings.loadItemDetail(bob, "dune") is Ok(bobSees)
     expect bobSees.ratings.length() == 1
     expect bobSees.count == 1
     expect bobSees.average == 6.00
-    expect loadItemDetail(ann, "dune") is Ok(annSees)
+    expect ratings.loadItemDetail(ann, "dune") is Ok(annSees)
     expect annSees.ratings.length() == 2
     expect annSees.count == 1
     expect annSees.average == 6.00
-    expect recommendations(bob, None, None, None) is Ok(listed)
+    expect recommendations.recommendations(bob, None, None, None) is Ok(listed)
     expect listed.length() == 1
     expect listed.at(0).average == 6.00
-    expect listRecommenders(bob) is Ok(people)
+    expect recommendations.listRecommenders(bob) is Ok(people)
     expect people.length() == 1
     expect people.at(0).username == "bob"
-    expect picksOf(bob, "u1") is Ok(annsPicks)
+    expect recommendations.picksOf(bob, "u1") is Ok(annsPicks)
     expect annsPicks.length() == 0
 }

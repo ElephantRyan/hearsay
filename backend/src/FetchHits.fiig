@@ -1,8 +1,0 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
-
-gateway fetchHits(libraryId: string, query: string, size: int) -> Result<client.BookPage, ApiError>
-    requires AbsApi
-{
-    return mapErr(e in AbsApi.searchAsService(libraryId, query, size)): apiErrorOfLibrary(e)
-}

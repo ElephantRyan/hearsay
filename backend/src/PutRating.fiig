@@ -1,6 +1,0 @@
-// Rate a book: find out who is asking and what the book is, then store the
-// rating. A book ABS doesn't have is a 404 for this feature too.
-workflow putRating(session: string | None, itemId: string, input: RatingInput) -> Result<Rating, ApiError> {
-    found = loadUserAndBook(session, itemId)?
-    return storeRating(found, input)
-}

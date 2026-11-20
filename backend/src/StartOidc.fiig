@@ -1,8 +1,0 @@
-// Authentik sign-in exists unless the server is password-only.
-workflow startOidc() -> Result<OidcStart, ApiError> {
-    modes = loadSignInModes()
-    if not modes.oidc {
-        return Err(ApiError.NotFound("Authentik sign-in on this server"))
-    }
-    return beginSignIn()
-}

@@ -1,0 +1,49 @@
+use abs.recommendations.ratings
+
+// Works out, without touching anything, what each named person's collections
+// should become. One collection per person per library, "<name> Recommends",
+// holding their recommended books best first. A library where they have
+// recommendations and we have no collection is a create; both is an update;
+// a collection of ours with nothing left to hold is a remove.
+rule planSync(rows: List<ratings.RatingRow>, states: List<SyncState>, userIds: List<string>) -> List<SyncPlan> {
+    plans: List<SyncPlan> = []
+    for userId in userIds {
+        mine = filter(r in rows): r.userId == userId and r.recommended
+        theirs = filter(s in states): s.userId == userId
+        byLibrary = groupBy(r in mine): r.libraryId
+        for libraryId, group in byLibrary {
+            ordered = sorted(r in group): r.score descending then r.updatedAt descending
+            existing = collectionIn(theirs, libraryId)
+            plans = append(
+                plans,
+                SyncPlan(userId: userId, libraryId: libraryId, name: "${group.at(0).username} Recommends", description: "Maintained by abs-recommendations. Edits here are overwritten on the next sync.", bookIds: map(r in ordered): r.itemId, collectionId: existing, action: createOrUpdate(existing)),
+            )
+        }
+        for state in theirs {
+            if not byLibrary.containsKey(state.libraryId) {
+                plans = append(
+                    plans,
+                    SyncPlan(userId: userId, libraryId: state.libraryId, name: "", description: "", bookIds: [], collectionId: state.collectionId, action: "remove"),
+                )
+            }
+        }
+    }
+    return plans
+}
+
+private {
+    collectionIn(theirs: List<SyncState>, libraryId: string) -> string | None {
+        found = filter(s in theirs): s.libraryId == libraryId
+        match found.firstOrNone() {
+            None -> None
+            state -> state.collectionId
+        }
+    }
+
+    createOrUpdate(existing: string | None) -> string {
+        match existing {
+            None -> "create"
+            id -> "update"
+        }
+    }
+}

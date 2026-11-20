@@ -1,8 +1,0 @@
-// Browse a library A to Z, or search it. What a page, a size and a search text
-// may be is decided here; the activity only fetches.
-workflow showLibraryItems(session: string | None, libraryId: string, page: int | None, size: int | None, q: string | None) -> Result<BrowseResult, ApiError> {
-    pageNumber = checkPage(page)?
-    pageSize = checkSize(size)?
-    typed = searchText(q)?
-    return loadBrowseResult(session, libraryId, pageNumber, pageSize, typed)
-}

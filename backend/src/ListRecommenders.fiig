@@ -1,4 +1,0 @@
-activity listRecommenders(session: string | None) -> Result<List<Recommender>, ApiError> {
-    currentUser(session)?
-    return Ok(recommendersOf(recommendedRows()))
-}

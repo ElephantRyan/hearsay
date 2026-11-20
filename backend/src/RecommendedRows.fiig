@@ -1,8 +1,0 @@
-// Every recommended rating with its book, for ranking and for the list of
-// recommenders. Private ratings never leave the database through here.
-gateway recommendedRows() -> List<RatingRow>
-    requires Database
-    idempotent
-{
-    return Database.queryMany("SELECT * FROM rating_row WHERE recommended = 1")
-}

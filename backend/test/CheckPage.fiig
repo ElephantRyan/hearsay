@@ -1,8 +1,0 @@
-test pageDefaultsToTheFirstAndRefusesNegatives {
-    expect checkPage(None) is Ok(firstPage)
-    expect firstPage == 0
-    expect checkPage(7) is Ok(seventh)
-    expect seventh == 7
-    expect checkPage(-1) is Err(ApiError.Invalid(pageField, pageReason))
-    expect pageField == "page"
-}

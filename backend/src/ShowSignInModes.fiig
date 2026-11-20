@@ -1,3 +1,0 @@
-workflow showSignInModes() -> Result<SignInModes, ApiError> {
-    return Ok(loadSignInModes())
-}

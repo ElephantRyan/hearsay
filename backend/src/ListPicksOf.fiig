@@ -1,3 +1,0 @@
-workflow listPicksOf(session: string | None, userId: string) -> Result<List<RatingRow>, ApiError> {
-    return picksOf(session, userId)
-}

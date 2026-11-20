@@ -1,0 +1,13 @@
+use abs.recommendations.common
+use abs.recommendations.recommendations
+use abs.recommendations.sessions
+
+// What a sync would do for whoever the caller may sync: reads our tables and
+// plans, and touches nothing.
+activity loadSyncPlans(session: string | None, userId: string | None) -> Result<List<SyncPlan>, common.ApiError> {
+    me = sessions.currentUser(session)?
+    rows = recommendations.recommendedRows()
+    states = allSyncStates()
+    targets = syncTargets(me, userId, rows, states)?
+    return Ok(planSync(rows, states, targets))
+}

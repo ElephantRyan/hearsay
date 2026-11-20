@@ -1,0 +1,6 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.common
+
+workflow showLibraries(session: string | None) -> Result<List<client.AbsLibrary>, common.ApiError> {
+    return listLibraries(session)
+}

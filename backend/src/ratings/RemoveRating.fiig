@@ -1,0 +1,9 @@
+use abs.recommendations.common
+use abs.recommendations.sessions
+
+// Deletes the signed-in person's rating of a book and says how many rows went.
+// Whether zero is a problem is the workflow's call.
+activity removeRating(session: string | None, itemId: string) -> Result<int, common.ApiError> {
+    me = sessions.currentUser(session)?
+    return Ok(deleteRating(me.userId, itemId))
+}

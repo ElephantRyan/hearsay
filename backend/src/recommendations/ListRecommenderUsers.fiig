@@ -1,0 +1,5 @@
+use abs.recommendations.common
+
+workflow listRecommenderUsers(session: string | None) -> Result<List<Recommender>, common.ApiError> {
+    return listRecommenders(session)
+}

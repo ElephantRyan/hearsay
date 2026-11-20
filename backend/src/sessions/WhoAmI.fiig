@@ -1,0 +1,6 @@
+use abs.recommendations.signin
+use abs.recommendations.common
+
+workflow whoAmI(session: string | None) -> Result<signin.Identity, common.ApiError> {
+    return currentUser(session)
+}

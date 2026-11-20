@@ -1,5 +1,0 @@
-// The signed-in person's ratings, newest first (the order the database gives).
-activity loadMyRatings(session: string | None) -> Result<List<RatingRow>, ApiError> {
-    me = currentUser(session)?
-    return Ok(ratingRowsByUser(me.userId))
-}

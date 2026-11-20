@@ -1,8 +1,0 @@
-// Step one of Authentik sign-in: fresh state and PKCE verifier (256 random
-// bits each, ADR 0068), and the URL to send the browser to.
-activity beginSignIn() -> Result<OidcStart, ApiError> {
-    state = Random.bytes(count: 32).toBase64Url()
-    verifier = Random.bytes(count: 32).toBase64Url()
-    url = fetchAuthorizeUrl(state, verifier)?
-    return Ok(OidcStart(url: url, pending: "${state}.${verifier}"))
-}

@@ -1,0 +1,5 @@
+use abs.recommendations.common
+
+workflow showSignInModes() -> Result<SignInModes, common.ApiError> {
+    return Ok(loadSignInModes())
+}

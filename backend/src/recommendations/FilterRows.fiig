@@ -1,0 +1,16 @@
+use abs.recommendations.ratings
+
+// The GET /recommendations filters that apply to ratings before ranking:
+// one recommender, one library. A filter left out matches everything.
+rule filterRows(rows: List<ratings.RatingRow>, userId: string | None, libraryId: string | None) -> List<ratings.RatingRow> {
+    return filter(r in rows): matches(r.userId, userId) and matches(r.libraryId, libraryId)
+}
+
+private {
+    matches(value: string, wanted: string | None) -> bool {
+        match wanted {
+            None -> true
+            given -> value == given
+        }
+    }
+}

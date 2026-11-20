@@ -1,0 +1,25 @@
+use abs.recommendations.signin
+use abs.recommendations.common
+use abs.recommendations.ratings
+
+test syncTargetsAreSelfUnlessAdmin {
+    rows = [
+        ratings.RatingRow(userId: "u1", username: "Ann", itemId: "a", libraryId: "l", title: "A", authors: "x", score: 7, note: "", recommended: true, createdAt: 1, updatedAt: 1),
+        ratings.RatingRow(userId: "u2", username: "Bob", itemId: "b", libraryId: "l", title: "B", authors: "x", score: 7, note: "", recommended: false, createdAt: 1, updatedAt: 1),
+    ]
+    states = [
+        SyncState(userId: "u3", libraryId: "l", collectionId: "c", lastSyncedAt: 1, lastError: None),
+    ]
+    ann = signin.Identity(userId: "u1", username: "Ann", userType: "user")
+    boss = signin.Identity(userId: "u0", username: "Boss", userType: "admin")
+    expect syncTargets(ann, None, rows, states) is Ok(own)
+    expect own == ["u1"]
+    expect syncTargets(ann, "u1", rows, states) is Ok(self)
+    expect self == ["u1"]
+    expect syncTargets(ann, "u2", rows, states) is Err(common.ApiError.Refused(why))
+    expect boss.userType == "admin"
+    expect syncTargets(boss, "u2", rows, states) is Ok(named)
+    expect named == ["u2"]
+    expect syncTargets(boss, None, rows, states) is Ok(all)
+    expect all == ["u1", "u3"]
+}

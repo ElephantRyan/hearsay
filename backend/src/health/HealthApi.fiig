@@ -1,0 +1,12 @@
+use abs.recommendations.common
+
+// The health routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// every domain's adapter together.
+adapter http healthApi {
+    GET "/health" -> healthCheck()
+        produces "application/json"
+    {
+        Ok(status) -> 200 status
+        Err(error) -> common.apiErrorResponse(error)
+    }
+}

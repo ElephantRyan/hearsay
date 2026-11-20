@@ -1,5 +1,0 @@
-conversion apiErrorOfRating(error: RatingError) -> ApiError {
-    match error {
-        RatingError.Invalid(field, reason) -> ApiError.Invalid(field, reason)
-    }
-}

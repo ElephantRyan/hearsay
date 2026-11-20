@@ -1,0 +1,8 @@
+use abs.recommendations.common
+use abs.recommendations.ratings
+use abs.recommendations.sessions
+
+activity picksOf(session: string | None, userId: string) -> Result<List<ratings.RatingRow>, common.ApiError> {
+    sessions.currentUser(session)?
+    return Ok(bestFirst(recommendedRows(), userId))
+}

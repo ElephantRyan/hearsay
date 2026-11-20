@@ -1,9 +1,0 @@
-// What a sync would do for whoever the caller may sync: reads our tables and
-// plans, and touches nothing.
-activity loadSyncPlans(session: string | None, userId: string | None) -> Result<List<SyncPlan>, ApiError> {
-    me = currentUser(session)?
-    rows = recommendedRows()
-    states = allSyncStates()
-    targets = syncTargets(me, userId, rows, states)?
-    return Ok(planSync(rows, states, targets))
-}

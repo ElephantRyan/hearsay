@@ -1,0 +1,7 @@
+use abs.recommendations.ratings
+
+// One person's list ("Ryan Recommends"): their recommended books, best first.
+rule bestFirst(rows: List<ratings.RatingRow>, userId: string) -> List<ratings.RatingRow> {
+    theirs = filter(r in rows): r.userId == userId and r.recommended
+    return sorted(r in theirs): r.score descending then r.updatedAt descending
+}

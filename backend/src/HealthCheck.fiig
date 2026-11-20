@@ -1,3 +1,0 @@
-workflow healthCheck() -> Result<Health, ApiError> {
-    return Ok(checkHealth())
-}

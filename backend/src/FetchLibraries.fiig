@@ -1,8 +1,0 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
-
-gateway fetchLibraries() -> Result<List<client.AbsLibrary>, ApiError>
-    requires AbsApi
-{
-    return mapErr(e in AbsApi.librariesAsService()): apiErrorOfLibrary(e)
-}

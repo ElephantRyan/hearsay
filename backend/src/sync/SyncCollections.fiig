@@ -1,0 +1,15 @@
+use abs.recommendations.common
+
+// POST /sync. Off unless the server enabled it (a 404 to everyone, so a
+// disabled server says nothing about who is signed in), a preview unless the
+// caller said `dryRun=false`, and only then does anything write to ABS.
+workflow syncCollections(session: string | None, userId: string | None, dryRun: bool | None) -> Result<List<SyncResult>, common.ApiError> {
+    if not mirrorEnabled() {
+        return Err(common.ApiError.NotFound("collection mirroring on this server"))
+    }
+    plans = loadSyncPlans(session, userId)?
+    if wantsDryRun(dryRun) {
+        return Ok(preview(plans))
+    }
+    return Ok(applyPlans(plans))
+}

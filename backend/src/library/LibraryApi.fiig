@@ -1,0 +1,24 @@
+use abs.recommendations.common
+
+// The library routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// every domain's adapter together.
+adapter http libraryApi {
+    GET "/libraries" -> showLibraries(session: string | None from cookie "sid")
+        produces "application/json"
+    {
+        Ok(libraries) -> 200 libraries
+        Err(error) -> common.apiErrorResponse(error)
+    }
+    GET "/libraries/{libraryId}/items?page={page}&size={size}&q={q}" -> showLibraryItems(
+        session: string | None from cookie "sid",
+        libraryId: string,
+        page: int | None,
+        size: int | None,
+        q: string | None,
+    )
+        produces "application/json"
+    {
+        Ok(result) -> 200 result
+        Err(error) -> common.apiErrorResponse(error)
+    }
+}

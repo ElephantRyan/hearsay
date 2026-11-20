@@ -1,0 +1,16 @@
+use abs.recommendations.common
+
+// The sync routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// every domain's adapter together.
+adapter http syncApi {
+    POST "/sync?userId={userId}&dryRun={dryRun}" -> syncCollections(
+        session: string | None from cookie "sid",
+        userId: string | None,
+        dryRun: bool | None,
+    )
+        produces "application/json"
+    {
+        Ok(results) -> 200 results
+        Err(error) -> common.apiErrorResponse(error)
+    }
+}

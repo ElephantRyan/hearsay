@@ -1,0 +1,10 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.absclient.AbsApi
+use abs.recommendations.common
+
+// A page of a library, A to Z. A 404 here means the library, not a book.
+gateway fetchPage(libraryId: string, page: int, size: int) -> Result<client.BookPage, common.ApiError>
+    requires AbsApi
+{
+    return mapErr(e in AbsApi.pageAsService(libraryId, page, size)): apiErrorOfLibrary(e)
+}

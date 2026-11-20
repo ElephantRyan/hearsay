@@ -1,0 +1,57 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.absclient.AbsApi
+use abs.recommendations.signin
+use abs.recommendations.common
+use abs.recommendations.ratings
+use abs.recommendations.sessions
+use abs.recommendations.sessions.Server
+
+test browseListsSearchesAndMarksMyScores {
+    fake Server {
+        sessionMaxAge: 3600
+    }
+    fake AbsApi {
+        gateway pageAsService(libraryId: string, page: int, size: int) -> Result<client.BookPage, client.AbsError> {
+            if libraryId == "gone" {
+                return Err(client.AbsError.NotFound)
+            }
+            expect libraryId == "lib-1"
+            expect page == 2
+            expect size == 24
+            return Ok(
+                client.BookPage(total: 1117, page: page, limit: size, books: [client.Book(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author"), client.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "")]),
+            )
+        }
+
+        gateway searchAsService(libraryId: string, query: string, size: int) -> Result<client.BookPage, client.AbsError> {
+            expect query == "alp"
+            return Ok(
+                client.BookPage(total: 1, page: 0, limit: size, books: [client.Book(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author")]),
+            )
+        }
+
+        gateway itemAsService(itemId: string) -> Result<client.Book, client.AbsError> {
+            return Ok(
+                client.Book(itemId: itemId, libraryId: "lib-1", title: "Alpha", authors: "A. Author"),
+            )
+        }
+    }
+
+    ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    expect ratings.putRating(ann, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
+    expect showLibraryItems(None, "lib-1", 2, None, None) is Err(common.ApiError.Unauthenticated)
+    expect showLibraryItems(ann, "lib-1", 2, None, None) is Ok(listed)
+    expect listed.total == 1117
+    expect listed.page == 2
+    expect listed.items.length() == 2
+    expect listed.items.at(0).myScore == 8
+    expect listed.items.at(1).myScore == None
+    expect showLibraryItems(ann, "lib-1", None, None, "  alp ") is Ok(found)
+    expect found.items.length() == 1
+    expect found.items.at(0).title == "Alpha"
+    expect found.items.at(0).myScore == 8
+    expect showLibraryItems(ann, "gone", 2, None, None) is Err(common.ApiError.NotFound(what))
+    expect what == "library with that id"
+    expect showLibraryItems(ann, "lib-1", -1, None, None) is Err(common.ApiError.Invalid(field, reason))
+    expect field == "page"
+}
