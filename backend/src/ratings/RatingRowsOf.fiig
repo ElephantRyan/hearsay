@@ -1,0 +1,5 @@
+// One person's ratings, newest first, for the domains that show them beside
+// something else (a library page's "my score").
+activity ratingRowsOf(userId: string) -> List<RatingRow> {
+    return ratingRowsByUser(userId)
+}

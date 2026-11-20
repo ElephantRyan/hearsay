@@ -1,0 +1,5 @@
+// Every recommended rating with its book, for the domains that rank or mirror
+// them. The rating_row view is ratings' own, so they ask here (ADR 0079 §6a).
+activity recommendedRatings() -> List<RatingRow> {
+    return recommendedRows()
+}

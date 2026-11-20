@@ -39,8 +39,11 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     }
 
     ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
-    expect ratings.putRating(ann, "a", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
-    expect ratings.putRating(ann, "b", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_)
+    // ratings are stored through putRating's two steps: another package's workflow is out of a test's reach (ADR 0079 §1)
+    expect ratings.loadUserAndBook(ann, "a") is Ok(annA)
+    expect ratings.storeRating(annA, ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
+    expect ratings.loadUserAndBook(ann, "b") is Ok(annB)
+    expect ratings.storeRating(annB, ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_)
     expect syncCollections(ann, None, None) is Ok(preview)
     expect preview.length() == 1
     expect preview.at(0).action == "would-create"
@@ -55,12 +58,12 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     expect second.at(0).action == "updated"
     expect calls(AbsApi.createCollectionAsService) == 1
     // someone deleted our collection in ABS: the update says 404, so it is made again
-    expect ratings.putRating(ann, "b", ratings.RatingInput(score: 9, note: None, recommended: false)) is Ok(_)
+    expect ratings.storeRating(annB, ratings.RatingInput(score: 9, note: None, recommended: false)) is Ok(_)
     expect syncCollections(ann, None, false) is Ok(recreated)
     expect recreated.at(0).action == "created"
     expect calls(AbsApi.createCollectionAsService) == 2
     // nothing left to recommend: our collection is removed and forgotten
-    expect ratings.putRating(ann, "a", ratings.RatingInput(score: 7, note: None, recommended: false)) is Ok(_)
+    expect ratings.storeRating(annA, ratings.RatingInput(score: 7, note: None, recommended: false)) is Ok(_)
     expect syncCollections(ann, None, false) is Ok(removed)
     expect removed.at(0).action == "removed"
     expect allSyncStates().length() == 0

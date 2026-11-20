@@ -20,8 +20,11 @@ test privateRatingsStayPrivate {
 
     ann = sessions.startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
     bob = sessions.startSession(signin.Identity(userId: "u2", username: "bob", userType: "user")).token
-    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
-    expect ratings.putRating(bob, "dune", ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
+    // ratings are stored through putRating's two steps: another package's workflow is out of a test's reach (ADR 0079 §1)
+    expect ratings.loadUserAndBook(ann, "dune") is Ok(annDune)
+    expect ratings.storeRating(annDune, ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
+    expect ratings.loadUserAndBook(bob, "dune") is Ok(bobDune)
+    expect ratings.storeRating(bobDune, ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
     expect ratings.loadItemDetail(bob, "dune") is Ok(bobSees)
     expect bobSees.ratings.length() == 1
     expect bobSees.count == 1

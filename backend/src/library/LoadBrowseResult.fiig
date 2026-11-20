@@ -4,11 +4,12 @@ use abs.recommendations.absclient as client
 use abs.recommendations.common
 use abs.recommendations.ratings
 use abs.recommendations.sessions
+use abs.recommendations.signin
 
 activity loadBrowseResult(session: string | None, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, common.ApiError> {
-    me = sessions.currentUser(session)?
+    me: signin.Identity = sessions.currentUser(session)?
     found = fetchBooks(libraryId, page, size, typed)?
-    mine = ratings.ratingRowsByUser(me.userId)
+    mine = ratings.ratingRowsOf(me.userId)
     return Ok(
         BrowseResult(total: found.total, page: found.page, limit: found.limit, items: withMyScores(found.books, mine)),
     )

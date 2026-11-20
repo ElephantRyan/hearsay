@@ -6,4 +6,6 @@ export OIDC_ISSUER="${OIDC_ISSUER:-https://authentik.example.com/application/o/a
 export OIDC_CLIENT_ID="${OIDC_CLIENT_ID:-placeholder}"
 export OIDC_CLIENT_SECRET="${OIDC_CLIENT_SECRET:-placeholder}"
 export ABS_SERVICE_TOKEN="${ABS_SERVICE_TOKEN:-placeholder}"
-exec "$F" serve -caps caps.json -env-file .env . api
+# One adapter per domain (src/<domain>/<Domain>Api.fiig), served together.
+A=abs.recommendations
+exec "$F" serve -caps caps.json -env-file .env .     $A.sessions.sessionsApi $A.ratings.ratingsApi $A.library.libraryApi     $A.recommendations.recommendationsApi $A.sync.syncApi $A.health.healthApi

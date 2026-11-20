@@ -1,8 +1,6 @@
-use abs.recommendations.ratings
-
 // Every recommended rating with its book, for ranking and for the list of
 // recommenders. Private ratings never leave the database through here.
-gateway recommendedRows() -> List<ratings.RatingRow>
+gateway recommendedRows() -> List<RatingRow>
     requires Database
     idempotent
 {
