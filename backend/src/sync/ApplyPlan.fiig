@@ -2,7 +2,7 @@
 // writes to ABS. A collection we made that ABS no longer has (someone deleted
 // it) is recreated; one that is already gone when we remove it is just forgotten.
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
+use abs.recommendations.absclient.AbsCollections
 
 activity applyPlan(plan: SyncPlan, now: int) -> SyncResult {
     match plan.collectionId {
@@ -26,7 +26,7 @@ private {
     }
 
     createFor(plan: SyncPlan, now: int) -> SyncResult {
-        match AbsApi.createCollectionAsService(plan.libraryId, plan.name, plan.description, plan.bookIds) {
+        match AbsCollections.createCollectionAsService(plan.libraryId, plan.name, plan.description, plan.bookIds) {
             Ok(id) -> {
                 remember(plan, id, now)
                 return syncResultOf(plan, "created", None)
@@ -38,7 +38,7 @@ private {
     }
 
     updateFor(plan: SyncPlan, existing: string, now: int) -> SyncResult {
-        match AbsApi.updateCollectionAsService(existing, plan.name, plan.description, plan.bookIds) {
+        match AbsCollections.updateCollectionAsService(existing, plan.name, plan.description, plan.bookIds) {
             Ok(_) -> {
                 remember(plan, existing, now)
                 return syncResultOf(plan, "updated", None)
@@ -54,7 +54,7 @@ private {
     }
 
     removeFor(plan: SyncPlan, existing: string) -> SyncResult {
-        match AbsApi.deleteCollectionAsService(existing) {
+        match AbsCollections.deleteCollectionAsService(existing) {
             Ok(_) -> {
                 deleteSyncState(plan.userId, plan.libraryId)
                 return syncResultOf(plan, "removed", None)

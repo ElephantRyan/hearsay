@@ -1,5 +1,5 @@
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
+use abs.recommendations.absclient.AbsCatalog
 use abs.recommendations.accounts
 use abs.recommendations.common
 use abs.recommendations.ratings
@@ -10,7 +10,7 @@ test browseListsSearchesAndMarksMyScores {
     fake SessionConfig {
         sessionMaxAge: 3600
     }
-    fake AbsApi {
+    fake AbsCatalog {
         gateway pageAsService(libraryId: string, page: int, size: int) -> Result<client.BookPage, client.AbsError> {
             if libraryId == "gone" {
                 return Err(client.AbsError.NotFound)

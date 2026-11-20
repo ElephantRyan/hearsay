@@ -1,0 +1,46 @@
+use fiig.http
+use fiig.http.HttpClient
+
+// What is in ABS: one book, the libraries, a page of one, and search.
+// The *AsService gateways use this server's own token.
+capability AbsCatalog {
+    gateway item(accessToken: string, itemId: string) -> Result<Book, AbsError>
+        requires HttpClient
+    {
+        itemIdSegment = absPathId(itemId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemIdSegment}", accessToken)))?
+        return bookOfItemReply(reply.body)
+    }
+
+    gateway itemAsService(itemId: string) -> Result<Book, AbsError>
+        requires HttpClient
+    {
+        itemIdSegment = absPathId(itemId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/items/${itemIdSegment}", AbsService.token.reveal())))?
+        return bookOfItemReply(reply.body)
+    }
+
+    gateway librariesAsService() -> Result<List<AbsLibrary>, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/libraries", AbsService.token.reveal())))?
+        found: AbsLibrariesReply = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(found.libraries)
+    }
+
+    gateway pageAsService(libraryId: string, page: int, size: int) -> Result<BookPage, AbsError>
+        requires HttpClient
+    {
+        libraryIdSegment = absPathId(libraryId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, absListPath(libraryIdSegment, page, size), AbsService.token.reveal())))?
+        return bookPageOfListing(reply.body)
+    }
+
+    gateway searchAsService(libraryId: string, query: string, size: int) -> Result<BookPage, AbsError>
+        requires HttpClient
+    {
+        libraryIdSegment = absPathId(libraryId)?
+        reply = absReply(HttpClient.send(absGet(Abs.url, absSearchPath(libraryIdSegment, query, size), AbsService.token.reveal())))?
+        return bookPageOfSearch(reply.body, size)
+    }
+}

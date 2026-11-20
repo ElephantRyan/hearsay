@@ -1,0 +1,12 @@
+use fiig.http
+use fiig.http.HttpClient
+
+// Whether ABS answers at all: its public /status, no token.
+capability AbsServer {
+    gateway status() -> Result<int, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/status", "")))?
+        return Ok(reply.status)
+    }
+}

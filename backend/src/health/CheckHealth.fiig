@@ -1,9 +1,9 @@
-use abs.recommendations.absclient.AbsApi
+use abs.recommendations.absclient.AbsServer
 
 // Liveness plus ABS reachability. The service is up if it answers; `abs`
 // says whether ABS's public /status does.
 activity checkHealth() -> Health {
-    match AbsApi.status() {
+    match AbsServer.status() {
         Ok(_) -> {
             return Health(ok: true, abs: "reachable")
         }

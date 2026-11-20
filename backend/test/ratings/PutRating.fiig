@@ -1,5 +1,5 @@
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
+use abs.recommendations.absclient.AbsCatalog
 use abs.recommendations.accounts
 use abs.recommendations.common
 use abs.recommendations.sessions
@@ -11,7 +11,7 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
     fake SessionConfig {
         sessionMaxAge: 3600
     }
-    fake AbsApi {
+    fake AbsCatalog {
         gateway itemAsService(itemId: string) -> Result<client.Book, client.AbsError> {
             if itemId == "gone" {
                 return Err(client.AbsError.NotFound)

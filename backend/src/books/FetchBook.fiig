@@ -1,11 +1,11 @@
 // One book from ABS, with the server's token. ABS's failures become the app's
 // errors here, once: a 404 is "no such book", anything else is "unavailable".
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
+use abs.recommendations.absclient.AbsCatalog
 use abs.recommendations.common
 
 gateway fetchBook(itemId: string) -> Result<client.Book, common.ApiError>
-    requires AbsApi
+    requires AbsCatalog
 {
-    return mapErr(e in AbsApi.itemAsService(itemId)): common.apiErrorOfAbs(e)
+    return mapErr(e in AbsCatalog.itemAsService(itemId)): common.apiErrorOfAbs(e)
 }

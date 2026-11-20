@@ -1,0 +1,20 @@
+use fiig.http
+use fiig.http.HttpClient
+
+// ABS accounts: signing in with a password, and who a token belongs to.
+capability AbsMembers {
+    gateway login(username: string, password: string) -> Result<AbsSession, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absLoginRequest(Abs.url, username, password)))?
+        return sessionOfLoginReply(reply.body)
+    }
+
+    gateway me(accessToken: string) -> Result<AbsUser, AbsError>
+        requires HttpClient
+    {
+        reply = absReply(HttpClient.send(absGet(Abs.url, "/api/me", accessToken)))?
+        user: AbsUser = mapErr(e in json.decode(reply.body)): AbsError.Unreadable(failure: e)?
+        return Ok(user)
+    }
+}

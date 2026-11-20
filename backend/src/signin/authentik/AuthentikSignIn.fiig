@@ -1,7 +1,7 @@
 // Sign-in through Authentik (OIDC authorization code + PKCE). A gateway
 // requires exactly one capability (ADR 0010), so this one does its own HTTP
 // to the identity provider and to ABS, reusing abs.client's pure helpers
-// (absGet, absReply, usersMatchingEmail) rather than calling AbsApi.
+// (absGet, absReply, usersMatchingEmail) rather than calling AbsMembers.
 //
 // `beginUrl` is outside the SignIn interface: only the OIDC path has a
 // redirect step. The caller makes `state` and `codeVerifier` (Random.bytes),

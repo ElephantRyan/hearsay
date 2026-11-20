@@ -1,5 +1,6 @@
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
+use abs.recommendations.absclient.AbsCatalog
+use abs.recommendations.absclient.AbsCollections
 use abs.recommendations.accounts
 use abs.recommendations.common
 use abs.recommendations.ratings
@@ -13,19 +14,20 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     fake SyncConfig {
         mirrorEnabled: true
     }
-    fake AbsApi {
+    fake AbsCatalog {
         gateway itemAsService(itemId: string) -> Result<client.Book, client.AbsError> {
             return Ok(client.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"))
         }
-
+    }
+    fake AbsCollections {
         gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
             expect name == "ann Recommends"
-            if calls(AbsApi.createCollectionAsService) == 1 {
+            if calls(AbsCollections.createCollectionAsService) == 1 {
                 expect bookIds == ["b", "a"]
             } else {
                 expect bookIds == ["a"]
             }
-            return Ok("col-${calls(AbsApi.createCollectionAsService)}")
+            return Ok("col-${calls(AbsCollections.createCollectionAsService)}")
         }
 
         gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
@@ -50,7 +52,7 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     expect preview.length() == 1
     expect preview.at(0).action == "would-create"
     expect preview.at(0).books == 2
-    expect calls(AbsApi.createCollectionAsService) == 0
+    expect calls(AbsCollections.createCollectionAsService) == 0
     expect allSyncStates().length() == 0
     expect syncCollections(ann, None, false) is Ok(first)
     expect first.at(0).action == "created"
@@ -58,18 +60,18 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     expect allSyncStates().at(0).collectionId == "col-1"
     expect syncCollections(ann, None, false) is Ok(second)
     expect second.at(0).action == "updated"
-    expect calls(AbsApi.createCollectionAsService) == 1
+    expect calls(AbsCollections.createCollectionAsService) == 1
     // someone deleted our collection in ABS: the update says 404, so it is made again
     expect ratings.storeRating(annB, ratings.RatingInput(score: 9, note: None, recommended: false)) is Ok(_)
     expect syncCollections(ann, None, false) is Ok(recreated)
     expect recreated.at(0).action == "created"
-    expect calls(AbsApi.createCollectionAsService) == 2
+    expect calls(AbsCollections.createCollectionAsService) == 2
     // nothing left to recommend: our collection is removed and forgotten
     expect ratings.storeRating(annA, ratings.RatingInput(score: 7, note: None, recommended: false)) is Ok(_)
     expect syncCollections(ann, None, false) is Ok(removed)
     expect removed.at(0).action == "removed"
     expect allSyncStates().length() == 0
-    expect calls(AbsApi.deleteCollectionAsService) == 1
+    expect calls(AbsCollections.deleteCollectionAsService) == 1
 }
 
 test syncIsOffByDefaultAndPrivateToTheirOwner {
@@ -79,7 +81,7 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
     fake SyncConfig {
         mirrorEnabled: false
     }
-    fake AbsApi {
+    fake AbsCollections {
         gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
             expect false
             return Err(client.AbsError.NotFound)
@@ -109,7 +111,7 @@ test aPersonCannotSyncSomeoneElsesList {
     fake SyncConfig {
         mirrorEnabled: true
     }
-    fake AbsApi {
+    fake AbsCollections {
         gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
             expect false
             return Err(client.AbsError.NotFound)
@@ -126,5 +128,5 @@ test aPersonCannotSyncSomeoneElsesList {
 
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect syncCollections(ann, "u2", false) is Err(common.ApiError.Refused(why))
-    expect calls(AbsApi.createCollectionAsService) == 0
+    expect calls(AbsCollections.createCollectionAsService) == 0
 }
