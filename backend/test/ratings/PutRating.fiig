@@ -37,7 +37,7 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
     expect field == "score"
     expect putRating(token, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(common.ApiError.NotFound(what))
     expect putRating(None, "dune", RatingInput(score: 5, note: None, recommended: true)) is Err(common.ApiError.Unauthenticated)
-    expect rated.loadMyRatings(token) is Ok(mine)
+    expect rated.listMyRatings(token, None) is Ok(mine)
     expect mine.length() == 1
     expect mine.at(0).title == "Dune"
     expect deleteMyRating(token, "dune") is Ok(removed)
