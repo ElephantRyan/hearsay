@@ -55,7 +55,7 @@ test oidcCallbackChecksStateBeforeExchanging {
     expect finishSignIn(None, None, "access_denied", None).location == "https://app.test/sign-in?error=denied"
     expect finishSignIn("unknown-person", "st-1", None, "st-1.ver-1").location == "https://app.test/sign-in?error=no-account"
     expect calls(AuthentikSignIn.authenticate) == 2
-    expect beginSignIn() is Ok(start)
+    expect startOidc() is Ok(start)
     expect start.url.startsWith("https://idp.test/authorize?state=")
     expect start.pending.split(".").length() == 2
 }

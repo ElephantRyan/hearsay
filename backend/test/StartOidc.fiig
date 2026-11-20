@@ -1,7 +1,7 @@
 use abs.recommendations.signin
 use abs.recommendations.signin.authentik.AuthentikSignIn
 
-test beginSignInIsOffInPasswordOnlyMode {
+test startOidcIsOffInPasswordOnlyMode {
     fake Server {
         authMode: "abs"
         sessionMaxAge: 3600
@@ -19,6 +19,6 @@ test beginSignInIsOffInPasswordOnlyMode {
         }
     }
 
-    expect beginSignIn() is Err(ApiError.NotFound(what))
+    expect startOidc() is Err(ApiError.NotFound(what))
     expect calls(AuthentikSignIn.beginUrl) == 0
 }

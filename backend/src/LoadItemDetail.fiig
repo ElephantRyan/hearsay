@@ -1,7 +1,6 @@
 // One book with the ratings the viewer may see. A book nobody has rated yet
 // is fetched from ABS, so the page can offer the first rating.
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
 
 activity loadItemDetail(session: string | None, itemId: string) -> Result<ItemDetail, ApiError> {
     me = currentUser(session)?
@@ -16,7 +15,7 @@ private {
     cachedOrFetched(itemId: string) -> Result<client.Book, ApiError> {
         match findBook(itemId) {
             None -> {
-                return mapErr(e in AbsApi.itemAsService(itemId)): apiErrorOfAbs(e)
+                return fetchBook(itemId)
             }
             cached -> {
                 return Ok(cached)

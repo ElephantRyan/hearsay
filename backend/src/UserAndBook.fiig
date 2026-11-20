@@ -1,0 +1,9 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.signin
+
+// Who is asking, and the book they asked about: the first step of every
+// feature that works on one book.
+model UserAndBook {
+    user: signin.Identity
+    book: client.Book
+}

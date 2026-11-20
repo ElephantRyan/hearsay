@@ -35,29 +35,29 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     }
 
     ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
-    expect rateItem(ann, "a", RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
-    expect rateItem(ann, "b", RatingInput(score: 9, note: None, recommended: true)) is Ok(_)
-    expect runSync(ann, None, None) is Ok(preview)
+    expect putRating(ann, "a", RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
+    expect putRating(ann, "b", RatingInput(score: 9, note: None, recommended: true)) is Ok(_)
+    expect syncCollections(ann, None, None) is Ok(preview)
     expect preview.length() == 1
     expect preview.at(0).action == "would-create"
     expect preview.at(0).books == 2
     expect calls(AbsApi.createCollectionAsService) == 0
     expect allSyncStates().length() == 0
-    expect runSync(ann, None, false) is Ok(first)
+    expect syncCollections(ann, None, false) is Ok(first)
     expect first.at(0).action == "created"
     expect allSyncStates().length() == 1
     expect allSyncStates().at(0).collectionId == "col-1"
-    expect runSync(ann, None, false) is Ok(second)
+    expect syncCollections(ann, None, false) is Ok(second)
     expect second.at(0).action == "updated"
     expect calls(AbsApi.createCollectionAsService) == 1
     // someone deleted our collection in ABS: the update says 404, so it is made again
-    expect rateItem(ann, "b", RatingInput(score: 9, note: None, recommended: false)) is Ok(_)
-    expect runSync(ann, None, false) is Ok(recreated)
+    expect putRating(ann, "b", RatingInput(score: 9, note: None, recommended: false)) is Ok(_)
+    expect syncCollections(ann, None, false) is Ok(recreated)
     expect recreated.at(0).action == "created"
     expect calls(AbsApi.createCollectionAsService) == 2
     // nothing left to recommend: our collection is removed and forgotten
-    expect rateItem(ann, "a", RatingInput(score: 7, note: None, recommended: false)) is Ok(_)
-    expect runSync(ann, None, false) is Ok(removed)
+    expect putRating(ann, "a", RatingInput(score: 7, note: None, recommended: false)) is Ok(_)
+    expect syncCollections(ann, None, false) is Ok(removed)
     expect removed.at(0).action == "removed"
     expect allSyncStates().length() == 0
     expect calls(AbsApi.deleteCollectionAsService) == 1
@@ -86,8 +86,9 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
     }
 
     ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
-    expect runSync(ann, None, false) is Err(ApiError.NotFound(what))
-    expect runSync(None, None, false) is Err(ApiError.Unauthenticated)
+    expect syncCollections(ann, None, false) is Err(ApiError.NotFound(what))
+    // disabled means disabled for everyone: a stranger learns nothing about sessions
+    expect syncCollections(None, None, false) is Err(ApiError.NotFound(missing))
 }
 
 test aPersonCannotSyncSomeoneElsesList {
@@ -111,6 +112,6 @@ test aPersonCannotSyncSomeoneElsesList {
     }
 
     ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
-    expect runSync(ann, "u2", false) is Err(ApiError.Refused(why))
+    expect syncCollections(ann, "u2", false) is Err(ApiError.Refused(why))
     expect calls(AbsApi.createCollectionAsService) == 0
 }

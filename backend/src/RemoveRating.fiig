@@ -1,8 +1,6 @@
+// Deletes the signed-in person's rating of a book and says how many rows went.
+// Whether zero is a problem is the workflow's call.
 activity removeRating(session: string | None, itemId: string) -> Result<int, ApiError> {
     me = currentUser(session)?
-    removed = deleteRating(me.userId, itemId)
-    if removed == 0 {
-        return Err(ApiError.NotFound("rating of yours for that book"))
-    }
-    return Ok(removed)
+    return Ok(deleteRating(me.userId, itemId))
 }

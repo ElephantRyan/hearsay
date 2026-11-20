@@ -21,20 +21,20 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
 
     session = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user"))
     token = session.token
-    expect rateItem(token, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first)
-    expect rateItem(token, "dune", RatingInput(score: 4, note: None, recommended: false)) is Ok(second)
+    expect putRating(token, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first)
+    expect putRating(token, "dune", RatingInput(score: 4, note: None, recommended: false)) is Ok(second)
     expect second.createdAt == first.createdAt
     expect second.score == 4
     expect second.note == ""
-    expect rateItem(token, "dune", RatingInput(score: 12, note: None, recommended: true)) is Err(ApiError.Invalid(field, reason))
+    expect putRating(token, "dune", RatingInput(score: 12, note: None, recommended: true)) is Err(ApiError.Invalid(field, reason))
     expect field == "score"
-    expect rateItem(token, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(ApiError.NotFound(what))
-    expect rateItem(None, "dune", RatingInput(score: 5, note: None, recommended: true)) is Err(ApiError.Unauthenticated)
-    expect myRatings(token, None) is Ok(mine)
+    expect putRating(token, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(ApiError.NotFound(what))
+    expect putRating(None, "dune", RatingInput(score: 5, note: None, recommended: true)) is Err(ApiError.Unauthenticated)
+    expect listMyRatings(token, None) is Ok(mine)
     expect mine.length() == 1
     expect mine.at(0).title == "Dune"
-    expect myRatings(token, "bogus") is Err(ApiError.Invalid(sortField, sortReason))
-    expect removeRating(token, "dune") is Ok(removed)
+    expect listMyRatings(token, "bogus") is Err(ApiError.Invalid(sortField, sortReason))
+    expect deleteMyRating(token, "dune") is Ok(removed)
     expect removed == 1
-    expect removeRating(token, "dune") is Err(ApiError.NotFound(missing))
+    expect deleteMyRating(token, "dune") is Err(ApiError.NotFound(missing))
 }

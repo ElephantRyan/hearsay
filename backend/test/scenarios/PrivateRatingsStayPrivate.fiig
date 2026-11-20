@@ -16,8 +16,8 @@ test privateRatingsStayPrivate {
 
     ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
     bob = startSession(signin.Identity(userId: "u2", username: "bob", userType: "user")).token
-    expect rateItem(ann, "dune", RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
-    expect rateItem(bob, "dune", RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
+    expect putRating(ann, "dune", RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
+    expect putRating(bob, "dune", RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
     expect loadItemDetail(bob, "dune") is Ok(bobSees)
     expect bobSees.ratings.length() == 1
     expect bobSees.count == 1

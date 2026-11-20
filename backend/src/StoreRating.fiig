@@ -1,0 +1,19 @@
+// Validates, stores, and returns what is now stored (an update keeps the
+// original created_at, so the stored row can differ from the one made here).
+// The book is cached on every write so lists need no ABS call per card.
+activity storeRating(found: UserAndBook, input: RatingInput) -> Result<Rating, ApiError> {
+    now = Clock.now()
+    rating = mapErr(e in createRating(found.user.userId, NewRating(itemId: found.book.itemId, score: input.score, note: input.note or "", recommended: input.recommended), now)): apiErrorOfRating(e)?
+    upsertUser(found.user.userId, found.user.username, now)
+    saveBook(found.book, now)
+    saveRating(rating)
+    stored = findRating(found.user.userId, found.book.itemId)
+    match stored {
+        None -> {
+            return Ok(rating)
+        }
+        saved -> {
+            return Ok(saved)
+        }
+    }
+}

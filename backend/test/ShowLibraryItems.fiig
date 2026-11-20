@@ -34,20 +34,20 @@ test browseListsSearchesAndMarksMyScores {
     }
 
     ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
-    expect rateItem(ann, "a", RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
-    expect browseLibrary(None, "lib-1", 2, None, None) is Err(ApiError.Unauthenticated)
-    expect browseLibrary(ann, "lib-1", 2, None, None) is Ok(listed)
+    expect putRating(ann, "a", RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
+    expect showLibraryItems(None, "lib-1", 2, None, None) is Err(ApiError.Unauthenticated)
+    expect showLibraryItems(ann, "lib-1", 2, None, None) is Ok(listed)
     expect listed.total == 1117
     expect listed.page == 2
     expect listed.items.length() == 2
     expect listed.items.at(0).myScore == 8
     expect listed.items.at(1).myScore == None
-    expect browseLibrary(ann, "lib-1", None, None, "  alp ") is Ok(found)
+    expect showLibraryItems(ann, "lib-1", None, None, "  alp ") is Ok(found)
     expect found.items.length() == 1
     expect found.items.at(0).title == "Alpha"
     expect found.items.at(0).myScore == 8
-    expect browseLibrary(ann, "gone", 2, None, None) is Err(ApiError.NotFound(what))
+    expect showLibraryItems(ann, "gone", 2, None, None) is Err(ApiError.NotFound(what))
     expect what == "library with that id"
-    expect browseLibrary(ann, "lib-1", -1, None, None) is Err(ApiError.Invalid(field, reason))
+    expect showLibraryItems(ann, "lib-1", -1, None, None) is Err(ApiError.Invalid(field, reason))
     expect field == "page"
 }

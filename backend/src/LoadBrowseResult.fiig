@@ -1,0 +1,28 @@
+// One page of a library, or the hits of a search when `typed` is given, with
+// the viewer's own scores. The inputs are already checked by the workflow.
+use abs.recommendations.absclient as client
+
+activity loadBrowseResult(session: string | None, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, ApiError> {
+    me = currentUser(session)?
+    found = fetchBooks(libraryId, page, size, typed)?
+    mine = ratingRowsByUser(me.userId)
+    return Ok(BrowseResult(
+        total: found.total,
+        page: found.page,
+        limit: found.limit,
+        items: withMyScores(found.books, mine),
+    ))
+}
+
+private {
+    fetchBooks(libraryId: string, page: int, size: int, typed: string | None) -> Result<client.BookPage, ApiError> {
+        match typed {
+            None -> {
+                return fetchPage(libraryId, page, size)
+            }
+            text -> {
+                return fetchHits(libraryId, text, size)
+            }
+        }
+    }
+}

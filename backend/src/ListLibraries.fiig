@@ -1,10 +1,9 @@
 // The libraries a person can browse. Only book libraries: podcasts have no
 // place in a book-recommendation list.
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsApi
 
 activity listLibraries(session: string | None) -> Result<List<client.AbsLibrary>, ApiError> {
     currentUser(session)?
-    all = mapErr(e in AbsApi.librariesAsService()): apiErrorOfLibrary(e)?
+    all = fetchLibraries()?
     return Ok(filter(library in all): library.mediaType == "book")
 }
