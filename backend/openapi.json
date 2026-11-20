@@ -14,7 +14,7 @@
     }
   },
   "info": {
-    "title": "api",
+    "title": "abs.recommendations.sessions.sessionsApi, abs.recommendations.ratings.ratingsApi, abs.recommendations.library.libraryApi, abs.recommendations.recommendations.recommendationsApi, abs.recommendations.sync.syncApi, abs.recommendations.health.healthApi",
     "version": "0.0.0"
   },
   "openapi": "3.0.3",
@@ -82,52 +82,10 @@
               }
             }
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -161,52 +119,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -240,52 +156,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -409,52 +283,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -501,52 +333,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -655,52 +445,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -744,52 +492,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -878,52 +584,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -954,52 +618,10 @@
           "204": {
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -1093,52 +715,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -1228,52 +808,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -1320,52 +858,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -1454,52 +950,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -1529,7 +983,7 @@
         ]
       },
       "post": {
-        "operationId": "passwordLogIn",
+        "operationId": "passwordSignIn",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1579,52 +1033,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
@@ -1691,52 +1103,10 @@
             },
             "description": ""
           },
-          "400": {
+          "default": {
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+                "schema": {}
               }
             },
             "description": ""
