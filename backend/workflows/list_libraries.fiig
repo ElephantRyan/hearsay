@@ -1,5 +1,0 @@
-use abs.client
-
-workflow showLibraries(session: string | None) -> Result<List<client.AbsLibrary>, ApiError> {
-    return listLibraries(session)
-}

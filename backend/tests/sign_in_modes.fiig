@@ -1,8 +1,0 @@
-test signInModesFollowAuthMode {
-    fake Server {
-        authMode: "oidc"
-        sessionMaxAge: 3600
-        frontendUrl: "x"
-    }
-    expect loadSignInModes() == SignInModes(password: false, oidc: true)
-}

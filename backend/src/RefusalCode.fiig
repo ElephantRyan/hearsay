@@ -1,0 +1,12 @@
+use abs.recommendations.signin
+
+// A short code for the frontend to show a message for; never the provider's
+// own words.
+rule refusalCode(error: signin.SignInError) -> string {
+    match error {
+        signin.SignInError.WrongMethod -> "method"
+        signin.SignInError.NoAccount -> "no-account"
+        signin.SignInError.Refused(reason) -> "refused"
+        signin.SignInError.Unavailable(detail) -> "unavailable"
+    }
+}

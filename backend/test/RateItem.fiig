@@ -1,0 +1,40 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.absclient.AbsApi
+use abs.recommendations.signin
+
+// Signs in as a fake identity, then rates through the real activity with ABS
+// faked. The book is fetched on every write, so a changed title is cached.
+test ratingFlowCachesTheBookAndKeepsCreatedAt {
+    fake Server {
+        sessionMaxAge: 3600
+    }
+    fake AbsApi {
+        gateway itemAsService(itemId: string) -> Result<client.Book, client.AbsError> {
+            if itemId == "gone" {
+                return Err(client.AbsError.NotFound)
+            }
+            return Ok(
+                client.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert"),
+            )
+        }
+    }
+
+    session = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user"))
+    token = session.token
+    expect rateItem(token, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first)
+    expect rateItem(token, "dune", RatingInput(score: 4, note: None, recommended: false)) is Ok(second)
+    expect second.createdAt == first.createdAt
+    expect second.score == 4
+    expect second.note == ""
+    expect rateItem(token, "dune", RatingInput(score: 12, note: None, recommended: true)) is Err(ApiError.Invalid(field, reason))
+    expect field == "score"
+    expect rateItem(token, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(ApiError.NotFound(what))
+    expect rateItem(None, "dune", RatingInput(score: 5, note: None, recommended: true)) is Err(ApiError.Unauthenticated)
+    expect myRatings(token, None) is Ok(mine)
+    expect mine.length() == 1
+    expect mine.at(0).title == "Dune"
+    expect myRatings(token, "bogus") is Err(ApiError.Invalid(sortField, sortReason))
+    expect removeRating(token, "dune") is Ok(removed)
+    expect removed == 1
+    expect removeRating(token, "dune") is Err(ApiError.NotFound(missing))
+}

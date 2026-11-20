@@ -1,0 +1,370 @@
+use abs.recommendations.absclient.Abs
+use abs.recommendations.absclient.AbsService
+use abs.recommendations.signin
+use fiig.http
+use fiig.http.HttpClient
+
+// One fake plays Authentik and ABS, answering by URL. Replies are shaped like
+// the live servers': the OIDC discovery and userinfo shapes are the standard
+// ones; /api/users is the real ABS 2.37.2 shape, extra `token` member included.
+test authenticateFindsTheAbsUserByEmail {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                expect request.method == http.Method.Post
+                match request.body {
+                    None -> {
+                        expect false
+                    }
+                    sent -> {
+                        match sent.utf8() {
+                            None -> {
+                                expect false
+                            }
+                            form -> {
+                                expect form.contains("grant_type=authorization_code")
+                                expect form.contains("code=code-1")
+                                expect form.contains("code_verifier=verifier-1")
+                                expect form.contains("client_id=cid")
+                                expect form.contains("client_secret=csec")
+                            }
+                        }
+                    }
+                }
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"access_token\":\"at-1\",\"token_type\":\"Bearer\",\"id_token\":\"ignored\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                expect http.headerValue(request.headers, "authorization") == "Bearer at-1"
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-1\",\"email\":\"Ryan@Example.com\",\"email_verified\":false,\"preferred_username\":\"ryan\"}".utf8()),
+                )
+            }
+            if request.url == "https://abs.test/api/users" {
+                expect http.headerValue(request.headers, "authorization") == "Bearer svc-token"
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-9\",\"username\":\"someone\",\"type\":\"user\",\"email\":null,\"token\":\"never-printed\"},{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"email\":\"ryan@example.com\",\"token\":\"never-printed\"}]}".utf8()),
+                )
+            }
+            expect false
+            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()))
+        }
+    }
+
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Ok(identity)
+    expect identity == signin.Identity(userId: "u-1", username: "ryan", userType: "admin")
+    expect calls(HttpClient.send) == 4
+}
+
+test absRefusingTheServiceTokenIsOurProblemNotThePersons {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"access_token\":\"at-1\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()),
+                )
+            }
+            return Ok(http.Reply(status: 401, headers: [], body: "".utf8()))
+        }
+    }
+
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Unavailable(detail))
+    expect detail.contains("token was refused")
+    expect not detail.contains("password")
+}
+
+test twoAbsAccountsWithOneEmailIsRefused {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"access_token\":\"at-1\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()),
+                )
+            }
+            return Ok(
+                http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"a\",\"type\":\"user\",\"email\":\"ryan@example.com\"},{\"id\":\"u-2\",\"username\":\"b\",\"type\":\"user\",\"email\":\"RYAN@example.com\"}]}".utf8()),
+            )
+        }
+    }
+
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Refused(why))
+    expect why.contains("more than one")
+}
+
+test noAbsAccountMeansSignInToAbsFirst {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"access_token\":\"at-1\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-2\",\"email\":\"new@example.com\"}".utf8()),
+                )
+            }
+            return Ok(
+                http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()),
+            )
+        }
+    }
+
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.NoAccount)
+}
+
+test noEmailFromTheProviderIsRefused {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"access_token\":\"at-1\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-3\"}".utf8()))
+            }
+            return Ok(
+                http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()),
+            )
+        }
+    }
+
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Refused(why))
+    expect why.contains("no email")
+}
+
+test passwordAttemptIsTheWrongMethod {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            expect false
+            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()))
+        }
+    }
+
+    attempt = signin.SignInAttempt.Password("ryan", "pw")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.WrongMethod)
+    expect calls(HttpClient.send) == 0
+}
+
+test providerOutageIsUnavailable {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                return Ok(
+                    http.Reply(status: 503, headers: [], body: "{\"access_token\":\"at-1\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()),
+                )
+            }
+            return Ok(
+                http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()),
+            )
+        }
+    }
+
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Unavailable(detail))
+    expect detail == "the identity provider answered 503"
+}
+
+test rejectedCodeIsRefused {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: "svc-token"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/token/" {
+                return Ok(
+                    http.Reply(status: 400, headers: [], body: "{\"access_token\":\"at-1\"}".utf8()),
+                )
+            }
+            if request.url == "https://idp.test/application/o/userinfo/" {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()),
+                )
+            }
+            return Ok(
+                http.Reply(status: 200, headers: [], body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()),
+            )
+        }
+    }
+
+    attempt = signin.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
+    expect AuthentikSignIn.authenticate(attempt) is Err(signin.SignInError.Refused(why))
+    expect why == "the identity provider did not accept this sign-in"
+}
+
+test beginUrlCarriesStateAndTheS256Challenge {
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: "csec"
+        redirectUri: "http://localhost:8080/auth/callback"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            expect request.url == "https://idp.test/application/o/abs/.well-known/openid-configuration"
+            return Ok(
+                http.Reply(status: 200, headers: [], body: "{\"authorization_endpoint\":\"https://idp.test/application/o/authorize/\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\",\"issuer\":\"x\"}".utf8()),
+            )
+        }
+    }
+
+    expect AuthentikSignIn.beginUrl("st-1", "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk") is Ok(url)
+    expect url.startsWith("https://idp.test/application/o/authorize/?")
+    expect url.contains("response_type=code")
+    expect url.contains("client_id=cid")
+    expect url.contains("redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fcallback")
+    expect url.contains("scope=openid+email+profile")
+    expect url.contains("state=st-1")
+    expect url.contains("code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM")
+    expect url.contains("code_challenge_method=S256")
+}

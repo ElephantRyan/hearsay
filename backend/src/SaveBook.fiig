@@ -1,0 +1,16 @@
+use abs.recommendations.absclient as client
+
+// The cached copy of what ABS says about a book, refreshed on every rating
+// write so lists need no ABS call per card.
+gateway saveBook(book: client.Book, now: int) -> int
+    requires Database
+{
+    return Database.execute(
+        "INSERT INTO book (item_id, library_id, title, authors, fetched_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (item_id) DO UPDATE SET library_id = excluded.library_id, title = excluded.title, authors = excluded.authors, fetched_at = excluded.fetched_at",
+        book.itemId,
+        book.libraryId,
+        book.title,
+        book.authors,
+        now,
+    )
+}

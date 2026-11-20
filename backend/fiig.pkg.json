@@ -3,10 +3,6 @@
     "kind": "application",
     "version": "0.1.0",
     "dependencies": {
-        "abs.client": "0.1.0",
-        "abs.signin": "0.1.0",
-        "abs.signin.authentik": "0.1.0",
-        "abs.signin.password": "0.1.0",
         "fiig.http": "1.0.0"
     },
     "capabilities": [
@@ -15,8 +11,5 @@
     ],
     "nativeCapabilities": [
         "Database"
-    ],
-    "workspaces": [
-        ".."
     ]
 }

@@ -1,0 +1,25 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.signin
+use fiig.http
+
+// A reply to a call made with this server's own ABS token, not the person's.
+// A refusal here is a misconfigured server, not a wrong password, so it
+// must never read "wrong username or password".
+conversion serviceReply(answer: Result<http.Reply, client.AbsError>) -> Result<http.Reply, signin.SignInError> {
+    match answer {
+        Ok(reply) -> Ok(reply)
+        Err(error) -> Err(serviceFailure(error))
+    }
+}
+
+private {
+    serviceFailure(error: client.AbsError) -> signin.SignInError {
+        match error {
+            client.AbsError.Unauthorized -> signin.SignInError.Unavailable("this server's Audiobookshelf token was refused; tell the server's admin")
+            client.AbsError.NotFound -> signin.SignInError.Unavailable("Audiobookshelf has no user list at the expected address")
+            client.AbsError.Rejected(status) -> signin.SignInError.Unavailable("Audiobookshelf answered ${status}")
+            client.AbsError.Unreachable(failure) -> signin.SignInError.Unavailable("Audiobookshelf is unreachable")
+            client.AbsError.Unreadable(failure) -> signin.SignInError.Unavailable("Audiobookshelf's reply was unreadable")
+        }
+    }
+}

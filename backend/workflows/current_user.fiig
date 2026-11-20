@@ -1,5 +1,0 @@
-use abs.signin
-
-workflow whoAmI(session: string | None) -> Result<signin.Identity, ApiError> {
-    return currentUser(session)
-}

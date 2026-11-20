@@ -1,3 +1,0 @@
-conversion syncResultOf(plan: SyncPlan, action: string, error: string | None) -> SyncResult {
-    return SyncResult(userId: plan.userId, libraryId: plan.libraryId, action: action, books: plan.bookIds.length(), error: error)
-}

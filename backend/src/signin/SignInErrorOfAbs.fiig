@@ -1,0 +1,13 @@
+use abs.recommendations.absclient as client
+
+// A wrong password or an unknown user is the person's mistake; anything else
+// is ours or ABS's. Shared by every provider that talks to ABS.
+conversion signInErrorOfAbs(error: client.AbsError) -> SignInError {
+    match error {
+        client.AbsError.Unauthorized -> SignInError.Refused("wrong username or password")
+        client.AbsError.NotFound -> SignInError.Refused("wrong username or password")
+        client.AbsError.Unreachable(failure) -> SignInError.Unavailable("Audiobookshelf is unreachable")
+        client.AbsError.Rejected(status) -> SignInError.Unavailable("Audiobookshelf answered ${status}")
+        client.AbsError.Unreadable(failure) -> SignInError.Unavailable("Audiobookshelf's reply was unreadable")
+    }
+}

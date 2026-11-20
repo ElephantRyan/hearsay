@@ -1,0 +1,10 @@
+// Opens a session for a proven identity: a fresh 256-bit token (ADR 0068),
+// stored hashed, handed back once to become the cookie.
+use abs.recommendations.signin
+
+activity startSession(identity: signin.Identity) -> Session {
+    token = Random.bytes(count: 32).toBase64Url()
+    maxAge = Server.sessionMaxAge
+    saveSession(tokenHash(token), identity, Clock.now() + maxAge * 1000)
+    return Session(token: token, identity: identity, maxAge: maxAge)
+}

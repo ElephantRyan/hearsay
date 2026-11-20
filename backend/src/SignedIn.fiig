@@ -1,0 +1,13 @@
+// Answers with who the person is and sets the session cookie. Leaving out
+// every attribute but maxAge gives the secure ones: HttpOnly, Secure,
+// SameSite=Lax, Path=/, no Domain (ADR 0069 §4).
+use abs.recommendations.signin
+
+conversion signedIn(session: Session) -> HttpResponse<signin.Identity> {
+    return HttpResponse(
+        status: 200,
+        body: session.identity,
+        headers: ["Cache-Control": "no-store"],
+        cookies: [Cookie(name: "sid", value: session.token, maxAge: session.maxAge)],
+    )
+}

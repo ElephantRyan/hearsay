@@ -1,0 +1,5 @@
+use abs.recommendations.signin
+
+conversion unreadable(what: string) -> signin.SignInError {
+    return signin.SignInError.Unavailable("the ${what} could not be read")
+}

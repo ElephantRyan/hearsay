@@ -1,0 +1,24 @@
+use abs.recommendations.signin
+use abs.recommendations.signin.authentik.AuthentikSignIn
+
+test beginSignInIsOffInPasswordOnlyMode {
+    fake Server {
+        authMode: "abs"
+        sessionMaxAge: 3600
+        frontendUrl: "https://app.test"
+    }
+    fake AuthentikSignIn {
+        gateway beginUrl(state: string, codeVerifier: string) -> Result<string, signin.SignInError> {
+            expect false
+            return Err(signin.SignInError.WrongMethod)
+        }
+
+        gateway authenticate(attempt: signin.SignInAttempt) -> Result<signin.Identity, signin.SignInError> {
+            expect false
+            return Err(signin.SignInError.WrongMethod)
+        }
+    }
+
+    expect beginSignIn() is Err(ApiError.NotFound(what))
+    expect calls(AuthentikSignIn.beginUrl) == 0
+}

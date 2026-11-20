@@ -1,0 +1,14 @@
+// ADR 0043 §3: the application chooses which provider proves an attempt. A
+// rule may return a provider but never call one. A password attempt goes to
+// ABS's own login, a code from the redirect flow goes to Authentik. Which
+// routes exist at all is AUTH_MODE's business (M4), not this rule's.
+use abs.recommendations.signin
+use abs.recommendations.signin.authentik.AuthentikSignIn
+use abs.recommendations.signin.password.AbsPasswordSignIn
+
+rule signInProvider(attempt: signin.SignInAttempt) -> signin.SignIn {
+    match attempt {
+        signin.SignInAttempt.Password(username, password) -> AbsPasswordSignIn
+        signin.SignInAttempt.AuthorizationCode(code, codeVerifier) -> AuthentikSignIn
+    }
+}

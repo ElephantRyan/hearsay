@@ -1,0 +1,10 @@
+// M3's exit check: sign in, ask ABS who we are, and look up one book.
+use abs.recommendations.absclient as client
+use abs.recommendations.absclient.AbsApi
+
+activity checkAbs(username: string, password: string, itemId: string) -> Result<AbsCheck, client.AbsError> {
+    session = AbsApi.login(username, password)?
+    user = AbsApi.me(session.accessToken)?
+    book = AbsApi.item(session.accessToken, itemId)?
+    return Ok(AbsCheck(username: user.username, userType: user.type, title: book.title))
+}

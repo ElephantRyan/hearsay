@@ -1,6 +1,0 @@
-use abs.client
-use abs.signin
-
-conversion identityOfSession(session: client.AbsSession) -> signin.Identity {
-    return signin.Identity(userId: session.userId, username: session.username, userType: session.userType)
-}

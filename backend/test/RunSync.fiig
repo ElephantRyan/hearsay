@@ -1,0 +1,116 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.absclient.AbsApi
+use abs.recommendations.signin
+
+test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
+    fake Server {
+        sessionMaxAge: 3600
+        mirrorEnabled: true
+    }
+    fake AbsApi {
+        gateway itemAsService(itemId: string) -> Result<client.Book, client.AbsError> {
+            return Ok(client.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"))
+        }
+
+        gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+            expect name == "ann Recommends"
+            if calls(AbsApi.createCollectionAsService) == 1 {
+                expect bookIds == ["b", "a"]
+            } else {
+                expect bookIds == ["a"]
+            }
+            return Ok("col-${calls(AbsApi.createCollectionAsService)}")
+        }
+
+        gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+            if collectionId == "col-1" and bookIds.length() == 1 {
+                return Err(client.AbsError.NotFound)
+            }
+            return Ok(200)
+        }
+
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
+            return Ok(200)
+        }
+    }
+
+    ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    expect rateItem(ann, "a", RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
+    expect rateItem(ann, "b", RatingInput(score: 9, note: None, recommended: true)) is Ok(_)
+    expect runSync(ann, None, None) is Ok(preview)
+    expect preview.length() == 1
+    expect preview.at(0).action == "would-create"
+    expect preview.at(0).books == 2
+    expect calls(AbsApi.createCollectionAsService) == 0
+    expect allSyncStates().length() == 0
+    expect runSync(ann, None, false) is Ok(first)
+    expect first.at(0).action == "created"
+    expect allSyncStates().length() == 1
+    expect allSyncStates().at(0).collectionId == "col-1"
+    expect runSync(ann, None, false) is Ok(second)
+    expect second.at(0).action == "updated"
+    expect calls(AbsApi.createCollectionAsService) == 1
+    // someone deleted our collection in ABS: the update says 404, so it is made again
+    expect rateItem(ann, "b", RatingInput(score: 9, note: None, recommended: false)) is Ok(_)
+    expect runSync(ann, None, false) is Ok(recreated)
+    expect recreated.at(0).action == "created"
+    expect calls(AbsApi.createCollectionAsService) == 2
+    // nothing left to recommend: our collection is removed and forgotten
+    expect rateItem(ann, "a", RatingInput(score: 7, note: None, recommended: false)) is Ok(_)
+    expect runSync(ann, None, false) is Ok(removed)
+    expect removed.at(0).action == "removed"
+    expect allSyncStates().length() == 0
+    expect calls(AbsApi.deleteCollectionAsService) == 1
+}
+
+test syncIsOffByDefaultAndPrivateToTheirOwner {
+    fake Server {
+        sessionMaxAge: 3600
+        mirrorEnabled: false
+    }
+    fake AbsApi {
+        gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+            expect false
+            return Err(client.AbsError.NotFound)
+        }
+
+        gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+            expect false
+            return Err(client.AbsError.NotFound)
+        }
+
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
+            expect false
+            return Err(client.AbsError.NotFound)
+        }
+    }
+
+    ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    expect runSync(ann, None, false) is Err(ApiError.NotFound(what))
+    expect runSync(None, None, false) is Err(ApiError.Unauthenticated)
+}
+
+test aPersonCannotSyncSomeoneElsesList {
+    fake Server {
+        sessionMaxAge: 3600
+        mirrorEnabled: true
+    }
+    fake AbsApi {
+        gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+            expect false
+            return Err(client.AbsError.NotFound)
+        }
+
+        gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+            return Ok(200)
+        }
+
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
+            return Ok(200)
+        }
+    }
+
+    ann = startSession(signin.Identity(userId: "u1", username: "ann", userType: "user")).token
+    expect runSync(ann, "u2", false) is Err(ApiError.Refused(why))
+    expect calls(AbsApi.createCollectionAsService) == 0
+}

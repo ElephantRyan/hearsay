@@ -1,0 +1,10 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.signin
+
+conversion identityOfSession(session: client.AbsSession) -> signin.Identity {
+    return signin.Identity(
+        userId: session.userId,
+        username: session.username,
+        userType: session.userType,
+    )
+}
