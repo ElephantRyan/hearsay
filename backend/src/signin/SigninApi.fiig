@@ -6,8 +6,7 @@ adapter http signinApi {
     GET "/auth/modes" -> showSignInModes()
         produces "application/json"
     {
-        Ok(modes) -> 200 modes
-        Err(error) -> common.apiErrorResponse(error)
+        modes -> 200 modes
     }
     POST "/session" -> passwordSignIn(input: PasswordLogin)
         consumes "application/json"

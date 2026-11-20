@@ -1,5 +1,3 @@
-use abs.recommendations.common
-
-workflow healthCheck() -> Result<Health, common.ApiError> {
-    return Ok(checkHealth())
+workflow healthCheck() -> Health {
+    return checkHealth()
 }
