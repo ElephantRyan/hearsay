@@ -1,8 +1,0 @@
-use fiig.http
-
-conversion queryOf(fields: List<http.Header>) -> string {
-    match http.formEncode(fields).utf8() {
-        None -> ""
-        text -> text
-    }
-}

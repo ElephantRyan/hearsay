@@ -13,3 +13,11 @@ workflow syncCollections(session: string | None, userId: string | None, dryRun: 
     }
     return Ok(applyPlans(plans))
 }
+
+private {
+    // Anything but an explicit `dryRun=false` is a dry run: writing to ABS is
+    // something a caller must say out loud.
+    wantsDryRun(dryRun: bool | None) -> bool {
+        return dryRun or true
+    }
+}

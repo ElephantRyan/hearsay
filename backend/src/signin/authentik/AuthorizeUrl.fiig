@@ -8,3 +8,12 @@ conversion authorizeUrl(endpoint: string, clientId: string, redirectUri: string,
     )
     return "${endpoint}?${query}"
 }
+
+private {
+    queryOf(fields: List<http.Header>) -> string {
+        match http.formEncode(fields).utf8() {
+            None -> ""
+            text -> text
+        }
+    }
+}

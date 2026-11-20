@@ -1,7 +1,0 @@
-use abs.recommendations.common
-
-conversion apiErrorOfRating(error: RatingError) -> common.ApiError {
-    match error {
-        RatingError.Invalid(field, reason) -> common.ApiError.Invalid(field, reason)
-    }
-}

@@ -20,3 +20,11 @@ activity storeRating(found: UserAndBook, input: RatingInput) -> Result<Rating, c
         }
     }
 }
+
+private {
+    apiErrorOfRating(error: RatingError) -> common.ApiError {
+        match error {
+            RatingError.Invalid(field, reason) -> common.ApiError.Invalid(field, reason)
+        }
+    }
+}

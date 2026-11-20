@@ -13,3 +13,17 @@ conversion absReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Rep
         }
     }
 }
+
+private {
+    // What a non-200 reply from ABS means. 401 is a bad or expired token (or a
+    // wrong password at login); 404 is an item that isn't there.
+    absFailure(status: int) -> AbsError {
+        if status == 401 {
+            return AbsError.Unauthorized
+        }
+        if status == 404 {
+            return AbsError.NotFound
+        }
+        return AbsError.Rejected(status)
+    }
+}
