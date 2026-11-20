@@ -9,22 +9,6 @@ adapter http signinApi {
         Ok(modes) -> 200 modes
         Err(error) -> common.apiErrorResponse(error)
     }
-    GET "/auth/login" -> startOidc()
-        produces "application/json"
-    {
-        Ok(start) -> redirectToIdp(start)
-        Err(error) -> common.apiErrorResponse(error)
-    }
-    GET "/auth/callback?code={code}&state={state}&error={error}" -> finishOidc(
-        code: string | None,
-        state: string | None,
-        error: string | None,
-        pending: string | None from cookie "oidc",
-    )
-        produces "application/json"
-    {
-        landing -> landed(landing)
-    }
     POST "/session" -> passwordSignIn(input: PasswordLogin)
         consumes "application/json"
         produces "application/json"

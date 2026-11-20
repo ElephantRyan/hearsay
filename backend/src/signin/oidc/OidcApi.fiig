@@ -1,0 +1,21 @@
+use abs.recommendations.common
+
+// The OIDC sign-in routes: off to the identity provider, and back.
+adapter http oidcApi {
+    GET "/auth/login" -> startOidc()
+        produces "application/json"
+    {
+        Ok(start) -> redirectToIdp(start)
+        Err(error) -> common.apiErrorResponse(error)
+    }
+    GET "/auth/callback?code={code}&state={state}&error={error}" -> finishOidc(
+        code: string | None,
+        state: string | None,
+        error: string | None,
+        pending: string | None from cookie "oidc",
+    )
+        produces "application/json"
+    {
+        landing -> landed(landing)
+    }
+}

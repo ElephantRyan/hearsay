@@ -1,6 +1,7 @@
 use abs.recommendations.accounts
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
+use abs.recommendations.signin.SignInConfig
 use abs.recommendations.signin.authentik.AuthentikSignIn
 use abs.recommendations.signin.password.AbsPasswordSignIn
 

@@ -1,8 +1,9 @@
 use abs.recommendations.common
+use abs.recommendations.signin
 
 // Authentik sign-in exists unless the server is password-only.
 workflow startOidc() -> Result<OidcStart, common.ApiError> {
-    modes = loadSignInModes()
+    modes = signin.loadSignInModes()
     if not modes.oidc {
         return Err(common.ApiError.NotFound("Authentik sign-in on this server"))
     }
