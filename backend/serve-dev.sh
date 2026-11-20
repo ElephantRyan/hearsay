@@ -1,10 +1,7 @@
 #!/bin/sh
-# Local development server. Placeholders stand in for OIDC settings until the
-# Authentik application exists; real values in .env win over them.
+# Local development server. The OIDC_* settings are needed only when AUTH_MODE
+# isn't `abs`; until the Authentik application exists, set AUTH_MODE=abs in .env.
 F="${FIIG:-fiig}"
-export OIDC_ISSUER="${OIDC_ISSUER:-https://authentik.example.com/application/o/audiobookshelf/}"
-export OIDC_CLIENT_ID="${OIDC_CLIENT_ID:-placeholder}"
-export OIDC_CLIENT_SECRET="${OIDC_CLIENT_SECRET:-placeholder}"
 export ABS_SERVICE_TOKEN="${ABS_SERVICE_TOKEN:-placeholder}"
 # One adapter per domain (src/<domain>/<Domain>Api.fiig), served together.
 A=abs.recommendations

@@ -1,3 +1,5 @@
+use abs.recommendations.accounts.SignInConfig
+
 test signInModesFollowAuthMode {
     fake SignInConfig {
         authMode: "oidc"
