@@ -1,6 +1,7 @@
 {
     "path": "hearsay",
     "kind": "application",
+    "formerly": ["abs.recommendations"],
     "version": "0.1.0",
     "dependencies": {
         "fiig.http": "1.0.0"
