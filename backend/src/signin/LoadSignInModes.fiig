@@ -1,6 +1,19 @@
-use abs.recommendations.accounts.SignInConfig
+use abs.recommendations.settings
 
+// Which ways in the server offers. Authentik needs its whole application set;
+// until it is, password sign-in stays on even in `oidc` mode, so a half-finished
+// switch never locks everyone out.
 activity loadSignInModes() -> SignInModes {
-    mode = SignInConfig.authMode
-    return SignInModes(password: mode != "oidc", oidc: mode != "abs")
+    mode = settings.authMode()
+    if mode == "abs" {
+        return SignInModes(password: true, oidc: false)
+    }
+    match settings.oidcSettingsOf() {
+        None -> {
+            return SignInModes(password: true, oidc: false)
+        }
+        ready -> {
+            return SignInModes(password: mode != "oidc", oidc: true)
+        }
+    }
 }

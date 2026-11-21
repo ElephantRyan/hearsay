@@ -1,5 +1,5 @@
 import { CircleAlert, CircleCheck, CircleDashed, RefreshCw } from "lucide-react";
-import { type FormEvent, type ReactNode, useId, useState } from "react";
+import { type ReactNode, useId, useState } from "react";
 import {
   isAdmin,
   useAdminSettings,
@@ -7,17 +7,9 @@ import {
   useLibraries,
   useMe,
   useRecommenders,
-  useResetSetting,
-  useSaveSettings,
   useSyncCollections,
 } from "../../api/hooks";
-import type {
-  AdminSettings,
-  SettingName,
-  SettingsChange,
-  SettingValue,
-  SyncResult,
-} from "../../api/types";
+import type { SyncResult } from "../../api/types";
 import {
   EmptyState,
   ErrorState,
@@ -25,6 +17,7 @@ import {
   messageFor,
 } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
+import { SettingsForm } from "./SettingsForm";
 
 /**
  * The admin screen: whether Audiobookshelf answers, the settings this server runs with, and
@@ -43,6 +36,7 @@ export function AdminPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Settings</h1>
+      <NextStep />
       <StatusCard />
       <SettingsCard />
       <CollectionsCard />
@@ -77,11 +71,32 @@ function Card({
   );
 }
 
+const authentikWords: Record<string, string> = {
+  answering: "Answering",
+  "not answering": "Not answering",
+  "not set up": "Not set up",
+};
+
 const absWords: Record<string, string> = {
   reachable: "Answering",
   unreachable: "Not answering",
   "not set up": "No address set",
 };
+
+/** On a new server: what is left after the first-run setup. */
+function NextStep() {
+  const settings = useAdminSettings();
+  if (settings.data?.serviceToken.source !== "unset") return null;
+  return (
+    <p
+      role="status"
+      className="rounded-card border border-accent/40 bg-accent-soft p-4 text-sm text-accent"
+    >
+      Almost done: paste an Audiobookshelf admin's API token below, then save. Until then the app
+      can sign people in but can't show books.
+    </p>
+  );
+}
 
 function StatusCard() {
   const status = useAdminStatus();
@@ -123,6 +138,15 @@ function StatusCard() {
                 : status.data.problem}
             </span>
           </dd>
+          <dt className="text-muted">Authentik</dt>
+          <dd className="flex items-center gap-1.5">
+            {status.data.authentik === "not set up" ? (
+              <CircleDashed aria-hidden="true" className="h-4 w-4 shrink-0 text-muted" />
+            ) : (
+              <StatusIcon good={status.data.authentik === "answering"} />
+            )}
+            {authentikWords[status.data.authentik] ?? status.data.authentik}
+          </dd>
         </dl>
       )}
       {status.data?.serviceAccount && !isAdmin(status.data.serviceAccountType ?? undefined) && (
@@ -152,159 +176,6 @@ function SettingsCard() {
       {settings.isError && <ErrorState error={settings.error} onRetry={() => settings.refetch()} />}
       {settings.data && <SettingsForm settings={settings.data} />}
     </Card>
-  );
-}
-
-/** Saves only what changed. The token is never shown, so its box starts empty. */
-function SettingsForm({ settings }: { settings: AdminSettings }) {
-  const save = useSaveSettings();
-  const urlId = useId();
-  const tokenId = useId();
-  const mirrorId = useId();
-  const [url, setUrl] = useState(settings.absUrl.value ?? "");
-  const [token, setToken] = useState("");
-  const [mirror, setMirror] = useState(settings.mirrorEnabled.value === "true");
-  const [notice, setNotice] = useState<string | null>(null);
-
-  function changes(): SettingsChange {
-    const change: SettingsChange = {};
-    if (url.trim() !== (settings.absUrl.value ?? "")) change.absUrl = url;
-    if (token.trim() !== "") change.serviceToken = token;
-    if (mirror !== (settings.mirrorEnabled.value === "true")) change.mirrorEnabled = mirror;
-    return change;
-  }
-
-  function onSubmit(event: FormEvent) {
-    event.preventDefault();
-    const change = changes();
-    if (Object.keys(change).length === 0) {
-      setNotice("Nothing has changed.");
-      return;
-    }
-    setNotice(null);
-    save.mutate(change, {
-      onSuccess: (saved) => {
-        setUrl(saved.absUrl.value ?? "");
-        setToken("");
-        setNotice("Saved.");
-      },
-    });
-  }
-
-  return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
-      <div>
-        <label htmlFor={urlId} className="mb-1 block text-sm font-medium">
-          Audiobookshelf address
-        </label>
-        <input
-          id={urlId}
-          type="url"
-          inputMode="url"
-          autoComplete="off"
-          placeholder="https://audiobooks.example.com"
-          value={url}
-          onChange={(event) => setUrl(event.target.value)}
-          className="min-h-11 w-full rounded-lg border border-border bg-surface px-3"
-        />
-        <Source name="absUrl" setting={settings.absUrl} variable="ABS_URL" />
-      </div>
-
-      <div>
-        <label htmlFor={tokenId} className="mb-1 block text-sm font-medium">
-          Audiobookshelf token
-        </label>
-        <input
-          id={tokenId}
-          type="password"
-          autoComplete="off"
-          placeholder={
-            settings.serviceToken.source === "unset" ? "Paste a token" : "Leave empty to keep it"
-          }
-          value={token}
-          onChange={(event) => setToken(event.target.value)}
-          className="min-h-11 w-full rounded-lg border border-border bg-surface px-3"
-        />
-        <p className="mt-1 text-xs text-muted">
-          An API token of an Audiobookshelf admin account. The app uses it to look up books, read
-          listening progress, and write collections. It is never shown again once saved.
-        </p>
-        <Source name="serviceToken" setting={settings.serviceToken} variable="ABS_SERVICE_TOKEN" />
-      </div>
-
-      <div>
-        <div className="flex items-start gap-3">
-          <input
-            id={mirrorId}
-            type="checkbox"
-            checked={mirror}
-            onChange={(event) => setMirror(event.target.checked)}
-            className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]"
-          />
-          <label htmlFor={mirrorId} className="text-sm">
-            <span className="font-medium">
-              Write recommendation collections into Audiobookshelf
-            </span>
-            <span className="block text-muted">
-              Each person's recommended books become a collection there. The app only ever creates,
-              changes and removes its own collections.
-            </span>
-          </label>
-        </div>
-        <Source name="mirrorEnabled" setting={settings.mirrorEnabled} variable="MIRROR_ENABLED" />
-      </div>
-
-      {save.isError && (
-        <p role="alert" className="text-sm text-danger">
-          {messageFor(save.error)}
-        </p>
-      )}
-      {notice && (
-        <p role="status" className="text-sm text-muted">
-          {notice}
-        </p>
-      )}
-      <Button type="submit" className="w-full sm:w-auto" disabled={save.isPending}>
-        {save.isPending ? "Saving…" : "Save settings"}
-      </Button>
-    </form>
-  );
-}
-
-/** Where a setting's value comes from, with a way back to the environment's. */
-function Source({
-  name,
-  setting,
-  variable,
-}: {
-  name: SettingName;
-  setting: SettingValue;
-  variable: string;
-}) {
-  const reset = useResetSetting();
-  return (
-    <div className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-muted">
-      {setting.source === "saved" && (
-        <>
-          <span>Saved in this app.</span>
-          <button
-            type="button"
-            onClick={() => reset.mutate(name)}
-            disabled={reset.isPending}
-            className="min-h-11 underline hover:text-text sm:min-h-0"
-          >
-            Use {variable} instead
-          </button>
-        </>
-      )}
-      {setting.source === "environment" && <span>From {variable} on the server.</span>}
-      {setting.source === "unset" && <span>Not set.</span>}
-      {reset.isError && (
-        <span role="alert" className="text-danger">
-          {messageFor(reset.error)}
-        </span>
-      )}
-    </div>
   );
 }
 

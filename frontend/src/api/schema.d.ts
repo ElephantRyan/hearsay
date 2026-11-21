@@ -292,6 +292,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["showSetup"];
+        put?: never;
+        post: operations["runSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sync": {
         parameters: {
             query?: never;
@@ -339,7 +355,31 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
+                        authMode: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        frontendUrl: {
+                            source: string;
+                            value?: string | null;
+                        };
                         mirrorEnabled: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcClientId: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcClientSecret: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcIssuer: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcRedirectUri: {
                             source: string;
                             value?: string | null;
                         };
@@ -403,7 +443,13 @@ export interface operations {
             content: {
                 "application/json": {
                     absUrl?: string | null;
+                    authMode?: string | null;
+                    frontendUrl?: string | null;
                     mirrorEnabled?: boolean | null;
+                    oidcClientId?: string | null;
+                    oidcClientSecret?: string | null;
+                    oidcIssuer?: string | null;
+                    oidcRedirectUri?: string | null;
                     serviceToken?: string | null;
                 };
             };
@@ -419,7 +465,31 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
+                        authMode: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        frontendUrl: {
+                            source: string;
+                            value?: string | null;
+                        };
                         mirrorEnabled: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcClientId: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcClientSecret: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcIssuer: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcRedirectUri: {
                             source: string;
                             value?: string | null;
                         };
@@ -493,7 +563,31 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
+                        authMode: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        frontendUrl: {
+                            source: string;
+                            value?: string | null;
+                        };
                         mirrorEnabled: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcClientId: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcClientSecret: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcIssuer: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        oidcRedirectUri: {
                             source: string;
                             value?: string | null;
                         };
@@ -562,6 +656,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         abs: string;
+                        authentik: string;
                         problem?: string | null;
                         serviceAccount?: string | null;
                         serviceAccountType?: string | null;
@@ -1592,6 +1687,98 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    showSetup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        needed: boolean;
+                    };
+                };
+            };
+        };
+    };
+    runSetup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    absUrl: string;
+                    password: string;
+                    username: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        userId: string;
+                        userType: string;
+                        username: string;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
             };
         };
     };

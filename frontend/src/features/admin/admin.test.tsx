@@ -18,6 +18,12 @@ function settingsOf(mirror: "true" | "false", source = "environment"): AdminSett
     absUrl: { value: "https://abs.home.test", source },
     serviceToken: { value: null, source: "saved" },
     mirrorEnabled: { value: mirror, source: "environment" },
+    authMode: { value: "abs", source: "environment" },
+    frontendUrl: { value: "http://localhost:3000", source: "environment" },
+    oidcIssuer: { value: null, source: "unset" },
+    oidcClientId: { value: null, source: "unset" },
+    oidcClientSecret: { value: null, source: "unset" },
+    oidcRedirectUri: { value: null, source: "unset" },
   };
 }
 
@@ -33,6 +39,7 @@ function serve(settings: AdminSettings) {
         abs: "reachable",
         serviceAccount: "recommendation-bot",
         serviceAccountType: "admin",
+        authentik: "not set up",
         problem: null,
       }),
     ),
@@ -152,5 +159,38 @@ describe("the admin screen", () => {
 
     expect(await screen.findByText(/Writing collections is off/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Sync now" })).not.toBeInTheDocument();
+  });
+
+  it("switches sign-in to Authentik with everything it needs, in one save", async () => {
+    const sent = serve(settingsOf("false"));
+    mount("/admin");
+
+    await userEvent.type(
+      await screen.findByLabelText("Issuer"),
+      "https://auth.test/application/o/recommends/",
+    );
+    await userEvent.type(screen.getByLabelText("Client ID"), "cid");
+    await userEvent.type(screen.getByLabelText("Client secret"), "csec");
+    await userEvent.click(
+      screen.getByRole("button", { name: `Use ${window.location.origin}/api/auth/callback` }),
+    );
+    await userEvent.click(screen.getByRole("radio", { name: "Authentik only" }));
+    await userEvent.click(screen.getByRole("button", { name: "Save settings" }));
+
+    expect(await screen.findByText("Saved.")).toBeInTheDocument();
+    expect(sent).toEqual([
+      {
+        method: "PUT",
+        path: "/admin/settings",
+        body: {
+          oidcIssuer: "https://auth.test/application/o/recommends/",
+          oidcClientId: "cid",
+          oidcRedirectUri: `${window.location.origin}/api/auth/callback`,
+          oidcClientSecret: "csec",
+          authMode: "oidc",
+        },
+      },
+    ]);
+    expect(screen.getByLabelText("Client secret")).toHaveValue("");
   });
 });

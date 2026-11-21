@@ -4,7 +4,10 @@ use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
 use abs.recommendations.settings
 use abs.recommendations.settings.Abs
+use abs.recommendations.settings.Oidc
+use abs.recommendations.settings.SignInConfig
 use abs.recommendations.settings.SyncConfig
+use abs.recommendations.signin
 
 test onlyAnAdminSeesOrChangesSettings {
     fake SessionConfig {
@@ -23,6 +26,15 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+    fake SignInConfig {
+        authMode: "abs"
+        frontendUrl: "https://app.test"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
     fake Abs {
         url: "https://from-env.test"
     }
@@ -32,6 +44,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
 
     // A saved token first: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
+    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     root = sessions.startSession(accounts.Identity(userId: "r1", username: "owner", userType: "root")).token
     expect showSettings(root) is Ok(before)
     expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
@@ -56,6 +69,15 @@ test aBadChangeSavesNothing {
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+    fake SignInConfig {
+        authMode: "abs"
+        frontendUrl: "https://app.test"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
     fake Abs {
         url: "https://from-env.test"
     }
@@ -64,6 +86,7 @@ test aBadChangeSavesNothing {
     }
 
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
+    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
     expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(common.ApiError.Invalid(field, _))
     expect field == "absUrl"
@@ -73,4 +96,76 @@ test aBadChangeSavesNothing {
     expect view.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
     expect settings.loadAbsTarget() is Ok(target)
     expect target.token.matches("old-token")
+}
+
+test switchingToAuthentikTurnsPasswordSignInOff {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake SignInConfig {
+        authMode: "abs"
+        frontendUrl: "https://app.test"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake SyncConfig {
+        mirrorEnabled: false
+    }
+
+    settings.rememberSetting("abs.serviceToken", "old-token", "test")
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
+
+    change = settings.SettingsChange(authMode: "oidc", oidcClientSecret: "new-secret", oidcRedirectUri: "https://app.home.test/api/auth/callback/")
+    expect changeSettings(admin, change) is Ok(view)
+    expect view.authMode == settings.SettingValue(value: "oidc", source: "saved")
+    expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved")
+    expect view.oidcRedirectUri == settings.SettingValue(value: "https://app.home.test/api/auth/callback", source: "saved")
+    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
+    expect settings.loadAbsTarget() is Ok(_)
+
+    expect changeSettings(admin, settings.SettingsChange(authMode: "everyone")) is Err(common.ApiError.Invalid(field, _))
+    expect field == "authMode"
+    expect resetSetting(admin, "authMode") is Ok(back)
+    expect back.authMode == settings.SettingValue(value: "abs", source: "environment")
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
+}
+
+test authentikOnlyWaitsForEveryAuthentikSetting {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake SignInConfig {
+        authMode: "oidc"
+        frontendUrl: "https://app.test"
+    }
+    fake Oidc {
+        issuer: None
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake SyncConfig {
+        mirrorEnabled: false
+    }
+
+    // AUTH_MODE=oidc with no issuer: password sign-in stays on rather than lock everyone out.
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
+    settings.rememberSetting("oidc.clientSecret", "csec", "test")
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
+
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
+    expect changeSettings(admin, settings.SettingsChange(authMode: "oidc")) is Err(common.ApiError.Invalid(field, _))
+    expect field == "authMode"
+    expect changeSettings(admin, settings.SettingsChange(authMode: "oidc", oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view)
+    expect view.authMode.value == "oidc"
+    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
 }

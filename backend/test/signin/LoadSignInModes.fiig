@@ -1,10 +1,18 @@
-use abs.recommendations.accounts.SignInConfig
+use abs.recommendations.settings.SignInConfig
+use abs.recommendations.settings
+use abs.recommendations.settings.Oidc
 
 test signInModesFollowAuthMode {
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
     fake SignInConfig {
         authMode: "oidc"
         frontendUrl: "x"
     }
 
+    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     expect loadSignInModes() == SignInModes(password: false, oidc: true)
 }

@@ -5,4 +5,10 @@ model SettingsChange {
     absUrl: string | None
     serviceToken: string | None
     mirrorEnabled: bool | None
+    authMode: string | None
+    frontendUrl: string | None
+    oidcIssuer: string | None
+    oidcClientId: string | None
+    oidcClientSecret: string | None
+    oidcRedirectUri: string | None
 }

@@ -1,0 +1,19 @@
+use abs.recommendations.common
+use abs.recommendations.signin
+
+// The first-run routes: whether setup is needed, and doing it. serve-dev.sh
+// serves every domain's adapter together.
+adapter http setupApi {
+    GET "/setup" -> showSetup()
+        produces "application/json"
+    {
+        state -> 200 state
+    }
+    POST "/setup" -> runSetup(input: SetupInput)
+        consumes "application/json"
+        produces "application/json"
+    {
+        Ok(session) -> signin.signedIn(session)
+        Err(error) -> common.apiErrorResponse(error)
+    }
+}

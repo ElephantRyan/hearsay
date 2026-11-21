@@ -1,0 +1,7 @@
+// The body of POST /setup: where Audiobookshelf is, and an admin's login there.
+// The password goes to ABS's /login and is dropped, as at sign-in.
+model SetupInput {
+    absUrl: string
+    username: string
+    password: string
+}

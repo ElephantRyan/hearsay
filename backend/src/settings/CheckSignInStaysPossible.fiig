@@ -1,0 +1,33 @@
+use abs.recommendations.common
+
+// Authentik-only sign-in can't be chosen until every Authentik setting is there,
+// counting the change itself: otherwise nobody could sign in to finish it.
+activity checkSignInStaysPossible(change: SettingsChange) -> Result<int, common.ApiError> {
+    mode = change.authMode or authMode()
+    if mode != "oidc" {
+        return Ok(0)
+    }
+    issuer = change.oidcIssuer or storedText("oidc.issuer") or Oidc.issuer
+    clientId = change.oidcClientId or storedText("oidc.clientId") or Oidc.clientId
+    redirectUri = change.oidcRedirectUri or storedText("oidc.redirectUri") or Oidc.redirectUri
+    if issuer == None or clientId == None or redirectUri == None or not secretThere(change) {
+        return Err(common.ApiError.Invalid("authMode", "can be Authentik only once every Authentik setting is filled in"))
+    }
+    return Ok(0)
+}
+
+private {
+    secretThere(change: SettingsChange) -> bool {
+        if change.oidcClientSecret != None {
+            return true
+        }
+        match storedSecret("oidc.clientSecret") or Oidc.clientSecret {
+            None -> {
+                return false
+            }
+            given -> {
+                return true
+            }
+        }
+    }
+}

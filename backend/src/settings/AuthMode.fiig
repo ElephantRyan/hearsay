@@ -1,0 +1,4 @@
+// `abs`, `oidc` or `both`: the admin's saved choice, or else AUTH_MODE.
+activity authMode() -> string {
+    return storedText("signin.authMode") or SignInConfig.authMode
+}

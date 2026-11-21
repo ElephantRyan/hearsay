@@ -7,6 +7,8 @@ use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
 use abs.recommendations.settings
 use abs.recommendations.settings.Abs
+use abs.recommendations.settings.Oidc
+use abs.recommendations.signin.authentik.AuthentikSignIn
 
 test statusSaysWhoTheTokenBelongsTo {
     fake SessionConfig {
@@ -14,6 +16,17 @@ test statusSaysWhoTheTokenBelongsTo {
     }
     fake Abs {
         url: "https://abs.test"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
+    fake AuthentikSignIn {
+        gateway discover(oidc: accounts.OidcSettings) -> Result<int, accounts.SignInError> {
+            expect oidc.clientId == "cid"
+            return Ok(200)
+        }
     }
     fake AbsServer {
         gateway status(url: string) -> Result<int, client.AbsError> {
@@ -32,9 +45,10 @@ test statusSaysWhoTheTokenBelongsTo {
 
     // "No token set" can't be tested: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
+    settings.rememberSetting("oidc.clientSecret", "csec", "a1")
     settings.rememberSetting("abs.serviceToken", "good", "a1")
     expect showStatus(admin) is Ok(good)
-    expect good == AdminStatus(abs: "reachable", serviceAccount: "recommendation-bot", serviceAccountType: "admin", problem: None)
+    expect good == AdminStatus(abs: "reachable", authentik: "answering", serviceAccount: "recommendation-bot", serviceAccountType: "admin", problem: None)
 
     settings.rememberSetting("abs.serviceToken", "stale", "a1")
     expect showStatus(admin) is Ok(refused)

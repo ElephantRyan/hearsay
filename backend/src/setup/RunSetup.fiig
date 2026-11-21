@@ -1,0 +1,19 @@
+use abs.recommendations.common
+use abs.recommendations.sessions
+use abs.recommendations.settings
+
+// POST /setup: only while the server has no Audiobookshelf address. The address
+// is checked like the admin screen's, the login must be an ABS admin's, and
+// that admin is signed in, ready to finish on the admin screen.
+workflow runSetup(input: SetupInput) -> Result<sessions.Session, common.ApiError> {
+    checked = settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl))?
+    match checked.absUrl {
+        None -> {
+            return Err(common.ApiError.Invalid("absUrl", "is missing"))
+        }
+        url -> {
+            identity = claimServer(url, input.username, input.password)?
+            return Ok(sessions.startSession(identity))
+        }
+    }
+}

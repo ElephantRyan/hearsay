@@ -1,15 +1,21 @@
 use abs.recommendations.accounts
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
-use abs.recommendations.accounts.SignInConfig
+use abs.recommendations.settings.SignInConfig
 use abs.recommendations.signin.authentik.AuthentikSignIn
 use abs.recommendations.signin.password.AbsPasswordSignIn
 use abs.recommendations.settings
 use abs.recommendations.settings.Abs
+use abs.recommendations.settings.Oidc
 
 // The callback only exchanges the code when the state matches the cookie.
 // Authentik is faked; a call to it from a mismatched callback fails the test.
 test oidcCallbackChecksStateBeforeExchanging {
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -27,7 +33,7 @@ test oidcCallbackChecksStateBeforeExchanging {
         }
     }
     fake AuthentikSignIn {
-        gateway beginUrl(state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
             return Ok("https://idp.test/authorize?state=${state}")
         }
 
@@ -47,6 +53,7 @@ test oidcCallbackChecksStateBeforeExchanging {
         }
     }
 
+    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     good = finishSignIn("code-1", "st-1", None, "st-1.ver-1")
     expect good.location == "https://app.test"
@@ -86,7 +93,7 @@ test finishSignInIsOffInPasswordOnlyMode {
         }
     }
     fake AuthentikSignIn {
-        gateway beginUrl(state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
             expect false
             return Err(accounts.SignInError.WrongMethod)
         }

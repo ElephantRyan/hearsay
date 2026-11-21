@@ -11,7 +11,7 @@ activity signIn(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, ac
         }
         url -> {
             Provider = signInProvider(attempt)
-            return Provider.authenticate(attempt, accounts.SignInServer(absUrl: url, serviceToken: settings.serviceToken()))
+            return Provider.authenticate(attempt, accounts.SignInServer(absUrl: url, serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf()))
         }
     }
 }

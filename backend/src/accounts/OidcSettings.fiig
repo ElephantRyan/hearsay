@@ -1,0 +1,7 @@
+// A complete Authentik application, loaded from settings by the caller.
+model OidcSettings {
+    issuer: string
+    clientId: string
+    clientSecret: Secret
+    redirectUri: string
+}

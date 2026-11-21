@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Navigate, useNavigate, useSearch } from "@tanstack/react-router";
 import { KeyRound } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ApiError } from "../../api/errors";
-import { usePasswordSignIn, useSignInModes } from "../../api/hooks";
+import { usePasswordSignIn, useSetupState, useSignInModes } from "../../api/hooks";
 import { ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
 import { safeRedirect } from "../../lib/safeRedirect";
@@ -32,6 +32,7 @@ export function SignInPage() {
   const { redirect, error } = useSearch({ from: "/sign-in" });
   const navigate = useNavigate();
   const modes = useSignInModes();
+  const setup = useSetupState();
   const signIn = usePasswordSignIn();
   const {
     register,
@@ -51,6 +52,9 @@ export function SignInPage() {
       : signIn.error
         ? "Couldn't reach the server to sign you in. Try again in a moment."
         : undefined;
+
+  // A new server can't sign anyone in until it knows its Audiobookshelf.
+  if (setup.data?.needed) return <Navigate to="/setup" replace />;
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-4 py-10">

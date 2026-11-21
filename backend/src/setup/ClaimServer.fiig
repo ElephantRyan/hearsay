@@ -1,0 +1,34 @@
+// The first run: proves the person is an admin of the Audiobookshelf at that
+// address, then saves the address. Nothing is saved for anyone else.
+use abs.recommendations.absclient as client
+use abs.recommendations.absclient.members.AbsMembers
+use abs.recommendations.accounts
+use abs.recommendations.common
+use abs.recommendations.settings
+use abs.recommendations.signin.password as passwordSignIn
+
+activity claimServer(url: string, username: string, password: string) -> Result<accounts.Identity, common.ApiError> {
+    if settings.absUrl() != None {
+        return Err(common.ApiError.Refused("this server is already set up; sign in instead"))
+    }
+    session = mapErr(e in AbsMembers.login(url, username, password)): setupErrorOfAbs(e)?
+    identity = passwordSignIn.identityOfSession(session)
+    if identity.userType != "admin" and identity.userType != "root" {
+        return Err(common.ApiError.Refused("only an Audiobookshelf admin can set up this server"))
+    }
+    settings.rememberSetting("abs.url", url, identity.userId)
+    return Ok(identity)
+}
+
+private {
+    // What went wrong, in words for the setup page. Never a password or a body.
+    setupErrorOfAbs(error: client.AbsError) -> common.ApiError {
+        match error {
+            client.AbsError.Unauthorized -> common.ApiError.Refused("that username or password wasn't right")
+            client.AbsError.NotFound -> common.ApiError.Invalid("absUrl", "doesn't look like an Audiobookshelf server")
+            client.AbsError.Rejected(status) -> common.ApiError.Invalid("absUrl", "answered ${status}")
+            client.AbsError.Unreachable(failure) -> common.ApiError.Invalid("absUrl", "didn't answer")
+            client.AbsError.Unreadable(failure) -> common.ApiError.Invalid("absUrl", "doesn't look like an Audiobookshelf server")
+        }
+    }
+}

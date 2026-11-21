@@ -17,4 +17,5 @@ export const keys = {
   listening: ["listening"] as const,
   adminSettings: ["admin", "settings"] as const,
   adminStatus: ["admin", "status"] as const,
+  setup: ["setup"] as const,
 };

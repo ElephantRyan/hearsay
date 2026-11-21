@@ -3,10 +3,16 @@ use abs.recommendations.signin.authentik.AuthentikSignIn
 use abs.recommendations.signin.password.AbsPasswordSignIn
 use abs.recommendations.settings
 use abs.recommendations.settings.Abs
+use abs.recommendations.settings.Oidc
 
 // signInProvider can return either provider, so both are faked (ADR 0091 §4);
 // the one the attempt should not reach fails the test if it is called.
 test signInUsesTheChosenProvider {
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        redirectUri: "https://app.test/api/auth/callback"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -16,7 +22,7 @@ test signInUsesTheChosenProvider {
         }
     }
     fake AuthentikSignIn {
-        gateway beginUrl(state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
             return Ok("https://idp.test/")
         }
 
@@ -25,6 +31,7 @@ test signInUsesTheChosenProvider {
         }
     }
 
+    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect signIn(accounts.SignInAttempt.Password("ryan", "pw")) is Ok(byPassword)
     expect byPassword.userId == "u-pw"

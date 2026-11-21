@@ -1,0 +1,6 @@
+use abs.recommendations.settings
+
+// GET /setup. Public: the sign-in page asks it before anyone can sign in.
+workflow showSetup() -> SetupState {
+    return SetupState(needed: settings.absUrl() == None)
+}

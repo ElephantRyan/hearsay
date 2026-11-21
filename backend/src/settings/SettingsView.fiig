@@ -3,4 +3,10 @@ model SettingsView {
     absUrl: SettingValue
     serviceToken: SettingValue
     mirrorEnabled: SettingValue
+    authMode: SettingValue
+    frontendUrl: SettingValue
+    oidcIssuer: SettingValue
+    oidcClientId: SettingValue
+    oidcClientSecret: SettingValue
+    oidcRedirectUri: SettingValue
 }

@@ -2,43 +2,75 @@ use abs.recommendations.absclient as client
 use abs.recommendations.absclient.AbsServer
 use abs.recommendations.absclient.members.AbsMembers
 use abs.recommendations.settings
+use abs.recommendations.signin.authentik.AuthentikSignIn
 
-// Is Audiobookshelf there, and does this server's token work? Asks ABS each time.
+// Is Audiobookshelf there, does this server's token work, and does Authentik
+// answer? Asks each of them every time.
 activity loadStatus() -> AdminStatus {
-    match settings.absUrl() {
-        None -> {
-            return AdminStatus(abs: "not set up", serviceAccount: None, serviceAccountType: None, problem: "No Audiobookshelf address is set.")
-        }
-        url -> {
-            match AbsServer.status(url) {
-                Err(_) -> {
-                    return AdminStatus(abs: "unreachable", serviceAccount: None, serviceAccountType: None, problem: "Audiobookshelf didn't answer at that address.")
-                }
-                Ok(_) -> {
-                    return withAccount(url)
+    return withAuthentik(absStatus(), authentikStatus())
+}
+
+private {
+    absStatus() -> AdminStatus {
+        match settings.absUrl() {
+            None -> {
+                return status("not set up", None, None, "No Audiobookshelf address is set.")
+            }
+            url -> {
+                match AbsServer.status(url) {
+                    Err(_) -> {
+                        return status("unreachable", None, None, "Audiobookshelf didn't answer at that address.")
+                    }
+                    Ok(_) -> {
+                        return withAccount(url)
+                    }
                 }
             }
         }
     }
-}
 
-private {
     withAccount(url: string) -> AdminStatus {
         match settings.serviceToken() {
             None -> {
-                return AdminStatus(abs: "reachable", serviceAccount: None, serviceAccountType: None, problem: "No Audiobookshelf token is set.")
+                return status("reachable", None, None, "No Audiobookshelf token is set.")
             }
             token -> {
                 match AbsMembers.meAsService(client.AbsTarget(url: url, token: token)) {
                     Ok(user) -> {
-                        return AdminStatus(abs: "reachable", serviceAccount: user.username, serviceAccountType: user.type, problem: None)
+                        return status("reachable", user.username, user.type, None)
                     }
                     Err(error) -> {
-                        return AdminStatus(abs: "reachable", serviceAccount: None, serviceAccountType: None, problem: tokenProblem(error))
+                        return status("reachable", None, None, tokenProblem(error))
                     }
                 }
             }
         }
+    }
+
+    authentikStatus() -> string {
+        match settings.oidcSettingsOf() {
+            None -> {
+                return "not set up"
+            }
+            oidc -> {
+                match AuthentikSignIn.discover(oidc) {
+                    Ok(_) -> {
+                        return "answering"
+                    }
+                    Err(_) -> {
+                        return "not answering"
+                    }
+                }
+            }
+        }
+    }
+
+    status(abs: string, account: string | None, accountType: string | None, problem: string | None) -> AdminStatus {
+        return AdminStatus(abs: abs, authentik: "not set up", serviceAccount: account, serviceAccountType: accountType, problem: problem)
+    }
+
+    withAuthentik(found: AdminStatus, authentik: string) -> AdminStatus {
+        return AdminStatus(abs: found.abs, authentik: authentik, serviceAccount: found.serviceAccount, serviceAccountType: found.serviceAccountType, problem: found.problem)
     }
 
     // Short, safe words for a failed token check. Never the token or a body.

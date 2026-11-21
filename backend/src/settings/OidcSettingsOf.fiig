@@ -1,0 +1,35 @@
+use abs.recommendations.accounts
+
+// The Authentik application, each part saved in the app or else from its
+// OIDC_* variable; None until all four are there.
+activity oidcSettingsOf() -> accounts.OidcSettings | None {
+    match storedText("oidc.issuer") or Oidc.issuer {
+        None -> {
+            return None
+        }
+        issuer -> {
+            match storedText("oidc.clientId") or Oidc.clientId {
+                None -> {
+                    return None
+                }
+                clientId -> {
+                    match storedText("oidc.redirectUri") or Oidc.redirectUri {
+                        None -> {
+                            return None
+                        }
+                        redirectUri -> {
+                            match storedSecret("oidc.clientSecret") or Oidc.clientSecret {
+                                None -> {
+                                    return None
+                                }
+                                clientSecret -> {
+                                    return accounts.OidcSettings(issuer: issuer, clientId: clientId, clientSecret: clientSecret, redirectUri: redirectUri)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

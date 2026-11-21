@@ -6,10 +6,10 @@
 use abs.recommendations.accounts
 use abs.recommendations.sessions
 use abs.recommendations.signin
-use abs.recommendations.accounts.SignInConfig
+use abs.recommendations.settings
 
 activity finishSignIn(code: string | None, state: string | None, error: string | None, pending: string | None) -> Landing {
-    if SignInConfig.authMode == "abs" {
+    if not signin.loadSignInModes().oidc {
         return failedLanding("disabled")
     }
     match error {
@@ -25,7 +25,7 @@ activity finishSignIn(code: string | None, state: string | None, error: string |
 private {
     failedLanding(reason: string) -> Landing {
         return Landing(
-            location: "${SignInConfig.frontendUrl}/sign-in?error=${reason}",
+            location: "${settings.frontendUrl()}/sign-in?error=${reason}",
             session: None,
         )
     }
@@ -59,7 +59,7 @@ private {
             }
             Ok(identity) -> {
                 session = sessions.startSession(identity)
-                return Landing(location: SignInConfig.frontendUrl, session: session)
+                return Landing(location: settings.frontendUrl(), session: session)
             }
         }
     }

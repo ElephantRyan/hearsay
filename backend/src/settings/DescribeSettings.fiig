@@ -2,8 +2,14 @@
 activity describeSettings() -> SettingsView {
     return SettingsView(
         absUrl: textSetting(storedText("abs.url"), Abs.url),
-        serviceToken: secretSetting(storedText("abs.serviceToken")),
+        serviceToken: secretSetting(storedText("abs.serviceToken"), "abs.serviceToken"),
         mirrorEnabled: textSetting(storedText("sync.mirrorEnabled"), boolText(SyncConfig.mirrorEnabled)),
+        authMode: textSetting(storedText("signin.authMode"), SignInConfig.authMode),
+        frontendUrl: textSetting(storedText("signin.frontendUrl"), SignInConfig.frontendUrl),
+        oidcIssuer: textSetting(storedText("oidc.issuer"), Oidc.issuer),
+        oidcClientId: textSetting(storedText("oidc.clientId"), Oidc.clientId),
+        oidcClientSecret: secretSetting(storedText("oidc.clientSecret"), "oidc.clientSecret"),
+        oidcRedirectUri: textSetting(storedText("oidc.redirectUri"), Oidc.redirectUri),
     )
 }
 
@@ -27,10 +33,10 @@ private {
     }
 
     // The environment is read only when nothing is saved.
-    secretSetting(saved: string | None) -> SettingValue {
+    secretSetting(saved: string | None, name: string) -> SettingValue {
         match saved {
             None -> {
-                if envTokenSet() {
+                if envSecretSet(name) {
                     return SettingValue(value: None, source: "environment")
                 }
                 return SettingValue(value: None, source: "unset")
@@ -41,10 +47,24 @@ private {
         }
     }
 
-    envTokenSet() -> bool {
-        match AbsService.token {
-            None -> false
-            given -> true
+    envSecretSet(name: string) -> bool {
+        if name == "abs.serviceToken" {
+            match AbsService.token {
+                None -> {
+                    return false
+                }
+                given -> {
+                    return true
+                }
+            }
+        }
+        match Oidc.clientSecret {
+            None -> {
+                return false
+            }
+            given -> {
+                return true
+            }
         }
     }
 

@@ -1,20 +1,8 @@
 // Saves every setting a checked change gives; `by` is the admin's user id.
 activity applySettingsChange(change: SettingsChange, by: string) -> int {
     saved: int = 0
-    match change.absUrl {
-        None -> {
-        }
-        url -> {
-            saved = saved + rememberSetting("abs.url", url, by)
-        }
-    }
-    match change.serviceToken {
-        None -> {
-        }
-        token -> {
-            saved = saved + rememberSetting("abs.serviceToken", token, by)
-        }
-    }
+    saved = saved + saveGiven("abs.url", change.absUrl, by)
+    saved = saved + saveGiven("abs.serviceToken", change.serviceToken, by)
     match change.mirrorEnabled {
         None -> {
         }
@@ -22,10 +10,27 @@ activity applySettingsChange(change: SettingsChange, by: string) -> int {
             saved = saved + rememberSetting("sync.mirrorEnabled", textOf(on), by)
         }
     }
+    saved = saved + saveGiven("signin.authMode", change.authMode, by)
+    saved = saved + saveGiven("signin.frontendUrl", change.frontendUrl, by)
+    saved = saved + saveGiven("oidc.issuer", change.oidcIssuer, by)
+    saved = saved + saveGiven("oidc.clientId", change.oidcClientId, by)
+    saved = saved + saveGiven("oidc.clientSecret", change.oidcClientSecret, by)
+    saved = saved + saveGiven("oidc.redirectUri", change.oidcRedirectUri, by)
     return saved
 }
 
 private {
+    saveGiven(name: string, value: string | None, by: string) -> int {
+        match value {
+            None -> {
+                return 0
+            }
+            given -> {
+                return rememberSetting(name, given, by)
+            }
+        }
+    }
+
     textOf(on: bool) -> string {
         if on {
             return "true"

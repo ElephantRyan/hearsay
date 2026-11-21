@@ -1,15 +1,26 @@
 use abs.recommendations.common
 
-// Tidies and checks a change before anything is saved: the address is an
-// http(s) URL with no trailing slash, and a token isn't blank.
+// Tidies and checks a change before anything is saved: addresses are http(s)
+// URLs with no trailing slash, the sign-in mode is one of the three, and no
+// text is blank.
 rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, common.ApiError> {
     return Ok(
-        SettingsChange(absUrl: checkUrl(change.absUrl)?, serviceToken: checkToken(change.serviceToken)?, mirrorEnabled: change.mirrorEnabled),
+        SettingsChange(
+            absUrl: checkUrl("absUrl", change.absUrl)?,
+            serviceToken: checkText("serviceToken", change.serviceToken)?,
+            mirrorEnabled: change.mirrorEnabled,
+            authMode: checkMode(change.authMode)?,
+            frontendUrl: checkUrl("frontendUrl", change.frontendUrl)?,
+            oidcIssuer: checkUrl("oidcIssuer", change.oidcIssuer)?,
+            oidcClientId: checkText("oidcClientId", change.oidcClientId)?,
+            oidcClientSecret: checkText("oidcClientSecret", change.oidcClientSecret)?,
+            oidcRedirectUri: checkUrl("oidcRedirectUri", change.oidcRedirectUri)?,
+        ),
     )
 }
 
 private {
-    checkUrl(given: string | None) -> Result<string | None, common.ApiError> {
+    checkUrl(field: string, given: string | None) -> Result<string | None, common.ApiError> {
         match given {
             None -> {
                 return Ok(None)
@@ -17,26 +28,40 @@ private {
             text -> {
                 url = text.trim().removeSuffix("/")
                 if not url.startsWith("https://") and not url.startsWith("http://") {
-                    return Err(common.ApiError.Invalid("absUrl", "must start with https:// or http://"))
+                    return Err(common.ApiError.Invalid(field, "must start with https:// or http://"))
                 }
                 if url.contains(" ") or url.length() < 9 {
-                    return Err(common.ApiError.Invalid("absUrl", "isn't a web address"))
+                    return Err(common.ApiError.Invalid(field, "isn't a web address"))
                 }
                 return Ok(url)
             }
         }
     }
 
-    checkToken(given: string | None) -> Result<string | None, common.ApiError> {
+    checkText(field: string, given: string | None) -> Result<string | None, common.ApiError> {
         match given {
             None -> {
                 return Ok(None)
             }
             text -> {
                 if text.isBlank() {
-                    return Err(common.ApiError.Invalid("serviceToken", "is blank"))
+                    return Err(common.ApiError.Invalid(field, "is blank"))
                 }
                 return Ok(text.trim())
+            }
+        }
+    }
+
+    checkMode(given: string | None) -> Result<string | None, common.ApiError> {
+        match given {
+            None -> {
+                return Ok(None)
+            }
+            mode -> {
+                if mode != "abs" and mode != "oidc" and mode != "both" {
+                    return Err(common.ApiError.Invalid("authMode", "must be abs, oidc or both"))
+                }
+                return Ok(mode)
             }
         }
     }

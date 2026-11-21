@@ -1,0 +1,5 @@
+// Where the app's pages are, for a finished Authentik sign-in to land: the
+// admin's saved address, or else FRONTEND_URL.
+activity frontendUrl() -> string {
+    return storedText("signin.frontendUrl") or SignInConfig.frontendUrl
+}

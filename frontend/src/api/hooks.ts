@@ -285,3 +285,23 @@ export function useSyncCollections() {
       unwrap(await api.POST("/sync", { params: { query: { dryRun } } })),
   });
 }
+
+/** Whether this server still needs its first-run setup. Public, like the sign-in modes. */
+export const useSetupState = () =>
+  useQuery({
+    queryKey: keys.setup,
+    queryFn: async () => unwrap(await api.GET("/setup")),
+  });
+
+/**
+ * The first run: Audiobookshelf's address and an ABS admin's login. That admin comes back
+ * signed in, so the whole cache starts over.
+ */
+export function useRunSetup() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { absUrl: string; username: string; password: string }) =>
+      unwrap(await api.POST("/setup", { body: input })),
+    onSuccess: () => queryClient.invalidateQueries(),
+  });
+}

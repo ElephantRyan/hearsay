@@ -13,13 +13,13 @@ use fiig.http
 use fiig.http.HttpClient
 
 capability AuthentikSignIn provides accounts.SignIn {
-    gateway beginUrl(state: string, codeVerifier: string) -> Result<string, accounts.SignInError>
+    gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError>
         requires HttpClient
     {
-        found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(Oidc.issuer), "")))?
+        found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(oidc.issuer), "")))?
         endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable("discovery document")?
         return Ok(
-            authorizeUrl(endpoints.authorizationEndpoint, Oidc.clientId, Oidc.redirectUri, state, pkceChallenge(codeVerifier)),
+            authorizeUrl(endpoints.authorizationEndpoint, oidc.clientId, oidc.redirectUri, state, pkceChallenge(codeVerifier)),
         )
     }
 
@@ -29,9 +29,10 @@ capability AuthentikSignIn provides accounts.SignIn {
         match attempt {
             accounts.SignInAttempt.Password(username, password) -> Err(accounts.SignInError.WrongMethod)
             accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> {
-                found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(Oidc.issuer), "")))?
+                oidc = oidcOf(server)?
+                found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(oidc.issuer), "")))?
                 endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable("discovery document")?
-                exchanged = oidcReply(HttpClient.send(tokenRequest(endpoints.tokenEndpoint, code, codeVerifier, Oidc.redirectUri, Oidc.clientId, Oidc.clientSecret.reveal())))?
+                exchanged = oidcReply(HttpClient.send(tokenRequest(endpoints.tokenEndpoint, code, codeVerifier, oidc.redirectUri, oidc.clientId, oidc.clientSecret.reveal())))?
                 token: OidcTokenReply = mapErr(e in json.decode(exchanged.body)): unreadable("token reply")?
                 profile = oidcReply(HttpClient.send(oidcGet(endpoints.userinfoEndpoint, token.accessToken)))?
                 info: OidcUserInfo = mapErr(e in json.decode(profile.body)): unreadable("user info")?
@@ -42,5 +43,15 @@ capability AuthentikSignIn provides accounts.SignIn {
                 return identityOfMatches(members.usersMatchingEmail(everyone.users, email))
             }
         }
+    }
+
+    // Whether the Authentik application's discovery document answers: the admin
+    // screen's check before anyone signs in with it.
+    gateway discover(oidc: accounts.OidcSettings) -> Result<int, accounts.SignInError>
+        requires HttpClient
+    {
+        found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(oidc.issuer), "")))?
+        endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable("discovery document")?
+        return Ok(found.status)
     }
 }

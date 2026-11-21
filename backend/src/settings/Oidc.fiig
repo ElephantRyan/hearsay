@@ -1,0 +1,11 @@
+// The Authentik application made for this app (PLAN.md section 5), from the
+// environment. issuer is the application's OpenID issuer URL; the endpoints come
+// from its discovery document. Each is optional: an admin may save them in the
+// app instead (oidcSettings), and Authentik sign-in is offered only once all
+// four are set.
+config Oidc {
+    issuer: string | None from env "OIDC_ISSUER"
+    clientId: string | None from env "OIDC_CLIENT_ID"
+    clientSecret: Secret | None from env "OIDC_CLIENT_SECRET"
+    redirectUri: string | None from env "OIDC_REDIRECT_URI"
+}

@@ -24,6 +24,24 @@ private {
         if name == "mirrorEnabled" {
             return "sync.mirrorEnabled"
         }
+        if name == "authMode" {
+            return "signin.authMode"
+        }
+        if name == "frontendUrl" {
+            return "signin.frontendUrl"
+        }
+        if name == "oidcIssuer" {
+            return "oidc.issuer"
+        }
+        if name == "oidcClientId" {
+            return "oidc.clientId"
+        }
+        if name == "oidcClientSecret" {
+            return "oidc.clientSecret"
+        }
+        if name == "oidcRedirectUri" {
+            return "oidc.redirectUri"
+        }
         return None
     }
 }

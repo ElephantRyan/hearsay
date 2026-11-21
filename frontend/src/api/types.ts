@@ -19,12 +19,19 @@ export type AdminSettings = Ok<paths["/admin/settings"]["get"]>;
 export type SettingValue = AdminSettings["absUrl"];
 export type AdminStatus = Ok<paths["/admin/status"]["get"]>;
 export type SyncResult = Ok<paths["/sync"]["post"]>[number];
+export type SetupState = Ok<paths["/setup"]["get"]>;
 
 /** What PUT /admin/settings takes: only the settings being changed. */
 export interface SettingsChange {
   absUrl?: string;
   serviceToken?: string;
   mirrorEnabled?: boolean;
+  authMode?: string;
+  frontendUrl?: string;
+  oidcIssuer?: string;
+  oidcClientId?: string;
+  oidcClientSecret?: string;
+  oidcRedirectUri?: string;
 }
 
 /** The setting names DELETE /admin/settings/{name} knows. */

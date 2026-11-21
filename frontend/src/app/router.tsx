@@ -38,6 +38,12 @@ const signInRoute = createRoute({
   component: lazyRouteComponent(() => import("../features/auth/SignInPage"), "SignInPage"),
 });
 
+const setupRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/setup",
+  component: lazyRouteComponent(() => import("../features/auth/SetupPage"), "SetupPage"),
+});
+
 /**
  * Everything behind sign-in. A 401 from /me sends the visitor to the sign-in
  * page with a return address; any other failure is left to the page to show.
@@ -140,6 +146,7 @@ const rateRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   signInRoute,
+  setupRoute,
   appRoute.addChildren([
     homeRoute,
     browseRoute,

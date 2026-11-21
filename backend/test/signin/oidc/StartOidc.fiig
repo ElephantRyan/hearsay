@@ -1,6 +1,6 @@
 use abs.recommendations.accounts
 use abs.recommendations.common
-use abs.recommendations.accounts.SignInConfig
+use abs.recommendations.settings.SignInConfig
 use abs.recommendations.signin.authentik.AuthentikSignIn
 
 test startOidcIsOffInPasswordOnlyMode {
@@ -9,7 +9,7 @@ test startOidcIsOffInPasswordOnlyMode {
         frontendUrl: "https://app.test"
     }
     fake AuthentikSignIn {
-        gateway beginUrl(state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
             expect false
             return Err(accounts.SignInError.WrongMethod)
         }

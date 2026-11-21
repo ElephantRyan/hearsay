@@ -1,8 +1,11 @@
-// What the admin screen says about Audiobookshelf. `abs` is "reachable",
-// "unreachable" or "not set up". The service account is who this server's token
-// belongs to; `problem` says in words why it couldn't be checked.
+// What the admin screen says about Audiobookshelf and Authentik. `abs` is
+// "reachable", "unreachable" or "not set up". The service account is who this
+// server's token belongs to; `problem` says in words why it couldn't be checked.
+// `authentik` is "answering", "not answering" or "not set up" (not all four
+// Authentik settings are there).
 model AdminStatus {
     abs: string
+    authentik: string
     serviceAccount: string | None
     serviceAccountType: string | None
     problem: string | None
