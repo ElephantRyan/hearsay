@@ -1,0 +1,18 @@
+use abs.recommendations.absclient
+use abs.recommendations.absclient.Abs
+use abs.recommendations.absclient.AbsService
+use fiig.http
+use fiig.http.HttpClient
+
+// What ABS knows about a person's listening. Read with this server's own token:
+// GET /api/users/{id} is admin-only, and it is the one place ABS lists another
+// account's progress.
+capability AbsProgress {
+    gateway progressAsService(userId: string) -> Result<List<Progress>, absclient.AbsError>
+        requires HttpClient
+    {
+        userIdSegment = absclient.absPathId(userId)?
+        reply = absclient.absReply(HttpClient.send(absclient.absGet(Abs.url, "/api/users/${userIdSegment}", AbsService.token.reveal())))?
+        return progressOfUserReply(reply.body)
+    }
+}

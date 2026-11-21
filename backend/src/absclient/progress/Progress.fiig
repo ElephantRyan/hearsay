@@ -1,0 +1,8 @@
+// One book a person has started in ABS: how far they are, and when they last
+// listened. `percent` is how far through, 0 to 100 (ABS keeps a fraction).
+model Progress {
+    itemId: string
+    finished: bool
+    percent: int
+    lastListenedAt: int
+}

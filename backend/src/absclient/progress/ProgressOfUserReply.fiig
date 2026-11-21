@@ -1,0 +1,26 @@
+use abs.recommendations.absclient
+
+// GET /api/users/{id}'s body as the books that person has started. Podcast
+// episodes are left out: this app rates books.
+conversion progressOfUserReply(body: bytes) -> Result<List<Progress>, absclient.AbsError> {
+    user: AbsUserWithProgress = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(failure: e)?
+    books = filter(p in user.mediaProgress): p.mediaItemType == "book"
+    return Ok(
+        map(p in books): Progress(itemId: p.libraryItemId, finished: p.isFinished, percent: math.roundToInt(p.progress * 100.0), lastListenedAt: p.lastUpdate),
+    )
+}
+
+private {
+    // The reply, trimmed to the progress list.
+    model AbsUserWithProgress {
+        mediaProgress: List<AbsMediaProgress>
+    }
+
+    model AbsMediaProgress {
+        libraryItemId: string
+        mediaItemType: string
+        isFinished: bool
+        progress: float
+        lastUpdate: int
+    }
+}

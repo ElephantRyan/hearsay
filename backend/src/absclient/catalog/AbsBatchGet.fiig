@@ -1,0 +1,19 @@
+use fiig.http
+
+// ABS's batch lookup: many books in one call. It is a POST that reads; the
+// path is fixed here, so nothing else can be sent this way.
+rule absBatchGet(base: string, itemIds: List<string>, token: string) -> http.Request {
+    return http.Request(
+        method: http.Method.Post,
+        url: "${base}/api/items/batch/get",
+        headers: [http.Header(name: "Authorization", value: "Bearer ${token}"), http.Header(name: "Content-Type", value: "application/json"), http.Header(name: "Accept", value: "application/json")],
+        body: json.encode(AbsBatchBody(libraryItemIds: itemIds)),
+        timeoutMillis: 20000,
+    )
+}
+
+private {
+    model AbsBatchBody {
+        libraryItemIds: List<string>
+    }
+}

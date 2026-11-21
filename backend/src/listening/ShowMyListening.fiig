@@ -1,0 +1,7 @@
+use abs.recommendations.common
+
+// GET /me/listening: what I am listening to and have finished, for the
+// "My books" screen and the Rate tab.
+workflow showMyListening(session: string | None) -> Result<List<ListenedBook>, common.ApiError> {
+    return loadMyListening(session)
+}
