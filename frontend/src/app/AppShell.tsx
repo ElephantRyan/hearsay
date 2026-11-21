@@ -1,7 +1,7 @@
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { Home, Library, LogOut, Search, Star, Users } from "lucide-react";
+import { Home, Library, LogOut, Search, Settings, Star, Users } from "lucide-react";
 import type { ReactNode } from "react";
-import { useMe, useSignOut } from "../api/hooks";
+import { isAdmin, useMe, useSignOut } from "../api/hooks";
 
 interface Tab {
   key: string;
@@ -101,6 +101,15 @@ export function AppShell() {
         </nav>
         <div className="flex items-center gap-2 text-sm">
           <span className="hidden text-muted sm:inline">{me.data?.username}</span>
+          {isAdmin(me.data?.userType) && (
+            <Link
+              to="/admin"
+              aria-label="Settings"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted no-underline hover:bg-surface-2 [&.active]:text-accent"
+            >
+              <Settings aria-hidden="true" className="h-5 w-5" />
+            </Link>
+          )}
           <button
             type="button"
             onClick={onSignOut}

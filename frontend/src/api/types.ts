@@ -15,6 +15,21 @@ export type BrowseItem = BrowseResult["items"][number];
 export type Rating = Ok<paths["/ratings/{itemId}"]["put"]>;
 export type ListenedBook = Ok<paths["/me/listening"]["get"]>[number];
 
+export type AdminSettings = Ok<paths["/admin/settings"]["get"]>;
+export type SettingValue = AdminSettings["absUrl"];
+export type AdminStatus = Ok<paths["/admin/status"]["get"]>;
+export type SyncResult = Ok<paths["/sync"]["post"]>[number];
+
+/** What PUT /admin/settings takes: only the settings being changed. */
+export interface SettingsChange {
+  absUrl?: string;
+  serviceToken?: string;
+  mirrorEnabled?: boolean;
+}
+
+/** The setting names DELETE /admin/settings/{name} knows. */
+export type SettingName = keyof SettingsChange;
+
 export type RatingSort = "score" | "newest" | "title";
 
 export interface RecommendationFilters {

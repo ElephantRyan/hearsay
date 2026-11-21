@@ -8,7 +8,13 @@ import {
 import { api } from "./client";
 import { ApiError, messageOf, unwrap } from "./errors";
 import { keys } from "./keys";
-import type { RatingRow, RatingSort, RecommendationFilters } from "./types";
+import type {
+  RatingRow,
+  RatingSort,
+  RecommendationFilters,
+  SettingName,
+  SettingsChange,
+} from "./types";
 
 /** Who is signed in. A 401 is an answer ("nobody"), not an error to retry. */
 export const meQuery = queryOptions({
@@ -215,5 +221,67 @@ export function useSignOut() {
       await api.DELETE("/session");
     },
     onSettled: () => queryClient.clear(),
+  });
+}
+
+/** An Audiobookshelf admin or its owner: the people who see the admin screen. */
+export const isAdmin = (userType: string | undefined) =>
+  userType === "admin" || userType === "root";
+
+/** The settings an admin can change, and where each value comes from. */
+export const useAdminSettings = () =>
+  useQuery({
+    queryKey: keys.adminSettings,
+    queryFn: async () => unwrap(await api.GET("/admin/settings")),
+  });
+
+/** Whether Audiobookshelf answers and whose token this server holds. Asks ABS each time. */
+export const useAdminStatus = () =>
+  useQuery({
+    queryKey: keys.adminStatus,
+    queryFn: async () => unwrap(await api.GET("/admin/status")),
+    staleTime: 0,
+  });
+
+/**
+ * After a settings change everything may read differently: another server, another token.
+ * The new settings come back from the server; the rest is refetched.
+ */
+function refreshAfterSettingsChange(queryClient: ReturnType<typeof useQueryClient>) {
+  return queryClient.invalidateQueries({
+    predicate: (query) => query.queryKey[0] !== "me" && query.queryKey[1] !== "settings",
+  });
+}
+
+export function useSaveSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (change: SettingsChange) =>
+      unwrap(await api.PUT("/admin/settings", { body: change })),
+    onSuccess: async (settings) => {
+      queryClient.setQueryData(keys.adminSettings, settings);
+      await refreshAfterSettingsChange(queryClient);
+    },
+  });
+}
+
+/** Forget a saved setting, so the environment's value applies again. */
+export function useResetSetting() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: SettingName) =>
+      unwrap(await api.DELETE("/admin/settings/{name}", { params: { path: { name } } })),
+    onSuccess: async (settings) => {
+      queryClient.setQueryData(keys.adminSettings, settings);
+      await refreshAfterSettingsChange(queryClient);
+    },
+  });
+}
+
+/** Mirror recommendations into ABS collections, or (dryRun) only say what would change. */
+export function useSyncCollections() {
+  return useMutation({
+    mutationFn: async ({ dryRun }: { dryRun: boolean }) =>
+      unwrap(await api.POST("/sync", { params: { query: { dryRun } } })),
   });
 }

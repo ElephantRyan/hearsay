@@ -15,4 +15,6 @@ export const keys = {
   myRatings: (sort: RatingSort) => ["my-ratings", sort] as const,
   allMyRatings: ["my-ratings"] as const,
   listening: ["listening"] as const,
+  adminSettings: ["admin", "settings"] as const,
+  adminStatus: ["admin", "status"] as const,
 };
