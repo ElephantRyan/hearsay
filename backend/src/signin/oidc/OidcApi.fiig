@@ -1,4 +1,4 @@
-use hearsay.common
+use hearsay.signin
 
 // The OIDC sign-in routes: off to the identity provider, and back.
 adapter http oidcApi {
@@ -6,7 +6,7 @@ adapter http oidcApi {
         produces "application/json"
     {
         Ok(start) -> redirectToIdp(start)
-        Err(error) -> common.apiErrorResponse(error)
+        Err(error) -> signin.loginErrorResponse(error)
     }
     GET "/auth/callback?code={code}&state={state}&error={error}" -> finishOidc(
         code: string | None,

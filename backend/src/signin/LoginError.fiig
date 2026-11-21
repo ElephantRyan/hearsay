@@ -1,0 +1,9 @@
+// Why a sign-in didn't start or didn't finish, as the routes that begin one
+// (password and Authentik) say it. A way in the server doesn't offer looks, to
+// a caller, like a route that isn't there.
+enum LoginError {
+    PasswordNotOffered
+    OidcNotOffered
+    Refused(reason: string)
+    Unavailable(detail: string)
+}

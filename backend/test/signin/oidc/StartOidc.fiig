@@ -1,6 +1,5 @@
 use hearsay.settings
 use hearsay.accounts
-use hearsay.common
 use hearsay.settings.SignInConfig
 use hearsay.signin.authentik.AuthentikSignIn
 
@@ -21,6 +20,6 @@ test startOidcIsOffInPasswordOnlyMode {
         }
     }
 
-    expect startOidc() is Err(common.ApiError.NotFound(what))
+    expect startOidc() is Err(signin.LoginError.OidcNotOffered)
     expect calls(AuthentikSignIn.beginUrl) == 0
 }

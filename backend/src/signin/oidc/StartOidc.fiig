@@ -1,11 +1,10 @@
-use hearsay.common
 use hearsay.signin
 
 // Authentik sign-in exists unless the server is password-only.
-workflow startOidc() -> Result<OidcStart, common.ApiError> {
+workflow startOidc() -> Result<OidcStart, signin.LoginError> {
     modes = signin.loadSignInModes()
     if not modes.oidc {
-        return Err(common.ApiError.NotFound("Authentik sign-in on this server"))
+        return Err(signin.LoginError.OidcNotOffered)
     }
-    return beginSignIn()
+    return mapErr(e in beginSignIn()): signin.loginErrorOfSignIn(e)
 }

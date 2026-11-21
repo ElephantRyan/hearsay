@@ -1,12 +1,10 @@
 use hearsay.accounts
-use hearsay.common
-use hearsay.signin
 use hearsay.signin.authentik.AuthentikSignIn
 
 // Where to send the browser to sign in with Authentik. The provider's failures
-// become the app's errors here.
-gateway fetchAuthorizeUrl(oidc: accounts.OidcSettings, state: string, verifier: string) -> Result<string, common.ApiError>
+// stay the provider's: signing in's own.
+gateway fetchAuthorizeUrl(oidc: accounts.OidcSettings, state: string, verifier: string) -> Result<string, accounts.SignInError>
     requires AuthentikSignIn
 {
-    return mapErr(e in AuthentikSignIn.beginUrl(oidc, state, verifier)): signin.apiErrorOfSignIn(e)
+    return AuthentikSignIn.beginUrl(oidc, state, verifier)
 }
