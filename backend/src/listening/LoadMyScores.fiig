@@ -1,0 +1,7 @@
+use hearsay.ratings.rated
+use hearsay.ratings.rated.RatedBooks
+
+// My own ratings, to put beside what I have listened to.
+activity loadMyScores(userId: string) -> List<rated.RatingRow> {
+    return RatedBooks.byUser(userId)
+}

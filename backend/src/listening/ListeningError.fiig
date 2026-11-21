@@ -1,0 +1,7 @@
+// Every way showing what a person has listened to can fail.
+enum ListeningError {
+    NotSignedIn
+    AccountNotFound
+    BookNotFound
+    Unavailable(detail: string)
+}

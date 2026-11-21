@@ -1,0 +1,10 @@
+// The status and message a client sees for each way listening can fail. 401
+// names no scheme: the browser holds a cookie, not a challenge to answer.
+conversion listeningErrorResponse(error: ListeningError) -> HttpResponse<string> {
+    match error {
+        ListeningError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
+        ListeningError.AccountNotFound -> HttpResponse(status: 404, body: "no Audiobookshelf account for you")
+        ListeningError.BookNotFound -> HttpResponse(status: 404, body: "no book with that id in Audiobookshelf")
+        ListeningError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+    }
+}
