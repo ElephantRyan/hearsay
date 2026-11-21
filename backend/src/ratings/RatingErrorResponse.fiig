@@ -1,8 +1,6 @@
-// The status and message a client sees for each way rating can fail. 401 names
-// no scheme: the browser holds a cookie, not a challenge to answer.
+// The status and message a client sees for each way rating can fail.
 conversion ratingErrorResponse(error: RatingError) -> HttpResponse<string> {
     match error {
-        RatingError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
         RatingError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
         RatingError.BookNotFound -> HttpResponse(status: 404, body: "no book with that id in Audiobookshelf")
         RatingError.NoRating -> HttpResponse(status: 404, body: "no rating of yours for that book")

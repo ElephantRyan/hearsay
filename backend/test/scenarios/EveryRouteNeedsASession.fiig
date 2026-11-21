@@ -19,8 +19,6 @@ test noRouteAnswersWithoutASession {
         mirrorEnabled: true
     }
 
-    expect ratings.putRating(None, "a", ratings.RatingInput(score: 5, note: None, recommended: true)) is Err(ratings.RatingError.NotSignedIn)
-    expect ratings.deleteMyRating(None, "a") is Err(ratings.RatingError.NotSignedIn)
     expect rated.listMyRatings(None, None) is Err(rated.RatedError.NotSignedIn)
     expect recommendations.listRecommendations(None, None, None, None) is Err(recommendations.RecommendationError.NotSignedIn)
     expect recommendations.listRecommenderUsers(None) is Err(recommendations.RecommendationError.NotSignedIn)

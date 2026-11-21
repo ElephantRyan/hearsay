@@ -48,10 +48,11 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect matching.indexLibrary(abs) is Ok(_)
-    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 9, note: "great", recommended: true)) is Ok(_)
-    expect ratings.putRating(ann, "old", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
-    expect ratings.putRating(ann, "secret", ratings.RatingInput(score: 2, note: "private", recommended: false)) is Ok(_)
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
+    ann = sessions.startSession(annId).token
+    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 9, note: "great", recommended: true)) is Ok(_)
+    expect ratings.putRating(annId, "old", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
+    expect ratings.putRating(annId, "secret", ratings.RatingInput(score: 2, note: "private", recommended: false)) is Ok(_)
 
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
     expect inviteServer(admin) is Ok(invite)

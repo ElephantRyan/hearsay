@@ -1,10 +1,11 @@
+use hearsay.accounts
 use hearsay.books
-use hearsay.sessions
 
-// Rate a book: find out who is asking and what the book is, then store the
-// rating. A book ABS doesn't have is "no such book" here.
-workflow putRating(session: string | None, itemId: string, input: RatingInput) -> Result<Rating, RatingError> {
-    me = mapErr(e in sessions.currentUser(session)): ratingErrorOfIdentity(e)?
+// Rate a book: check what was sent, find out what the book is, then store the
+// rating. The check comes first, so a bad rating costs no Audiobookshelf call.
+// A book ABS doesn't have is "no such book" here.
+workflow putRating(me: accounts.Identity, itemId: string, input: RatingInput) -> Result<Rating, RatingError> {
+    checked = checkRating(itemId, input)?
     book = mapErr(e in books.latestBook(itemId)): ratingErrorOfBook(e)?
-    return storeRating(me, book, input)
+    return Ok(storeRating(me, book, checked))
 }

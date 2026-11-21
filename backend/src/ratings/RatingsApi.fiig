@@ -1,21 +1,19 @@
-// The ratings routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
-// every domain's adapter together.
+use hearsay.accounts
+use hearsay.sessions
+
+// The ratings routes of the HTTP surface; src/Hearsay.fiig serves every
+// domain's adapter together. Both need a signed-in person.
 adapter http ratingsApi {
-    PUT "/ratings/{itemId}" -> putRating(
-        session: string | None from cookie "sid",
-        itemId: string,
-        input: RatingInput,
-    )
+    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+
+    PUT "/ratings/{itemId}" -> putRating(me, itemId: string, input: RatingInput)
         consumes "application/json"
         produces "application/json"
     {
         Ok(rating) -> 200 rating
         Err(error) -> ratingErrorResponse(error)
     }
-    DELETE "/ratings/{itemId}" -> deleteMyRating(
-        session: string | None from cookie "sid",
-        itemId: string,
-    )
+    DELETE "/ratings/{itemId}" -> deleteMyRating(me, itemId: string)
         produces "application/json"
     {
         Ok(_) -> 204

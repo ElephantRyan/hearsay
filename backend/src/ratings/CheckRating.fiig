@@ -1,0 +1,15 @@
+// Checks what a person sent, before anything else is asked of anyone: a bad
+// rating is refused without a round trip to Audiobookshelf.
+rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, RatingError> {
+    note = input.note or ""
+    if input.score < 1 or input.score > 10 {
+        return Err(RatingError.Invalid("score", "must be from 1 to 10"))
+    }
+    if note.length() > 280 {
+        return Err(RatingError.Invalid("note", "must be at most 280 characters"))
+    }
+    if itemId.isBlank() {
+        return Err(RatingError.Invalid("itemId", "must not be blank"))
+    }
+    return Ok(CheckedRating(itemId: itemId, score: input.score, note: note, recommended: input.recommended))
+}

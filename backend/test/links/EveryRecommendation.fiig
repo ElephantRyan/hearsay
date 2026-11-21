@@ -31,8 +31,9 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 8, note: "here", recommended: true)) is Ok(_)
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
+    ann = sessions.startSession(annId).token
+    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 8, note: "here", recommended: true)) is Ok(_)
 
     saveLink(LinkedServer(id: "l1", name: "Alex's library", address: "https://alex.test", linkedAt: 1, linkedBy: "invite"), "key-out-1", "hash-1")
     saveLink(LinkedServer(id: "l2", name: "Sam's place", address: "https://sam.test", linkedAt: 1, linkedBy: "invite"), "key-out-2", "hash-2")

@@ -43,8 +43,9 @@ test browseListsSearchesAndMarksMyScores {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    expect ratings.putRating(ann, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
+    ann = sessions.startSession(annId).token
+    expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
     expect showLibraryItems(None, "lib-1", 2, None, None) is Err(LibraryError.NotSignedIn)
     expect showLibraryItems(ann, "lib-1", 2, None, None) is Ok(listed)
     expect listed.total == 1117
