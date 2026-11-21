@@ -1,0 +1,9 @@
+// Every way browsing libraries and books can be refused, as values the caller
+// must handle.
+enum LibraryError {
+    NotSignedIn
+    Invalid(field: string, reason: string)
+    LibraryNotFound
+    BookNotFound
+    Unavailable(detail: string)
+}

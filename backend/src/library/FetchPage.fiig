@@ -4,8 +4,8 @@ use hearsay.absclient.catalog.AbsCatalog
 use hearsay.common
 
 // A page of a library, A to Z. A 404 here means the library, not a book.
-gateway fetchPage(abs: absclient.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, common.ApiError>
+gateway fetchPage(abs: absclient.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, absclient.AbsFault>
     requires AbsCatalog
 {
-    return mapErr(e in AbsCatalog.pageAsService(abs, libraryId, page, size)): apiErrorOfLibrary(e)
+    return mapErr(e in AbsCatalog.pageAsService(abs, libraryId, page, size)): absclient.faultOfAbs(e)
 }

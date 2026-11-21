@@ -2,7 +2,6 @@ use hearsay.absclient as client
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
-use hearsay.common
 use hearsay.ratings
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
@@ -46,7 +45,7 @@ test browseListsSearchesAndMarksMyScores {
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
     expect ratings.putRating(ann, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
-    expect showLibraryItems(None, "lib-1", 2, None, None) is Err(common.ApiError.Unauthenticated)
+    expect showLibraryItems(None, "lib-1", 2, None, None) is Err(LibraryError.NotSignedIn)
     expect showLibraryItems(ann, "lib-1", 2, None, None) is Ok(listed)
     expect listed.total == 1117
     expect listed.page == 2
@@ -57,8 +56,7 @@ test browseListsSearchesAndMarksMyScores {
     expect found.items.length() == 1
     expect found.items.at(0).title == "Alpha"
     expect found.items.at(0).myScore == 8
-    expect showLibraryItems(ann, "gone", 2, None, None) is Err(common.ApiError.NotFound(what))
-    expect what == "library with that id"
-    expect showLibraryItems(ann, "lib-1", -1, None, None) is Err(common.ApiError.Invalid(field, reason))
+    expect showLibraryItems(ann, "gone", 2, None, None) is Err(LibraryError.LibraryNotFound)
+    expect showLibraryItems(ann, "lib-1", -1, None, None) is Err(LibraryError.Invalid(field, reason))
     expect field == "page"
 }

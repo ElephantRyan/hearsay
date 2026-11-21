@@ -1,18 +1,12 @@
 // One book with the ratings the viewer may see. A book nobody has rated yet
 // is fetched from ABS, so the page can offer the first rating.
-use hearsay.books
-use hearsay.common
+use hearsay.absclient.catalog
 use hearsay.ratings.rated
 use hearsay.ratings.rated.RatedBooks
-use hearsay.sessions
 
-activity loadItemDetail(session: string | None, itemId: string) -> Result<ItemDetail, common.ApiError> {
-    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
-    rows = RatedBooks.visibleFor(itemId, me.userId)
-    book = mapErr(e in books.cachedBook(itemId)): books.apiErrorOfBook(e)?
-    return Ok(
-        ItemDetail(book: book, average: averageOf(rows), count: count(r in rows): r.recommended, ratings: rows),
-    )
+activity loadItemDetail(userId: string, book: catalog.Book) -> ItemDetail {
+    rows = RatedBooks.visibleFor(book.itemId, userId)
+    return ItemDetail(book: book, average: averageOf(rows), count: count(r in rows): r.recommended, ratings: rows)
 }
 
 private {

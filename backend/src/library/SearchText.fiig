@@ -1,8 +1,6 @@
-use hearsay.common
-
 // What a person typed in the search box: None for blank (browse instead),
 // an error for something absurdly long, else the trimmed text.
-rule searchText(q: string | None) -> Result<string | None, common.ApiError> {
+rule searchText(q: string | None) -> Result<string | None, LibraryError> {
     match q {
         None -> Ok(None)
         typed -> checkTyped(typed.trim())
@@ -10,12 +8,12 @@ rule searchText(q: string | None) -> Result<string | None, common.ApiError> {
 }
 
 private {
-    checkTyped(text: string) -> Result<string | None, common.ApiError> {
+    checkTyped(text: string) -> Result<string | None, LibraryError> {
         if text.isBlank() {
             return Ok(None)
         }
         if text.length() > 100 {
-            return Err(common.ApiError.Invalid("q", "must be at most 100 characters"))
+            return Err(LibraryError.Invalid("q", "must be at most 100 characters"))
         }
         return Ok(text)
     }

@@ -1,0 +1,9 @@
+use hearsay.books
+
+// Asking for the page of a book that ABS does not have is "no such book".
+conversion libraryErrorOfBook(error: books.BookError) -> LibraryError {
+    match error {
+        books.BookError.Missing -> LibraryError.BookNotFound
+        books.BookError.Unavailable(detail) -> LibraryError.Unavailable(detail)
+    }
+}

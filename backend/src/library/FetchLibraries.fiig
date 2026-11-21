@@ -3,8 +3,8 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.common
 
-gateway fetchLibraries(abs: absclient.AbsTarget) -> Result<List<catalog.AbsLibrary>, common.ApiError>
+gateway fetchLibraries(abs: absclient.AbsTarget) -> Result<List<catalog.AbsLibrary>, absclient.AbsFault>
     requires AbsCatalog
 {
-    return mapErr(e in AbsCatalog.librariesAsService(abs)): apiErrorOfLibrary(e)
+    return mapErr(e in AbsCatalog.librariesAsService(abs)): absclient.faultOfAbs(e)
 }

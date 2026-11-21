@@ -1,0 +1,7 @@
+use hearsay.sessions
+
+conversion libraryErrorOfIdentity(error: sessions.IdentityError) -> LibraryError {
+    match error {
+        sessions.IdentityError.NotSignedIn -> LibraryError.NotSignedIn
+    }
+}

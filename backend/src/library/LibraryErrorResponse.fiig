@@ -1,0 +1,11 @@
+// The status and message a client sees for each way browsing can fail. 401
+// names no scheme: the browser holds a cookie, not a challenge to answer.
+conversion libraryErrorResponse(error: LibraryError) -> HttpResponse<string> {
+    match error {
+        LibraryError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
+        LibraryError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
+        LibraryError.LibraryNotFound -> HttpResponse(status: 404, body: "no library with that id")
+        LibraryError.BookNotFound -> HttpResponse(status: 404, body: "no book with that id in Audiobookshelf")
+        LibraryError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+    }
+}

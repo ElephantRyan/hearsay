@@ -1,10 +1,9 @@
-use hearsay.common
 
 test pageDefaultsToTheFirstAndRefusesNegatives {
     expect checkPage(None) is Ok(firstPage)
     expect firstPage == 0
     expect checkPage(7) is Ok(seventh)
     expect seventh == 7
-    expect checkPage(-1) is Err(common.ApiError.Invalid(pageField, pageReason))
+    expect checkPage(-1) is Err(LibraryError.Invalid(pageField, pageReason))
     expect pageField == "page"
 }

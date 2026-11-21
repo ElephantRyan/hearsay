@@ -1,11 +1,10 @@
-use hearsay.common
 
 test sizeDefaultsTo24AndStopsAt100 {
     expect checkSize(None) is Ok(defaultSize)
     expect defaultSize == 24
     expect checkSize(100) is Ok(biggest)
     expect biggest == 100
-    expect checkSize(0) is Err(common.ApiError.Invalid(sizeField, sizeReason))
+    expect checkSize(0) is Err(LibraryError.Invalid(sizeField, sizeReason))
     expect sizeField == "size"
-    expect checkSize(101) is Err(common.ApiError.Invalid(tooBig, tooBigReason))
+    expect checkSize(101) is Err(LibraryError.Invalid(tooBig, tooBigReason))
 }

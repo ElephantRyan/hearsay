@@ -2,23 +2,21 @@
 // the viewer's own scores. The inputs are already checked by the workflow.
 use hearsay.absclient
 use hearsay.absclient.catalog
-use hearsay.common
 use hearsay.ratings.rated
 use hearsay.ratings.rated.RatedBooks
 use hearsay.sessions
 use hearsay.settings
 
-activity loadBrowseResult(session: string | None, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, common.ApiError> {
-    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
-    found = fetchBooks(mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?, libraryId, page, size, typed)?
-    mine = RatedBooks.byUser(me.userId)
+activity loadBrowseResult(userId: string, abs: absclient.AbsTarget, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, absclient.AbsFault> {
+    found = fetchBooks(abs, libraryId, page, size, typed)?
+    mine = RatedBooks.byUser(userId)
     return Ok(
         BrowseResult(total: found.total, page: found.page, limit: found.limit, items: withMyScores(found.books, mine)),
     )
 }
 
 private {
-    fetchBooks(abs: absclient.AbsTarget, libraryId: string, page: int, size: int, typed: string | None) -> Result<catalog.BookPage, common.ApiError> {
+    fetchBooks(abs: absclient.AbsTarget, libraryId: string, page: int, size: int, typed: string | None) -> Result<catalog.BookPage, absclient.AbsFault> {
         match typed {
             None -> {
                 return fetchPage(abs, libraryId, page, size)

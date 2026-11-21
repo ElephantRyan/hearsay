@@ -1,5 +1,3 @@
-use hearsay.common
-
 // The library routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http libraryApi {
@@ -7,7 +5,7 @@ adapter http libraryApi {
         produces "application/json"
     {
         Ok(libraries) -> 200 libraries
-        Err(error) -> common.apiErrorResponse(error)
+        Err(error) -> libraryErrorResponse(error)
     }
     GET "/libraries/{libraryId}/items?page={page}&size={size}&q={q}" -> showLibraryItems(
         session: string | None from cookie "sid",
@@ -19,12 +17,12 @@ adapter http libraryApi {
         produces "application/json"
     {
         Ok(result) -> 200 result
-        Err(error) -> common.apiErrorResponse(error)
+        Err(error) -> libraryErrorResponse(error)
     }
     GET "/items/{itemId}" -> showItem(session: string | None from cookie "sid", itemId: string)
         produces "application/json"
     {
         Ok(detail) -> 200 detail
-        Err(error) -> common.apiErrorResponse(error)
+        Err(error) -> libraryErrorResponse(error)
     }
 }
