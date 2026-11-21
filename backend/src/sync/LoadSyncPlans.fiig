@@ -1,10 +1,10 @@
 use hearsay.accounts
-use hearsay.ratings.rated.RatedBooks
+use hearsay.links
 
-// What sync would do for whoever the caller may sync: reads tables and
-// plans, and touches nothing.
+// What sync would do for whoever the caller may sync, linked servers' people
+// included: reads tables and plans, and touches nothing.
 activity loadSyncPlans(me: accounts.Identity, userId: string | None) -> Result<List<SyncPlan>, SyncError> {
-    rows = RatedBooks.recommended()
+    rows = links.everyRecommendation()
     states = allSyncStates()
     targets = syncTargets(me, userId, everyoneToSync(rows, states))?
     return Ok(planSync(rows, states, targets))

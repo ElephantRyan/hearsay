@@ -2,7 +2,8 @@ use hearsay.ratings.rated
 
 // Works out, without touching anything, what each named person's collections
 // should become. One collection per person per library, "<name> Recommends",
-// holding their recommended books best first. A library where they have
+// holding their recommended books best first. A linked server's person gets
+// one too, of the books matched here, and its description says where from. A library where they have
 // recommendations and we have no collection is a create; both is an update;
 // a collection of ours with nothing left to hold is a remove.
 rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: List<string>) -> List<SyncPlan> {
@@ -16,7 +17,7 @@ rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: Lis
             existing = collectionIn(theirs, libraryId)
             plans = append(
                 plans,
-                SyncPlan(userId: userId, libraryId: libraryId, name: "${group.at(0).username} Recommends", description: "Maintained by Hearsay. Edits here are overwritten on the next sync.", bookIds: map(r in ordered): r.itemId, collectionId: existing, action: createOrUpdate(existing)),
+                SyncPlan(userId: userId, libraryId: libraryId, name: "${group.at(0).username} Recommends", description: descriptionFor(group.at(0).via), bookIds: map(r in ordered): r.itemId, collectionId: existing, action: createOrUpdate(existing)),
             )
         }
         for state in theirs {
@@ -37,6 +38,13 @@ private {
         match found.firstOrNone() {
             None -> None
             state -> state.collectionId
+        }
+    }
+
+    descriptionFor(via: string | None) -> string {
+        match via {
+            None -> "Maintained by Hearsay. Edits here are overwritten on the next sync."
+            server -> "Recommended on ${server}. Maintained by Hearsay. Edits here are overwritten on the next sync."
         }
     }
 

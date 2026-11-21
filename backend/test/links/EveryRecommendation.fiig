@@ -9,6 +9,8 @@ use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.absclient.collections.AbsCollections
+use hearsay.sync
 
 // Linked servers' ratings blend in (LINKED.md section 6): they count in
 // averages, the ranked list, recommenders, picks and the book page, and a
@@ -78,4 +80,57 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
     deleteLink("l1")
     expect everyRecommendation().length() == 2
     expect (map(r in everyRecommendation()): r.username) == ["ann", "sam"] or (map(r in everyRecommendation()): r.username) == ["sam", "ann"]
+}
+
+// A linked server's person gets a "<name> Recommends" collection in this ABS,
+// of the books matched here, by the same sync (LINKED.md section 6). Its
+// description says where the recommendations came from. Unlinked, the
+// collection goes at the next sync.
+test linkedPeopleGetCollectionsThatGoWhenUnlinked {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsCollections {
+        gateway createCollectionAsService(abs: client.AbsTarget, libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+            expect libraryId == "lib-1"
+            expect name == "sam Recommends"
+            expect description.startsWith("Recommended on Alex's library.")
+            expect bookIds == ["hobbit", "dune"]
+            return Ok("col-sam")
+        }
+
+        gateway updateCollectionAsService(abs: client.AbsTarget, collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+            expect false
+            return Ok(1)
+        }
+
+        gateway deleteCollectionAsService(abs: client.AbsTarget, collectionId: string) -> Result<int, client.AbsError> {
+            expect collectionId == "col-sam"
+            return Ok(1)
+        }
+    }
+
+    saveLink(LinkedServer(id: "l1", name: "Alex's library", address: "https://alex.test", linkedAt: 1, linkedBy: "invite"), "key-out", "hash")
+    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 6, note: "", updatedAt: 6, itemId: "dune", libraryId: "lib-1", matchedBy: "asin"))
+    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0HOBBIT", isbn: None, title: "The Hobbit", authors: "J. R. R. Tolkien", score: 9, note: "", updatedAt: 7, itemId: "hobbit", libraryId: "lib-1", matchedBy: "asin"))
+    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0ELSE", isbn: None, title: "Not Here", authors: "Nobody", score: 10, note: "", updatedAt: 8, itemId: None, libraryId: None, matchedBy: None))
+
+    plans = sync.loadAllSyncPlans()
+    expect plans.length() == 1
+    expect plans.first().userId == "linked-l1-p2"
+    expect plans.first().action == sync.SyncAction.Create
+
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
+    expect settings.loadAbsTarget() is Ok(abs)
+    results = sync.applyPlans(abs, plans)
+    expect results.first().action == sync.SyncOutcome.Created
+    expect results.first().books == 2
+
+    deleteLink("l1")
+    gone = sync.loadAllSyncPlans()
+    expect gone.length() == 1
+    expect gone.first().action == sync.SyncAction.Remove
+    expect gone.first().collectionId == "col-sam"
+    expect sync.applyPlans(abs, gone).first().action == sync.SyncOutcome.Removed
+    expect sync.loadAllSyncPlans().length() == 0
 }

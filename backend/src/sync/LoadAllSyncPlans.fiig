@@ -1,9 +1,10 @@
-use hearsay.ratings.rated.RatedBooks
+use hearsay.links
 
-// What a full sync would do, for everyone: the scheduled run's plan. Reads our
-// tables and touches nothing.
+// What a full sync would do, for everyone, linked servers' people included
+// (LINKED.md section 6): the scheduled run's plan. Reads our tables and
+// touches nothing.
 activity loadAllSyncPlans() -> List<SyncPlan> {
-    rows = RatedBooks.recommended()
+    rows = links.everyRecommendation()
     states = allSyncStates()
     return planSync(rows, states, everyoneToSync(rows, states))
 }
