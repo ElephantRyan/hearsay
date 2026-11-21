@@ -1,6 +1,11 @@
 {
   "components": {
     "securitySchemes": {
+      "Authorization": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      },
       "oidc": {
         "in": "cookie",
         "name": "oidc",
@@ -107,8 +112,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -173,16 +177,6 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
             "content": {
               "application/json": {
@@ -202,53 +196,12 @@
               }
             },
             "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "502": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
           }
         },
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       },
       "post": {
@@ -400,8 +353,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -505,8 +457,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -620,8 +571,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -767,8 +717,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -950,16 +899,6 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
             "content": {
               "application/json": {
@@ -979,33 +918,12 @@
               }
             },
             "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
           }
         },
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       },
       "put": {
@@ -1296,8 +1214,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -1543,8 +1460,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -1592,16 +1508,6 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
             "content": {
               "application/json": {
@@ -1621,33 +1527,12 @@
               }
             },
             "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
           }
         },
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -1779,28 +1664,8 @@
     "/federation/fetch": {
       "post": {
         "operationId": "fetchForCaller",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "204": {
-            "description": ""
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
             "description": ""
           },
           "401": {
@@ -1812,65 +1677,20 @@
               }
             },
             "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "412": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
       }
     },
     "/federation/link": {
       "delete": {
         "operationId": "dropLink",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "204": {
-            "description": ""
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
             "description": ""
           },
           "401": {
@@ -1882,38 +1702,13 @@
               }
             },
             "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "412": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
       },
       "post": {
         "operationId": "acceptLink",
@@ -1980,16 +1775,6 @@
             },
             "description": ""
           },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "403": {
             "content": {
               "application/json": {
@@ -2026,16 +1811,6 @@
     "/federation/recommendations": {
       "get": {
         "operationId": "shareRecommendations",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "content": {
@@ -2090,16 +1865,6 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
             "content": {
               "application/json": {
@@ -2109,38 +1874,13 @@
               }
             },
             "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "412": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
       }
     },
     "/health": {
@@ -2348,8 +2088,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -2430,8 +2169,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -2574,8 +2312,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -2629,8 +2366,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -2725,8 +2461,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -2832,8 +2567,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -2898,8 +2632,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       },
       "put": {
@@ -3027,8 +2760,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -3122,8 +2854,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -3178,8 +2909,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -3280,8 +3010,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -3354,8 +3083,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     },
@@ -3684,8 +3412,7 @@
         "security": [
           {
             "sid": []
-          },
-          {}
+          }
         ]
       }
     }
