@@ -1,0 +1,9 @@
+// What a caller that is not a linked server is told. 401 with the scheme: the
+// calling side is another Hearsay, which does answer a challenge. linkErrorOfPeer
+// reads these statuses back there, so the two change together.
+conversion peerRefused(error: PeerRefusal) -> HttpResponse<string> {
+    match error {
+        PeerRefusal.NoKey -> HttpResponse(status: 401, headers: ["WWW-Authenticate": "Bearer"], body: "a linked server's key is needed")
+        PeerRefusal.UnknownKey -> HttpResponse(status: 401, headers: ["WWW-Authenticate": "Bearer"], body: "that key belongs to no linked server")
+    }
+}

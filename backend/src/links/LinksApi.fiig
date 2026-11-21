@@ -1,39 +1,38 @@
+use hearsay.accounts
+use hearsay.sessions
+
 // The admin routes for linked servers (LINKED.md section 4): invite one, link
-// to one with its code, list them, fetch one's recommendations now, unlink. src/Hearsay.fiig serves every
-// domain's adapter together.
+// to one with its code, list them, fetch one's recommendations now, unlink.
+// src/Hearsay.fiig serves every domain's adapter together. Admins only.
 adapter http linksApi {
-    GET "/admin/links" -> listLinks(session: string | None from cookie "sid")
+    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+    principal admin: accounts.Admin from me by accounts.signedInAdmin else accounts.notAnAdmin
+
+    GET "/admin/links" -> listLinks(admin)
         produces "application/json"
     {
-        Ok(links) -> 200 links
-        Err(error) -> linkErrorResponse(error)
+        links -> 200 links
     }
-    POST "/admin/links/invite" -> inviteServer(session: string | None from cookie "sid")
+    POST "/admin/links/invite" -> inviteServer(admin)
         produces "application/json"
     {
         Ok(invite) -> 200 invite
         Err(error) -> linkErrorResponse(error)
     }
-    POST "/admin/links" -> linkServer(
-        session: string | None from cookie "sid",
-        request: LinkRequest,
-    )
+    POST "/admin/links" -> linkServer(admin, request: LinkRequest)
         consumes "application/json"
         produces "application/json"
     {
         Ok(link) -> 200 link
         Err(error) -> linkErrorResponse(error)
     }
-    POST "/admin/links/{id}/refresh" -> refreshLink(
-        session: string | None from cookie "sid",
-        id: string,
-    )
+    POST "/admin/links/{id}/refresh" -> refreshLink(admin, id: string)
         produces "application/json"
     {
         Ok(link) -> 200 link
         Err(error) -> linkErrorResponse(error)
     }
-    DELETE "/admin/links/{id}" -> unlinkServer(session: string | None from cookie "sid", id: string)
+    DELETE "/admin/links/{id}" -> unlinkServer(admin, id: string)
         produces "application/json"
     {
         Ok(unlinked) -> 200 unlinked

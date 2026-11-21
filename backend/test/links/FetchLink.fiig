@@ -4,8 +4,6 @@ use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
 use fiig.http
 use fiig.http.HttpClient
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
 use hearsay.settings.ServerConfig
@@ -18,9 +16,6 @@ use hearsay.settings.SignInConfig
 test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake SessionConfig {
-        sessionMaxAge: 3600
     }
     fake ServerConfig {
         name: "Alex's library"
@@ -68,7 +63,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
 
     // Linking builds the empty index, then fetches at once.
@@ -121,9 +116,6 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     fake Abs {
         url: "https://abs.test"
     }
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
     fake ServerConfig {
         name: "Alex's library"
     }
@@ -160,7 +152,7 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     expect calls(HttpClient.send) == 0
     expect calls(AbsCatalog.librariesAsService) == 0
 
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
     expect fetchOnSchedule() is Err(FetchError.IndexNotRebuilt(problem))
     expect problem == "Audiobookshelf answered 502"

@@ -1,9 +1,6 @@
-// The status and message a client sees for each way a linking request can
-// fail. 401 names no scheme: the browser holds a cookie, not a challenge.
+// The status and message a client sees for each way a linking request can fail.
 conversion linkErrorResponse(error: LinkError) -> HttpResponse<string> {
     match error {
-        LinkError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
-        LinkError.NotAdmin -> HttpResponse(status: 403, body: "only an admin can do this")
         LinkError.NoServerName -> HttpResponse(status: 409, body: "give this server a name first, in Settings")
         LinkError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
         LinkError.AlreadyLinked(name) -> HttpResponse(status: 409, body: "already linked to ${name}")

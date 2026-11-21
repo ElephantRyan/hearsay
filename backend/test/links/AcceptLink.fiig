@@ -4,8 +4,6 @@ use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
 use fiig.http
 use fiig.http.HttpClient
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
 use hearsay.settings.ServerConfig
@@ -18,9 +16,6 @@ use hearsay.settings.SignInConfig
 test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake SessionConfig {
-        sessionMaxAge: 3600
     }
     fake ServerConfig {
         name: "Ryan's library"
@@ -46,7 +41,7 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin))
     expect inviteServer(admin) is Ok(invite)
     expect calls(AbsCatalog.pageAsService) == 1
     expect invite.code.startsWith("https://ryan.test#")
@@ -63,20 +58,19 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     expect acceptLink(offer) is Ok(accepted)
     expect accepted.name == "Ryan's library"
     expect acceptLink(offer) is Err(FederationError.BadInvite)
-    expect listLinks(admin) is Ok(links)
+    links = listLinks(admin)
     expect links.length() == 1
     expect links.first().name == "Alex's library"
     expect links.first().address == "https://alex.test"
     expect links.first().linkedBy == "invite"
-    expect linkOfKey("Bearer ${accepted.key}") is Ok(caller)
+    expect callingServer("Bearer ${accepted.key}") is Ok(caller)
     expect caller.name == "Alex's library"
-    expect linkOfKey(None) is Err(FederationError.NoKey)
-    expect linkOfKey(accepted.key) is Err(FederationError.NoKey)
-    expect linkOfKey("Bearer ${alexKey}") is Err(FederationError.UnknownKey)
+    expect callingServer(None) is Err(PeerRefusal.NoKey)
+    expect callingServer(accepted.key) is Err(PeerRefusal.NoKey)
+    expect callingServer("Bearer ${alexKey}") is Err(PeerRefusal.UnknownKey)
 
     // Asked to fetch by the server that just linked: it is fetched at once.
-    expect fetchForCaller(None) is Err(FederationError.NoKey)
-    expect fetchForCaller("Bearer ${accepted.key}") is Ok(1)
+    expect fetchForCaller(caller) == 1
     held = linkedRatingsOf(caller.id)
     expect held.length() == 1
     expect held.first().itemId == "dune-here"
@@ -90,9 +84,9 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
 
     // Unlinked from the other side: the key stops working.
-    expect dropLink("Bearer ${accepted.key}") is Ok(1)
-    expect dropLink("Bearer ${accepted.key}") is Err(FederationError.UnknownKey)
-    expect listLinks(admin) is Ok(none)
+    expect dropLink(caller) == 1
+    expect callingServer("Bearer ${accepted.key}") is Err(PeerRefusal.UnknownKey)
+    none = listLinks(admin)
     expect none.length() == 0
 }
 
@@ -123,9 +117,6 @@ test anInviteWaitsForTheLibraryIndex {
     fake Abs {
         url: "https://abs.test"
     }
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
     fake ServerConfig {
         name: "Ryan's library"
     }
@@ -141,22 +132,17 @@ test anInviteWaitsForTheLibraryIndex {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin))
     expect inviteServer(admin) is Err(LinkError.IndexUnavailable(detail))
     expect detail == "Audiobookshelf refused this server's token"
 }
 
 test linkingWaitsForAServerName {
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
     fake ServerConfig {
         name: None
     }
 
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
-    user = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    expect inviteServer(user) is Err(LinkError.NotAdmin)
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin))
     expect inviteServer(admin) is Err(LinkError.NoServerName)
     expect linkServer(admin, LinkRequest(code: "https://alex.test#x")) is Err(LinkError.NoServerName)
 }

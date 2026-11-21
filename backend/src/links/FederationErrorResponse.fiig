@@ -4,8 +4,6 @@
 conversion federationErrorResponse(error: FederationError) -> HttpResponse<string> {
     match error {
         FederationError.BadInvite -> HttpResponse(status: 403, body: "this link code is used, expired, or wrong")
-        FederationError.NoKey -> HttpResponse(status: 401, headers: ["WWW-Authenticate": "Bearer"], body: "a linked server's key is needed")
-        FederationError.UnknownKey -> HttpResponse(status: 401, headers: ["WWW-Authenticate": "Bearer"], body: "that key belongs to no linked server")
         FederationError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
         FederationError.AlreadyLinked -> HttpResponse(status: 409, body: "already linked to that address")
         FederationError.NoServerName -> HttpResponse(status: 412, body: "this server has no name yet")

@@ -1,9 +1,8 @@
-// Why another server's call was refused. None of them says more than it must
+// Why another server's call was refused, once it has been believed to be a
+// linked server (or is taking up an invite). None of them says more than it must
 // to a caller that may not be a linked server at all.
 enum FederationError {
     BadInvite
-    NoKey
-    UnknownKey
     Invalid(field: string, reason: string)
     AlreadyLinked
     NoServerName

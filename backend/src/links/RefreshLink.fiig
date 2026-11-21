@@ -1,8 +1,9 @@
+use hearsay.accounts
+
 // POST /admin/links/{id}/refresh: fetch one server's recommendations now. A
 // server that doesn't answer is not an error here: the answer says so in
 // notAnsweringSince and problem, as the list does.
-workflow refreshLink(session: string | None, id: string) -> Result<LinkedServer, LinkError> {
-    requireAdmin(session)?
+workflow refreshLink(admin: accounts.Admin, id: string) -> Result<LinkedServer, LinkError> {
     peer = peerToFetch(id)?
     readyIndex()?
     return fetchLink(peer)

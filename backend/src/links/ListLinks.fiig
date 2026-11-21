@@ -1,5 +1,6 @@
+use hearsay.accounts
+
 // GET /admin/links.
-workflow listLinks(session: string | None) -> Result<List<LinkedServer>, LinkError> {
-    requireAdmin(session)?
-    return Ok(linkedServers())
+workflow listLinks(admin: accounts.Admin) -> List<LinkedServer> {
+    return linkedServers()
 }

@@ -1,0 +1,23 @@
+// Which linked server is calling, from its "Authorization: Bearer <key>"
+// header: settled once per request, by the adapter, before the request is read.
+// A header that is missing or isn't a bearer key is refused before any lookup.
+workflow callingServer(authorization: string | None) -> Result<LinkedServer, PeerRefusal> {
+    match authorization {
+        None -> {
+            return Err(PeerRefusal.NoKey)
+        }
+        given -> {
+            if not given.startsWith("Bearer ") {
+                return Err(PeerRefusal.NoKey)
+            }
+            match linkWithKey(given.removePrefix("Bearer ").trim()) {
+                None -> {
+                    return Err(PeerRefusal.UnknownKey)
+                }
+                link -> {
+                    return Ok(link)
+                }
+            }
+        }
+    }
+}

@@ -1,5 +1,6 @@
+use hearsay.accounts
+
 // DELETE /admin/links/{id}.
-workflow unlinkServer(session: string | None, id: string) -> Result<Unlinked, LinkError> {
-    requireAdmin(session)?
+workflow unlinkServer(admin: accounts.Admin, id: string) -> Result<Unlinked, LinkError> {
     return removeLink(id)
 }

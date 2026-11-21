@@ -4,8 +4,6 @@ use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
 use fiig.http
 use fiig.http.HttpClient
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
 use hearsay.settings.ServerConfig
@@ -17,9 +15,6 @@ use hearsay.settings.SignInConfig
 test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake SessionConfig {
-        sessionMaxAge: 3600
     }
     fake ServerConfig {
         name: "Alex's library"
@@ -72,7 +67,7 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Root)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Root))
     code = "  https://ryan.test/#${"s".padRight(43, "s")} "
     expect linkServer(admin, LinkRequest(code: code)) is Ok(link)
     expect link.name == "Ryan's library"
@@ -88,16 +83,13 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     expect unlinkServer(admin, link.id) is Ok(unlinked)
     expect unlinked == Unlinked(name: "Ryan's library", told: true)
     expect unlinkServer(admin, link.id) is Err(LinkError.UnknownLink)
-    expect listLinks(admin) is Ok(none)
+    none = listLinks(admin)
     expect none.length() == 0
 }
 
 test aLoginPageOrARefusalKeepsNothing {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake SessionConfig {
-        sessionMaxAge: 3600
     }
     fake ServerConfig {
         name: "Alex's library"
@@ -137,7 +129,7 @@ test aLoginPageOrARefusalKeepsNothing {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
     secret = "s".padRight(43, "s")
     expect linkServer(admin, LinkRequest(code: "https://login.test#${secret}")) is Err(LinkError.PeerLoginPage)
     expect linkServer(admin, LinkRequest(code: "https://page.test#${secret}")) is Err(LinkError.PeerLoginPage)
@@ -148,7 +140,7 @@ test aLoginPageOrARefusalKeepsNothing {
     expect own.contains("own")
     expect linkServer(admin, LinkRequest(code: "https://ryan.test")) is Err(LinkError.Invalid(_, _))
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#short")) is Err(LinkError.Invalid(_, _))
-    expect listLinks(admin) is Ok(none)
+    none = listLinks(admin)
     expect none.length() == 0
     expect calls(AbsCatalog.pageAsService) == 1
 }
@@ -157,9 +149,6 @@ test aLoginPageOrARefusalKeepsNothing {
 test linkingWaitsForTheLibraryIndex {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake SessionConfig {
-        sessionMaxAge: 3600
     }
     fake ServerConfig {
         name: "Alex's library"
@@ -182,7 +171,7 @@ test linkingWaitsForTheLibraryIndex {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Err(LinkError.IndexUnavailable(_))
     expect calls(HttpClient.send) == 0
 }
@@ -192,9 +181,6 @@ test linkingWaitsForTheLibraryIndex {
 test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake SessionConfig {
-        sessionMaxAge: 3600
     }
     fake ServerConfig {
         name: "Alex's library"
@@ -224,13 +210,13 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
     expect link.problem == "it didn't answer"
     expect link.lastFetchedAt == None
     expect calls(HttpClient.send) == 3
     expect unlinkServer(admin, link.id) is Ok(unlinked)
     expect unlinked == Unlinked(name: "Ryan's library", told: false)
-    expect listLinks(admin) is Ok(none)
+    none = listLinks(admin)
     expect none.length() == 0
 }

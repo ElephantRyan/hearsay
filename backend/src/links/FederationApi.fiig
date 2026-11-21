@@ -1,31 +1,31 @@
 // The routes another Hearsay server calls (LINKED.md sections 4 and 5): taking
 // up an invite, fetching recommendations, being asked to fetch, and being
-// unlinked. A login in front of the app must let /api/federation/ through;
-// these routes check the invite or the key themselves.
+// unlinked. A login in front of the app must let /api/federation/ through.
+// Taking up an invite is public (the invite is its own proof, checked in the
+// workflow); every other route settles which linked server is calling first.
 adapter http federationApi {
-    POST "/federation/link" -> acceptLink(offer: LinkOffer)
+    principal peer: LinkedServer from header "Authorization" by callingServer else peerRefused
+
+    POST "/federation/link" public -> acceptLink(offer: LinkOffer)
         consumes "application/json"
         produces "application/json"
     {
         Ok(acceptance) -> 200 acceptance
         Err(error) -> federationErrorResponse(error)
     }
-    GET "/federation/recommendations" -> shareRecommendations(authorization: string | None from header "Authorization")
+    GET "/federation/recommendations" -> shareRecommendations(peer)
         produces "application/json"
     {
-        Ok(ratings) -> 200 ratings
-        Err(error) -> federationErrorResponse(error)
+        ratings -> 200 ratings
     }
-    POST "/federation/fetch" -> fetchForCaller(authorization: string | None from header "Authorization")
+    POST "/federation/fetch" -> fetchForCaller(peer)
         produces "application/json"
     {
-        Ok(_) -> noContent()
-        Err(error) -> federationErrorResponse(error)
+        _ -> noContent()
     }
-    DELETE "/federation/link" -> dropLink(authorization: string | None from header "Authorization")
+    DELETE "/federation/link" -> dropLink(peer)
         produces "application/json"
     {
-        Ok(_) -> noContent()
-        Err(error) -> federationErrorResponse(error)
+        _ -> noContent()
     }
 }

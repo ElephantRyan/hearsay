@@ -1,11 +1,11 @@
+use hearsay.accounts
 use hearsay.settings
 
 // POST /admin/links: takes up another server's invite with its link code, then
 // fetches its recommendations and asks it to fetch this server's, so both
 // show the other's straight away. The library index is made ready before the
 // other server is contacted, so a link is never made that can't match books.
-workflow linkServer(session: string | None, request: LinkRequest) -> Result<LinkedServer, LinkError> {
-    me = requireAdmin(session)?
+workflow linkServer(admin: accounts.Admin, request: LinkRequest) -> Result<LinkedServer, LinkError> {
     match settings.serverName() {
         None -> {
             return Err(LinkError.NoServerName)
@@ -13,7 +13,7 @@ workflow linkServer(session: string | None, request: LinkRequest) -> Result<Link
         name -> {
             invite = inviteCodeOf(request.code)?
             readyIndex()?
-            link = takeUpInvite(invite, name, me.userId)?
+            link = takeUpInvite(invite, name, admin.identity.userId)?
             return fetchNewLink(link.id)
         }
     }

@@ -1,0 +1,4 @@
+// The linked server a key belongs to, if any. What none means is callingServer's to say.
+activity linkWithKey(key: string) -> LinkedServer | None {
+    return linkOfKeyHash(keyHash(key))
+}
