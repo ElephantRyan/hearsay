@@ -1,6 +1,6 @@
 use hearsay.common
 
-// The ratings routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// The ratings routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http ratingsApi {
     PUT "/ratings/{itemId}" -> putRating(

@@ -1,0 +1,33 @@
+use hearsay.admin
+use hearsay.health
+use hearsay.library
+use hearsay.listening
+use hearsay.ratings
+use hearsay.ratings.rated
+use hearsay.recommendations
+use hearsay.sessions
+use hearsay.setup
+use hearsay.signin
+use hearsay.signin.oidc
+use hearsay.sync
+
+// What Hearsay runs (fiig ADR 0132): the HTTP surface, and the hourly collections sync.
+application Hearsay {
+    serve web {
+        sessions.sessionsApi
+        signin.signinApi
+        oidc.oidcApi
+        ratings.ratingsApi
+        rated.ratedApi
+        library.libraryApi
+        recommendations.recommendationsApi
+        sync.syncApi
+        listening.listeningApi
+        admin.adminApi
+        setup.setupApi
+        health.healthApi
+    }
+    serve worker {
+        sync.syncSchedule
+    }
+}

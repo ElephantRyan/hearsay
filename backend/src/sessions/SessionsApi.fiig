@@ -1,6 +1,6 @@
 use hearsay.common
 
-// The sessions routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// The sessions routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http sessionsApi {
     DELETE "/session" -> endSession(session: string | None from cookie "sid")

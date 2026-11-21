@@ -1,6 +1,6 @@
 use hearsay.common
 
-// The library routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// The library routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http libraryApi {
     GET "/libraries" -> showLibraries(session: string | None from cookie "sid")

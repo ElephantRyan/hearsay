@@ -1,4 +1,4 @@
-// The health routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// The health routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http healthApi {
     GET "/health" -> healthCheck()

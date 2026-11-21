@@ -1,6 +1,6 @@
 use hearsay.common
 
-// The recommendations routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// The recommendations routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http recommendationsApi {
     GET "/recommendations?userId={userId}&libraryId={libraryId}&minScore={minScore}" -> listRecommendations(

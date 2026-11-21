@@ -2,7 +2,7 @@ use hearsay.common
 use hearsay.settings
 
 // The admin routes of the HTTP surface: settings and a status check, for
-// Audiobookshelf admins only. serve-dev.sh serves every domain's adapter together.
+// Audiobookshelf admins only. src/Hearsay.fiig serves every domain's adapter together.
 adapter http adminApi {
     GET "/admin/settings" -> showSettings(session: string | None from cookie "sid")
         produces "application/json"

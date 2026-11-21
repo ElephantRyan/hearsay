@@ -1,7 +1,7 @@
 use hearsay.common
 use hearsay.signin
 
-// The first-run routes: whether setup is needed, and doing it. serve-dev.sh
+// The first-run routes: whether setup is needed, and doing it. src/Hearsay.fiig
 // serves every domain's adapter together.
 adapter http setupApi {
     GET "/setup" -> showSetup()

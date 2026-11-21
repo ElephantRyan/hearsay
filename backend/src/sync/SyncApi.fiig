@@ -1,6 +1,6 @@
 use hearsay.common
 
-// The sync routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
+// The sync routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http syncApi {
     POST "/sync?userId={userId}&dryRun={dryRun}" -> syncCollections(

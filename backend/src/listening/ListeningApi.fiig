@@ -1,6 +1,6 @@
 use hearsay.common
 
-// The listening routes of the HTTP surface; serve-dev.sh serves every domain's
+// The listening routes of the HTTP surface; src/Hearsay.fiig serves every domain's
 // adapter together.
 adapter http listeningApi {
     GET "/me/listening" -> showMyListening(session: string | None from cookie "sid")
