@@ -34,7 +34,7 @@ test aNewServerIsClaimedByAnAbsAdmin {
     expect showSetup() == SetupState(needed: true)
 
     expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "right")) is Ok(session)
-    expect sessions.whoAmI(session.token) is Ok(me)
+    expect sessions.signedIn(session.token) is Ok(me)
     expect me.userType == client.AbsUserType.Root
     expect settings.absUrl() == "https://abs.home.test"
     expect showSetup() == SetupState(needed: false)

@@ -1,5 +1,5 @@
 use hearsay.accounts
 
-workflow whoAmI(session: string | None) -> Result<accounts.Identity, IdentityError> {
-    return currentUser(session)
+workflow whoAmI(me: accounts.Identity) -> accounts.Identity {
+    return me
 }

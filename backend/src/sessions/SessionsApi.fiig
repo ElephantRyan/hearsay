@@ -1,15 +1,19 @@
-// The sessions routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
-// every domain's adapter together.
+use hearsay.accounts
+
+// The sessions routes of the HTTP surface; src/Hearsay.fiig serves every
+// domain's adapter together.
 adapter http sessionsApi {
-    DELETE "/session" -> endSession(session: string | None from cookie "sid")
+    principal me: accounts.Identity from cookie "sid" by signedIn else identityErrorResponse
+
+    // Logging out with no session is fine, so this route settles no principal.
+    DELETE "/session" public -> endSession(session: string | None from cookie "sid")
         produces "application/json"
     {
         _ -> signedOut()
     }
-    GET "/me" -> whoAmI(session: string | None from cookie "sid")
+    GET "/me" -> whoAmI(me)
         produces "application/json"
     {
-        Ok(identity) -> 200 identity
-        Err(error) -> identityErrorResponse(error)
+        identity -> 200 identity
     }
 }

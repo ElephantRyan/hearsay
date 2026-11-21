@@ -1,0 +1,21 @@
+use hearsay.absclient as client
+use hearsay.accounts
+
+// The binder every signed-in route goes through: what a cookie means.
+test aCookieIsASessionOnlyWhileItIsLive {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+
+    identity = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
+    session = startSession(identity)
+    expect signedIn(session.token) is Ok(found)
+    expect found == identity
+    expect signedIn(None) is Err(IdentityError.NotSignedIn)
+    expect signedIn("not-a-token") is Err(IdentityError.NotSignedIn)
+    saveSession(tokenHash("old"), identity, 1)
+    expect signedIn("old") is Err(IdentityError.NotSignedIn)
+    expect logOut(session.token) == 1
+    expect signedIn(session.token) is Err(IdentityError.NotSignedIn)
+    expect logOut(None) == 0
+}

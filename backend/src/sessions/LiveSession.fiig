@@ -1,0 +1,7 @@
+use hearsay.accounts
+
+// The identity behind a session token, if the session is live: known, and not
+// past its expiry. What a missing one means is signedIn's to say.
+activity liveSession(token: string) -> accounts.Identity | None {
+    return findSession(tokenHash(token), Clock.now())
+}

@@ -1,0 +1,4 @@
+// Why a signed-in person isn't an admin.
+enum AdminRefusal {
+    NotAnAdmin
+}

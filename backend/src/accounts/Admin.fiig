@@ -1,0 +1,6 @@
+// An identity that may administer: an Audiobookshelf admin or its owner (root).
+// Only signedInAdmin settles one, so a workflow that takes an Admin is reached
+// by nobody else.
+model Admin {
+    identity: Identity
+}
