@@ -8,3 +8,7 @@ abs-login.json
 node_modules/
 dist/
 *.log
+
+# notes stay local; only the root README is published
+*.md
+!/README.md

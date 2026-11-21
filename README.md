@@ -18,9 +18,8 @@ programming language for application services, where models, business rules, ext
 how they compose are part of the language and the compiler rejects whole classes of bugs
 (unhandled errors, undeclared effects, invalid transactions).
 
-Hearsay is also fiig's first real application, so it doubles as a test of the language. The places
-where fiig got in the way are written down in [GAPS.md](GAPS.md), and fiig is fixed from that list.
-fiig is alpha: syntax and behavior can still change, and Hearsay is kept building against it.
+Hearsay is also fiig's first real application, so it doubles as a test of the language. fiig is
+alpha: syntax and behavior can still change, and Hearsay is kept building against it.
 
 If you haven't seen fiig before, a taste of this codebase (`backend/src/ratings/CreateRating.fiig`):
 
@@ -35,7 +34,7 @@ rule createRating(userId: string, itemId: string, input: RatingInput, now: int) 
 ```
 
 The backend is one file per declaration, and each folder under `backend/src/` is a package (a
-domain: `ratings/`, `library/`, `sync/`, ...). [backend/README.md](backend/README.md) has the map.
+domain: `ratings/`, `library/`, `sync/`, ...).
 
 ## Layout
 
@@ -43,10 +42,6 @@ domain: `ratings/`, `library/`, `sync/`, ...). [backend/README.md](backend/READM
 |---|---|
 | `backend/` | The fiig application: JSON API, SQLite, the hourly collections sync |
 | `frontend/` | A React + TypeScript single-page app that talks only to the JSON API |
-| [PLAN.md](PLAN.md) | Goals, data model, API surface and milestones |
-| [FRONTEND.md](FRONTEND.md) | The frontend's design |
-| [LINKED.md](LINKED.md) | Blending ratings between linked servers |
-| [GAPS.md](GAPS.md) | Where fiig fell short while building this |
 
 ## Running it
 
@@ -64,7 +59,7 @@ irm https://raw.githubusercontent.com/ElephantRyan/fiig-lang/main/install.ps1 | 
 Backend (from `backend/`):
 
 ```sh
-# configure it: .env holds ABS_URL, ABS_SERVICE_TOKEN, AUTH_MODE, ... (PLAN.md section 8)
+# configure it: .env holds ABS_URL, ABS_SERVICE_TOKEN, AUTH_MODE, ...
 fiig check .                                          # type-check
 fiig test  .                                          # run the tests
 fiig serve -caps caps.json -env-file .env . web       # the API on :8080
