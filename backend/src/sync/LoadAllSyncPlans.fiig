@@ -1,0 +1,9 @@
+use abs.recommendations.ratings.rated.RatedBooks
+
+// What a full sync would do, for everyone: the scheduled run's plan. Reads our
+// tables and touches nothing.
+activity loadAllSyncPlans() -> List<SyncPlan> {
+    rows = RatedBooks.recommended()
+    states = allSyncStates()
+    return planSync(rows, states, everyoneToSync(rows, states))
+}

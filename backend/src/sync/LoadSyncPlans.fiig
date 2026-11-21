@@ -8,6 +8,6 @@ activity loadSyncPlans(session: string | None, userId: string | None) -> Result<
     me = sessions.currentUser(session)?
     rows = RatedBooks.recommended()
     states = allSyncStates()
-    targets = syncTargets(me, userId, rows, states)?
+    targets = syncTargets(me, userId, everyoneToSync(rows, states))?
     return Ok(planSync(rows, states, targets))
 }

@@ -1,18 +1,17 @@
 use abs.recommendations.accounts
 use abs.recommendations.common
-use abs.recommendations.ratings.rated
 
 // Whose lists a sync touches: "admin or self" (PLAN.md section 4). A person
 // syncs their own; an admin may name anyone, or leave it out for everyone who
-// has recommendations or a collection of ours.
-rule syncTargets(me: accounts.Identity, requested: string | None, rows: List<rated.RatingRow>, states: List<SyncState>) -> Result<List<string>, common.ApiError> {
+// has recommendations or a collection of ours (everyoneToSync, from the caller).
+rule syncTargets(me: accounts.Identity, requested: string | None, everyone: List<string>) -> Result<List<string>, common.ApiError> {
     admin = me.userType == "admin" or me.userType == "root"
     match requested {
         None -> {
             if not admin {
                 return Ok([me.userId])
             }
-            return Ok(everyone(rows, states))
+            return Ok(everyone)
         }
         named -> {
             if named != me.userId and not admin {
@@ -20,22 +19,5 @@ rule syncTargets(me: accounts.Identity, requested: string | None, rows: List<rat
             }
             return Ok([named])
         }
-    }
-}
-
-private {
-    everyone(rows: List<rated.RatingRow>, states: List<SyncState>) -> List<string> {
-        ids: List<string> = []
-        for row in rows {
-            if row.recommended and not ids.contains(row.userId) {
-                ids = append(ids, row.userId)
-            }
-        }
-        for state in states {
-            if not ids.contains(state.userId) {
-                ids = append(ids, state.userId)
-            }
-        }
-        return ids
     }
 }

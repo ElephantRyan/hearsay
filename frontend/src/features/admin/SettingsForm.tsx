@@ -332,8 +332,8 @@ function MirrorField({
         <label htmlFor={id} className="text-sm">
           <span className="font-medium">Write recommendation collections into Audiobookshelf</span>
           <span className="block text-muted">
-            Each person's recommended books become a collection there. The app only ever creates,
-            changes and removes its own collections.
+            Each person's recommended books become a collection there, brought up to date every
+            hour. The app only ever creates, changes and removes its own collections.
           </span>
         </label>
       </div>

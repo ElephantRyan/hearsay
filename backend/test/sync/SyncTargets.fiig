@@ -12,14 +12,14 @@ test syncTargetsAreSelfUnlessAdmin {
     ]
     ann = accounts.Identity(userId: "u1", username: "Ann", userType: "user")
     boss = accounts.Identity(userId: "u0", username: "Boss", userType: "admin")
-    expect syncTargets(ann, None, rows, states) is Ok(own)
+    expect syncTargets(ann, None, everyoneToSync(rows, states)) is Ok(own)
     expect own == ["u1"]
-    expect syncTargets(ann, "u1", rows, states) is Ok(self)
+    expect syncTargets(ann, "u1", everyoneToSync(rows, states)) is Ok(self)
     expect self == ["u1"]
-    expect syncTargets(ann, "u2", rows, states) is Err(common.ApiError.Refused(why))
+    expect syncTargets(ann, "u2", everyoneToSync(rows, states)) is Err(common.ApiError.Refused(why))
     expect boss.userType == "admin"
-    expect syncTargets(boss, "u2", rows, states) is Ok(named)
+    expect syncTargets(boss, "u2", everyoneToSync(rows, states)) is Ok(named)
     expect named == ["u2"]
-    expect syncTargets(boss, None, rows, states) is Ok(all)
+    expect syncTargets(boss, None, everyoneToSync(rows, states)) is Ok(all)
     expect all == ["u1", "u3"]
 }

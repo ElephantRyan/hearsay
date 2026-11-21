@@ -1,0 +1,10 @@
+// Keeps the mirrored collections in ABS current without anyone pressing Sync
+// (fiig ADR 0112). Hourly, at the top of the hour UTC; a firing missed while the
+// server was down is skipped, and the next one catches up on everything. An Err
+// is logged by the runtime.
+adapter schedule syncSchedule {
+    every "1h" -> syncOnSchedule() {
+        Ok(_) -> done
+        Err(_) -> done
+    }
+}

@@ -200,7 +200,8 @@ function CollectionsCard() {
       ) : (
         <div className="space-y-4">
           <p className="text-sm text-muted">
-            Preview shows what would change in Audiobookshelf without touching it.
+            Collections update by themselves every hour. Preview shows what would change in
+            Audiobookshelf without touching it; Sync now does it straight away.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button variant="secondary" onClick={() => run(true)} disabled={sync.isPending}>

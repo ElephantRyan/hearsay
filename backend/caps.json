@@ -1,4 +1,5 @@
 {
     "Database": {"type": "sql", "driver": "sqlite", "dsn": "file:abs-recommendations.db"},
-    "Socket": {"type": "socket"}
+    "Socket": {"type": "socket"},
+    "ScheduleLock": {"type": "local"}
 }
