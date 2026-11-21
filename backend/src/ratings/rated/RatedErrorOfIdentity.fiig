@@ -1,0 +1,7 @@
+use hearsay.sessions
+
+conversion ratedErrorOfIdentity(error: sessions.IdentityError) -> RatedError {
+    match error {
+        sessions.IdentityError.NotSignedIn -> RatedError.NotSignedIn
+    }
+}

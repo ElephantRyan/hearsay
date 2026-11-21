@@ -1,9 +1,6 @@
-use hearsay.common
 use hearsay.ratings.rated
 use hearsay.ratings.rated.RatedBooks
-use hearsay.sessions
 
-activity picksOf(session: string | None, userId: string) -> Result<List<rated.RatingRow>, common.ApiError> {
-    mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
-    return Ok(bestFirst(RatedBooks.recommended(), userId))
+activity picksOf(userId: string) -> List<rated.RatingRow> {
+    return bestFirst(RatedBooks.recommended(), userId)
 }

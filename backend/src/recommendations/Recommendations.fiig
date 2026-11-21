@@ -1,9 +1,6 @@
-use hearsay.common
 use hearsay.ratings.rated.RatedBooks
-use hearsay.sessions
 
-activity recommendations(session: string | None, userId: string | None, libraryId: string | None, minScore: int | None) -> Result<List<RecommendedBook>, common.ApiError> {
-    mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
+activity recommendations(userId: string | None, libraryId: string | None, minScore: int | None) -> List<RecommendedBook> {
     rows = filterRows(RatedBooks.recommended(), userId, libraryId)
-    return Ok(atLeast(rankRecommendations(rows), minScore))
+    return atLeast(rankRecommendations(rows), minScore)
 }

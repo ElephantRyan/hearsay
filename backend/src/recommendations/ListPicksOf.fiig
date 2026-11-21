@@ -1,6 +1,7 @@
-use hearsay.common
 use hearsay.ratings.rated
+use hearsay.sessions
 
-workflow listPicksOf(session: string | None, userId: string) -> Result<List<rated.RatingRow>, common.ApiError> {
-    return picksOf(session, userId)
+workflow listPicksOf(session: string | None, userId: string) -> Result<List<rated.RatingRow>, RecommendationError> {
+    mapErr(e in sessions.currentUser(session)): recommendationErrorOfIdentity(e)?
+    return Ok(picksOf(userId))
 }

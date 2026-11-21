@@ -1,5 +1,6 @@
-use hearsay.common
+use hearsay.sessions
 
-workflow listRecommenderUsers(session: string | None) -> Result<List<Recommender>, common.ApiError> {
-    return listRecommenders(session)
+workflow listRecommenderUsers(session: string | None) -> Result<List<Recommender>, RecommendationError> {
+    mapErr(e in sessions.currentUser(session)): recommendationErrorOfIdentity(e)?
+    return Ok(listRecommenders())
 }

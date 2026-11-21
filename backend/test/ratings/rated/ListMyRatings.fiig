@@ -1,6 +1,5 @@
 use hearsay.absclient as client
 use hearsay.accounts
-use hearsay.common
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
 
@@ -14,5 +13,5 @@ test myRatingsComeInAnyOrderAskedFor {
     expect none.length() == 0
     expect listMyRatings(token, RatingOrder.Score) is Ok(byScore)
     expect byScore.length() == 0
-    expect listMyRatings(None, None) is Err(common.ApiError.Unauthenticated)
+    expect listMyRatings(None, None) is Err(RatedError.NotSignedIn)
 }

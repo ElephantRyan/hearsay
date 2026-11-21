@@ -38,12 +38,12 @@ test privateRatingsStayPrivate {
     expect annSees.ratings.length() == 2
     expect annSees.count == 1
     expect annSees.average == 6.00
-    expect recommendations.recommendations(bob, None, None, None) is Ok(listed)
+    expect recommendations.listRecommendations(bob, None, None, None) is Ok(listed)
     expect listed.length() == 1
     expect listed.at(0).average == 6.00
-    expect recommendations.listRecommenders(bob) is Ok(people)
+    expect recommendations.listRecommenderUsers(bob) is Ok(people)
     expect people.length() == 1
     expect people.at(0).username == "bob"
-    expect recommendations.picksOf(bob, "u1") is Ok(annsPicks)
+    expect recommendations.listPicksOf(bob, "u1") is Ok(annsPicks)
     expect annsPicks.length() == 0
 }

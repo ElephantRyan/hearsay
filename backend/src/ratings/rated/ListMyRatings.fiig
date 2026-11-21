@@ -1,8 +1,9 @@
-use hearsay.common
+use hearsay.sessions
 
 // Who is asking comes first (a stranger learns nothing about valid sorts). An
 // unknown sort never gets here: the route refuses it with a 400.
-workflow listMyRatings(session: string | None, sort: RatingOrder | None) -> Result<List<RatingRow>, common.ApiError> {
-    rows = loadMyRatings(session)?
+workflow listMyRatings(session: string | None, sort: RatingOrder | None) -> Result<List<RatingRow>, RatedError> {
+    me = mapErr(e in sessions.currentUser(session)): ratedErrorOfIdentity(e)?
+    rows = loadMyRatings(me.userId)
     return Ok(sortRatings(rows, sort or RatingOrder.Newest))
 }
