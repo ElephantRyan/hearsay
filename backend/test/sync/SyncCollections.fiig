@@ -6,11 +6,14 @@ use hearsay.accounts
 use hearsay.ratings
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
+use hearsay.settings.AbsService
 use hearsay.settings.SyncConfig
-use hearsay.settings
 use hearsay.settings.Abs
 
 test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -48,7 +51,6 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     expect ratings.putRating(annId, "a", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)

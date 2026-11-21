@@ -2,6 +2,7 @@ use hearsay.absclient as client
 use hearsay.accounts
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
+use hearsay.settings.AbsService
 use hearsay.settings.SignInConfig
 use hearsay.signin.authentik.AuthentikSignIn
 use hearsay.signin.password.AbsPasswordSignIn
@@ -12,9 +13,13 @@ use hearsay.settings.Oidc
 // The callback only exchanges the code when the state matches the cookie.
 // Authentik is faked; a call to it from a mismatched callback fails the test.
 test oidcCallbackChecksStateBeforeExchanging {
+    fake AbsService {
+        token: "svc"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake Abs {
@@ -54,8 +59,6 @@ test oidcCallbackChecksStateBeforeExchanging {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     good = finishSignIn("code-1", "st-1", None, "st-1.ver-1")
     expect good.location == "https://app.test"
     match good.session {

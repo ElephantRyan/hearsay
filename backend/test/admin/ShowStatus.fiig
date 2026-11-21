@@ -5,6 +5,7 @@ use hearsay.absclient.members.AbsMembers
 use hearsay.accounts
 use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use hearsay.settings.Oidc
 use hearsay.signin.authentik.AuthentikSignIn
 
@@ -12,9 +13,13 @@ test statusSaysWhoTheTokenBelongsTo {
     fake Abs {
         url: "https://abs.test"
     }
+    fake AbsService {
+        token: "good"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake AuthentikSignIn {
@@ -38,14 +43,37 @@ test statusSaysWhoTheTokenBelongsTo {
         }
     }
 
-    // "No token set" can't be tested: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
     admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
-    settings.rememberSetting("oidc.clientSecret", "csec", "a1")
-    settings.rememberSetting("abs.serviceToken", "good", "a1")
     good = showStatus(admin)
     expect good == AdminStatus(abs: "reachable", authentik: "answering", serviceAccount: "recommendation-bot", serviceAccountType: client.AbsUserType.Admin, problem: None)
 
+    // A token saved in the app wins over ABS_SERVICE_TOKEN.
     settings.rememberSetting("abs.serviceToken", "stale", "a1")
     refused = showStatus(admin)
     expect refused.problem == "Audiobookshelf refused the token."
+}
+
+// A new server: Audiobookshelf answers, but no token is set anywhere and
+// Authentik has no client secret, so the card says what is missing.
+test statusSaysWhenNoTokenIsSet {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake AbsService {
+        token: None
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: None
+        redirectUri: "https://app.test/api/auth/callback"
+    }
+    fake AbsServer {
+        gateway status(url: string) -> Result<int, client.AbsError> {
+            return Ok(200)
+        }
+    }
+
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
+    expect showStatus(admin) == AdminStatus(abs: "reachable", authentik: "not set up", serviceAccount: None, serviceAccountType: None, problem: "No Audiobookshelf token is set.")
 }

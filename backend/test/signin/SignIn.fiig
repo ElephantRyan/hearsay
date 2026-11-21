@@ -1,17 +1,21 @@
 use hearsay.absclient as client
 use hearsay.accounts
+use hearsay.settings.AbsService
 use hearsay.signin.authentik.AuthentikSignIn
 use hearsay.signin.password.AbsPasswordSignIn
-use hearsay.settings
 use hearsay.settings.Abs
 use hearsay.settings.Oidc
 
 // signInProvider can return either provider, so both are faked (ADR 0091 §4);
 // the one the attempt should not reach fails the test if it is called.
 test signInUsesTheChosenProvider {
+    fake AbsService {
+        token: "svc"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake Abs {
@@ -32,8 +36,6 @@ test signInUsesTheChosenProvider {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect signIn(accounts.SignInAttempt.Password("ryan", "pw")) is Ok(byPassword)
     expect byPassword.userId == "u-pw"
     expect signIn(accounts.SignInAttempt.AuthorizationCode("c", "v")) is Ok(byCode)

@@ -8,6 +8,7 @@ use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
@@ -15,6 +16,9 @@ use hearsay.settings.SignInConfig
 // what recognises each book. A book cached before ASINs were (migration 0005)
 // takes its ASIN from the library index.
 test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -45,7 +49,6 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect matching.indexLibrary(abs) is Ok(_)
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)

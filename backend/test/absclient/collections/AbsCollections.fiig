@@ -3,10 +3,14 @@ use hearsay.settings.Abs
 use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
+use hearsay.settings.AbsService
 
 // Writes are the dangerous calls, so bad ids stop before any request: a path
 // built from "../users" would be a write-capable request to the wrong place.
 test absCollectionWritesRefuseBadIdsAndMapFailures {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -22,7 +26,6 @@ test absCollectionWritesRefuseBadIdsAndMapFailures {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsCollections.deleteCollectionAsService(abs, "../users") is Err(absclient.AbsError.NotFound)
     expect AbsCollections.updateCollectionAsService(abs, "a/b", "n", "d", []) is Err(absclient.AbsError.NotFound)
@@ -37,6 +40,9 @@ test absCollectionWritesRefuseBadIdsAndMapFailures {
 // What a collection write sends: the verb, the path, the token, and a JSON body
 // carrying the books in order. ABS's reply is faked with the one member read.
 test absCollectionWritesSendExactlyWhatTheyShould {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -78,7 +84,6 @@ test absCollectionWritesSendExactlyWhatTheyShould {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsCollections.createCollectionAsService(abs, "lib-1", "Ann Recommends", "d", ["b-2", "b-1"]) is Ok(id)
     expect id == "col-1"

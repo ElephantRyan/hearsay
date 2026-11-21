@@ -10,6 +10,7 @@ use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
 use hearsay.absclient.collections.AbsCollections
+use hearsay.settings.AbsService
 use hearsay.sync
 
 // Linked servers' ratings blend in (LINKED.md section 6): they count in
@@ -18,6 +19,9 @@ use hearsay.sync
 // Dune on this server. Alex's library also has an ann, and a sam who rates
 // Dune and a book this library hasn't. Sam's place has another sam.
 test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -30,7 +34,6 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 8, note: "here", recommended: true)) is Ok(_)
@@ -88,6 +91,9 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
 // description says where the recommendations came from. Unlinked, the
 // collection goes at the next sync.
 test linkedPeopleGetCollectionsThatGoWhenUnlinked {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -121,7 +127,6 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
     expect plans.first().userId == "linked-l1-p2"
     expect plans.first().action == sync.SyncAction.Create
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     results = sync.applyPlans(abs, plans)
     expect results.first().action == sync.SyncOutcome.Created

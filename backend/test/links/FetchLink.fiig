@@ -6,6 +6,7 @@ use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
@@ -14,6 +15,9 @@ use hearsay.settings.SignInConfig
 // it is linked); its second
 // only one; then it refuses the key, as after it unlinked this server.
 test aFetchMatchesEachBookAndReplacesWhatWasHeld {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -62,7 +66,6 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
 
@@ -113,6 +116,9 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
 // that can't be rebuilt is logged, but the fetch still runs on the old index:
 // ABS answers the listing once, when linking builds the index, then fails.
 test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -147,7 +153,6 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect fetchOnSchedule() is Ok(0)
     expect calls(HttpClient.send) == 0
     expect calls(AbsCatalog.librariesAsService) == 0

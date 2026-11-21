@@ -2,6 +2,7 @@ use hearsay.absclient as client
 use hearsay.accounts
 use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use hearsay.settings.Oidc
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
@@ -9,6 +10,9 @@ use hearsay.settings.SyncConfig
 use hearsay.signin
 
 test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
+    fake AbsService {
+        token: "old-token"
+    }
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
@@ -16,6 +20,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake Abs {
@@ -28,9 +33,6 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
         name: None
     }
 
-    // A saved token first: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
-    settings.rememberSetting("abs.serviceToken", "old-token", "test")
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     root = accounts.Admin(identity: accounts.Identity(userId: "r1", username: "owner", userType: client.AbsUserType.Root))
     before = showSettings(root)
     expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
@@ -58,6 +60,9 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
 }
 
 test aBadChangeSavesNothing {
+    fake AbsService {
+        token: "old-token"
+    }
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
@@ -65,6 +70,7 @@ test aBadChangeSavesNothing {
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake Abs {
@@ -77,8 +83,6 @@ test aBadChangeSavesNothing {
         name: None
     }
 
-    settings.rememberSetting("abs.serviceToken", "old-token", "test")
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
     expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid(field, _))
     expect field == "absUrl"
@@ -91,6 +95,9 @@ test aBadChangeSavesNothing {
 }
 
 test switchingToAuthentikTurnsPasswordSignInOff {
+    fake AbsService {
+        token: "old-token"
+    }
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
@@ -110,7 +117,6 @@ test switchingToAuthentikTurnsPasswordSignInOff {
         name: None
     }
 
-    settings.rememberSetting("abs.serviceToken", "old-token", "test")
     admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
     change = settings.SettingsChange(
@@ -130,6 +136,9 @@ test switchingToAuthentikTurnsPasswordSignInOff {
 }
 
 test authentikOnlyWaitsForEveryAuthentikSetting {
+    fake AbsService {
+        token: "svc"
+    }
     fake SignInConfig {
         authMode: settings.AuthMode.Oidc
         frontendUrl: "https://app.test"
@@ -137,6 +146,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
     fake Oidc {
         issuer: None
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake Abs {
@@ -150,13 +160,47 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
     }
 
     // AUTH_MODE=oidc with no issuer: password sign-in stays on rather than lock everyone out.
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
     admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _))
     expect field == "authMode"
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view)
     expect view.authMode.value == "oidc"
+    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
+}
+
+// Every Authentik setting but the client secret: Authentik-only is refused, so
+// nobody is locked out, until a change brings the secret too.
+test authentikOnlyWaitsForTheClientSecret {
+    fake AbsService {
+        token: "svc"
+    }
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs
+        frontendUrl: "https://app.test"
+    }
+    fake Oidc {
+        issuer: "https://idp.test/application/o/abs/"
+        clientId: "cid"
+        clientSecret: None
+        redirectUri: "https://app.test/api/auth/callback"
+    }
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake SyncConfig {
+        mirrorEnabled: false
+    }
+    fake ServerConfig {
+        name: None
+    }
+
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _))
+    expect field == "authMode"
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcClientSecret: "csec")) is Ok(view)
+    expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved")
     expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
 }

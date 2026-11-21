@@ -3,11 +3,15 @@ use hearsay.settings.Abs
 use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
+use hearsay.settings.AbsService
 
 // Replies are shaped like the live ABS 2.37.2's (checked 2026-11-19): a minified
 // listing carries one `authorName`, which may be null; a search nests the same
 // item under `book[].libraryItem` beside other result kinds this app ignores.
 test absBrowseReadsLibrariesPagesAndSearchHits {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -35,7 +39,6 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsCatalog.librariesAsService(abs) is Ok(libraries)
     expect libraries.length() == 2
@@ -55,6 +58,9 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
 // An id from a caller's URL goes into an ABS path sent with the server's own
 // token. A hostile one must be refused before any request is made.
 test absRefusesHostileIdsWithoutCallingAbs {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -65,7 +71,6 @@ test absRefusesHostileIdsWithoutCallingAbs {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsCatalog.itemAsService(abs, "../../api/users") is Err(absclient.AbsError.NotFound)
     expect AbsCatalog.itemAsService(abs, "a/b") is Err(absclient.AbsError.NotFound)
@@ -122,6 +127,9 @@ test absCatalogRefusalsAreValues {
 // Many books in one POST /api/items/batch/get, which reads. ABS leaves out ids it
 // doesn't have.
 test absBatchLooksUpManyBooksInOneCall {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -137,13 +145,15 @@ test absBatchLooksUpManyBooksInOneCall {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsCatalog.itemsAsService(abs, ["b-1", "gone", "b-2"]) is Ok(found)
     expect found == [Book(itemId: "b-1", libraryId: "lib-1", title: "Alpha", authors: "A. Author, B. Author"), Book(itemId: "b-2", libraryId: "lib-1", title: "Beta", authors: "")]
 }
 
 test absBatchRefusesAHostileIdWithoutCallingAbs {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -154,7 +164,6 @@ test absBatchRefusesAHostileIdWithoutCallingAbs {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsCatalog.itemsAsService(abs, ["b-1", "../users"]) is Err(absclient.AbsError.NotFound)
 }

@@ -6,8 +6,8 @@ use hearsay.accounts
 use hearsay.ratings
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
-use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use hearsay.settings.SyncConfig
 
 test theScheduledSyncDoesNothingWhileMirroringIsOff {
@@ -37,6 +37,9 @@ test theScheduledSyncDoesNothingWhileMirroringIsOff {
 }
 
 test theScheduledSyncBringsEveryonesCollectionsUpToDate {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -70,7 +73,6 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect syncOnSchedule() is Ok(nothing)
     expect nothing == 0
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)

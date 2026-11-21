@@ -3,8 +3,12 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 
 test theIndexMatchesByAsinThenIsbnThenTitle {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -35,7 +39,6 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect indexLibrary(abs) is Ok(summary)
     expect summary == IndexSummary(books: 253, withAsin: 251, withIsbn: 1, titleOnly: 1)

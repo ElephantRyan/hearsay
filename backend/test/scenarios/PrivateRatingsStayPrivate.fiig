@@ -7,10 +7,13 @@ use hearsay.ratings
 use hearsay.recommendations
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
-use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 
 test privateRatingsStayPrivate {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -25,7 +28,6 @@ test privateRatingsStayPrivate {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     bobId = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User)

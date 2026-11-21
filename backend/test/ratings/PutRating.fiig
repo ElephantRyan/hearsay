@@ -3,13 +3,16 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
 use hearsay.ratings.rated
-use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 
 // Rates through the real workflows with ABS faked, as a person the adapter has
 // already settled. The book is fetched on every write, so a changed title is
 // cached.
 test ratingFlowCachesTheBookAndKeepsCreatedAt {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -24,7 +27,6 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     expect putRating(ann, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first)
     expect putRating(ann, "dune", RatingInput(score: 4, note: None, recommended: false)) is Ok(second)
@@ -45,6 +47,9 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
 // A rating that is wrong is refused before Audiobookshelf is asked anything:
 // the check needs no I/O, so it comes first.
 test aBadRatingCostsNoAbsCall {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -54,7 +59,6 @@ test aBadRatingCostsNoAbsCall {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     expect putRating(ann, "dune", RatingInput(score: 0, note: None, recommended: true)) is Err(RatingError.Invalid(_, _))
     expect calls(AbsCatalog.itemAsService) == 0

@@ -7,10 +7,13 @@ use hearsay.accounts
 use hearsay.ratings
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
-use hearsay.settings
 use hearsay.settings.Abs
+use hearsay.settings.AbsService
 
 test myListeningIsMostRecentFirstWithMyScores {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -40,7 +43,6 @@ test myListeningIsMostRecentFirstWithMyScores {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_)
@@ -49,6 +51,9 @@ test myListeningIsMostRecentFirstWithMyScores {
 }
 
 test myListeningCachesWhatItLooksUp {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -71,7 +76,6 @@ test myListeningCachesWhatItLooksUp {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     expect showMyListening(annId) is Ok(first)
@@ -80,6 +84,9 @@ test myListeningCachesWhatItLooksUp {
 }
 
 test myListeningSaysWhenAbsIsDown {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -92,7 +99,6 @@ test myListeningSaysWhenAbsIsDown {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     expect showMyListening(annId) is Err(ListeningError.Unavailable(why))
@@ -100,6 +106,9 @@ test myListeningSaysWhenAbsIsDown {
 }
 
 test myListeningSaysWhenAbsHasNoAccountForMe {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -112,7 +121,6 @@ test myListeningSaysWhenAbsHasNoAccountForMe {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     expect showMyListening(annId) is Err(ListeningError.AccountNotFound)

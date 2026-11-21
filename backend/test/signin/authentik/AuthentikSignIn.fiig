@@ -3,15 +3,20 @@ use hearsay.accounts
 use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
+use hearsay.settings.AbsService
 use hearsay.settings.Oidc
 
 // One fake plays Authentik and ABS, answering by URL. Replies are shaped like
 // the live servers': the OIDC discovery and userinfo shapes are the standard
 // ones; /api/users is the real ABS 2.37.2 shape, extra `token` member included.
 test authenticateFindsTheAbsUserByEmail {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -63,9 +68,7 @@ test authenticateFindsTheAbsUserByEmail {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Ok(identity)
     expect identity == accounts.Identity(userId: "u-1", username: "ryan", userType: client.AbsUserType.Admin)
@@ -73,9 +76,13 @@ test authenticateFindsTheAbsUserByEmail {
 }
 
 test absRefusingTheServiceTokenIsOurProblemNotThePersons {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -99,9 +106,7 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Unavailable(detail))
     expect detail.contains("token was refused")
@@ -109,9 +114,13 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
 }
 
 test twoAbsAccountsWithOneEmailIsRefused {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -137,18 +146,20 @@ test twoAbsAccountsWithOneEmailIsRefused {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why))
     expect why.contains("more than one")
 }
 
 test noAbsAccountMeansSignInToAbsFirst {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -174,17 +185,19 @@ test noAbsAccountMeansSignInToAbsFirst {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.NoAccount)
 }
 
 test noEmailFromTheProviderIsRefused {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -208,18 +221,20 @@ test noEmailFromTheProviderIsRefused {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why))
     expect why.contains("no email")
 }
 
 test passwordAttemptIsTheWrongMethod {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -229,18 +244,20 @@ test passwordAttemptIsTheWrongMethod {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.Password("ryan", "pw")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.WrongMethod)
     expect calls(HttpClient.send) == 0
 }
 
 test providerOutageIsUnavailable {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -266,18 +283,20 @@ test providerOutageIsUnavailable {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Unavailable(detail))
     expect detail == "the identity provider answered 503"
 }
 
 test rejectedCodeIsRefused {
+    fake AbsService {
+        token: "svc-token"
+    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -303,9 +322,7 @@ test rejectedCodeIsRefused {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
     server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf())
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why))
     expect why == "the identity provider did not accept this sign-in"
@@ -315,6 +332,7 @@ test beginUrlCarriesStateAndTheS256Challenge {
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "http://localhost:8080/auth/callback"
     }
     fake HttpClient {
@@ -326,7 +344,6 @@ test beginUrlCarriesStateAndTheS256Challenge {
         }
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     match settings.oidcSettingsOf() {
         None -> {
             expect false

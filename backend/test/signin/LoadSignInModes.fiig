@@ -6,6 +6,7 @@ test signInModesFollowAuthMode {
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
+        clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake SignInConfig {
@@ -13,6 +14,5 @@ test signInModesFollowAuthMode {
         frontendUrl: "x"
     }
 
-    settings.rememberSetting("oidc.clientSecret", "csec", "test")
     expect loadSignInModes() == SignInModes(password: false, oidc: true)
 }

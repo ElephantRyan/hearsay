@@ -3,10 +3,14 @@ use hearsay.settings.Abs
 use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
+use hearsay.settings.AbsService
 
 // The reply is shaped like the live ABS 2.37.2's GET /api/users/{id} (checked
 // 2026-11-20): progress is a fraction, and podcast episodes share the list.
 test absProgressListsStartedBooks {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -21,7 +25,6 @@ test absProgressListsStartedBooks {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsProgress.progressAsService(abs, "u-1") is Ok(started)
     expect started.length() == 2
@@ -30,6 +33,9 @@ test absProgressListsStartedBooks {
 }
 
 test absProgressRefusesAHostileIdWithoutCallingAbs {
+    fake AbsService {
+        token: "svc"
+    }
     fake Abs {
         url: "https://abs.test"
     }
@@ -40,7 +46,6 @@ test absProgressRefusesAHostileIdWithoutCallingAbs {
         }
     }
 
-    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect settings.loadAbsTarget() is Ok(abs)
     expect AbsProgress.progressAsService(abs, "../../api/libraries") is Err(absclient.AbsError.NotFound)
 }
