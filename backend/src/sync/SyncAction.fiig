@@ -1,0 +1,6 @@
+// What a sync would do for one person in one library.
+enum SyncAction {
+    Create
+    Update
+    Remove
+}

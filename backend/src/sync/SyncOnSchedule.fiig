@@ -14,7 +14,7 @@ workflow syncOnSchedule() -> Result<int, common.ApiError> {
         return Ok(0)
     }
     results = applyPlans(settings.loadAbsTarget()?, plans)
-    failed = filter(r in results): r.action == "failed"
+    failed = filter(r in results): r.action == SyncOutcome.Failed
     if failed.length() > 0 {
         return Err(common.ApiError.Unavailable("${failed.length()} of ${results.length()} collection writes failed"))
     }

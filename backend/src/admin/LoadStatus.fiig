@@ -65,7 +65,7 @@ private {
         }
     }
 
-    status(abs: string, account: string | None, accountType: string | None, problem: string | None) -> AdminStatus {
+    status(abs: string, account: string | None, accountType: client.AbsUserType | None, problem: string | None) -> AdminStatus {
         return AdminStatus(abs: abs, authentik: "not set up", serviceAccount: account, serviceAccountType: accountType, problem: problem)
     }
 

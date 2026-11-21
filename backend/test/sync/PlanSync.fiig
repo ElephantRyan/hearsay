@@ -16,16 +16,16 @@ test planSyncCreatesUpdatesAndRemoves {
     expect plans.length() == 3
     first = plans.at(0)
     expect first.libraryId == "lib-1"
-    expect first.action == "create"
+    expect first.action == SyncAction.Create
     expect first.name == "Ann Recommends"
     expect first.bookIds == ["b", "a"]
     expect first.collectionId == None
     second = plans.at(1)
     expect second.libraryId == "lib-2"
-    expect second.action == "update"
+    expect second.action == SyncAction.Update
     expect second.collectionId == "col-2"
     third = plans.at(2)
     expect third.libraryId == "lib-3"
-    expect third.action == "remove"
+    expect third.action == SyncAction.Remove
     expect third.collectionId == "col-3"
 }

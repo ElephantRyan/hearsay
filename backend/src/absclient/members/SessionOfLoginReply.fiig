@@ -19,7 +19,7 @@ private {
     model AbsLoginUser {
         id: string
         username: string
-        type: string
+        type: absclient.AbsUserType
         accessToken: string
         refreshToken: string
     }

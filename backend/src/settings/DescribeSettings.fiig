@@ -4,7 +4,7 @@ activity describeSettings() -> SettingsView {
         absUrl: textSetting(storedText("abs.url"), Abs.url),
         serviceToken: secretSetting(storedText("abs.serviceToken"), "abs.serviceToken"),
         mirrorEnabled: textSetting(storedText("sync.mirrorEnabled"), boolText(SyncConfig.mirrorEnabled)),
-        authMode: textSetting(storedText("signin.authMode"), SignInConfig.authMode),
+        authMode: textSetting(storedText("signin.authMode"), authModeText(SignInConfig.authMode)),
         frontendUrl: textSetting(storedText("signin.frontendUrl"), SignInConfig.frontendUrl),
         oidcIssuer: textSetting(storedText("oidc.issuer"), Oidc.issuer),
         oidcClientId: textSetting(storedText("oidc.clientId"), Oidc.clientId),

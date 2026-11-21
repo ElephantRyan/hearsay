@@ -1,3 +1,4 @@
+use hearsay.absclient as client
 use hearsay.accounts
 use hearsay.signin.authentik.AuthentikSignIn
 use hearsay.signin.password.AbsPasswordSignIn
@@ -18,7 +19,7 @@ test signInUsesTheChosenProvider {
     }
     fake AbsPasswordSignIn {
         gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            return Ok(accounts.Identity(userId: "u-pw", username: "ryan", userType: "user"))
+            return Ok(accounts.Identity(userId: "u-pw", username: "ryan", userType: client.AbsUserType.User))
         }
     }
     fake AuthentikSignIn {
@@ -27,7 +28,7 @@ test signInUsesTheChosenProvider {
         }
 
         gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            return Ok(accounts.Identity(userId: "u-oidc", username: "ryan", userType: "user"))
+            return Ok(accounts.Identity(userId: "u-oidc", username: "ryan", userType: client.AbsUserType.User))
         }
     }
 

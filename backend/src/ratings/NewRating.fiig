@@ -1,8 +1,0 @@
-// What a signed-in user sends to rate a book. The user comes from the
-// session, never from the request body.
-model NewRating {
-    itemId: string
-    score: int
-    note: string
-    recommended: bool
-}

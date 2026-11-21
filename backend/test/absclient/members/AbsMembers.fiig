@@ -16,7 +16,7 @@ test absLoginReadsTheRealReplyShape {
     }
 
     expect AbsMembers.login("https://abs.test", "ryan", "pw") is Ok(session)
-    expect session == AbsSession(userId: "u-1", username: "ryan", userType: "user", accessToken: "acc", refreshToken: "ref")
+    expect session == AbsSession(userId: "u-1", username: "ryan", userType: absclient.AbsUserType.User, accessToken: "acc", refreshToken: "ref")
     expect calls(HttpClient.send) == 1
 }
 
@@ -31,7 +31,7 @@ test absMeSendsTheToken {
     }
 
     expect AbsMembers.me("https://abs.test", "tok-1") is Ok(user)
-    expect user == AbsUser(id: "u-1", username: "ryan", type: "admin")
+    expect user == AbsUser(id: "u-1", username: "ryan", type: absclient.AbsUserType.Admin)
 }
 
 // A refusal is a value, not a fault: wrong password, a server error.

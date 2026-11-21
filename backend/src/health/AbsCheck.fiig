@@ -1,7 +1,9 @@
+use hearsay.absclient as client
+
 // What the live check reports: no tokens, only who ABS says we are and the
 // title it found.
 model AbsCheck {
     username: string
-    userType: string
+    userType: client.AbsUserType
     title: string
 }

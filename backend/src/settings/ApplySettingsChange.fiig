@@ -10,7 +10,13 @@ activity applySettingsChange(change: SettingsChange, by: string) -> int {
             saved = saved + rememberSetting("sync.mirrorEnabled", textOf(on), by)
         }
     }
-    saved = saved + saveGiven("signin.authMode", change.authMode, by)
+    match change.authMode {
+        None -> {
+        }
+        mode -> {
+            saved = saved + rememberSetting("signin.authMode", authModeText(mode), by)
+        }
+    }
     saved = saved + saveGiven("signin.frontendUrl", change.frontendUrl, by)
     saved = saved + saveGiven("oidc.issuer", change.oidcIssuer, by)
     saved = saved + saveGiven("oidc.clientId", change.oidcClientId, by)

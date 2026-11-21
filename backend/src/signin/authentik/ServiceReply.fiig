@@ -14,12 +14,10 @@ conversion serviceReply(answer: Result<http.Reply, client.AbsError>) -> Result<h
 
 private {
     serviceFailure(error: client.AbsError) -> accounts.SignInError {
-        match error {
-            client.AbsError.Unauthorized -> accounts.SignInError.Unavailable("this server's Audiobookshelf token was refused; tell the server's admin")
-            client.AbsError.NotFound -> accounts.SignInError.Unavailable("Audiobookshelf has no user list at the expected address")
-            client.AbsError.Rejected(status) -> accounts.SignInError.Unavailable("Audiobookshelf answered ${status}")
-            client.AbsError.Unreachable(failure) -> accounts.SignInError.Unavailable("Audiobookshelf is unreachable")
-            client.AbsError.Unreadable(failure) -> accounts.SignInError.Unavailable("Audiobookshelf's reply was unreadable")
+        match client.faultOfAbs(error) {
+            client.AbsFault.Missing -> accounts.SignInError.Unavailable("Audiobookshelf has no user list at the expected address")
+            client.AbsFault.Denied -> accounts.SignInError.Unavailable("this server's Audiobookshelf token was refused; tell the server's admin")
+            client.AbsFault.Down(detail) -> accounts.SignInError.Unavailable(detail)
         }
     }
 }

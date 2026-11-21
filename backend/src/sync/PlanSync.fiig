@@ -23,7 +23,7 @@ rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: Lis
             if not byLibrary.containsKey(state.libraryId) {
                 plans = append(
                     plans,
-                    SyncPlan(userId: userId, libraryId: state.libraryId, name: "", description: "", bookIds: [], collectionId: state.collectionId, action: "remove"),
+                    SyncPlan(userId: userId, libraryId: state.libraryId, name: "", description: "", bookIds: [], collectionId: state.collectionId, action: SyncAction.Remove),
                 )
             }
         }
@@ -40,10 +40,10 @@ private {
         }
     }
 
-    createOrUpdate(existing: string | None) -> string {
+    createOrUpdate(existing: string | None) -> SyncAction {
         match existing {
-            None -> "create"
-            id -> "update"
+            None -> SyncAction.Create
+            id -> SyncAction.Update
         }
     }
 }

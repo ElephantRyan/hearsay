@@ -1,5 +1,5 @@
-// What a sync would do for one person in one library. `action` is create,
-// update or remove; `collectionId` is the collection we made earlier, if any.
+// What a sync would do for one person in one library. `collectionId` is the
+// collection we made earlier, if any.
 model SyncPlan {
     userId: string
     libraryId: string
@@ -7,5 +7,5 @@ model SyncPlan {
     description: string
     bookIds: List<string>
     collectionId: string | None
-    action: string
+    action: SyncAction
 }

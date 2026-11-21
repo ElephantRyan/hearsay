@@ -21,7 +21,7 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, common
         abs = settings.loadAbsTarget()?
         now = Clock.now()
         for book in fetchBooks(abs, missing)? {
-            saveBook(book, now)
+            BookCache.save(book, now)
             found = found.put(book.itemId, book)
         }
     }

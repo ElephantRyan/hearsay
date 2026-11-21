@@ -1,8 +1,10 @@
+use hearsay.absclient as client
+
 // Who a successful sign-in says the person is. userId is the Audiobookshelf
 // user id (PLAN.md section 3): ratings are keyed by it whichever provider
 // proved it.
 model Identity {
     userId: string
     username: string
-    userType: string
+    userType: client.AbsUserType
 }

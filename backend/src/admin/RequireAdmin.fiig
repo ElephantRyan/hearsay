@@ -1,12 +1,13 @@
 // Who is asking, if they are an Audiobookshelf admin or its owner (root). The
 // admin screen and its routes are theirs only.
+use hearsay.absclient as client
 use hearsay.accounts
 use hearsay.common
 use hearsay.sessions
 
 activity requireAdmin(session: string | None) -> Result<accounts.Identity, common.ApiError> {
     me = sessions.currentUser(session)?
-    if me.userType != "admin" and me.userType != "root" {
+    if not client.canAdminister(me.userType) {
         return Err(common.ApiError.Refused("only an admin can do this"))
     }
     return Ok(me)

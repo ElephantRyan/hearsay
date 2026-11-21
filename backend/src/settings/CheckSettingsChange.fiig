@@ -1,15 +1,14 @@
 use hearsay.common
 
 // Tidies and checks a change before anything is saved: addresses are http(s)
-// URLs with no trailing slash, the sign-in mode is one of the three, and no
-// text is blank.
+// URLs with no trailing slash, and no text is blank.
 rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, common.ApiError> {
     return Ok(
         SettingsChange(
             absUrl: checkUrl("absUrl", change.absUrl)?,
             serviceToken: checkText("serviceToken", change.serviceToken)?,
             mirrorEnabled: change.mirrorEnabled,
-            authMode: checkMode(change.authMode)?,
+            authMode: change.authMode,
             frontendUrl: checkUrl("frontendUrl", change.frontendUrl)?,
             oidcIssuer: checkUrl("oidcIssuer", change.oidcIssuer)?,
             oidcClientId: checkText("oidcClientId", change.oidcClientId)?,
@@ -48,20 +47,6 @@ private {
                     return Err(common.ApiError.Invalid(field, "is blank"))
                 }
                 return Ok(text.trim())
-            }
-        }
-    }
-
-    checkMode(given: string | None) -> Result<string | None, common.ApiError> {
-        match given {
-            None -> {
-                return Ok(None)
-            }
-            mode -> {
-                if mode != "abs" and mode != "oidc" and mode != "both" {
-                    return Err(common.ApiError.Invalid("authMode", "must be abs, oidc or both"))
-                }
-                return Ok(mode)
             }
         }
     }

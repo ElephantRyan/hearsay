@@ -21,9 +21,9 @@ test aNewServerIsClaimedByAnAbsAdmin {
                 return Err(client.AbsError.Unauthorized)
             }
             if username == "reader" {
-                return Ok(members.AbsSession(userId: "u2", username: "reader", userType: "user", accessToken: "t", refreshToken: "r"))
+                return Ok(members.AbsSession(userId: "u2", username: "reader", userType: client.AbsUserType.User, accessToken: "t", refreshToken: "r"))
             }
-            return Ok(members.AbsSession(userId: "r1", username: "owner", userType: "root", accessToken: "t", refreshToken: "r"))
+            return Ok(members.AbsSession(userId: "r1", username: "owner", userType: client.AbsUserType.Root, accessToken: "t", refreshToken: "r"))
         }
     }
 
@@ -36,7 +36,7 @@ test aNewServerIsClaimedByAnAbsAdmin {
 
     expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "right")) is Ok(session)
     expect sessions.whoAmI(session.token) is Ok(me)
-    expect me.userType == "root"
+    expect me.userType == client.AbsUserType.Root
     expect settings.absUrl() == "https://abs.home.test"
     expect showSetup() == SetupState(needed: false)
 

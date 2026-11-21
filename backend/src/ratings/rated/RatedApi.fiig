@@ -4,7 +4,7 @@ use hearsay.common
 adapter http ratedApi {
     GET "/ratings/mine?sort={sort}" -> listMyRatings(
         session: string | None from cookie "sid",
-        sort: string | None,
+        sort: RatingOrder | None,
     )
         produces "application/json"
     {

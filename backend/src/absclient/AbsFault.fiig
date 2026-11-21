@@ -1,0 +1,9 @@
+// What an AbsError means to a caller, so each caller decides only what it
+// says about the two answers that depend on the call: ABS has no such thing
+// (Missing), and ABS refused our token (Denied). Every other failure is
+// ABS being unavailable, and reads the same everywhere (Down).
+enum AbsFault {
+    Missing
+    Denied
+    Down(detail: string)
+}

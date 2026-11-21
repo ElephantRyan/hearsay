@@ -1,4 +1,8 @@
-// `abs`, `oidc` or `both`: the admin's saved choice, or else AUTH_MODE.
-activity authMode() -> string {
-    return storedText("signin.authMode") or SignInConfig.authMode
+// Which sign-in routes answer: Audiobookshelf passwords, Authentik, or both.
+// Spelled `abs`, `oidc` and `both` in the environment, the API, and the
+// saved setting.
+enum AuthMode {
+    Abs from json "abs"
+    Oidc from json "oidc"
+    Both from json "both"
 }

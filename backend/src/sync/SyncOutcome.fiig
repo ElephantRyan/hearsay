@@ -1,0 +1,11 @@
+// What a sync did (or, in a dry run, would do) for one person in one
+// library. The would-be forms are a dry run's, spelled as the API spells them.
+enum SyncOutcome {
+    WouldCreate from json "would-create"
+    WouldUpdate from json "would-update"
+    WouldRemove from json "would-remove"
+    Created from json "created"
+    Updated from json "updated"
+    Removed from json "removed"
+    Failed from json "failed"
+}

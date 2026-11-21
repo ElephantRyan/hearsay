@@ -4,8 +4,8 @@ use hearsay.settings
 // until it is, password sign-in stays on even in `oidc` mode, so a half-finished
 // switch never locks everyone out.
 activity loadSignInModes() -> SignInModes {
-    mode = settings.authMode()
-    if mode == "abs" {
+    mode = settings.currentAuthMode()
+    if mode == settings.AuthMode.Abs {
         return SignInModes(password: true, oidc: false)
     }
     match settings.oidcSettingsOf() {
@@ -13,7 +13,7 @@ activity loadSignInModes() -> SignInModes {
             return SignInModes(password: true, oidc: false)
         }
         ready -> {
-            return SignInModes(password: mode != "oidc", oidc: true)
+            return SignInModes(password: mode != settings.AuthMode.Oidc, oidc: true)
         }
     }
 }

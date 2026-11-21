@@ -37,18 +37,18 @@ test statusSaysWhoTheTokenBelongsTo {
     fake AbsMembers {
         gateway meAsService(abs: client.AbsTarget) -> Result<members.AbsUser, client.AbsError> {
             if abs.token.matches("good") {
-                return Ok(members.AbsUser(id: "bot", username: "recommendation-bot", type: "admin"))
+                return Ok(members.AbsUser(id: "bot", username: "recommendation-bot", type: client.AbsUserType.Admin))
             }
             return Err(client.AbsError.Unauthorized)
         }
     }
 
     // "No token set" can't be tested: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
     settings.rememberSetting("oidc.clientSecret", "csec", "a1")
     settings.rememberSetting("abs.serviceToken", "good", "a1")
     expect showStatus(admin) is Ok(good)
-    expect good == AdminStatus(abs: "reachable", authentik: "answering", serviceAccount: "recommendation-bot", serviceAccountType: "admin", problem: None)
+    expect good == AdminStatus(abs: "reachable", authentik: "answering", serviceAccount: "recommendation-bot", serviceAccountType: client.AbsUserType.Admin, problem: None)
 
     settings.rememberSetting("abs.serviceToken", "stale", "a1")
     expect showStatus(admin) is Ok(refused)

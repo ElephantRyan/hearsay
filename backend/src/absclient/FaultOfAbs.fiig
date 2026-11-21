@@ -1,0 +1,11 @@
+// The one place that sorts the five AbsError cases into an AbsFault and
+// words the unavailable ones.
+conversion faultOfAbs(error: AbsError) -> AbsFault {
+    match error {
+        AbsError.NotFound -> AbsFault.Missing
+        AbsError.Unauthorized -> AbsFault.Denied
+        AbsError.Rejected(status) -> AbsFault.Down("Audiobookshelf answered ${status}")
+        AbsError.Unreachable(failure) -> AbsFault.Down("Audiobookshelf is unreachable")
+        AbsError.Unreadable(failure) -> AbsFault.Down("Audiobookshelf's reply was unreadable")
+    }
+}

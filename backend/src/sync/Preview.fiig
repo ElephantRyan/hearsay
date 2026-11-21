@@ -1,3 +1,13 @@
 rule preview(plans: List<SyncPlan>) -> List<SyncResult> {
-    return map(p in plans): SyncResult(userId: p.userId, libraryId: p.libraryId, action: "would-${p.action}", books: p.bookIds.length(), error: None)
+    return map(p in plans): SyncResult(userId: p.userId, libraryId: p.libraryId, action: wouldDo(p.action), books: p.bookIds.length(), error: None)
+}
+
+private {
+    wouldDo(action: SyncAction) -> SyncOutcome {
+        match action {
+            SyncAction.Create -> SyncOutcome.WouldCreate
+            SyncAction.Update -> SyncOutcome.WouldUpdate
+            SyncAction.Remove -> SyncOutcome.WouldRemove
+        }
+    }
 }

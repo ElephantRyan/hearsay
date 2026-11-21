@@ -31,7 +31,7 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     session = sessions.startSession(
-        accounts.Identity(userId: "u1", username: "ann", userType: "user"),
+        accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User),
     )
     token = session.token
     expect putRating(token, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first)

@@ -26,8 +26,8 @@ test privateRatingsStayPrivate {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
-    bob = sessions.startSession(accounts.Identity(userId: "u2", username: "bob", userType: "user")).token
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
+    bob = sessions.startSession(accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User)).token
     expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
     expect ratings.putRating(bob, "dune", ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
     expect library.loadItemDetail(bob, "dune") is Ok(bobSees)

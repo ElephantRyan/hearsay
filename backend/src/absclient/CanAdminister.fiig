@@ -1,0 +1,10 @@
+// Whether an ABS account may administer: the owner (root) and admins. The one
+// place that says so.
+rule canAdminister(type: AbsUserType) -> bool {
+    match type {
+        AbsUserType.Root -> true
+        AbsUserType.Admin -> true
+        AbsUserType.User -> false
+        AbsUserType.Guest -> false
+    }
+}

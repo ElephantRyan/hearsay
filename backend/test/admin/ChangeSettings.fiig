@@ -1,3 +1,4 @@
+use hearsay.absclient as client
 use hearsay.accounts
 use hearsay.common
 use hearsay.sessions
@@ -14,7 +15,7 @@ test onlyAnAdminSeesOrChangesSettings {
         sessionMaxAge: 3600
     }
 
-    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
     change = settings.SettingsChange(absUrl: "https://elsewhere.test", serviceToken: None, mirrorEnabled: None)
     expect showSettings(None) is Err(common.ApiError.Unauthenticated)
     expect showSettings(ann) is Err(common.ApiError.Refused(_))
@@ -27,7 +28,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
         sessionMaxAge: 3600
     }
     fake SignInConfig {
-        authMode: "abs"
+        authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
     fake Oidc {
@@ -45,7 +46,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     // A saved token first: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
-    root = sessions.startSession(accounts.Identity(userId: "r1", username: "owner", userType: "root")).token
+    root = sessions.startSession(accounts.Identity(userId: "r1", username: "owner", userType: client.AbsUserType.Root)).token
     expect showSettings(root) is Ok(before)
     expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
     expect before.mirrorEnabled == settings.SettingValue(value: "false", source: "environment")
@@ -70,7 +71,7 @@ test aBadChangeSavesNothing {
         sessionMaxAge: 3600
     }
     fake SignInConfig {
-        authMode: "abs"
+        authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
     fake Oidc {
@@ -87,7 +88,7 @@ test aBadChangeSavesNothing {
 
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
     expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(common.ApiError.Invalid(field, _))
     expect field == "absUrl"
     expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(common.ApiError.Invalid(blank, _))
@@ -103,7 +104,7 @@ test switchingToAuthentikTurnsPasswordSignInOff {
         sessionMaxAge: 3600
     }
     fake SignInConfig {
-        authMode: "abs"
+        authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
     fake Oidc {
@@ -119,19 +120,16 @@ test switchingToAuthentikTurnsPasswordSignInOff {
     }
 
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
 
-    change = settings.SettingsChange(authMode: "oidc", oidcClientSecret: "new-secret", oidcRedirectUri: "https://app.home.test/api/auth/callback/")
+    change = settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcClientSecret: "new-secret", oidcRedirectUri: "https://app.home.test/api/auth/callback/")
     expect changeSettings(admin, change) is Ok(view)
     expect view.authMode == settings.SettingValue(value: "oidc", source: "saved")
     expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved")
     expect view.oidcRedirectUri == settings.SettingValue(value: "https://app.home.test/api/auth/callback", source: "saved")
     expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
     expect settings.loadAbsTarget() is Ok(_)
-
-    expect changeSettings(admin, settings.SettingsChange(authMode: "everyone")) is Err(common.ApiError.Invalid(field, _))
-    expect field == "authMode"
     expect resetSetting(admin, "authMode") is Ok(back)
     expect back.authMode == settings.SettingValue(value: "abs", source: "environment")
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
@@ -142,7 +140,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
         sessionMaxAge: 3600
     }
     fake SignInConfig {
-        authMode: "oidc"
+        authMode: settings.AuthMode.Oidc
         frontendUrl: "https://app.test"
     }
     fake Oidc {
@@ -162,10 +160,10 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
 
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
-    expect changeSettings(admin, settings.SettingsChange(authMode: "oidc")) is Err(common.ApiError.Invalid(field, _))
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(common.ApiError.Invalid(field, _))
     expect field == "authMode"
-    expect changeSettings(admin, settings.SettingsChange(authMode: "oidc", oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view)
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view)
     expect view.authMode.value == "oidc"
     expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
 }

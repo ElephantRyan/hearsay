@@ -3,8 +3,8 @@ use hearsay.common
 // Authentik-only sign-in can't be chosen until every Authentik setting is there,
 // counting the change itself: otherwise nobody could sign in to finish it.
 activity checkSignInStaysPossible(change: SettingsChange) -> Result<int, common.ApiError> {
-    mode = change.authMode or authMode()
-    if mode != "oidc" {
+    mode = change.authMode or currentAuthMode()
+    if mode != AuthMode.Oidc {
         return Ok(0)
     }
     issuer = change.oidcIssuer or storedText("oidc.issuer") or Oidc.issuer

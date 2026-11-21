@@ -13,7 +13,7 @@ activity claimServer(url: string, username: string, password: string) -> Result<
     }
     session = mapErr(e in AbsMembers.login(url, username, password)): setupErrorOfAbs(e)?
     identity = passwordSignIn.identityOfSession(session)
-    if identity.userType != "admin" and identity.userType != "root" {
+    if not client.canAdminister(identity.userType) {
         return Err(common.ApiError.Refused("only an Audiobookshelf admin can set up this server"))
     }
     settings.rememberSetting("abs.url", url, identity.userId)

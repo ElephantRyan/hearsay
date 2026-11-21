@@ -1,3 +1,4 @@
+use hearsay.absclient as client
 use hearsay.accounts
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
@@ -23,7 +24,7 @@ test oidcCallbackChecksStateBeforeExchanging {
         sessionMaxAge: 3600
     }
     fake SignInConfig {
-        authMode: "both"
+        authMode: settings.AuthMode.Both
         frontendUrl: "https://app.test"
     }
     fake AbsPasswordSignIn {
@@ -44,7 +45,7 @@ test oidcCallbackChecksStateBeforeExchanging {
                     if code == "unknown-person" {
                         return Err(accounts.SignInError.NoAccount)
                     }
-                    return Ok(accounts.Identity(userId: "u1", username: "ann", userType: "user"))
+                    return Ok(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User))
                 }
                 accounts.SignInAttempt.Password(username, password) -> {
                     return Err(accounts.SignInError.WrongMethod)
@@ -83,7 +84,7 @@ test finishSignInIsOffInPasswordOnlyMode {
         sessionMaxAge: 3600
     }
     fake SignInConfig {
-        authMode: "abs"
+        authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
     fake AbsPasswordSignIn {

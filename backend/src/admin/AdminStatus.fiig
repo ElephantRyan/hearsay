@@ -1,3 +1,5 @@
+use hearsay.absclient as client
+
 // What the admin screen says about Audiobookshelf and Authentik. `abs` is
 // "reachable", "unreachable" or "not set up". The service account is who this
 // server's token belongs to; `problem` says in words why it couldn't be checked.
@@ -7,6 +9,6 @@ model AdminStatus {
     abs: string
     authentik: string
     serviceAccount: string | None
-    serviceAccountType: string | None
+    serviceAccountType: client.AbsUserType | None
     problem: string | None
 }

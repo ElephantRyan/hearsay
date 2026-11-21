@@ -1,8 +1,8 @@
 // How people sign in, from the environment (PLAN.md section 8). authMode is
-// `oidc`, `abs` or `both`: which sign-in routes answer. frontendUrl is where a
+// which sign-in routes answer. frontendUrl is where a
 // finished Authentik sign-in lands. A value an admin saves in the app wins
 // (authMode, frontendUrl).
 config SignInConfig {
-    authMode: string from env "AUTH_MODE" = "both"
+    authMode: AuthMode from env "AUTH_MODE" = AuthMode.Both
     frontendUrl: string from env "FRONTEND_URL" = "http://localhost:5173"
 }

@@ -9,7 +9,7 @@ test signInModesFollowAuthMode {
         redirectUri: "https://app.test/api/auth/callback"
     }
     fake SignInConfig {
-        authMode: "oidc"
+        authMode: settings.AuthMode.Oidc
         frontendUrl: "x"
     }
 
