@@ -1,8 +1,8 @@
-use hearsay.absclient as client
+use hearsay.absclient.roles
 
 // Settles whether this signed-in person may administer.
 workflow signedInAdmin(me: Identity) -> Result<Admin, AdminRefusal> {
-    if not client.canAdminister(me.userType) {
+    if not roles.canAdminister(me.userType) {
         return Err(AdminRefusal.NotAnAdmin)
     }
     return Ok(Admin(identity: me))

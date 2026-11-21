@@ -1,4 +1,4 @@
-use hearsay.absclient as client
+use hearsay.absclient.roles
 use hearsay.sessions
 use hearsay.settings
 
@@ -16,7 +16,7 @@ workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
                 return Err(SetupError.AlreadySetUp)
             }
             identity = mapErr(e in loginToAbs(url, input.username, input.password)): setupErrorOfFault(e)?
-            if not client.canAdminister(identity.userType) {
+            if not roles.canAdminister(identity.userType) {
                 return Err(SetupError.NotAdmin)
             }
             settings.rememberSetting("abs.url", url, identity.userId)
