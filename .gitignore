@@ -12,3 +12,6 @@ dist/
 # notes stay local; only the root README is published
 *.md
 !/README.md
+
+# IDE settings
+.idea/
