@@ -1,16 +1,23 @@
 use hearsay.absclient as client
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
 use fiig.http
 use fiig.http.HttpClient
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
+use hearsay.settings.Abs
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
 // The linking side, against a fake of the other server shaped like
-// federationApi's answers.
-test aCodeLinksThisServerToTheOtherAndUnlinkTellsIt {
+// federationApi's answers. Linking fetches the other server's recommendations
+// at once and asks it to fetch this one's.
+test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
@@ -21,10 +28,19 @@ test aCodeLinksThisServerToTheOtherAndUnlinkTellsIt {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://alex.test"
     }
+    fake AbsCatalog {
+        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        }
+
+        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "dune-here", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None)]))
+        }
+    }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            expect request.url == "https://ryan.test/api/federation/link"
-            if request.method == http.Method.Post {
+            key = "k".padRight(43, "k")
+            if request.url == "https://ryan.test/api/federation/link" and request.method == http.Method.Post {
                 expect http.headerValue(request.headers, "content-type") == "application/json"
                 match request.body {
                     None -> {
@@ -38,24 +54,37 @@ test aCodeLinksThisServerToTheOtherAndUnlinkTellsIt {
                     }
                 }
                 return Ok(
-                    http.Reply(status: 200, headers: [http.Header(name: "Content-Type", value: "application/json")], body: json.encode(LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")))),
+                    http.Reply(status: 200, headers: [http.Header(name: "Content-Type", value: "application/json")], body: json.encode(LinkAcceptance(name: "Ryan's library", key: key))),
                 )
             }
+            expect http.headerValue(request.headers, "authorization") == "Bearer ${key}"
+            if request.url == "https://ryan.test/api/federation/recommendations" {
+                return Ok(http.Reply(status: 200, headers: [], body: json.encode([SharedRating(personId: "p1", username: "ryan", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 9, note: "great", updatedAt: 1)])))
+            }
+            if request.url == "https://ryan.test/api/federation/fetch" {
+                expect request.method == http.Method.Post
+                return Ok(http.Reply(status: 204, headers: [], body: "".utf8()))
+            }
+            expect request.url == "https://ryan.test/api/federation/link"
             expect request.method == http.Method.Delete
-            expect http.headerValue(request.headers, "authorization") == "Bearer ${"k".padRight(43, "k")}"
             return Ok(http.Reply(status: 204, headers: [], body: "".utf8()))
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Root)).token
     code = "  https://ryan.test/#${"s".padRight(43, "s")} "
     expect linkServer(admin, LinkRequest(code: code)) is Ok(link)
     expect link.name == "Ryan's library"
     expect link.address == "https://ryan.test"
     expect link.linkedBy == "a1"
+    expect link.lastFetchedAt != None
+    expect link.ratings == 1
+    expect link.matched == 1
+    expect calls(HttpClient.send) == 3
     expect linkServer(admin, LinkRequest(code: code)) is Err(LinkError.AlreadyLinked(name))
     expect name == "Ryan's library"
-    expect calls(HttpClient.send) == 1
+    expect calls(HttpClient.send) == 3
     expect unlinkServer(admin, link.id) is Ok(unlinked)
     expect unlinked == Unlinked(name: "Ryan's library", told: true)
     expect unlinkServer(admin, link.id) is Err(LinkError.UnknownLink)
@@ -64,6 +93,9 @@ test aCodeLinksThisServerToTheOtherAndUnlinkTellsIt {
 }
 
 test aLoginPageOrARefusalKeepsNothing {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
@@ -73,6 +105,15 @@ test aLoginPageOrARefusalKeepsNothing {
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://alex.test"
+    }
+    fake AbsCatalog {
+        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        }
+
+        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "dune-here", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None)]))
+        }
     }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
@@ -95,6 +136,7 @@ test aLoginPageOrARefusalKeepsNothing {
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
     secret = "s".padRight(43, "s")
     expect linkServer(admin, LinkRequest(code: "https://login.test#${secret}")) is Err(LinkError.PeerLoginPage)
@@ -108,10 +150,49 @@ test aLoginPageOrARefusalKeepsNothing {
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#short")) is Err(LinkError.Invalid(_, _))
     expect listLinks(admin) is Ok(none)
     expect none.length() == 0
+    expect calls(AbsCatalog.pageAsService) == 1
 }
 
-// Unlinking forgets the link here even when the other server can't be told.
-test unlinkingASilentServerStillForgetsIt {
+// No other server is contacted when this library can't be indexed.
+test linkingWaitsForTheLibraryIndex {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake ServerConfig {
+        name: "Alex's library"
+    }
+    fake AbsCatalog {
+        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Err(client.AbsError.Rejected(status: 502))
+        }
+
+        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
+            expect false
+            return Err(client.AbsError.Rejected(status: 502))
+        }
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            expect false
+            return Err(http.HttpError.InvalidRequest(reason: "unexpected"))
+        }
+    }
+
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Err(LinkError.IndexUnavailable(_))
+    expect calls(HttpClient.send) == 0
+}
+
+// A link stands even when the first fetch, and telling the other server to
+// fetch, both fail; and unlinking still forgets it when the other can't be told.
+test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
@@ -122,9 +203,18 @@ test unlinkingASilentServerStillForgetsIt {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://alex.test"
     }
+    fake AbsCatalog {
+        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        }
+
+        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(catalog.BookPage(total: 0, page: 0, limit: size, books: []))
+        }
+    }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if request.method == http.Method.Post {
+            if request.url == "https://ryan.test/api/federation/link" and request.method == http.Method.Post {
                 return Ok(
                     http.Reply(status: 200, headers: [], body: json.encode(LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")))),
                 )
@@ -133,8 +223,12 @@ test unlinkingASilentServerStillForgetsIt {
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
+    expect link.problem == "it didn't answer"
+    expect link.lastFetchedAt == None
+    expect calls(HttpClient.send) == 3
     expect unlinkServer(admin, link.id) is Ok(unlinked)
     expect unlinked == Unlinked(name: "Ryan's library", told: false)
     expect listLinks(admin) is Ok(none)

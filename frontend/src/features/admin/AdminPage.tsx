@@ -447,7 +447,8 @@ function InviteServer({ disabled }: { disabled: boolean }) {
       <h3 className="text-sm font-semibold">Invite a server</h3>
       <p className="text-sm text-muted">
         Makes a link code for the other server's admin to paste into theirs. It works once, for 24
-        hours, and carries this app's address from Sign-in settings.
+        hours, and carries this app's address from Sign-in settings. The first one takes a few
+        seconds: this server's library is indexed so linked servers' books can be matched.
       </p>
       <Button
         variant="secondary"
@@ -498,7 +499,8 @@ function LinkServerForm({ disabled }: { disabled: boolean }) {
     <form onSubmit={onSubmit} noValidate className="space-y-2">
       <h3 className="text-sm font-semibold">Link a server</h3>
       <label htmlFor={id} className="block text-sm text-muted">
-        Paste the link code the other server's admin made.
+        Paste the link code the other server's admin made. Both servers then show each other's
+        recommendations straight away.
       </label>
       <input
         id={id}
@@ -520,7 +522,10 @@ function LinkServerForm({ disabled }: { disabled: boolean }) {
       )}
       {link.data && (
         <p role="status" className="text-sm text-muted">
-          Linked to {link.data.name}.
+          Linked to {link.data.name}.{" "}
+          {link.data.lastFetchedAt == null
+            ? "Its recommendations will show after the next hourly fetch."
+            : `${link.data.matched} of ${link.data.ratings} of its recommendations are books here.`}
         </p>
       )}
     </form>

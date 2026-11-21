@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/federation/fetch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["fetchForCaller"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/federation/link": {
         parameters: {
             query?: never;
@@ -1408,6 +1424,65 @@ export interface operations {
             };
         };
     };
+    fetchForCaller: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
     acceptLink: {
         parameters: {
             query?: never;
@@ -1469,7 +1544,7 @@ export interface operations {
                     "application/json": string;
                 };
             };
-            503: {
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1528,7 +1603,7 @@ export interface operations {
                     "application/json": string;
                 };
             };
-            503: {
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1599,7 +1674,7 @@ export interface operations {
                     "application/json": string;
                 };
             };
-            503: {
+            412: {
                 headers: {
                     [name: string]: unknown;
                 };

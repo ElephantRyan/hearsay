@@ -283,7 +283,7 @@ describe("the admin screen", () => {
     await userEvent.click(screen.getByRole("button", { name: "Make a link code" }));
     expect(await screen.findByLabelText("Link code")).toHaveValue("http://localhost:3000#secret");
 
-    const code = screen.getByLabelText("Paste the link code the other server's admin made.");
+    const code = screen.getByLabelText(/Paste the link code the other server's admin made/);
     await userEvent.type(code, "https://old.test#used");
     await userEvent.click(screen.getByRole("button", { name: "Link" }));
     expect(await screen.findByText(/used, expired, or mistyped/)).toBeInTheDocument();
@@ -291,7 +291,9 @@ describe("the admin screen", () => {
     await userEvent.clear(code);
     await userEvent.type(code, "https://sam.test#fresh");
     await userEvent.click(screen.getByRole("button", { name: "Link" }));
-    expect(await screen.findByText("Linked to Sam's library.")).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Linked to Sam's library\. Its recommendations will show/),
+    ).toBeInTheDocument();
     expect(await within(list).findByText("Sam's library")).toBeInTheDocument();
     expect(code).toHaveValue("");
     expect(sent).toEqual([

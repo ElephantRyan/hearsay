@@ -1,6 +1,7 @@
 // The routes another Hearsay server calls (LINKED.md sections 4 and 5): taking
-// up an invite, fetching recommendations, and being unlinked. A login in front of the app must let
-// /api/federation/ through; these routes check the invite or the key themselves.
+// up an invite, fetching recommendations, being asked to fetch, and being
+// unlinked. A login in front of the app must let /api/federation/ through;
+// these routes check the invite or the key themselves.
 adapter http federationApi {
     POST "/federation/link" -> acceptLink(offer: LinkOffer)
         consumes "application/json"
@@ -15,10 +16,16 @@ adapter http federationApi {
         Ok(ratings) -> 200 ratings
         Err(error) -> federationErrorResponse(error)
     }
+    POST "/federation/fetch" -> fetchForCaller(authorization: string | None from header "Authorization")
+        produces "application/json"
+    {
+        Ok(_) -> noContent()
+        Err(error) -> federationErrorResponse(error)
+    }
     DELETE "/federation/link" -> dropLink(authorization: string | None from header "Authorization")
         produces "application/json"
     {
-        Ok(_) -> peerUnlinked()
+        Ok(_) -> noContent()
         Err(error) -> federationErrorResponse(error)
     }
 }

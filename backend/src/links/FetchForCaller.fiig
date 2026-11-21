@@ -1,0 +1,8 @@
+// POST /federation/fetch: the calling server has just linked to this one and
+// wants its recommendations shown here now. Nothing is fetched while this
+// server has no library index (it is built when an invite is made), since
+// matching would find nothing; the hourly fetch builds it.
+workflow fetchForCaller(authorization: string | None) -> Result<int, FederationError> {
+    link = linkOfKey(authorization)?
+    return Ok(fetchIfIndexed(link.id))
+}

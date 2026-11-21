@@ -12,7 +12,8 @@ use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
 // The fetching side, against a fake of the other server: its first answer has
-// a book matched by ASIN, one by title and one this library hasn't; its second
+// a book matched by ASIN, one by title and one this library hasn't (fetched as
+// it is linked); its second
 // only one; then it refuses the key, as after it unlinked this server.
 test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     fake Abs {
@@ -39,8 +40,11 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if request.method == http.Method.Post {
+            if request.url == "https://ryan.test/api/federation/link" and request.method == http.Method.Post {
                 return Ok(http.Reply(status: 200, headers: [], body: json.encode(LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")))))
+            }
+            if request.url == "https://ryan.test/api/federation/fetch" {
+                return Ok(http.Reply(status: 204, headers: [], body: "".utf8()))
             }
             if request.method == http.Method.Delete {
                 return Err(http.HttpError.InvalidRequest(reason: "gone"))
@@ -56,7 +60,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                     ),
                 )
             }
-            if calls(HttpClient.send) == 3 {
+            if calls(HttpClient.send) == 4 {
                 return Ok(http.Reply(status: 200, headers: [], body: json.encode([SharedRating(personId: "p1", username: "ryan", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 10, note: "even better", updatedAt: 4)])))
             }
             return Ok(http.Reply(status: 401, headers: [http.Header(name: "Content-Type", value: "text/plain")], body: "that key belongs to no linked server".utf8()))
@@ -66,10 +70,9 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
-    expect link.lastFetchedAt == None
 
-    // The index is empty, so it is built first.
-    expect refreshLink(admin, link.id) is Ok(first)
+    // Linking builds the empty index, then fetches at once.
+    first = link
     expect calls(AbsCatalog.pageAsService) == 1
     expect first.ratings == 3
     expect first.matched == 2
@@ -112,7 +115,8 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
 }
 
 // With no links the scheduled fetch does nothing. With one, a library index
-// that can't be rebuilt is logged, but the fetch still runs on the old index.
+// that can't be rebuilt is logged, but the fetch still runs on the old index:
+// ABS answers the listing once, when linking builds the index, then fails.
 test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     fake Abs {
         url: "https://abs.test"
@@ -129,18 +133,23 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     }
     fake AbsCatalog {
         gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            if calls(AbsCatalog.librariesAsService) == 1 {
+                return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+            }
             return Err(client.AbsError.Rejected(status: 502))
         }
 
         gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            expect false
-            return Err(client.AbsError.Rejected(status: 502))
+            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "dune-here", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None)]))
         }
     }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if request.method == http.Method.Post {
+            if request.url == "https://ryan.test/api/federation/link" {
                 return Ok(http.Reply(status: 200, headers: [], body: json.encode(LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")))))
+            }
+            if request.url == "https://ryan.test/api/federation/fetch" {
+                return Ok(http.Reply(status: 204, headers: [], body: "".utf8()))
             }
             return Ok(http.Reply(status: 200, headers: [], body: json.encode([SharedRating(personId: "p1", username: "ryan", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 9, note: "", updatedAt: 1)])))
         }
@@ -155,8 +164,9 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
     expect fetchOnSchedule() is Err(FetchError.IndexNotRebuilt(problem))
     expect problem == "Audiobookshelf answered 502"
+    expect calls(AbsCatalog.librariesAsService) == 2
+    expect calls(HttpClient.send) == 4
     held = linkedRatingsOf(link.id)
     expect held.length() == 1
-    expect held.first().itemId == None
-    expect refreshLink(admin, link.id) is Err(LinkError.IndexUnavailable(_))
+    expect held.first().itemId == "dune-here"
 }

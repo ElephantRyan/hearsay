@@ -1,0 +1,15 @@
+// The first fetch from a server just linked, and a request that it fetch from
+// this one. If it can't fetch now, its hourly fetch will: what this answers
+// is this server's side only.
+activity fetchNewLink(id: string) -> Result<LinkedServer, LinkError> {
+    peer = peerToFetch(id)?
+    fetched = fetchLink(peer)?
+    match PeerServer.fetchNow(peer.address, peer.keyOut) {
+        Ok(_) -> {
+        }
+        Err(_) -> {
+            // Its hourly fetch catches up.
+        }
+    }
+    return Ok(fetched)
+}

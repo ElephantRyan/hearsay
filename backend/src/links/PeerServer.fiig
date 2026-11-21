@@ -22,6 +22,14 @@ capability PeerServer {
         return Ok(ratings)
     }
 
+    // Asks the other server to fetch this one's recommendations now.
+    gateway fetchNow(address: string, key: Secret) -> Result<int, PeerError>
+        requires HttpClient
+    {
+        reply = peerReply(HttpClient.send(peerRequest(http.Method.Post, "${address}/api/federation/fetch", key.reveal(), None)))?
+        return Ok(reply.status)
+    }
+
     // Tells the other server this link is gone.
     gateway unlink(address: string, key: Secret) -> Result<int, PeerError>
         requires HttpClient

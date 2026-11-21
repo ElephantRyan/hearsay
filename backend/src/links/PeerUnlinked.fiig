@@ -1,3 +1,0 @@
-conversion peerUnlinked() -> HttpResponse<None> {
-    return HttpResponse(status: 204)
-}

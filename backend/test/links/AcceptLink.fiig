@@ -1,14 +1,24 @@
 use hearsay.absclient as client
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
+use fiig.http
+use fiig.http.HttpClient
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
+use hearsay.settings.Abs
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
 // The inviting side: an invite works once and for a day, and the key it
-// answers with is the only way back in.
+// answers with is the only way back in. Making the first invite builds the
+// library index, so the fetch the other side asks for straight after linking
+// can match books.
 test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
@@ -19,9 +29,26 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://ryan.test"
     }
+    fake AbsCatalog {
+        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        }
 
+        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "dune-here", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None)]))
+        }
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            expect request.url == "https://alex.test/api/federation/recommendations"
+            return Ok(http.Reply(status: 200, headers: [], body: json.encode([SharedRating(personId: "p1", username: "alex", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 8, note: "", updatedAt: 1)])))
+        }
+    }
+
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
     expect inviteServer(admin) is Ok(invite)
+    expect calls(AbsCatalog.pageAsService) == 1
     expect invite.code.startsWith("https://ryan.test#")
     expect inviteCodeOf(invite.code) is Ok(code)
     expect code.address == "https://ryan.test"
@@ -46,11 +73,22 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     expect linkOfKey(None) is Err(FederationError.NoKey)
     expect linkOfKey(accepted.key) is Err(FederationError.NoKey)
     expect linkOfKey("Bearer ${alexKey}") is Err(FederationError.UnknownKey)
-    // A second invite taken up from an address already linked is refused, and spent.
+
+    // Asked to fetch by the server that just linked: it is fetched at once.
+    expect fetchForCaller(None) is Err(FederationError.NoKey)
+    expect fetchForCaller("Bearer ${accepted.key}") is Ok(1)
+    held = linkedRatingsOf(caller.id)
+    expect held.length() == 1
+    expect held.first().itemId == "dune-here"
+
+    // A second invite taken up from an address already linked is refused, and
+    // spent. The index is already built, so it isn't built again.
     expect inviteServer(admin) is Ok(again)
+    expect calls(AbsCatalog.pageAsService) == 1
     expect inviteCodeOf(again.code) is Ok(againCode)
     expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.AlreadyLinked)
     expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+
     // Unlinked from the other side: the key stops working.
     expect dropLink("Bearer ${accepted.key}") is Ok(1)
     expect dropLink("Bearer ${accepted.key}") is Err(FederationError.UnknownKey)
@@ -67,23 +105,45 @@ test anExpiredInviteIsRefused {
 }
 
 test aBadOfferStillSpendsTheInvite {
+    fake ServerConfig {
+        name: "Ryan's library"
+    }
+
+    secret = newKey()
+    now = Clock.now()
+    saveInvite(keyHash(secret), now + 60 * 1000, now, "a1")
+    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "ftp://alex.test", key: newKey())) is Err(FederationError.Invalid(field, _))
+    expect field == "address"
+    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+}
+
+// No invite is made when the library can't be indexed: the link it leads to
+// couldn't match any book.
+test anInviteWaitsForTheLibraryIndex {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake ServerConfig {
         name: "Ryan's library"
     }
-    fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://ryan.test"
+    fake AbsCatalog {
+        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Err(client.AbsError.Unauthorized)
+        }
+
+        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
+            expect false
+            return Err(client.AbsError.Unauthorized)
+        }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
-    expect inviteServer(admin) is Ok(invite)
-    expect inviteCodeOf(invite.code) is Ok(code)
-    expect acceptLink(LinkOffer(secret: code.secret, name: "Alex", address: "ftp://alex.test", key: newKey())) is Err(FederationError.Invalid(field, _))
-    expect field == "address"
-    expect acceptLink(LinkOffer(secret: code.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+    expect inviteServer(admin) is Err(LinkError.IndexUnavailable(detail))
+    expect detail == "Audiobookshelf refused this server's token"
 }
 
 test linkingWaitsForAServerName {
