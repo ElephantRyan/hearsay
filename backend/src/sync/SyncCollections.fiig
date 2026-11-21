@@ -1,18 +1,20 @@
-use hearsay.common
+use hearsay.sessions
 use hearsay.settings
 
 // POST /sync. Off unless the server enabled it (a 404 to everyone, so a
 // disabled server says nothing about who is signed in), a preview unless the
 // caller said `dryRun=false`, and only then does anything write to ABS.
-workflow syncCollections(session: string | None, userId: string | None, dryRun: bool | None) -> Result<List<SyncResult>, common.ApiError> {
+workflow syncCollections(session: string | None, userId: string | None, dryRun: bool | None) -> Result<List<SyncResult>, SyncError> {
     if not settings.mirrorEnabled() {
-        return Err(common.ApiError.NotFound("collection mirroring on this server"))
+        return Err(SyncError.MirroringOff)
     }
-    plans = loadSyncPlans(session, userId)?
+    me = mapErr(e in sessions.currentUser(session)): syncErrorOfIdentity(e)?
+    plans = loadSyncPlans(me, userId)?
     if wantsDryRun(dryRun) {
         return Ok(preview(plans))
     }
-    return Ok(applyPlans(mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?, plans))
+    abs = mapErr(e in settings.loadAbsTarget()): syncErrorOfSettings(e)?
+    return Ok(applyPlans(abs, plans))
 }
 
 private {

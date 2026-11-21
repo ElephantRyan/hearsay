@@ -1,0 +1,12 @@
+// The status and message a client sees for each way a sync can fail. Mirroring
+// off is a 404: the route does not exist on this server. 401 names no scheme:
+// the browser holds a cookie, not a challenge to answer.
+conversion syncErrorResponse(error: SyncError) -> HttpResponse<string> {
+    match error {
+        SyncError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
+        SyncError.MirroringOff -> HttpResponse(status: 404, body: "no collection mirroring on this server")
+        SyncError.NotAllowed -> HttpResponse(status: 403, body: "only an admin can sync someone else's list")
+        SyncError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+        SyncError.SomeWritesFailed(failed, total) -> HttpResponse(status: 503, body: "${failed} of ${total} collection writes failed")
+    }
+}

@@ -1,11 +1,10 @@
-use hearsay.common
 use hearsay.settings
 
 // The scheduled sync: every collection brought up to date, when the server
 // writes collections at all. Off is a quiet no-op. A collection write that
 // fails comes back as an Err, so the run is logged; the rest still ran, and
 // the next run tries again.
-workflow syncOnSchedule() -> Result<int, common.ApiError> {
+workflow syncOnSchedule() -> Result<int, SyncError> {
     if not settings.mirrorEnabled() {
         return Ok(0)
     }
@@ -13,10 +12,11 @@ workflow syncOnSchedule() -> Result<int, common.ApiError> {
     if plans.length() == 0 {
         return Ok(0)
     }
-    results = applyPlans(mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?, plans)
+    abs = mapErr(e in settings.loadAbsTarget()): syncErrorOfSettings(e)?
+    results = applyPlans(abs, plans)
     failed = filter(r in results): r.action == SyncOutcome.Failed
     if failed.length() > 0 {
-        return Err(common.ApiError.Unavailable("${failed.length()} of ${results.length()} collection writes failed"))
+        return Err(SyncError.SomeWritesFailed(failed.length(), results.length()))
     }
     return Ok(results.length())
 }

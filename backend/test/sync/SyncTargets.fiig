@@ -1,6 +1,5 @@
 use hearsay.absclient as client
 use hearsay.accounts
-use hearsay.common
 use hearsay.ratings.rated
 
 test syncTargetsAreSelfUnlessAdmin {
@@ -17,7 +16,7 @@ test syncTargetsAreSelfUnlessAdmin {
     expect own == ["u1"]
     expect syncTargets(ann, "u1", everyoneToSync(rows, states)) is Ok(self)
     expect self == ["u1"]
-    expect syncTargets(ann, "u2", everyoneToSync(rows, states)) is Err(common.ApiError.Refused(why))
+    expect syncTargets(ann, "u2", everyoneToSync(rows, states)) is Err(SyncError.NotAllowed)
     expect boss.userType == client.AbsUserType.Admin
     expect syncTargets(boss, "u2", everyoneToSync(rows, states)) is Ok(named)
     expect named == ["u2"]

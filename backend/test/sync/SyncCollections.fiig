@@ -3,7 +3,6 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.absclient.collections.AbsCollections
 use hearsay.accounts
-use hearsay.common
 use hearsay.ratings
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
@@ -104,9 +103,9 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
     }
 
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    expect syncCollections(ann, None, false) is Err(common.ApiError.NotFound(what))
+    expect syncCollections(ann, None, false) is Err(SyncError.MirroringOff)
     // disabled means disabled for everyone: a stranger learns nothing about sessions
-    expect syncCollections(None, None, false) is Err(common.ApiError.NotFound(missing))
+    expect syncCollections(None, None, false) is Err(SyncError.MirroringOff)
 }
 
 test aPersonCannotSyncSomeoneElsesList {
@@ -132,6 +131,6 @@ test aPersonCannotSyncSomeoneElsesList {
     }
 
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    expect syncCollections(ann, "u2", false) is Err(common.ApiError.Refused(why))
+    expect syncCollections(ann, "u2", false) is Err(SyncError.NotAllowed)
     expect calls(AbsCollections.createCollectionAsService) == 0
 }

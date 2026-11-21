@@ -1,0 +1,9 @@
+// Every way syncing collections can be refused or can fail, as values the
+// caller must handle.
+enum SyncError {
+    NotSignedIn
+    MirroringOff
+    NotAllowed
+    Unavailable(detail: string)
+    SomeWritesFailed(failed: int, total: int)
+}

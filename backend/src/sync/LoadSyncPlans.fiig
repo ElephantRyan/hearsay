@@ -1,11 +1,9 @@
-use hearsay.common
+use hearsay.accounts
 use hearsay.ratings.rated.RatedBooks
-use hearsay.sessions
 
-// What a sync would do for whoever the caller may sync: reads our tables and
+// What sync would do for whoever the caller may sync: reads tables and
 // plans, and touches nothing.
-activity loadSyncPlans(session: string | None, userId: string | None) -> Result<List<SyncPlan>, common.ApiError> {
-    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
+activity loadSyncPlans(me: accounts.Identity, userId: string | None) -> Result<List<SyncPlan>, SyncError> {
     rows = RatedBooks.recommended()
     states = allSyncStates()
     targets = syncTargets(me, userId, everyoneToSync(rows, states))?
