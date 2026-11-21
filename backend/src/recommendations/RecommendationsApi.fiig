@@ -27,4 +27,13 @@ adapter http recommendationsApi {
         Ok(rows) -> 200 rows
         Err(error) -> recommendationErrorResponse(error)
     }
+    GET "/recommendations/users/{userId}/missing" -> listMissingOf(
+        session: string | None from cookie "sid",
+        userId: string,
+    )
+        produces "application/json"
+    {
+        Ok(books) -> 200 books
+        Err(error) -> recommendationErrorResponse(error)
+    }
 }

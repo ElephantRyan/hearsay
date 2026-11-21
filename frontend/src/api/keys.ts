@@ -8,6 +8,7 @@ export const keys = {
   recommenders: ["recommenders"] as const,
   picks: (userId: string) => ["picks", userId] as const,
   allPicks: ["picks"] as const,
+  missing: (userId: string) => ["missing", userId] as const,
   item: (itemId: string) => ["item", itemId] as const,
   libraries: ["libraries"] as const,
   browse: (libraryId: string, page: number, q: string) => ["browse", libraryId, page, q] as const,

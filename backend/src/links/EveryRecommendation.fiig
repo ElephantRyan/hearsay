@@ -1,0 +1,20 @@
+use hearsay.ratings.rated
+use hearsay.ratings.rated.RatedBooks
+
+// Every recommended rating, this server's and linked servers' alike (those of
+// books this library has), with linked names marked where they clash. What
+// averages, the ranked list, recommenders and picks are made from.
+activity everyRecommendation() -> List<rated.RatingRow> {
+    everyone = joined(RatedBooks.recommended(), LinkedRatings.matched())
+    return withServerNames(everyone, everyone)
+}
+
+private {
+    joined(first: List<rated.RatingRow>, second: List<rated.RatingRow>) -> List<rated.RatingRow> {
+        rows: List<rated.RatingRow> = first
+        for row in second {
+            rows = append(rows, row)
+        }
+        return rows
+    }
+}

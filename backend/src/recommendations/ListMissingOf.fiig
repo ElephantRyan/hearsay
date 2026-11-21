@@ -1,0 +1,9 @@
+use hearsay.links
+use hearsay.sessions
+
+// GET /recommendations/users/{userId}/missing: what a linked server's person
+// recommends that this library doesn't have.
+workflow listMissingOf(session: string | None, userId: string) -> Result<List<links.MissingBook>, RecommendationError> {
+    mapErr(e in sessions.currentUser(session)): recommendationErrorOfIdentity(e)?
+    return Ok(links.missingOf(userId))
+}

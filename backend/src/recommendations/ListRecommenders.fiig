@@ -1,5 +1,5 @@
-use hearsay.ratings.rated.RatedBooks
+use hearsay.links
 
 activity listRecommenders() -> List<Recommender> {
-    return recommendersOf(RatedBooks.recommended())
+    return recommendersOf(links.everyRecommendation())
 }

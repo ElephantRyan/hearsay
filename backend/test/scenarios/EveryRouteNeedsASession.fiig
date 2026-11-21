@@ -26,6 +26,7 @@ test noRouteAnswersWithoutASession {
     expect recommendations.listRecommendations(None, None, None, None) is Err(recommendations.RecommendationError.NotSignedIn)
     expect recommendations.listRecommenderUsers(None) is Err(recommendations.RecommendationError.NotSignedIn)
     expect recommendations.listPicksOf(None, "u1") is Err(recommendations.RecommendationError.NotSignedIn)
+    expect recommendations.listMissingOf(None, "linked-l1-p1") is Err(recommendations.RecommendationError.NotSignedIn)
     expect library.showLibraries(None) is Err(library.LibraryError.NotSignedIn)
     expect library.showLibraryItems(None, "lib-1", None, None, None) is Err(library.LibraryError.NotSignedIn)
     expect library.showItem(None, "a") is Err(library.LibraryError.NotSignedIn)

@@ -2244,6 +2244,10 @@
                           "libraryId": {
                             "type": "string"
                           },
+                          "matchedBy": {
+                            "nullable": true,
+                            "type": "string"
+                          },
                           "note": {
                             "type": "string"
                           },
@@ -2263,6 +2267,10 @@
                             "type": "string"
                           },
                           "username": {
+                            "type": "string"
+                          },
+                          "via": {
+                            "nullable": true,
                             "type": "string"
                           }
                         },
@@ -2759,6 +2767,10 @@
                       "libraryId": {
                         "type": "string"
                       },
+                      "matchedBy": {
+                        "nullable": true,
+                        "type": "string"
+                      },
                       "note": {
                         "type": "string"
                       },
@@ -2778,6 +2790,10 @@
                         "type": "string"
                       },
                       "username": {
+                        "type": "string"
+                      },
+                      "via": {
+                        "nullable": true,
                         "type": "string"
                       }
                     },
@@ -3129,6 +3145,10 @@
                       },
                       "username": {
                         "type": "string"
+                      },
+                      "via": {
+                        "nullable": true,
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -3195,6 +3215,10 @@
                       "libraryId": {
                         "type": "string"
                       },
+                      "matchedBy": {
+                        "nullable": true,
+                        "type": "string"
+                      },
                       "note": {
                         "type": "string"
                       },
@@ -3215,6 +3239,10 @@
                       },
                       "username": {
                         "type": "string"
+                      },
+                      "via": {
+                        "nullable": true,
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -3229,6 +3257,80 @@
                       "updatedAt",
                       "userId",
                       "username"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          },
+          {}
+        ]
+      }
+    },
+    "/recommendations/users/{userId}/missing": {
+      "get": {
+        "operationId": "listMissingOf",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "properties": {
+                      "authors": {
+                        "type": "string"
+                      },
+                      "note": {
+                        "type": "string"
+                      },
+                      "score": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "integer"
+                      },
+                      "via": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "authors",
+                      "note",
+                      "score",
+                      "title",
+                      "updatedAt",
+                      "via"
                     ],
                     "type": "object"
                   },

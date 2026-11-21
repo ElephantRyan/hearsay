@@ -64,6 +64,20 @@ export const usePicks = (userId: string) =>
       unwrap(await api.GET("/recommendations/users/{userId}", { params: { path: { userId } } })),
   });
 
+/**
+ * What a linked server's person recommends that this library doesn't have. Only their ids
+ * start with "linked-", so nobody else's page asks.
+ */
+export const useMissing = (userId: string) =>
+  useQuery({
+    queryKey: keys.missing(userId),
+    enabled: userId.startsWith("linked-"),
+    queryFn: async () =>
+      unwrap(
+        await api.GET("/recommendations/users/{userId}/missing", { params: { path: { userId } } }),
+      ),
+  });
+
 export const useItem = (itemId: string) =>
   useQuery({
     queryKey: keys.item(itemId),
@@ -286,6 +300,11 @@ export function useSyncCollections() {
   });
 }
 
+/** A link, a fetch or an unlink changes every list that counts linked ratings. */
+function refreshAfterLinkChange(queryClient: ReturnType<typeof useQueryClient>) {
+  return queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] !== "me" });
+}
+
 /** The servers linked to this one (LINKED.md section 4). */
 export const useLinkedServers = () =>
   useQuery({
@@ -305,7 +324,7 @@ export function useLinkServer() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (code: string) => unwrap(await api.POST("/admin/links", { body: { code } })),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.adminLinks }),
+    onSuccess: () => refreshAfterLinkChange(queryClient),
   });
 }
 
@@ -318,7 +337,7 @@ export function useRefreshLink() {
   return useMutation({
     mutationFn: async (id: string) =>
       unwrap(await api.POST("/admin/links/{id}/refresh", { params: { path: { id } } })),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.adminLinks }),
+    onSuccess: () => refreshAfterLinkChange(queryClient),
   });
 }
 
@@ -328,7 +347,7 @@ export function useUnlinkServer() {
   return useMutation({
     mutationFn: async (id: string) =>
       unwrap(await api.DELETE("/admin/links/{id}", { params: { path: { id } } })),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.adminLinks }),
+    onSuccess: () => refreshAfterLinkChange(queryClient),
   });
 }
 

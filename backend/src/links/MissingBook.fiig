@@ -1,0 +1,10 @@
+// A book a linked server's person recommends that this library doesn't have,
+// listed on their page under "Not in your library". via is their server's name.
+model MissingBook {
+    title: string
+    authors: string
+    score: int
+    note: string
+    updatedAt: int
+    via: string
+}

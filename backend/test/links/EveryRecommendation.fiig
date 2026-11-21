@@ -1,0 +1,81 @@
+use hearsay.absclient as client
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
+use hearsay.accounts
+use hearsay.library
+use hearsay.ratings
+use hearsay.recommendations
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.Abs
+
+// Linked servers' ratings blend in (LINKED.md section 6): they count in
+// averages, the ranked list, recommenders, picks and the book page, and a
+// linked name is marked with its server only where it clashes. Here ann rates
+// Dune on this server. Alex's library also has an ann, and a sam who rates
+// Dune and a book this library hasn't. Sam's place has another sam.
+test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
+    fake Abs {
+        url: "https://abs.test"
+    }
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake AbsCatalog {
+        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None))
+        }
+    }
+
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
+    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 8, note: "here", recommended: true)) is Ok(_)
+
+    saveLink(LinkedServer(id: "l1", name: "Alex's library", address: "https://alex.test", linkedAt: 1, linkedBy: "invite"), "key-out-1", "hash-1")
+    saveLink(LinkedServer(id: "l2", name: "Sam's place", address: "https://sam.test", linkedAt: 1, linkedBy: "invite"), "key-out-2", "hash-2")
+    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p1", username: "Ann", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 10, note: "there", updatedAt: 5, itemId: "dune", libraryId: "lib-1", matchedBy: "asin"))
+    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: None, isbn: None, title: "Dune", authors: "Frank Herbert", score: 6, note: "", updatedAt: 6, itemId: "dune", libraryId: "lib-1", matchedBy: "title"))
+    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0ELSE", isbn: None, title: "Not Here", authors: "Nobody", score: 9, note: "find it", updatedAt: 7, itemId: None, libraryId: None, matchedBy: None))
+    saveLinkedRating(LinkedRating(linkId: "l2", personId: "p9", username: "sam", asin: None, isbn: "123", title: "The Hobbit", authors: "J. R. R. Tolkien", score: 7, note: "", updatedAt: 8, itemId: "hobbit", libraryId: "lib-1", matchedBy: "isbn"))
+
+    everyone = everyRecommendation()
+    expect everyone.length() == 4
+    names = sorted(r in everyone): r.username
+    expect (map(r in names): r.username) == ["Ann · Alex's library", "ann", "sam · Alex's library", "sam · Sam's place"]
+
+    expect recommendations.recommendations(None, None, None) is books
+    expect books.length() == 2
+    expect books.first().itemId == "dune"
+    expect books.first().count == 3
+    expect books.first().average == math.divide(math.toDecimal(24), math.toDecimal(3), places: 2, rounding: Rounding.HalfUp)
+    expect books.last().title == "The Hobbit"
+
+    people = recommendations.listRecommenders()
+    expect people.length() == 4
+    expect (filter(p in people): p.userId == "u1").first().via == None
+    expect (filter(p in people): p.userId == "linked-l1-p2").first().via == "Alex's library"
+
+    picks = recommendations.picksOf("linked-l1-p2")
+    expect (map(r in picks): r.title) == ["Dune"]
+    missing = missingOf("linked-l1-p2")
+    expect missing == [MissingBook(title: "Not Here", authors: "Nobody", score: 9, note: "find it", updatedAt: 7, via: "Alex's library")]
+    expect missingOf("u1").length() == 0
+    expect missingOf("linked-l2-p9").length() == 0
+
+    expect settings.loadAbsTarget() is Ok(abs)
+    expect AbsCatalog.itemAsService(abs, "dune") is Ok(dune)
+    page = library.loadItemDetail("u1", dune)
+    expect page.count == 3
+    expect page.average == books.first().average
+    weak = filter(r in page.ratings): r.matchedBy == "title"
+    expect weak.length() == 1
+    expect weak.first().username == "sam · Alex's library"
+    expect weak.first().via == "Alex's library"
+    expect (filter(r in page.ratings): r.via == None).first().username == "ann"
+
+    // Unlinked: its ratings leave every list.
+    deleteLink("l1")
+    expect everyRecommendation().length() == 2
+    expect (map(r in everyRecommendation()): r.username) == ["ann", "sam"] or (map(r in everyRecommendation()): r.username) == ["sam", "ann"]
+}

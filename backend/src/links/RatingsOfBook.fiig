@@ -1,0 +1,19 @@
+use hearsay.ratings.rated
+use hearsay.ratings.rated.RatedBooks
+
+// What a viewer may see of one book: everyone's recommended ratings here, the
+// viewer's own whether recommended or not, and linked servers' ratings of it.
+activity ratingsOfBook(itemId: string, viewerId: string) -> List<rated.RatingRow> {
+    rows = joined(RatedBooks.visibleFor(itemId, viewerId), LinkedRatings.forItem(itemId))
+    return withServerNames(rows, joined(RatedBooks.recommended(), LinkedRatings.matched()))
+}
+
+private {
+    joined(first: List<rated.RatingRow>, second: List<rated.RatingRow>) -> List<rated.RatingRow> {
+        rows: List<rated.RatingRow> = first
+        for row in second {
+            rows = append(rows, row)
+        }
+        return rows
+    }
+}

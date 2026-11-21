@@ -95,7 +95,11 @@ export function ItemPage() {
                 {row.note && (
                   <p className="mt-2 whitespace-pre-wrap break-words text-sm">{row.note}</p>
                 )}
-                <p className="mt-2 text-xs text-muted">{formatDate(row.updatedAt)}</p>
+                <p className="mt-2 text-xs text-muted">
+                  {formatDate(row.updatedAt)}
+                  {row.via && ` · via ${row.via}`}
+                  {row.matchedBy === "title" && " · matched by title"}
+                </p>
               </li>
             ))}
           </ul>

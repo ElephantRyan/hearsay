@@ -404,6 +404,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommendations/users/{userId}/missing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listMissingOf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/session": {
         parameters: {
             query?: never;
@@ -1739,6 +1755,7 @@ export interface operations {
                             createdAt: number;
                             itemId: string;
                             libraryId: string;
+                            matchedBy?: string | null;
                             note: string;
                             recommended: boolean;
                             score: number;
@@ -1746,6 +1763,7 @@ export interface operations {
                             updatedAt: number;
                             userId: string;
                             username: string;
+                            via?: string | null;
                         }[];
                     };
                 };
@@ -2013,6 +2031,7 @@ export interface operations {
                         createdAt: number;
                         itemId: string;
                         libraryId: string;
+                        matchedBy?: string | null;
                         note: string;
                         recommended: boolean;
                         score: number;
@@ -2020,6 +2039,7 @@ export interface operations {
                         updatedAt: number;
                         userId: string;
                         username: string;
+                        via?: string | null;
                     }[];
                 };
             };
@@ -2211,6 +2231,7 @@ export interface operations {
                         count: number;
                         userId: string;
                         username: string;
+                        via?: string | null;
                     }[];
                 };
             };
@@ -2245,6 +2266,7 @@ export interface operations {
                         createdAt: number;
                         itemId: string;
                         libraryId: string;
+                        matchedBy?: string | null;
                         note: string;
                         recommended: boolean;
                         score: number;
@@ -2252,6 +2274,43 @@ export interface operations {
                         updatedAt: number;
                         userId: string;
                         username: string;
+                        via?: string | null;
+                    }[];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    listMissingOf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        authors: string;
+                        note: string;
+                        score: number;
+                        title: string;
+                        updatedAt: number;
+                        via: string;
                     }[];
                 };
             };

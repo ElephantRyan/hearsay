@@ -1,0 +1,33 @@
+use hearsay.ratings.rated
+
+// What was fetched from linked servers, for the rest of the app to read
+// (ADR 0079 §6a): ratings of books matched to this library, in rating_row's
+// shape (the linked_rating_row view), and a person's books this library hasn't.
+capability LinkedRatings {
+    // Every fetched rating of a book this library has.
+    gateway matched() -> List<rated.RatingRow>
+        requires Database
+        idempotent
+    {
+        return Database.queryMany("SELECT * FROM linked_rating_row")
+    }
+
+    // The fetched ratings of one local book.
+    gateway forItem(itemId: string) -> List<rated.RatingRow>
+        requires Database
+        idempotent
+    {
+        return Database.queryMany("SELECT * FROM linked_rating_row WHERE item_id = ? ORDER BY updated_at DESC", itemId)
+    }
+
+    // What one linked person recommends that this library doesn't have.
+    gateway missingOf(userId: string) -> List<MissingBook>
+        requires Database
+        idempotent
+    {
+        return Database.queryMany(
+            "SELECT lr.title, lr.authors, lr.score, lr.note, lr.updated_at, ls.name AS via FROM linked_rating lr JOIN linked_server ls ON ls.id = lr.link_id WHERE lr.item_id IS NULL AND 'linked-' || lr.link_id || '-' || lr.person_id = ? ORDER BY lr.score DESC, lr.updated_at DESC",
+            userId,
+        )
+    }
+}

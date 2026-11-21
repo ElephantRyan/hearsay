@@ -1,11 +1,12 @@
-// One book with the ratings the viewer may see. A book nobody has rated yet
-// is fetched from ABS, so the page can offer the first rating.
+// One book with the ratings the viewer may see, linked servers' included. A
+// book nobody has rated yet is fetched from ABS, so the page can offer the
+// first rating.
 use hearsay.absclient.catalog
 use hearsay.ratings.rated
-use hearsay.ratings.rated.RatedBooks
+use hearsay.links
 
 activity loadItemDetail(userId: string, book: catalog.Book) -> ItemDetail {
-    rows = RatedBooks.visibleFor(book.itemId, userId)
+    rows = links.ratingsOfBook(book.itemId, userId)
     return ItemDetail(book: book, average: averageOf(rows), count: count(r in rows): r.recommended, ratings: rows)
 }
 

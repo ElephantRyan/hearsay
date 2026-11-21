@@ -1,0 +1,8 @@
+// A linked person's recommendations of books this library doesn't have; none
+// for one of this server's people.
+activity missingOf(userId: string) -> List<MissingBook> {
+    if not userId.startsWith("linked-") {
+        return []
+    }
+    return LinkedRatings.missingOf(userId)
+}

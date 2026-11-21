@@ -8,7 +8,7 @@ rule recommendersOf(rows: List<rated.RatingRow>) -> List<Recommender> {
     for userId, group in groups {
         people = append(
             people,
-            Recommender(userId: userId, username: group.at(0).username, count: group.length()),
+            Recommender(userId: userId, username: group.at(0).username, count: group.length(), via: group.at(0).via),
         )
     }
     return sorted(person in people): person.count descending then person.username

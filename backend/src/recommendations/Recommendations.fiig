@@ -1,6 +1,6 @@
-use hearsay.ratings.rated.RatedBooks
+use hearsay.links
 
 activity recommendations(userId: string | None, libraryId: string | None, minScore: int | None) -> List<RecommendedBook> {
-    rows = filterRows(RatedBooks.recommended(), userId, libraryId)
+    rows = filterRows(links.everyRecommendation(), userId, libraryId)
     return atLeast(rankRecommendations(rows), minScore)
 }
