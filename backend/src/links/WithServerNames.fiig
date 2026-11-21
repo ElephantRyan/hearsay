@@ -24,21 +24,7 @@ private {
                         if (filter(o in others): o.userId != row.userId).length() == 0 {
                             return row
                         }
-                        return rated.RatingRow(
-                            userId: row.userId,
-                            username: "${row.username} · ${server}",
-                            itemId: row.itemId,
-                            libraryId: row.libraryId,
-                            title: row.title,
-                            authors: row.authors,
-                            score: row.score,
-                            note: row.note,
-                            recommended: row.recommended,
-                            createdAt: row.createdAt,
-                            updatedAt: row.updatedAt,
-                            via: row.via,
-                            matchedBy: row.matchedBy,
-                        )
+                        return copy(row, username: "${row.username} · ${server}")
                     }
                 }
             }
