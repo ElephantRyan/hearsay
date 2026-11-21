@@ -63,7 +63,7 @@ test oidcCallbackChecksStateBeforeExchanging {
             expect false
         }
         opened -> {
-            expect sessions.currentUser(opened.token) is Ok(me)
+            expect sessions.signedIn(opened.token) is Ok(me)
             expect me.userId == "u1"
         }
     }
