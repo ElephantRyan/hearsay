@@ -1,0 +1,9 @@
+use hearsay.settings
+
+// An admin can fix a server that is not set up, so this says what to enter.
+conversion adminErrorOfSettings(error: settings.SettingsError) -> AdminError {
+    match error {
+        settings.SettingsError.NoAbsUrl -> AdminError.Unavailable("this server isn't set up yet: an admin needs to enter the Audiobookshelf address")
+        settings.SettingsError.NoServiceToken -> AdminError.Unavailable("this server isn't set up yet: an admin needs to enter its Audiobookshelf token")
+    }
+}

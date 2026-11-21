@@ -1,7 +1,6 @@
 use hearsay.absclient as client
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
-use hearsay.common
 use hearsay.settings
 use hearsay.settings.Abs
 
@@ -37,7 +36,8 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
     }
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
-    expect indexLibrary() is Ok(summary)
+    expect settings.loadAbsTarget() is Ok(abs)
+    expect indexLibrary(abs) is Ok(summary)
     expect summary == IndexSummary(books: 253, withAsin: 251, withIsbn: 1, titleOnly: 1)
     expect calls(AbsCatalog.pageAsService) == 2
 
@@ -47,6 +47,6 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
     expect matchBook(keysOf(None, None, "Not Here", "Anyone")) == None
 
     // A rebuild that fails part-way keeps the old index.
-    expect indexLibrary() is Err(common.ApiError.Unavailable(_))
+    expect indexLibrary(abs) is Err(client.AbsFault.Down(_))
     expect matchBook(keysOf("b0dune", None, "", "")) == LocalMatch(itemId: "dune", libraryId: "lib-1", how: "asin")
 }

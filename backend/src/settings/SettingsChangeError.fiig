@@ -1,0 +1,6 @@
+// Why a settings change was refused: a value that is not right, or a setting
+// that does not exist.
+enum SettingsChangeError {
+    Invalid(field: string, reason: string)
+    UnknownSetting(name: string)
+}

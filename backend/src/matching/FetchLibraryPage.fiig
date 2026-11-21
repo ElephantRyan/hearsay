@@ -1,11 +1,10 @@
 use hearsay.absclient
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
-use hearsay.common
 
 // One page of a library's books, ASIN and ISBN included, for an index rebuild.
-gateway fetchLibraryPage(abs: absclient.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, common.ApiError>
+gateway fetchLibraryPage(abs: absclient.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, absclient.AbsFault>
     requires AbsCatalog
 {
-    return mapErr(e in AbsCatalog.pageAsService(abs, libraryId, page, size)): common.apiErrorOfAbs(e)
+    return mapErr(e in AbsCatalog.pageAsService(abs, libraryId, page, size)): absclient.faultOfAbs(e)
 }

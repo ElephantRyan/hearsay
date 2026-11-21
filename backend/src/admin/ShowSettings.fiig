@@ -1,8 +1,7 @@
-use hearsay.common
 use hearsay.settings
 
 // GET /admin/settings.
-workflow showSettings(session: string | None) -> Result<settings.SettingsView, common.ApiError> {
+workflow showSettings(session: string | None) -> Result<settings.SettingsView, AdminError> {
     requireAdmin(session)?
     return Ok(settings.describeSettings())
 }

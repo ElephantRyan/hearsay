@@ -1,5 +1,3 @@
-use hearsay.common
-
 // The sessions routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http sessionsApi {
@@ -12,6 +10,6 @@ adapter http sessionsApi {
         produces "application/json"
     {
         Ok(identity) -> 200 identity
-        Err(error) -> common.apiErrorResponse(error)
+        Err(error) -> identityErrorResponse(error)
     }
 }

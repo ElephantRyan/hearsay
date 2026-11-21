@@ -1,18 +1,25 @@
-use hearsay.common
+use hearsay.absclient as client
 use hearsay.sessions
 use hearsay.settings
 
 // POST /setup: only while the server has no Audiobookshelf address. The address
 // is checked like the admin screen's, the login must be an ABS admin's, and
 // that admin is signed in, ready to finish on the admin screen.
-workflow runSetup(input: SetupInput) -> Result<sessions.Session, common.ApiError> {
-    checked = settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl))?
+workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
+    checked = mapErr(e in settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl))): setupErrorOfChange(e)?
     match checked.absUrl {
         None -> {
-            return Err(common.ApiError.Invalid("absUrl", "is missing"))
+            return Err(SetupError.Invalid("absUrl", "is missing"))
         }
         url -> {
-            identity = claimServer(url, input.username, input.password)?
+            if settings.absUrl() != None {
+                return Err(SetupError.AlreadySetUp)
+            }
+            identity = mapErr(e in loginToAbs(url, input.username, input.password)): setupErrorOfFault(e)?
+            if not client.canAdminister(identity.userType) {
+                return Err(SetupError.NotAdmin)
+            }
+            settings.rememberSetting("abs.url", url, identity.userId)
             return Ok(sessions.startSession(identity))
         }
     }

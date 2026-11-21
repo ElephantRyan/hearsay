@@ -1,11 +1,9 @@
-use hearsay.common
-
 // Forgets a saved setting by the name the admin screen uses, so the
 // environment's value applies again.
-activity forgetSetting(name: string) -> Result<int, common.ApiError> {
+activity forgetSetting(name: string) -> Result<int, SettingsChangeError> {
     match storedName(name) {
         None -> {
-            return Err(common.ApiError.NotFound("setting called ${name}"))
+            return Err(SettingsChangeError.UnknownSetting(name))
         }
         stored -> {
             return Ok(clearSetting(stored))

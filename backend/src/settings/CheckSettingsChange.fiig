@@ -1,8 +1,6 @@
-use hearsay.common
-
 // Tidies and checks a change before anything is saved: addresses are http(s)
 // URLs with no trailing slash, and no text is blank.
-rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, common.ApiError> {
+rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, SettingsChangeError> {
     return Ok(
         SettingsChange(
             absUrl: checkUrl("absUrl", change.absUrl)?,
@@ -19,7 +17,7 @@ rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, commo
 }
 
 private {
-    checkUrl(field: string, given: string | None) -> Result<string | None, common.ApiError> {
+    checkUrl(field: string, given: string | None) -> Result<string | None, SettingsChangeError> {
         match given {
             None -> {
                 return Ok(None)
@@ -27,24 +25,24 @@ private {
             text -> {
                 url = text.trim().removeSuffix("/")
                 if not url.startsWith("https://") and not url.startsWith("http://") {
-                    return Err(common.ApiError.Invalid(field, "must start with https:// or http://"))
+                    return Err(SettingsChangeError.Invalid(field, "must start with https:// or http://"))
                 }
                 if url.contains(" ") or url.length() < 9 {
-                    return Err(common.ApiError.Invalid(field, "isn't a web address"))
+                    return Err(SettingsChangeError.Invalid(field, "isn't a web address"))
                 }
                 return Ok(url)
             }
         }
     }
 
-    checkText(field: string, given: string | None) -> Result<string | None, common.ApiError> {
+    checkText(field: string, given: string | None) -> Result<string | None, SettingsChangeError> {
         match given {
             None -> {
                 return Ok(None)
             }
             text -> {
                 if text.isBlank() {
-                    return Err(common.ApiError.Invalid(field, "is blank"))
+                    return Err(SettingsChangeError.Invalid(field, "is blank"))
                 }
                 return Ok(text.trim())
             }

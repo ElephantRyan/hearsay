@@ -1,12 +1,10 @@
 use hearsay.absclient.catalog
-use hearsay.common
-use hearsay.settings
+use hearsay.absclient
 
 // Rebuilds the index of every local book library from ABS, a page of 250 at a
 // time (about five calls for 1,100 books). On any failure the old index is
 // kept: nothing is cleared until every page has arrived.
-activity indexLibrary() -> Result<IndexSummary, common.ApiError> {
-    abs = mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?
+activity indexLibrary(abs: absclient.AbsTarget) -> Result<IndexSummary, absclient.AbsFault> {
     libraries = filter(library in fetchLibraryList(abs)?): library.mediaType == "book"
     books: List<catalog.Book> = []
     for library in libraries {

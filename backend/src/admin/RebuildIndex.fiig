@@ -1,9 +1,10 @@
-use hearsay.common
 use hearsay.matching
+use hearsay.settings
 
 // POST /admin/library-index: rebuild the index linked servers' books are
 // matched against, and say how many books can be recognised and how.
-workflow rebuildIndex(session: string | None) -> Result<matching.IndexSummary, common.ApiError> {
+workflow rebuildIndex(session: string | None) -> Result<matching.IndexSummary, AdminError> {
     requireAdmin(session)?
-    return matching.indexLibrary()
+    abs = mapErr(e in settings.loadAbsTarget()): adminErrorOfSettings(e)?
+    return mapErr(e in matching.indexLibrary(abs)): adminErrorOfFault(e)
 }

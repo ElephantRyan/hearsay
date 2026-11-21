@@ -1,7 +1,6 @@
 use hearsay.absclient as client
 use hearsay.absclient.members
 use hearsay.absclient.members.AbsMembers
-use hearsay.common
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
@@ -28,10 +27,10 @@ test aNewServerIsClaimedByAnAbsAdmin {
     }
 
     expect showSetup() == SetupState(needed: true)
-    expect runSetup(SetupInput(absUrl: "ftp://abs.home.test", username: "owner", password: "right")) is Err(common.ApiError.Invalid(field, _))
+    expect runSetup(SetupInput(absUrl: "ftp://abs.home.test", username: "owner", password: "right")) is Err(SetupError.Invalid(field, _))
     expect field == "absUrl"
-    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "wrong")) is Err(common.ApiError.Refused(_))
-    expect runSetup(SetupInput(absUrl: "https://abs.home.test", username: "reader", password: "right")) is Err(common.ApiError.Refused(_))
+    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "wrong")) is Err(SetupError.WrongLogin)
+    expect runSetup(SetupInput(absUrl: "https://abs.home.test", username: "reader", password: "right")) is Err(SetupError.NotAdmin)
     expect showSetup() == SetupState(needed: true)
 
     expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "right")) is Ok(session)
@@ -40,6 +39,6 @@ test aNewServerIsClaimedByAnAbsAdmin {
     expect settings.absUrl() == "https://abs.home.test"
     expect showSetup() == SetupState(needed: false)
 
-    expect runSetup(SetupInput(absUrl: "https://elsewhere.test", username: "owner", password: "right")) is Err(common.ApiError.Refused(_))
+    expect runSetup(SetupInput(absUrl: "https://elsewhere.test", username: "owner", password: "right")) is Err(SetupError.AlreadySetUp)
     expect settings.absUrl() == "https://abs.home.test"
 }

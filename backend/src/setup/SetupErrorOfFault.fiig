@@ -1,0 +1,11 @@
+use hearsay.absclient as client
+
+// A refusal here is the person's login. A 404, or a reply that isn't ABS's,
+// means the address is not an Audiobookshelf server.
+conversion setupErrorOfFault(fault: client.AbsFault) -> SetupError {
+    match fault {
+        client.AbsFault.Missing -> SetupError.Invalid("absUrl", "doesn't look like an Audiobookshelf server")
+        client.AbsFault.Denied -> SetupError.WrongLogin
+        client.AbsFault.Down(detail) -> SetupError.Invalid("absUrl", detail)
+    }
+}

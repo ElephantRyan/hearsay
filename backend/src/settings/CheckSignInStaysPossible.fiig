@@ -1,8 +1,6 @@
-use hearsay.common
-
 // Authentik-only sign-in can't be chosen until every Authentik setting is there,
 // counting the change itself: otherwise nobody could sign in to finish it.
-activity checkSignInStaysPossible(change: SettingsChange) -> Result<int, common.ApiError> {
+activity checkSignInStaysPossible(change: SettingsChange) -> Result<int, SettingsChangeError> {
     mode = change.authMode or currentAuthMode()
     if mode != AuthMode.Oidc {
         return Ok(0)
@@ -11,7 +9,7 @@ activity checkSignInStaysPossible(change: SettingsChange) -> Result<int, common.
     clientId = change.oidcClientId or storedText("oidc.clientId") or Oidc.clientId
     redirectUri = change.oidcRedirectUri or storedText("oidc.redirectUri") or Oidc.redirectUri
     if issuer == None or clientId == None or redirectUri == None or not secretThere(change) {
-        return Err(common.ApiError.Invalid("authMode", "can be Authentik only once every Authentik setting is filled in"))
+        return Err(SettingsChangeError.Invalid("authMode", "can be Authentik only once every Authentik setting is filled in"))
     }
     return Ok(0)
 }

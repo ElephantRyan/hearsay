@@ -1,6 +1,5 @@
 use hearsay.absclient as client
 use hearsay.accounts
-use hearsay.common
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
@@ -17,10 +16,10 @@ test onlyAnAdminSeesOrChangesSettings {
 
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
     change = settings.SettingsChange(absUrl: "https://elsewhere.test", serviceToken: None, mirrorEnabled: None)
-    expect showSettings(None) is Err(common.ApiError.Unauthenticated)
-    expect showSettings(ann) is Err(common.ApiError.Refused(_))
-    expect changeSettings(ann, change) is Err(common.ApiError.Refused(_))
-    expect resetSetting(ann, "absUrl") is Err(common.ApiError.Refused(_))
+    expect showSettings(None) is Err(AdminError.NotSignedIn)
+    expect showSettings(ann) is Err(AdminError.NotAdmin)
+    expect changeSettings(ann, change) is Err(AdminError.NotAdmin)
+    expect resetSetting(ann, "absUrl") is Err(AdminError.NotAdmin)
 }
 
 test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
@@ -63,7 +62,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
 
     expect resetSetting(root, "absUrl") is Ok(reset)
     expect reset.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
-    expect resetSetting(root, "password") is Err(common.ApiError.NotFound(_))
+    expect resetSetting(root, "password") is Err(AdminError.UnknownSetting(_))
 }
 
 test aBadChangeSavesNothing {
@@ -89,9 +88,9 @@ test aBadChangeSavesNothing {
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
-    expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(common.ApiError.Invalid(field, _))
+    expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid(field, _))
     expect field == "absUrl"
-    expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(common.ApiError.Invalid(blank, _))
+    expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid(blank, _))
     expect blank == "serviceToken"
     expect showSettings(admin) is Ok(view)
     expect view.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
@@ -161,7 +160,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
 
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
-    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(common.ApiError.Invalid(field, _))
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _))
     expect field == "authMode"
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view)
     expect view.authMode.value == "oidc"

@@ -1,0 +1,9 @@
+// Every way an admin request can be refused, as values the caller must handle.
+enum AdminError {
+    NotSignedIn
+    NotAdmin
+    Invalid(field: string, reason: string)
+    UnknownSetting(name: string)
+    LibraryNotFound
+    Unavailable(detail: string)
+}
