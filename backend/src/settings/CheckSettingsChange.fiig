@@ -1,0 +1,43 @@
+use abs.recommendations.common
+
+// Tidies and checks a change before anything is saved: the address is an
+// http(s) URL with no trailing slash, and a token isn't blank.
+rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, common.ApiError> {
+    return Ok(
+        SettingsChange(absUrl: checkUrl(change.absUrl)?, serviceToken: checkToken(change.serviceToken)?, mirrorEnabled: change.mirrorEnabled),
+    )
+}
+
+private {
+    checkUrl(given: string | None) -> Result<string | None, common.ApiError> {
+        match given {
+            None -> {
+                return Ok(None)
+            }
+            text -> {
+                url = text.trim().removeSuffix("/")
+                if not url.startsWith("https://") and not url.startsWith("http://") {
+                    return Err(common.ApiError.Invalid("absUrl", "must start with https:// or http://"))
+                }
+                if url.contains(" ") or url.length() < 9 {
+                    return Err(common.ApiError.Invalid("absUrl", "isn't a web address"))
+                }
+                return Ok(url)
+            }
+        }
+    }
+
+    checkToken(given: string | None) -> Result<string | None, common.ApiError> {
+        match given {
+            None -> {
+                return Ok(None)
+            }
+            text -> {
+                if text.isBlank() {
+                    return Err(common.ApiError.Invalid("serviceToken", "is blank"))
+                }
+                return Ok(text.trim())
+            }
+        }
+    }
+}

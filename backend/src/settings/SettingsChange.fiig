@@ -1,0 +1,8 @@
+// The body of PUT /admin/settings: the settings to save. A field left out (or
+// null) is left as it is; a saved one goes back to the environment's value
+// only through DELETE /admin/settings/{name}.
+model SettingsChange {
+    absUrl: string | None
+    serviceToken: string | None
+    mirrorEnabled: bool | None
+}

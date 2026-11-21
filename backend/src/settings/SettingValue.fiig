@@ -1,0 +1,7 @@
+// One setting as the admin screen shows it. `source` is "saved" (in the app),
+// "environment" (its variable), or "unset". A secret's value is never shown:
+// it is always None, and only the source says whether one is there.
+model SettingValue {
+    value: string | None
+    source: string
+}

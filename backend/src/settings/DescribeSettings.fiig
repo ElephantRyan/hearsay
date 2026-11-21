@@ -1,0 +1,57 @@
+// The settings as they stand, and where each comes from. Never a secret's value.
+activity describeSettings() -> SettingsView {
+    return SettingsView(
+        absUrl: textSetting(storedText("abs.url"), Abs.url),
+        serviceToken: secretSetting(storedText("abs.serviceToken")),
+        mirrorEnabled: textSetting(storedText("sync.mirrorEnabled"), boolText(SyncConfig.mirrorEnabled)),
+    )
+}
+
+private {
+    textSetting(saved: string | None, env: string | None) -> SettingValue {
+        match saved {
+            None -> {
+                match env {
+                    None -> {
+                        return SettingValue(value: None, source: "unset")
+                    }
+                    given -> {
+                        return SettingValue(value: given, source: "environment")
+                    }
+                }
+            }
+            given -> {
+                return SettingValue(value: given, source: "saved")
+            }
+        }
+    }
+
+    // The environment is read only when nothing is saved.
+    secretSetting(saved: string | None) -> SettingValue {
+        match saved {
+            None -> {
+                if envTokenSet() {
+                    return SettingValue(value: None, source: "environment")
+                }
+                return SettingValue(value: None, source: "unset")
+            }
+            given -> {
+                return SettingValue(value: None, source: "saved")
+            }
+        }
+    }
+
+    envTokenSet() -> bool {
+        match AbsService.token {
+            None -> false
+            given -> true
+        }
+    }
+
+    boolText(on: bool) -> string {
+        if on {
+            return "true"
+        }
+        return "false"
+    }
+}

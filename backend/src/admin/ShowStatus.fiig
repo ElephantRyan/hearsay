@@ -1,0 +1,7 @@
+use abs.recommendations.common
+
+// GET /admin/status.
+workflow showStatus(session: string | None) -> Result<AdminStatus, common.ApiError> {
+    requireAdmin(session)?
+    return Ok(loadStatus())
+}

@@ -1,0 +1,11 @@
+use abs.recommendations.common
+use abs.recommendations.settings
+
+// PUT /admin/settings: checks the whole change, then saves it, then answers
+// with the settings as they now stand.
+workflow changeSettings(session: string | None, change: settings.SettingsChange) -> Result<settings.SettingsView, common.ApiError> {
+    me = requireAdmin(session)?
+    checked = settings.checkSettingsChange(change)?
+    settings.applySettingsChange(checked, me.userId)
+    return Ok(settings.describeSettings())
+}

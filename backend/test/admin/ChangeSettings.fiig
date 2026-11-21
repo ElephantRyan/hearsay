@@ -1,0 +1,76 @@
+use abs.recommendations.accounts
+use abs.recommendations.common
+use abs.recommendations.sessions
+use abs.recommendations.sessions.SessionConfig
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
+use abs.recommendations.settings.SyncConfig
+
+test onlyAnAdminSeesOrChangesSettings {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+
+    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
+    change = settings.SettingsChange(absUrl: "https://elsewhere.test", serviceToken: None, mirrorEnabled: None)
+    expect showSettings(None) is Err(common.ApiError.Unauthenticated)
+    expect showSettings(ann) is Err(common.ApiError.Refused(_))
+    expect changeSettings(ann, change) is Err(common.ApiError.Refused(_))
+    expect resetSetting(ann, "absUrl") is Err(common.ApiError.Refused(_))
+}
+
+test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake Abs {
+        url: "https://from-env.test"
+    }
+    fake SyncConfig {
+        mirrorEnabled: false
+    }
+
+    // A saved token first: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
+    settings.rememberSetting("abs.serviceToken", "old-token", "test")
+    root = sessions.startSession(accounts.Identity(userId: "r1", username: "owner", userType: "root")).token
+    expect showSettings(root) is Ok(before)
+    expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
+    expect before.mirrorEnabled == settings.SettingValue(value: "false", source: "environment")
+
+    change = settings.SettingsChange(absUrl: "  https://abs.home.test/ ", serviceToken: "new-token", mirrorEnabled: true)
+    expect changeSettings(root, change) is Ok(after)
+    expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved")
+    expect after.serviceToken == settings.SettingValue(value: None, source: "saved")
+    expect after.mirrorEnabled == settings.SettingValue(value: "true", source: "saved")
+    expect settings.loadAbsTarget() is Ok(target)
+    expect target.url == "https://abs.home.test"
+    expect target.token.matches("new-token")
+    expect settings.mirrorEnabled()
+
+    expect resetSetting(root, "absUrl") is Ok(reset)
+    expect reset.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
+    expect resetSetting(root, "password") is Err(common.ApiError.NotFound(_))
+}
+
+test aBadChangeSavesNothing {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake Abs {
+        url: "https://from-env.test"
+    }
+    fake SyncConfig {
+        mirrorEnabled: false
+    }
+
+    settings.rememberSetting("abs.serviceToken", "old-token", "test")
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: "admin")).token
+    expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(common.ApiError.Invalid(field, _))
+    expect field == "absUrl"
+    expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(common.ApiError.Invalid(blank, _))
+    expect blank == "serviceToken"
+    expect showSettings(admin) is Ok(view)
+    expect view.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
+    expect settings.loadAbsTarget() is Ok(target)
+    expect target.token.matches("old-token")
+}

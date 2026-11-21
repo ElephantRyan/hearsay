@@ -1,0 +1,9 @@
+use abs.recommendations.common
+use abs.recommendations.settings
+
+// DELETE /admin/settings/{name}: back to the environment's value.
+workflow resetSetting(session: string | None, name: string) -> Result<settings.SettingsView, common.ApiError> {
+    requireAdmin(session)?
+    settings.forgetSetting(name)?
+    return Ok(settings.describeSettings())
+}

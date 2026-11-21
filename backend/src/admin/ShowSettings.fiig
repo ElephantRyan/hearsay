@@ -1,0 +1,8 @@
+use abs.recommendations.common
+use abs.recommendations.settings
+
+// GET /admin/settings.
+workflow showSettings(session: string | None) -> Result<settings.SettingsView, common.ApiError> {
+    requireAdmin(session)?
+    return Ok(settings.describeSettings())
+}

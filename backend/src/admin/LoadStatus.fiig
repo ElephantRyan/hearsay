@@ -1,0 +1,54 @@
+use abs.recommendations.absclient as client
+use abs.recommendations.absclient.AbsServer
+use abs.recommendations.absclient.members.AbsMembers
+use abs.recommendations.settings
+
+// Is Audiobookshelf there, and does this server's token work? Asks ABS each time.
+activity loadStatus() -> AdminStatus {
+    match settings.absUrl() {
+        None -> {
+            return AdminStatus(abs: "not set up", serviceAccount: None, serviceAccountType: None, problem: "No Audiobookshelf address is set.")
+        }
+        url -> {
+            match AbsServer.status(url) {
+                Err(_) -> {
+                    return AdminStatus(abs: "unreachable", serviceAccount: None, serviceAccountType: None, problem: "Audiobookshelf didn't answer at that address.")
+                }
+                Ok(_) -> {
+                    return withAccount(url)
+                }
+            }
+        }
+    }
+}
+
+private {
+    withAccount(url: string) -> AdminStatus {
+        match settings.serviceToken() {
+            None -> {
+                return AdminStatus(abs: "reachable", serviceAccount: None, serviceAccountType: None, problem: "No Audiobookshelf token is set.")
+            }
+            token -> {
+                match AbsMembers.meAsService(client.AbsTarget(url: url, token: token)) {
+                    Ok(user) -> {
+                        return AdminStatus(abs: "reachable", serviceAccount: user.username, serviceAccountType: user.type, problem: None)
+                    }
+                    Err(error) -> {
+                        return AdminStatus(abs: "reachable", serviceAccount: None, serviceAccountType: None, problem: tokenProblem(error))
+                    }
+                }
+            }
+        }
+    }
+
+    // Short, safe words for a failed token check. Never the token or a body.
+    tokenProblem(error: client.AbsError) -> string {
+        match error {
+            client.AbsError.NotFound -> "Audiobookshelf answered 404 to /api/me."
+            client.AbsError.Unauthorized -> "Audiobookshelf refused the token."
+            client.AbsError.Rejected(status) -> "Audiobookshelf answered ${status} to the token."
+            client.AbsError.Unreachable(failure) -> "Audiobookshelf stopped answering."
+            client.AbsError.Unreadable(failure) -> "Audiobookshelf's answer couldn't be read."
+        }
+    }
+}

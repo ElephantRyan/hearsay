@@ -1,0 +1,29 @@
+use abs.recommendations.common
+
+// Forgets a saved setting by the name the admin screen uses, so the
+// environment's value applies again.
+activity forgetSetting(name: string) -> Result<int, common.ApiError> {
+    match storedName(name) {
+        None -> {
+            return Err(common.ApiError.NotFound("setting called ${name}"))
+        }
+        stored -> {
+            return Ok(clearSetting(stored))
+        }
+    }
+}
+
+private {
+    storedName(name: string) -> string | None {
+        if name == "absUrl" {
+            return "abs.url"
+        }
+        if name == "serviceToken" {
+            return "abs.serviceToken"
+        }
+        if name == "mirrorEnabled" {
+            return "sync.mirrorEnabled"
+        }
+        return None
+    }
+}
