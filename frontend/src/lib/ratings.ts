@@ -18,7 +18,7 @@ export function noteLength(note: string): number {
   return count;
 }
 
-/** The same rules the server enforces (backend/rules/create_rating.fiig). */
+/** The same rules the server enforces (backend/src/ratings/CreateRating.fiig). */
 export const ratingSchema = z.object({
   score: z
     .number({ error: "Pick a score from 1 to 10." })

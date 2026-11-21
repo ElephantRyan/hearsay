@@ -161,11 +161,27 @@ export function useRateItem() {
   });
 }
 
+/** Remove my rating. It leaves the "my ratings" lists at once and comes back if the server refuses. */
 export function useRemoveRating() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (itemId: string) =>
       unwrap(await api.DELETE("/ratings/{itemId}", { params: { path: { itemId } } })),
+    onMutate: async (itemId) => {
+      await queryClient.cancelQueries({ queryKey: keys.allMyRatings });
+      const snapshots = queryClient.getQueriesData<RatingRow[]>({ queryKey: keys.allMyRatings });
+      for (const [key, rows] of snapshots) {
+        if (rows)
+          queryClient.setQueryData<RatingRow[]>(
+            key,
+            rows.filter((row) => row.itemId !== itemId),
+          );
+      }
+      return { snapshots };
+    },
+    onError: (_error, _itemId, context) => {
+      for (const [key, rows] of context?.snapshots ?? []) queryClient.setQueryData(key, rows);
+    },
     onSettled: (_data, _error, itemId) => refreshAfterRatingChange(queryClient, itemId),
   });
 }

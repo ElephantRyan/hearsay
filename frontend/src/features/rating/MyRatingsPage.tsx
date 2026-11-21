@@ -1,11 +1,16 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { useId } from "react";
-import { useMyRatings } from "../../api/hooks";
-import type { RatingSort } from "../../api/types";
+import { useMyRatings, useRateItem } from "../../api/hooks";
+import type { RatingRow, RatingSort } from "../../api/types";
 import { BookRow } from "../../components/domain/BookRow";
 import { RatingBadge } from "../../components/domain/RatingBadge";
-import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  messageFor,
+} from "../../components/domain/StateViews";
 
 const sorts: { value: RatingSort; label: string }[] = [
   { value: "newest", label: "Newest" },
@@ -52,26 +57,55 @@ export function MyRatingsPage() {
       {ratings.data && ratings.data.length > 0 && (
         <ul className="space-y-3">
           {ratings.data.map((row) => (
-            <BookRow
-              key={row.itemId}
-              itemId={row.itemId}
-              title={row.title}
-              authors={row.authors}
-              detail={
-                <span className="inline-flex items-center gap-1">
-                  {row.recommended ? (
-                    <Eye aria-hidden="true" className="h-4 w-4" />
-                  ) : (
-                    <EyeOff aria-hidden="true" className="h-4 w-4" />
-                  )}
-                  {row.recommended ? "Shared with everyone" : "Only you"}
-                </span>
-              }
-              aside={<RatingBadge score={row.score} />}
-            />
+            <MyRating key={row.itemId} row={row} />
           ))}
         </ul>
       )}
     </div>
+  );
+}
+
+/**
+ * One of my ratings, with its publish switch right on the row (FRONTEND.md section 5). Flipping it
+ * saves the same score and note; the row changes at once and flips back if the server refuses.
+ */
+function MyRating({ row }: { row: RatingRow }) {
+  const rate = useRateItem();
+  const shared = row.recommended;
+  const flip = () =>
+    rate.mutate({ itemId: row.itemId, score: row.score, note: row.note, recommended: !shared });
+
+  return (
+    <BookRow
+      itemId={row.itemId}
+      title={row.title}
+      authors={row.authors}
+      detail={shared ? "Shared with everyone" : "Only you"}
+      aside={<RatingBadge score={row.score} />}
+      action={
+        <button
+          type="button"
+          role="switch"
+          aria-checked={shared}
+          aria-label={`Recommend ${row.title}`}
+          disabled={rate.isPending}
+          onClick={flip}
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text disabled:opacity-60"
+        >
+          {shared ? (
+            <Eye aria-hidden="true" className="h-5 w-5 text-accent" />
+          ) : (
+            <EyeOff aria-hidden="true" className="h-5 w-5" />
+          )}
+        </button>
+      }
+      footer={
+        rate.isError && (
+          <p role="alert" className="text-sm text-danger">
+            Couldn't change who sees this: {messageFor(rate.error)}
+          </p>
+        )
+      }
+    />
   );
 }
