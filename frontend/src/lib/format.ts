@@ -8,6 +8,14 @@ export function coverUrl(itemId: string): string | undefined {
   return absUrl ? `${absUrl}/api/items/${encodeURIComponent(itemId)}/cover` : undefined;
 }
 
+/**
+ * The book in ABS's own web app, where Play is one tap away. ABS serves its web app under
+ * /audiobookshelf/ (its default router base path). Undefined when there's no VITE_ABS_URL.
+ */
+export function absItemUrl(itemId: string): string | undefined {
+  return absUrl ? `${absUrl}/audiobookshelf/item/${encodeURIComponent(itemId)}` : undefined;
+}
+
 /** An average as shown: one decimal, "8.7". */
 export function formatAverage(average: number): string {
   return average.toFixed(1);

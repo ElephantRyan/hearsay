@@ -38,6 +38,19 @@ function itemAnswer(rating?: ReturnType<typeof mine>) {
   );
 }
 
+describe("the book page", () => {
+  it("links to the book in Audiobookshelf's own player, in a new tab", async () => {
+    server.use(signedIn, itemAnswer());
+    mount(`/items/${book.itemId}`);
+
+    const link = await screen.findByRole("link", { name: "Open in Audiobookshelf" });
+    expect(link.getAttribute("href")).toMatch(
+      new RegExp(`/audiobookshelf/item/${encodeURIComponent(book.itemId)}$`),
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+  });
+});
+
 describe("the rating sheet", () => {
   it("rates a book from the home list and closes once saved", async () => {
     const sent: unknown[] = [];

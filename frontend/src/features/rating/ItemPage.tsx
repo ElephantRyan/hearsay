@@ -1,11 +1,12 @@
 import { useParams } from "@tanstack/react-router";
+import { ExternalLink } from "lucide-react";
 import { ApiError } from "../../api/errors";
 import { useItem, useMe } from "../../api/hooks";
 import { BookCover } from "../../components/domain/BookCover";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { RecommenderChip } from "../../components/domain/RecommenderChip";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
-import { formatDate } from "../../lib/format";
+import { absItemUrl, formatDate } from "../../lib/format";
 import { RatingFormPanel } from "./RatingFormPanel";
 
 export function ItemPage() {
@@ -28,6 +29,7 @@ export function ItemPage() {
   const { book, average, count, ratings } = item.data;
   const mine = ratings.find((row) => row.userId === me.data?.userId);
   const others = ratings.filter((row) => row.userId !== me.data?.userId);
+  const listenUrl = absItemUrl(book.itemId);
 
   return (
     <div className="space-y-8">
@@ -45,6 +47,17 @@ export function ItemPage() {
               <p className="text-sm text-muted">Nobody has recommended this yet.</p>
             )}
           </div>
+          {listenUrl && (
+            <a
+              href={listenUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-text no-underline hover:opacity-90"
+            >
+              Open in Audiobookshelf
+              <ExternalLink aria-hidden="true" className="h-4 w-4" />
+            </a>
+          )}
         </div>
       </header>
 
