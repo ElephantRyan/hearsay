@@ -1,0 +1,6 @@
+// What this server is called to the servers linked to it (LINKED.md section 4),
+// from the environment: "Ryan's library", say. Optional: an admin may save it in
+// the app instead (serverName), and linking waits until one of them is set.
+config ServerConfig {
+    name: string | None from env "SERVER_NAME"
+}

@@ -1,0 +1,5 @@
+// The inviting server's answer: its name, and the key it will accept.
+model LinkAcceptance {
+    name: string
+    key: string
+}

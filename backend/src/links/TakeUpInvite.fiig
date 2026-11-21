@@ -1,0 +1,31 @@
+use hearsay.settings
+
+// Sends the inviting server this one's name, address and the key it will call
+// with, and keeps the key it answers with. Nothing is kept unless it agreed.
+activity takeUpInvite(invite: InviteCode, name: string, by: string) -> Result<LinkedServer, LinkError> {
+    ownAddress = settings.frontendUrl()
+    if invite.address == ownAddress {
+        return Err(LinkError.Invalid("code", "is this server's own"))
+    }
+    match linkAt(invite.address) {
+        None -> {
+        }
+        existing -> {
+            return Err(LinkError.AlreadyLinked(existing.name))
+        }
+    }
+    keyIn = newKey()
+    accepted = mapErr(e in PeerServer.link(invite.address, LinkOffer(secret: invite.secret, name: name, address: ownAddress, key: keyIn))): linkErrorOfPeer(e)?
+    if accepted.name.isBlank() or accepted.key.length() < 43 {
+        return Err(LinkError.PeerRefused("its answer had no name or key"))
+    }
+    link = LinkedServer(
+        id: Random.uuid(),
+        name: accepted.name.trim(),
+        address: invite.address,
+        linkedAt: Clock.now(),
+        linkedBy: by,
+    )
+    saveLink(link, accepted.key, keyHash(keyIn))
+    return Ok(link)
+}

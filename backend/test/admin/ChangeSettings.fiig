@@ -5,6 +5,7 @@ use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
 use hearsay.settings.Oidc
+use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 use hearsay.settings.SyncConfig
 use hearsay.signin
@@ -15,7 +16,11 @@ test onlyAnAdminSeesOrChangesSettings {
     }
 
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    change = settings.SettingsChange(absUrl: "https://elsewhere.test", serviceToken: None, mirrorEnabled: None)
+    change = settings.SettingsChange(
+        absUrl: "https://elsewhere.test",
+        serviceToken: None,
+        mirrorEnabled: None,
+    )
     expect showSettings(None) is Err(AdminError.NotSignedIn)
     expect showSettings(ann) is Err(AdminError.NotAdmin)
     expect changeSettings(ann, change) is Err(AdminError.NotAdmin)
@@ -41,6 +46,9 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     fake SyncConfig {
         mirrorEnabled: false
     }
+    fake ServerConfig {
+        name: None
+    }
 
     // A saved token first: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
@@ -49,17 +57,23 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     expect showSettings(root) is Ok(before)
     expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
     expect before.mirrorEnabled == settings.SettingValue(value: "false", source: "environment")
-
-    change = settings.SettingsChange(absUrl: "  https://abs.home.test/ ", serviceToken: "new-token", mirrorEnabled: true)
+    expect before.serverName == settings.SettingValue(value: None, source: "unset")
+    change = settings.SettingsChange(
+        absUrl: "  https://abs.home.test/ ",
+        serviceToken: "new-token",
+        mirrorEnabled: true,
+        serverName: " Ryan's library ",
+    )
     expect changeSettings(root, change) is Ok(after)
     expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved")
     expect after.serviceToken == settings.SettingValue(value: None, source: "saved")
     expect after.mirrorEnabled == settings.SettingValue(value: "true", source: "saved")
+    expect after.serverName == settings.SettingValue(value: "Ryan's library", source: "saved")
+    expect settings.serverName() == "Ryan's library"
     expect settings.loadAbsTarget() is Ok(target)
     expect target.url == "https://abs.home.test"
     expect target.token.matches("new-token")
     expect settings.mirrorEnabled()
-
     expect resetSetting(root, "absUrl") is Ok(reset)
     expect reset.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
     expect resetSetting(root, "password") is Err(AdminError.UnknownSetting(_))
@@ -83,6 +97,9 @@ test aBadChangeSavesNothing {
     }
     fake SyncConfig {
         mirrorEnabled: false
+    }
+    fake ServerConfig {
+        name: None
     }
 
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
@@ -117,12 +134,18 @@ test switchingToAuthentikTurnsPasswordSignInOff {
     fake SyncConfig {
         mirrorEnabled: false
     }
+    fake ServerConfig {
+        name: None
+    }
 
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
-
-    change = settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcClientSecret: "new-secret", oidcRedirectUri: "https://app.home.test/api/auth/callback/")
+    change = settings.SettingsChange(
+        authMode: settings.AuthMode.Oidc,
+        oidcClientSecret: "new-secret",
+        oidcRedirectUri: "https://app.home.test/api/auth/callback/",
+    )
     expect changeSettings(admin, change) is Ok(view)
     expect view.authMode == settings.SettingValue(value: "oidc", source: "saved")
     expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved")
@@ -153,12 +176,14 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
     fake SyncConfig {
         mirrorEnabled: false
     }
+    fake ServerConfig {
+        name: None
+    }
 
     // AUTH_MODE=oidc with no issuer: password sign-in stays on rather than lock everyone out.
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
-
     admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _))
     expect field == "authMode"

@@ -1,0 +1,33 @@
+// A linked server's key, read back as a Secret so it can't be shown or logged
+// from here on (fiig ADR 0126).
+gateway peerKeyOf(id: string) -> PeerKey | None
+    requires Database
+    idempotent
+{
+    found: PeerKeyRow | None = Database.queryOne(
+        "SELECT id, name, address, key_out FROM linked_server WHERE id = ?",
+        id,
+    )
+    match found {
+        None -> {
+            return None
+        }
+        row -> {
+            return PeerKey(
+                id: row.id,
+                name: row.name,
+                address: row.address,
+                keyOut: row.keyOut.toSecret("linked server key"),
+            )
+        }
+    }
+}
+
+private {
+    model PeerKeyRow {
+        id: string
+        name: string
+        address: string
+        keyOut: string
+    }
+}

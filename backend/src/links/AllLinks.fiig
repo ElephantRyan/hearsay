@@ -1,0 +1,8 @@
+gateway allLinks() -> List<LinkedServer>
+    requires Database
+    idempotent
+{
+    return Database.queryMany(
+        "SELECT id, name, address, linked_at, linked_by FROM linked_server ORDER BY name",
+    )
+}

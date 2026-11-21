@@ -20,6 +20,8 @@ export type SettingValue = AdminSettings["absUrl"];
 export type AdminStatus = Ok<paths["/admin/status"]["get"]>;
 export type SyncResult = Ok<paths["/sync"]["post"]>[number];
 export type SetupState = Ok<paths["/setup"]["get"]>;
+export type LinkedServer = Ok<paths["/admin/links"]["get"]>[number];
+export type LinkInvite = Ok<paths["/admin/links/invite"]["post"]>;
 
 /** How people sign in: the `AUTH_MODE` values. */
 export type AuthMode = "abs" | "oidc" | "both";
@@ -35,6 +37,7 @@ export interface SettingsChange {
   oidcClientId?: string;
   oidcClientSecret?: string;
   oidcRedirectUri?: string;
+  serverName?: string;
 }
 
 /** The setting names DELETE /admin/settings/{name} knows. */

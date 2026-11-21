@@ -1,0 +1,23 @@
+use fiig.http
+use fiig.http.HttpClient
+
+// Calls to another Hearsay server's federation routes, at its address (the
+// app's own, with the API under /api as the frontend reaches it).
+capability PeerServer {
+    // Takes up the other server's invite, and gives the key it will call with.
+    gateway link(address: string, offer: LinkOffer) -> Result<LinkAcceptance, PeerError>
+        requires HttpClient
+    {
+        reply = peerReply(HttpClient.send(peerRequest(http.Method.Post, "${address}/api/federation/link", None, json.encode(offer))))?
+        accepted: LinkAcceptance = mapErr(e in json.decode(reply.body)): PeerError.Unreadable?
+        return Ok(accepted)
+    }
+
+    // Tells the other server this link is gone.
+    gateway unlink(address: string, key: Secret) -> Result<int, PeerError>
+        requires HttpClient
+    {
+        reply = peerReply(HttpClient.send(peerRequest(http.Method.Delete, "${address}/api/federation/link", key.reveal(), None)))?
+        return Ok(reply.status)
+    }
+}

@@ -1,0 +1,5 @@
+gateway deleteLink(id: string) -> int
+    requires Database
+{
+    return Database.execute("DELETE FROM linked_server WHERE id = ?", id)
+}

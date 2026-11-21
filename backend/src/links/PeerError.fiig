@@ -1,0 +1,10 @@
+use fiig.http
+
+// Why a call to another server didn't give an answer: no reply, a login page
+// in front of it, a refusal by status, or a reply that isn't Hearsay's.
+enum PeerError {
+    Unreachable(failure: http.HttpError)
+    LoginPage
+    Rejected(status: int)
+    Unreadable
+}

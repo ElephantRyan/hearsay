@@ -1,0 +1,7 @@
+// What DELETE /admin/links/{id} did: which server was unlinked, and whether it
+// was told. If it wasn't, its own link to here stays until its admin removes it,
+// and its calls are refused.
+model Unlinked {
+    name: string
+    told: bool
+}

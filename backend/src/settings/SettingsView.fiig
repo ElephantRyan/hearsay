@@ -9,4 +9,5 @@ model SettingsView {
     oidcClientId: SettingValue
     oidcClientSecret: SettingValue
     oidcRedirectUri: SettingValue
+    serverName: SettingValue
 }

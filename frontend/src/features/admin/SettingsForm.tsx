@@ -1,11 +1,23 @@
 import { type FormEvent, type ReactNode, useId, useState } from "react";
 import { useResetSetting, useSaveSettings } from "../../api/hooks";
-import type { AdminSettings, AuthMode, SettingName, SettingsChange, SettingValue } from "../../api/types";
+import type {
+  AdminSettings,
+  AuthMode,
+  SettingName,
+  SettingsChange,
+  SettingValue,
+} from "../../api/types";
 import { messageFor } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
 import { Collapsible } from "../../components/ui/Collapsible";
 
-type TextName = "absUrl" | "frontendUrl" | "oidcIssuer" | "oidcClientId" | "oidcRedirectUri";
+type TextName =
+  | "absUrl"
+  | "frontendUrl"
+  | "oidcIssuer"
+  | "oidcClientId"
+  | "oidcRedirectUri"
+  | "serverName";
 type SecretName = "serviceToken" | "oidcClientSecret";
 
 const textNames: TextName[] = [
@@ -14,6 +26,7 @@ const textNames: TextName[] = [
   "oidcIssuer",
   "oidcClientId",
   "oidcRedirectUri",
+  "serverName",
 ];
 const secretNames: SecretName[] = ["serviceToken", "oidcClientSecret"];
 
@@ -132,6 +145,21 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
               suggestion={texts.frontendUrl === origin ? undefined : origin}
               footer={
                 <Source name="frontendUrl" setting={settings.frontendUrl} variable="FRONTEND_URL" />
+              }
+            />
+          </fieldset>
+        </Section>
+
+        <Section title="Linked servers">
+          <fieldset className="space-y-5" aria-label="Linked servers">
+            <TextField
+              label="This server's name"
+              placeholder="Ryan's library"
+              value={texts.serverName}
+              onChange={setText("serverName")}
+              hint="What the servers linked to this one call it. Linking waits until it has one."
+              footer={
+                <Source name="serverName" setting={settings.serverName} variable="SERVER_NAME" />
               }
             />
           </fieldset>

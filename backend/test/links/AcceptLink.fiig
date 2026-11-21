@@ -1,0 +1,102 @@
+use hearsay.absclient as client
+use hearsay.accounts
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.ServerConfig
+use hearsay.settings.SignInConfig
+
+// The inviting side: an invite works once and for a day, and the key it
+// answers with is the only way back in.
+test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake ServerConfig {
+        name: "Ryan's library"
+    }
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs
+        frontendUrl: "https://ryan.test"
+    }
+
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
+    expect inviteServer(admin) is Ok(invite)
+    expect invite.code.startsWith("https://ryan.test#")
+    expect inviteCodeOf(invite.code) is Ok(code)
+    expect code.address == "https://ryan.test"
+    alexKey = newKey()
+    offer = LinkOffer(
+        secret: code.secret,
+        name: " Alex's library ",
+        address: "https://alex.test/",
+        key: alexKey,
+    )
+    expect acceptLink(LinkOffer(secret: "not-the-secret", name: "x", address: "https://x.test", key: alexKey)) is Err(FederationError.BadInvite)
+    expect acceptLink(offer) is Ok(accepted)
+    expect accepted.name == "Ryan's library"
+    expect acceptLink(offer) is Err(FederationError.BadInvite)
+    expect listLinks(admin) is Ok(links)
+    expect links.length() == 1
+    expect links.first().name == "Alex's library"
+    expect links.first().address == "https://alex.test"
+    expect links.first().linkedBy == "invite"
+    expect linkOfKey("Bearer ${accepted.key}") is Ok(caller)
+    expect caller.name == "Alex's library"
+    expect linkOfKey(None) is Err(FederationError.NoKey)
+    expect linkOfKey(accepted.key) is Err(FederationError.NoKey)
+    expect linkOfKey("Bearer ${alexKey}") is Err(FederationError.UnknownKey)
+    // A second invite taken up from an address already linked is refused, and spent.
+    expect inviteServer(admin) is Ok(again)
+    expect inviteCodeOf(again.code) is Ok(againCode)
+    expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.AlreadyLinked)
+    expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+    // Unlinked from the other side: the key stops working.
+    expect dropLink("Bearer ${accepted.key}") is Ok(1)
+    expect dropLink("Bearer ${accepted.key}") is Err(FederationError.UnknownKey)
+    expect listLinks(admin) is Ok(none)
+    expect none.length() == 0
+}
+
+// An invite saved already at its expiry, as one a day old is.
+test anExpiredInviteIsRefused {
+    secret = newKey()
+    now = Clock.now()
+    saveInvite(keyHash(secret), now, now - 24 * 60 * 60 * 1000, "a1")
+    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+}
+
+test aBadOfferStillSpendsTheInvite {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake ServerConfig {
+        name: "Ryan's library"
+    }
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs
+        frontendUrl: "https://ryan.test"
+    }
+
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
+    expect inviteServer(admin) is Ok(invite)
+    expect inviteCodeOf(invite.code) is Ok(code)
+    expect acceptLink(LinkOffer(secret: code.secret, name: "Alex", address: "ftp://alex.test", key: newKey())) is Err(FederationError.Invalid(field, _))
+    expect field == "address"
+    expect acceptLink(LinkOffer(secret: code.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+}
+
+test linkingWaitsForAServerName {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake ServerConfig {
+        name: None
+    }
+
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin)).token
+    user = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
+    expect inviteServer(user) is Err(LinkError.NotAdmin)
+    expect inviteServer(admin) is Err(LinkError.NoServerName)
+    expect linkServer(admin, LinkRequest(code: "https://alex.test#x")) is Err(LinkError.NoServerName)
+}

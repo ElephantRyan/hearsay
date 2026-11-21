@@ -286,6 +286,39 @@ export function useSyncCollections() {
   });
 }
 
+/** The servers linked to this one (LINKED.md section 4). */
+export const useLinkedServers = () =>
+  useQuery({
+    queryKey: keys.adminLinks,
+    queryFn: async () => unwrap(await api.GET("/admin/links")),
+  });
+
+/** A one-time link code for another server's admin, good for 24 hours. */
+export function useInviteServer() {
+  return useMutation({
+    mutationFn: async () => unwrap(await api.POST("/admin/links/invite")),
+  });
+}
+
+/** Take up another server's invite with the code its admin gave. */
+export function useLinkServer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (code: string) => unwrap(await api.POST("/admin/links", { body: { code } })),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.adminLinks }),
+  });
+}
+
+/** Unlink a server. The answer says whether that server could be told. */
+export function useUnlinkServer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) =>
+      unwrap(await api.DELETE("/admin/links/{id}", { params: { path: { id } } })),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.adminLinks }),
+  });
+}
+
 /** Whether this server still needs its first-run setup. Public, like the sign-in modes. */
 export const useSetupState = () =>
   useQuery({

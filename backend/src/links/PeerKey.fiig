@@ -1,0 +1,7 @@
+// A linked server's address and the key this server calls it with.
+model PeerKey {
+    id: string
+    name: string
+    address: string
+    keyOut: Secret
+}

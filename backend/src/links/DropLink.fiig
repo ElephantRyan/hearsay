@@ -1,0 +1,5 @@
+// DELETE /federation/link: the calling server has unlinked, so this one
+// forgets it and its keys too.
+workflow dropLink(authorization: string | None) -> Result<int, FederationError> {
+    return Ok(forgetLink(linkOfKey(authorization)?))
+}

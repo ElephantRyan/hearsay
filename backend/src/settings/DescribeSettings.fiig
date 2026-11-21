@@ -10,6 +10,7 @@ activity describeSettings() -> SettingsView {
         oidcClientId: textSetting(storedText("oidc.clientId"), Oidc.clientId),
         oidcClientSecret: secretSetting(storedText("oidc.clientSecret"), "oidc.clientSecret"),
         oidcRedirectUri: textSetting(storedText("oidc.redirectUri"), Oidc.redirectUri),
+        serverName: textSetting(storedText("server.name"), ServerConfig.name),
     )
 }
 

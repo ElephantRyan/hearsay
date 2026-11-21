@@ -11,4 +11,5 @@ model SettingsChange {
     oidcClientId: string | None
     oidcClientSecret: string | None
     oidcRedirectUri: string | None
+    serverName: string | None
 }

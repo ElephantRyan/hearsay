@@ -1,0 +1,5 @@
+// DELETE /admin/links/{id}.
+workflow unlinkServer(session: string | None, id: string) -> Result<Unlinked, LinkError> {
+    requireAdmin(session)?
+    return removeLink(id)
+}

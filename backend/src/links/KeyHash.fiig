@@ -1,0 +1,5 @@
+// What this server keeps of an invite's secret or a key it accepts. Both are
+// 256 random bits, so a fast hash is enough (fiig ADR 0075 §4).
+conversion keyHash(key: string) -> string {
+    return crypto.sha256(key.utf8()).toHex()
+}

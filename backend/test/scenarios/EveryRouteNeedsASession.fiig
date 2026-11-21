@@ -1,5 +1,6 @@
 use hearsay.admin
 use hearsay.library
+use hearsay.links
 use hearsay.listening
 use hearsay.ratings
 use hearsay.ratings.rated
@@ -35,4 +36,9 @@ test noRouteAnswersWithoutASession {
     expect admin.resetSetting(None, "absUrl") is Err(admin.AdminError.NotSignedIn)
     expect admin.rebuildIndex(None) is Err(admin.AdminError.NotSignedIn)
     expect admin.showStatus(None) is Err(admin.AdminError.NotSignedIn)
+    // federationApi's routes take a linked server's invite or key instead (test/links).
+    expect links.listLinks(None) is Err(links.LinkError.NotSignedIn)
+    expect links.inviteServer(None) is Err(links.LinkError.NotSignedIn)
+    expect links.linkServer(None, links.LinkRequest(code: "https://elsewhere.test#x")) is Err(links.LinkError.NotSignedIn)
+    expect links.unlinkServer(None, "l1") is Err(links.LinkError.NotSignedIn)
 }

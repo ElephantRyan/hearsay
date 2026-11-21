@@ -12,6 +12,7 @@ rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, Setti
             oidcClientId: checkText("oidcClientId", change.oidcClientId)?,
             oidcClientSecret: checkText("oidcClientSecret", change.oidcClientSecret)?,
             oidcRedirectUri: checkUrl("oidcRedirectUri", change.oidcRedirectUri)?,
+            serverName: checkText("serverName", change.serverName)?,
         ),
     )
 }

@@ -1,6 +1,7 @@
 use hearsay.admin
 use hearsay.health
 use hearsay.library
+use hearsay.links
 use hearsay.listening
 use hearsay.ratings
 use hearsay.ratings.rated
@@ -11,7 +12,8 @@ use hearsay.signin
 use hearsay.signin.oidc
 use hearsay.sync
 
-// What Hearsay runs (fiig ADR 0132): the HTTP surface, and the hourly collections sync.
+// What Hearsay runs (fiig ADR 0132): the HTTP surface, linked servers' routes
+// included, and the hourly collections sync.
 application Hearsay {
     serve web {
         sessions.sessionsApi
@@ -24,6 +26,8 @@ application Hearsay {
         sync.syncApi
         listening.listeningApi
         admin.adminApi
+        links.linksApi
+        links.federationApi
         setup.setupApi
         health.healthApi
     }

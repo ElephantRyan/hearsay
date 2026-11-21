@@ -1,0 +1,21 @@
+// Tells the other server, then forgets the link and its keys here whether or
+// not it answered. Unlinked.told says which.
+activity removeLink(id: string) -> Result<Unlinked, LinkError> {
+    match peerKeyOf(id) {
+        None -> {
+            return Err(LinkError.UnknownLink)
+        }
+        peer -> {
+            told: bool = false
+            match PeerServer.unlink(peer.address, peer.keyOut) {
+                Ok(_) -> {
+                    told = true
+                }
+                Err(_) -> {
+                }
+            }
+            deleteLink(id)
+            return Ok(Unlinked(name: peer.name, told: told))
+        }
+    }
+}

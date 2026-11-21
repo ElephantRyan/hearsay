@@ -1,0 +1,142 @@
+use hearsay.absclient as client
+use hearsay.accounts
+use fiig.http
+use fiig.http.HttpClient
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.ServerConfig
+use hearsay.settings.SignInConfig
+
+// The linking side, against a fake of the other server shaped like
+// federationApi's answers.
+test aCodeLinksThisServerToTheOtherAndUnlinkTellsIt {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake ServerConfig {
+        name: "Alex's library"
+    }
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs
+        frontendUrl: "https://alex.test"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            expect request.url == "https://ryan.test/api/federation/link"
+            if request.method == http.Method.Post {
+                expect http.headerValue(request.headers, "content-type") == "application/json"
+                match request.body {
+                    None -> {
+                        expect false
+                    }
+                    sent -> {
+                        decoded: Result<LinkOffer, JsonError> = json.decode(sent)
+                        expect decoded is Ok(offer)
+                        expect offer == LinkOffer(secret: "s".padRight(43, "s"), name: "Alex's library", address: "https://alex.test", key: offer.key)
+                        expect offer.key.length() == 43
+                    }
+                }
+                return Ok(
+                    http.Reply(status: 200, headers: [http.Header(name: "Content-Type", value: "application/json")], body: json.encode(LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")))),
+                )
+            }
+            expect request.method == http.Method.Delete
+            expect http.headerValue(request.headers, "authorization") == "Bearer ${"k".padRight(43, "k")}"
+            return Ok(http.Reply(status: 204, headers: [], body: "".utf8()))
+        }
+    }
+
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Root)).token
+    code = "  https://ryan.test/#${"s".padRight(43, "s")} "
+    expect linkServer(admin, LinkRequest(code: code)) is Ok(link)
+    expect link.name == "Ryan's library"
+    expect link.address == "https://ryan.test"
+    expect link.linkedBy == "a1"
+    expect linkServer(admin, LinkRequest(code: code)) is Err(LinkError.AlreadyLinked(name))
+    expect name == "Ryan's library"
+    expect calls(HttpClient.send) == 1
+    expect unlinkServer(admin, link.id) is Ok(unlinked)
+    expect unlinked == Unlinked(name: "Ryan's library", told: true)
+    expect unlinkServer(admin, link.id) is Err(LinkError.UnknownLink)
+    expect listLinks(admin) is Ok(none)
+    expect none.length() == 0
+}
+
+test aLoginPageOrARefusalKeepsNothing {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake ServerConfig {
+        name: "Alex's library"
+    }
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs
+        frontendUrl: "https://alex.test"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.url.startsWith("https://login.test") {
+                return Ok(
+                    http.Reply(status: 302, headers: [http.Header(name: "Location", value: "https://auth.test/flow")], body: "".utf8()),
+                )
+            }
+            if request.url.startsWith("https://page.test") {
+                return Ok(
+                    http.Reply(status: 200, headers: [http.Header(name: "Content-Type", value: "text/html; charset=utf-8")], body: "<html></html>".utf8()),
+                )
+            }
+            if request.url.startsWith("https://old.test") {
+                return Ok(
+                    http.Reply(status: 403, headers: [http.Header(name: "Content-Type", value: "text/plain")], body: "this link code is used, expired, or wrong".utf8()),
+                )
+            }
+            return Err(http.HttpError.InvalidRequest(reason: "no such host"))
+        }
+    }
+
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    secret = "s".padRight(43, "s")
+    expect linkServer(admin, LinkRequest(code: "https://login.test#${secret}")) is Err(LinkError.PeerLoginPage)
+    expect linkServer(admin, LinkRequest(code: "https://page.test#${secret}")) is Err(LinkError.PeerLoginPage)
+    expect linkServer(admin, LinkRequest(code: "https://old.test#${secret}")) is Err(LinkError.PeerRefused(reason))
+    expect reason.contains("used, expired, or mistyped")
+    expect linkServer(admin, LinkRequest(code: "https://gone.test#${secret}")) is Err(LinkError.PeerUnreachable)
+    expect linkServer(admin, LinkRequest(code: "https://alex.test#${secret}")) is Err(LinkError.Invalid(_, own))
+    expect own.contains("own")
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test")) is Err(LinkError.Invalid(_, _))
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test#short")) is Err(LinkError.Invalid(_, _))
+    expect listLinks(admin) is Ok(none)
+    expect none.length() == 0
+}
+
+// Unlinking forgets the link here even when the other server can't be told.
+test unlinkingASilentServerStillForgetsIt {
+    fake SessionConfig {
+        sessionMaxAge: 3600
+    }
+    fake ServerConfig {
+        name: "Alex's library"
+    }
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs
+        frontendUrl: "https://alex.test"
+    }
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if request.method == http.Method.Post {
+                return Ok(
+                    http.Reply(status: 200, headers: [], body: json.encode(LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")))),
+                )
+            }
+            return Err(http.HttpError.InvalidRequest(reason: "gone"))
+        }
+    }
+
+    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin)).token
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
+    expect unlinkServer(admin, link.id) is Ok(unlinked)
+    expect unlinked == Unlinked(name: "Ryan's library", told: false)
+    expect listLinks(admin) is Ok(none)
+    expect none.length() == 0
+}

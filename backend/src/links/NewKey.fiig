@@ -1,0 +1,4 @@
+// A fresh 256-bit secret: an invite's, or a key between two servers.
+activity newKey() -> string {
+    return Random.bytes(count: 32).toBase64Url()
+}

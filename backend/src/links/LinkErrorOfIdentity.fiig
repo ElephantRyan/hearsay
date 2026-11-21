@@ -1,0 +1,7 @@
+use hearsay.sessions
+
+conversion linkErrorOfIdentity(error: sessions.IdentityError) -> LinkError {
+    match error {
+        sessions.IdentityError.NotSignedIn -> LinkError.NotSignedIn
+    }
+}

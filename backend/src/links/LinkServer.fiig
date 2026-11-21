@@ -1,0 +1,14 @@
+use hearsay.settings
+
+// POST /admin/links: takes up another server's invite with its link code.
+workflow linkServer(session: string | None, request: LinkRequest) -> Result<LinkedServer, LinkError> {
+    me = requireAdmin(session)?
+    match settings.serverName() {
+        None -> {
+            return Err(LinkError.NoServerName)
+        }
+        name -> {
+            return takeUpInvite(inviteCodeOf(request.code)?, name, me.userId)
+        }
+    }
+}

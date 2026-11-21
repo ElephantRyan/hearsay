@@ -1,0 +1,5 @@
+// Whether an invite with this secret was there and unexpired. Either way it is
+// gone afterwards.
+activity spendInvite(secret: string) -> bool {
+    return useInvite(keyHash(secret), Clock.now()) == 1
+}

@@ -1,0 +1,10 @@
+// A linked server as the admin screen lists it. Its keys never leave the
+// server. linkedBy is the admin's user id, or "invite" when the other side
+// took up this server's invite.
+model LinkedServer {
+    id: string
+    name: string
+    address: string
+    linkedAt: int
+    linkedBy: string
+}

@@ -1,0 +1,28 @@
+// What the other server's answer to a link means for the admin linking.
+conversion linkErrorOfPeer(error: PeerError) -> LinkError {
+    match error {
+        PeerError.Unreachable(failure) -> LinkError.PeerUnreachable
+        PeerError.LoginPage -> LinkError.PeerLoginPage
+        PeerError.Unreadable -> LinkError.PeerLoginPage
+        PeerError.Rejected(status) -> LinkError.PeerRefused(refusalOf(status))
+    }
+}
+
+private {
+    // The statuses federationErrorResponse answers with.
+    refusalOf(status: int) -> string {
+        if status == 403 {
+            return "the link code was refused: it is used, expired, or mistyped; ask for a new one"
+        }
+        if status == 409 {
+            return "it is already linked to this server; unlink it there first"
+        }
+        if status == 503 {
+            return "it has no server name yet; its admin needs to set one"
+        }
+        if status == 404 {
+            return "it doesn't know linking; it may be an older Hearsay"
+        }
+        return "it answered ${status}"
+    }
+}

@@ -22,6 +22,7 @@ activity applySettingsChange(change: SettingsChange, by: string) -> int {
     saved = saved + saveGiven("oidc.clientId", change.oidcClientId, by)
     saved = saved + saveGiven("oidc.clientSecret", change.oidcClientSecret, by)
     saved = saved + saveGiven("oidc.redirectUri", change.oidcRedirectUri, by)
+    saved = saved + saveGiven("server.name", change.serverName, by)
     return saved
 }
 

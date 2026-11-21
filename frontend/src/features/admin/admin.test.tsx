@@ -2,7 +2,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import type { AdminSettings } from "../../api/types";
+import type { AdminSettings, LinkedServer } from "../../api/types";
 import { mount } from "../../test/mount";
 import { server } from "../../test/server";
 
@@ -24,6 +24,7 @@ function settingsOf(mirror: "true" | "false", source = "environment"): AdminSett
     oidcClientId: { value: null, source: "unset" },
     oidcClientSecret: { value: null, source: "unset" },
     oidcRedirectUri: { value: null, source: "unset" },
+    serverName: { value: "Ryan's library", source: "environment" },
   };
 }
 
@@ -74,6 +75,47 @@ function serve(settings: AdminSettings) {
     }),
   );
   return sent;
+}
+
+const copyA: LinkedServer = {
+  id: "l-1",
+  name: "Alex's library",
+  address: "https://alex.test",
+  linkedAt: Date.UTC(2026, 10, 21, 12),
+  linkedBy: "invite",
+};
+
+/** Serves the linked-server routes over `serve`'s, and records what the page sends. */
+function serveLinks(sent: { method: string; path: string; body?: unknown }[], told = true) {
+  let links: LinkedServer[] = [copyA];
+  server.use(
+    http.get("/api/admin/links", () => HttpResponse.json(links)),
+    http.post("/api/admin/links/invite", () => {
+      sent.push({ method: "POST", path: "/admin/links/invite" });
+      return HttpResponse.json({
+        code: "http://localhost:3000#secret",
+        expiresAt: Date.UTC(2026, 10, 22, 12),
+      });
+    }),
+    http.post("/api/admin/links", async ({ request }) => {
+      const body = (await request.json()) as { code: string };
+      sent.push({ method: "POST", path: "/admin/links", body });
+      if (!body.code.startsWith("https://sam.test#")) {
+        return HttpResponse.json(
+          "the other server refused: the link code was refused: it is used, expired, or mistyped; ask for a new one",
+          { status: 502 },
+        );
+      }
+      const linked = { ...copyA, id: "l-2", name: "Sam's library", address: "https://sam.test" };
+      links = [...links, linked];
+      return HttpResponse.json(linked);
+    }),
+    http.delete("/api/admin/links/:id", ({ params }) => {
+      sent.push({ method: "DELETE", path: `/admin/links/${params.id}` });
+      links = links.filter((link) => link.id !== params.id);
+      return HttpResponse.json({ name: "Alex's library", told });
+    }),
+  );
 }
 
 describe("the admin screen", () => {
@@ -212,5 +254,60 @@ describe("the admin screen", () => {
     expect(signIn).not.toBeVisible();
     await userEvent.click(screen.getByRole("heading", { name: "Collections" }));
     expect(screen.queryByText(/Writing collections is off/)).not.toBeVisible();
+  });
+
+  it("lists linked servers, invites one, and links to another with its code", async () => {
+    const sent = serve(settingsOf("false"));
+    serveLinks(sent);
+    mount("/admin");
+
+    const list = await screen.findByRole("list", { name: "Linked servers" });
+    expect(within(list).getByText("Alex's library")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Make a link code" }));
+    expect(await screen.findByLabelText("Link code")).toHaveValue("http://localhost:3000#secret");
+
+    const code = screen.getByLabelText("Paste the link code the other server's admin made.");
+    await userEvent.type(code, "https://old.test#used");
+    await userEvent.click(screen.getByRole("button", { name: "Link" }));
+    expect(await screen.findByText(/used, expired, or mistyped/)).toBeInTheDocument();
+
+    await userEvent.clear(code);
+    await userEvent.type(code, "https://sam.test#fresh");
+    await userEvent.click(screen.getByRole("button", { name: "Link" }));
+    expect(await screen.findByText("Linked to Sam's library.")).toBeInTheDocument();
+    expect(await within(list).findByText("Sam's library")).toBeInTheDocument();
+    expect(code).toHaveValue("");
+    expect(sent).toEqual([
+      { method: "POST", path: "/admin/links/invite" },
+      { method: "POST", path: "/admin/links", body: { code: "https://old.test#used" } },
+      { method: "POST", path: "/admin/links", body: { code: "https://sam.test#fresh" } },
+    ]);
+  });
+
+  it("unlinks only after a second press, and says when the other server wasn't told", async () => {
+    const sent = serve(settingsOf("false"));
+    serveLinks(sent, false);
+    mount("/admin");
+
+    const list = await screen.findByRole("list", { name: "Linked servers" });
+    await userEvent.click(within(list).getByRole("button", { name: "Unlink" }));
+    expect(sent).toEqual([]);
+    await userEvent.click(within(list).getByRole("button", { name: "Unlink Alex's library" }));
+
+    expect(await screen.findByText(/it didn't answer/)).toBeInTheDocument();
+    expect(await screen.findByText("No servers are linked yet.")).toBeInTheDocument();
+    expect(sent).toEqual([{ method: "DELETE", path: "/admin/links/l-1" }]);
+  });
+
+  it("waits for this server's name before linking", async () => {
+    const settings = settingsOf("false");
+    const sent = serve({ ...settings, serverName: { value: null, source: "unset" } });
+    serveLinks(sent);
+    mount("/admin");
+
+    expect(await screen.findByText(/Give this server a name/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Make a link code" })).toBeDisabled();
+    expect(screen.getByLabelText("This server's name")).toHaveValue("");
   });
 });

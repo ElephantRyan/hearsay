@@ -1,0 +1,33 @@
+// The admin routes for linked servers (LINKED.md section 4): invite one, link
+// to one with its code, list them, unlink. src/Hearsay.fiig serves every
+// domain's adapter together.
+adapter http linksApi {
+    GET "/admin/links" -> listLinks(session: string | None from cookie "sid")
+        produces "application/json"
+    {
+        Ok(links) -> 200 links
+        Err(error) -> linkErrorResponse(error)
+    }
+    POST "/admin/links/invite" -> inviteServer(session: string | None from cookie "sid")
+        produces "application/json"
+    {
+        Ok(invite) -> 200 invite
+        Err(error) -> linkErrorResponse(error)
+    }
+    POST "/admin/links" -> linkServer(
+        session: string | None from cookie "sid",
+        request: LinkRequest,
+    )
+        consumes "application/json"
+        produces "application/json"
+    {
+        Ok(link) -> 200 link
+        Err(error) -> linkErrorResponse(error)
+    }
+    DELETE "/admin/links/{id}" -> unlinkServer(session: string | None from cookie "sid", id: string)
+        produces "application/json"
+    {
+        Ok(unlinked) -> 200 unlinked
+        Err(error) -> linkErrorResponse(error)
+    }
+}

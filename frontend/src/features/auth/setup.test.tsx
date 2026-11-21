@@ -19,6 +19,7 @@ const settings = {
   oidcClientId: { value: null, source: "unset" },
   oidcClientSecret: { value: null, source: "unset" },
   oidcRedirectUri: { value: null, source: "unset" },
+  serverName: { value: null, source: "unset" },
 };
 
 /** A new server: nobody is signed in and setup is needed, until a setup succeeds. */

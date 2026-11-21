@@ -1,0 +1,11 @@
+use hearsay.settings
+
+// POST /admin/links/invite: a link code for another server's admin, good once
+// and for 24 hours. Linking waits for this server to have a name.
+workflow inviteServer(session: string | None) -> Result<LinkInvite, LinkError> {
+    me = requireAdmin(session)?
+    if settings.serverName() == None {
+        return Err(LinkError.NoServerName)
+    }
+    return Ok(openInvite(me.userId))
+}

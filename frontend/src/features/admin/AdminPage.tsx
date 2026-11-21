@@ -1,15 +1,19 @@
 import { CircleAlert, CircleCheck, CircleDashed, RefreshCw } from "lucide-react";
-import { type ReactNode, useId, useState } from "react";
+import { type FormEvent, type ReactNode, useId, useState } from "react";
 import {
   isAdmin,
   useAdminSettings,
   useAdminStatus,
+  useInviteServer,
   useLibraries,
+  useLinkedServers,
+  useLinkServer,
   useMe,
   useRecommenders,
   useSyncCollections,
+  useUnlinkServer,
 } from "../../api/hooks";
-import type { SyncResult } from "../../api/types";
+import type { LinkedServer, SyncResult } from "../../api/types";
 import {
   EmptyState,
   ErrorState,
@@ -21,8 +25,8 @@ import { Collapsible } from "../../components/ui/Collapsible";
 import { SettingsForm } from "./SettingsForm";
 
 /**
- * The admin screen: whether Audiobookshelf answers, the settings this server runs with, and
- * the collections it writes into ABS. For Audiobookshelf admins only; the server refuses
+ * The admin screen: whether Audiobookshelf answers, the settings this server runs with, the
+ * collections it writes into ABS, and the servers linked to this one. For Audiobookshelf admins only; the server refuses
  * everyone else too.
  */
 export function AdminPage() {
@@ -41,6 +45,7 @@ export function AdminPage() {
       <StatusCard />
       <SettingsCard />
       <CollectionsCard />
+      <LinksCard />
     </div>
   );
 }
@@ -278,5 +283,202 @@ function SyncResults({ results, applied }: { results: SyncResult[]; applied: boo
         </li>
       ))}
     </ul>
+  );
+}
+
+const dateOf = (millis: number) =>
+  new Date(millis).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+
+/**
+ * Linking two servers (LINKED.md section 4): one admin invites, the other pastes the code.
+ * Both need a name first, and each must reach the other's /api/federation/.
+ */
+function LinksCard() {
+  const settings = useAdminSettings();
+  const links = useLinkedServers();
+  const id = useId();
+  const named = settings.data !== undefined && settings.data.serverName.value != null;
+  const [notice, setNotice] = useState<string | null>(null);
+  return (
+    <Card title="Linked servers" id={id}>
+      <div className="space-y-5">
+        <p className="text-sm text-muted">
+          A linked server's recommendations show here as if they were made on this one, and this
+          server's show there. Both servers must be able to reach each other, and a login in front
+          of either must let /api/federation/ through.
+        </p>
+        {settings.data && !named && (
+          <p role="status" className="text-sm text-accent">
+            Give this server a name under Server settings first. Linked servers show it beside its
+            people.
+          </p>
+        )}
+        {links.isPending && <LoadingState rows={1} label="Loading linked servers" />}
+        {links.isError && <ErrorState error={links.error} onRetry={() => links.refetch()} />}
+        {links.data &&
+          (links.data.length === 0 ? (
+            <p className="text-sm text-muted">No servers are linked yet.</p>
+          ) : (
+            <ul aria-label="Linked servers" className="space-y-2">
+              {links.data.map((link) => (
+                <LinkRow key={link.id} link={link} onUnlinked={setNotice} />
+              ))}
+            </ul>
+          ))}
+        {notice && (
+          <p role="status" className="text-sm text-muted">
+            {notice}
+          </p>
+        )}
+        <InviteServer disabled={!named} />
+        <LinkServerForm disabled={!named} />
+      </div>
+    </Card>
+  );
+}
+
+function LinkRow({
+  link,
+  onUnlinked,
+}: {
+  link: LinkedServer;
+  onUnlinked: (notice: string) => void;
+}) {
+  const unlink = useUnlinkServer();
+  const [confirming, setConfirming] = useState(false);
+  return (
+    <li className="rounded-lg border border-border px-3 py-2 text-sm">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="font-medium break-words">{link.name}</p>
+          <p className="break-all text-muted">{link.address}</p>
+          <p className="text-muted">Linked {dateOf(link.linkedAt)}</p>
+        </div>
+        {confirming ? (
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => setConfirming(false)}>
+              Keep
+            </Button>
+            <Button
+              onClick={() =>
+                unlink.mutate(link.id, {
+                  onSuccess: (done) =>
+                    onUnlinked(
+                      done.told
+                        ? `Unlinked ${done.name}. It was told, and has unlinked this server too.`
+                        : `Unlinked ${done.name} here, but it didn't answer. Its admin should unlink this server there too.`,
+                    ),
+                })
+              }
+              disabled={unlink.isPending}
+            >
+              {unlink.isPending ? "Unlinking…" : `Unlink ${link.name}`}
+            </Button>
+          </div>
+        ) : (
+          <Button variant="secondary" onClick={() => setConfirming(true)}>
+            Unlink
+          </Button>
+        )}
+      </div>
+      {confirming && !unlink.isPending && (
+        <p className="mt-2 text-muted">
+          Its recommendations leave this server, and this server's leave it.
+        </p>
+      )}
+      {unlink.isError && (
+        <p role="alert" className="mt-2 text-danger">
+          {messageFor(unlink.error)}
+        </p>
+      )}
+    </li>
+  );
+}
+
+function InviteServer({ disabled }: { disabled: boolean }) {
+  const invite = useInviteServer();
+  const id = useId();
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-semibold">Invite a server</h3>
+      <p className="text-sm text-muted">
+        Makes a link code for the other server's admin to paste into theirs. It works once, for 24
+        hours, and carries this app's address from Sign-in settings.
+      </p>
+      <Button
+        variant="secondary"
+        onClick={() => invite.mutate()}
+        disabled={disabled || invite.isPending}
+      >
+        {invite.isPending ? "Making a code…" : "Make a link code"}
+      </Button>
+      {invite.isError && (
+        <p role="alert" className="text-sm text-danger">
+          {messageFor(invite.error)}
+        </p>
+      )}
+      {invite.data && (
+        <div>
+          <label htmlFor={id} className="mb-1 block text-sm font-medium">
+            Link code
+          </label>
+          <input
+            id={id}
+            readOnly
+            value={invite.data.code}
+            onFocus={(event) => event.target.select()}
+            className="min-h-11 w-full rounded-lg border border-border bg-surface px-3 font-mono text-xs"
+          />
+          <p className="mt-1 text-xs text-muted">
+            Good until {dateOf(invite.data.expiresAt)}. Send it privately: anyone with it can link a
+            server to this one.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LinkServerForm({ disabled }: { disabled: boolean }) {
+  const link = useLinkServer();
+  const id = useId();
+  const [code, setCode] = useState("");
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (code.trim() === "") return;
+    link.mutate(code, { onSuccess: () => setCode("") });
+  }
+
+  return (
+    <form onSubmit={onSubmit} noValidate className="space-y-2">
+      <h3 className="text-sm font-semibold">Link a server</h3>
+      <label htmlFor={id} className="block text-sm text-muted">
+        Paste the link code the other server's admin made.
+      </label>
+      <input
+        id={id}
+        value={code}
+        onChange={(event) => setCode(event.target.value)}
+        autoComplete="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        placeholder="https://their-server.example.com#…"
+        className="min-h-11 w-full rounded-lg border border-border bg-surface px-3"
+      />
+      <Button type="submit" disabled={disabled || link.isPending || code.trim() === ""}>
+        {link.isPending ? "Linking…" : "Link"}
+      </Button>
+      {link.isError && (
+        <p role="alert" className="text-sm text-danger">
+          {messageFor(link.error)}
+        </p>
+      )}
+      {link.data && (
+        <p role="status" className="text-sm text-muted">
+          Linked to {link.data.name}.
+        </p>
+      )}
+    </form>
   );
 }

@@ -1,0 +1,10 @@
+// The linked server at an address, if there is one.
+gateway linkAt(address: string) -> LinkedServer | None
+    requires Database
+    idempotent
+{
+    return Database.queryOne(
+        "SELECT id, name, address, linked_at, linked_by FROM linked_server WHERE address = ?",
+        address,
+    )
+}

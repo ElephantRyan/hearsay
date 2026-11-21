@@ -40,6 +40,9 @@ private {
         if name == "oidcRedirectUri" {
             return "oidc.redirectUri"
         }
+        if name == "serverName" {
+            return "server.name"
+        }
         return None
     }
 }

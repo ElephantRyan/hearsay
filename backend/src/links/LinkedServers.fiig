@@ -1,0 +1,4 @@
+// Every linked server, by name.
+activity linkedServers() -> List<LinkedServer> {
+    return allLinks()
+}
