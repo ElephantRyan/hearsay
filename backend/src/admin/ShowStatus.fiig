@@ -1,5 +1,6 @@
+use hearsay.accounts
+
 // GET /admin/status.
-workflow showStatus(session: string | None) -> Result<AdminStatus, AdminError> {
-    requireAdmin(session)?
-    return Ok(loadStatus())
+workflow showStatus(admin: accounts.Admin) -> AdminStatus {
+    return loadStatus()
 }

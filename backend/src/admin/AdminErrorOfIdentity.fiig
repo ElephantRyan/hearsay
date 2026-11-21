@@ -1,7 +1,0 @@
-use hearsay.sessions
-
-conversion adminErrorOfIdentity(error: sessions.IdentityError) -> AdminError {
-    match error {
-        sessions.IdentityError.NotSignedIn -> AdminError.NotSignedIn
-    }
-}

@@ -1,7 +1,7 @@
+use hearsay.accounts
 use hearsay.settings
 
 // GET /admin/settings.
-workflow showSettings(session: string | None) -> Result<settings.SettingsView, AdminError> {
-    requireAdmin(session)?
-    return Ok(settings.describeSettings())
+workflow showSettings(admin: accounts.Admin) -> settings.SettingsView {
+    return settings.describeSettings()
 }

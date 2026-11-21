@@ -6,7 +6,6 @@ use hearsay.ratings
 use hearsay.ratings.rated
 use hearsay.recommendations
 use hearsay.settings
-use hearsay.settings.SyncConfig
 use hearsay.sync
 
 // Auth is a first line in each workflow (fiig has no way to ask for it at the
@@ -14,15 +13,6 @@ use hearsay.sync
 // else would notice. Add a workflow here when a route is added: with no
 // session, each one must refuse and do nothing else.
 test noRouteAnswersWithoutASession {
-    fake SyncConfig {
-        mirrorEnabled: true
-    }
-
-    expect admin.showSettings(None) is Err(admin.AdminError.NotSignedIn)
-    expect admin.changeSettings(None, settings.SettingsChange(mirrorEnabled: true)) is Err(admin.AdminError.NotSignedIn)
-    expect admin.resetSetting(None, "absUrl") is Err(admin.AdminError.NotSignedIn)
-    expect admin.rebuildIndex(None) is Err(admin.AdminError.NotSignedIn)
-    expect admin.showStatus(None) is Err(admin.AdminError.NotSignedIn)
     // federationApi's routes take a linked server's invite or key instead (test/links).
     expect links.listLinks(None) is Err(links.LinkError.NotSignedIn)
     expect links.inviteServer(None) is Err(links.LinkError.NotSignedIn)

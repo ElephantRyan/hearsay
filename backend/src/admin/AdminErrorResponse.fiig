@@ -1,9 +1,6 @@
-// The status and message a client sees for each way an admin request can
-// fail. 401 names no scheme: the browser holds a cookie, not a challenge.
+// The status and message a client sees for each way an admin request can fail.
 conversion adminErrorResponse(error: AdminError) -> HttpResponse<string> {
     match error {
-        AdminError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
-        AdminError.NotAdmin -> HttpResponse(status: 403, body: "only an admin can do this")
         AdminError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
         AdminError.UnknownSetting(name) -> HttpResponse(status: 404, body: "no setting called ${name}")
         AdminError.LibraryNotFound -> HttpResponse(status: 404, body: "no library in Audiobookshelf that it listed")

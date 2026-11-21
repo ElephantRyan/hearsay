@@ -1,7 +1,5 @@
 use hearsay.absclient as client
 use hearsay.accounts
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
 use hearsay.settings.Oidc
@@ -10,27 +8,7 @@ use hearsay.settings.SignInConfig
 use hearsay.settings.SyncConfig
 use hearsay.signin
 
-test onlyAnAdminSeesOrChangesSettings {
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
-
-    ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    change = settings.SettingsChange(
-        absUrl: "https://elsewhere.test",
-        serviceToken: None,
-        mirrorEnabled: None,
-    )
-    expect showSettings(None) is Err(AdminError.NotSignedIn)
-    expect showSettings(ann) is Err(AdminError.NotAdmin)
-    expect changeSettings(ann, change) is Err(AdminError.NotAdmin)
-    expect resetSetting(ann, "absUrl") is Err(AdminError.NotAdmin)
-}
-
 test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
@@ -53,8 +31,8 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     // A saved token first: a test can't leave ABS_SERVICE_TOKEN unset (GAPS G53, G54).
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
-    root = sessions.startSession(accounts.Identity(userId: "r1", username: "owner", userType: client.AbsUserType.Root)).token
-    expect showSettings(root) is Ok(before)
+    root = accounts.Admin(identity: accounts.Identity(userId: "r1", username: "owner", userType: client.AbsUserType.Root))
+    before = showSettings(root)
     expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
     expect before.mirrorEnabled == settings.SettingValue(value: "false", source: "environment")
     expect before.serverName == settings.SettingValue(value: None, source: "unset")
@@ -80,9 +58,6 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
 }
 
 test aBadChangeSavesNothing {
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
@@ -104,21 +79,18 @@ test aBadChangeSavesNothing {
 
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
     expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid(field, _))
     expect field == "absUrl"
     expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid(blank, _))
     expect blank == "serviceToken"
-    expect showSettings(admin) is Ok(view)
+    view = showSettings(admin)
     expect view.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
     expect settings.loadAbsTarget() is Ok(target)
     expect target.token.matches("old-token")
 }
 
 test switchingToAuthentikTurnsPasswordSignInOff {
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
@@ -139,7 +111,7 @@ test switchingToAuthentikTurnsPasswordSignInOff {
     }
 
     settings.rememberSetting("abs.serviceToken", "old-token", "test")
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
     change = settings.SettingsChange(
         authMode: settings.AuthMode.Oidc,
@@ -158,9 +130,6 @@ test switchingToAuthentikTurnsPasswordSignInOff {
 }
 
 test authentikOnlyWaitsForEveryAuthentikSetting {
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
     fake SignInConfig {
         authMode: settings.AuthMode.Oidc
         frontendUrl: "https://app.test"
@@ -184,7 +153,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     settings.rememberSetting("oidc.clientSecret", "csec", "test")
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
-    admin = sessions.startSession(accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin)).token
+    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _))
     expect field == "authMode"
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view)

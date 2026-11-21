@@ -1,43 +1,40 @@
+use hearsay.accounts
+use hearsay.sessions
 use hearsay.settings
 
 // The admin routes of the HTTP surface: settings and a status check, for
 // Audiobookshelf admins only. src/Hearsay.fiig serves every domain's adapter together.
 adapter http adminApi {
-    GET "/admin/settings" -> showSettings(session: string | None from cookie "sid")
+    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+    principal admin: accounts.Admin from me by accounts.signedInAdmin else accounts.notAnAdmin
+
+    GET "/admin/settings" -> showSettings(admin)
         produces "application/json"
     {
-        Ok(view) -> 200 view
-        Err(error) -> adminErrorResponse(error)
+        view -> 200 view
     }
-    PUT "/admin/settings" -> changeSettings(
-        session: string | None from cookie "sid",
-        change: settings.SettingsChange,
-    )
+    PUT "/admin/settings" -> changeSettings(admin, change: settings.SettingsChange)
         consumes "application/json"
         produces "application/json"
     {
         Ok(view) -> 200 view
         Err(error) -> adminErrorResponse(error)
     }
-    DELETE "/admin/settings/{name}" -> resetSetting(
-        session: string | None from cookie "sid",
-        name: string,
-    )
+    DELETE "/admin/settings/{name}" -> resetSetting(admin, name: string)
         produces "application/json"
     {
         Ok(view) -> 200 view
         Err(error) -> adminErrorResponse(error)
     }
-    POST "/admin/library-index" -> rebuildIndex(session: string | None from cookie "sid")
+    POST "/admin/library-index" -> rebuildIndex(admin)
         produces "application/json"
     {
         Ok(summary) -> 200 summary
         Err(error) -> adminErrorResponse(error)
     }
-    GET "/admin/status" -> showStatus(session: string | None from cookie "sid")
+    GET "/admin/status" -> showStatus(admin)
         produces "application/json"
     {
-        Ok(status) -> 200 status
-        Err(error) -> adminErrorResponse(error)
+        status -> 200 status
     }
 }

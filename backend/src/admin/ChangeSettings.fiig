@@ -1,11 +1,11 @@
+use hearsay.accounts
 use hearsay.settings
 
 // PUT /admin/settings: checks the whole change, then saves it, then answers
 // with the settings as they now stand.
-workflow changeSettings(session: string | None, change: settings.SettingsChange) -> Result<settings.SettingsView, AdminError> {
-    me = requireAdmin(session)?
+workflow changeSettings(admin: accounts.Admin, change: settings.SettingsChange) -> Result<settings.SettingsView, AdminError> {
     checked = mapErr(e in settings.checkSettingsChange(change)): adminErrorOfChange(e)?
     mapErr(e in settings.checkSignInStaysPossible(checked)): adminErrorOfChange(e)?
-    settings.applySettingsChange(checked, me.userId)
+    settings.applySettingsChange(checked, admin.identity.userId)
     return Ok(settings.describeSettings())
 }
