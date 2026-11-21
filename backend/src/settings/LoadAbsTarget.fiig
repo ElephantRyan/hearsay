@@ -1,5 +1,5 @@
-use abs.recommendations.absclient
-use abs.recommendations.common
+use hearsay.absclient
+use hearsay.common
 
 // Audiobookshelf and this server's own token for it, or the error for a server
 // that isn't set up yet.

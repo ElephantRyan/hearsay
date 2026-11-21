@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // Rate a book: find out who is asking and what the book is, then store the
 // rating. A book ABS doesn't have is a 404 for this feature too.

@@ -1,13 +1,13 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.catalog
-use abs.recommendations.absclient.catalog.AbsCatalog
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.ratings.rated
-use abs.recommendations.sessions
-use abs.recommendations.sessions.SessionConfig
-use abs.recommendations.settings
-use abs.recommendations.settings.Abs
+use hearsay.absclient as client
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
+use hearsay.accounts
+use hearsay.common
+use hearsay.ratings.rated
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.Abs
 
 // Signs in as a fake identity, then rates through the real activity with ABS
 // faked. The book is fetched on every write, so a changed title is cached.

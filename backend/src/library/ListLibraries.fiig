@@ -1,9 +1,9 @@
 // The libraries a person can browse. Only book libraries: podcasts have no
 // place in a book-recommendation list.
-use abs.recommendations.absclient.catalog
-use abs.recommendations.common
-use abs.recommendations.sessions
-use abs.recommendations.settings
+use hearsay.absclient.catalog
+use hearsay.common
+use hearsay.sessions
+use hearsay.settings
 
 activity listLibraries(session: string | None) -> Result<List<catalog.AbsLibrary>, common.ApiError> {
     sessions.currentUser(session)?

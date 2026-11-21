@@ -1,8 +1,8 @@
-use abs.recommendations.absclient
-use abs.recommendations.settings.Abs
+use hearsay.absclient
+use hearsay.settings.Abs
 use fiig.http
 use fiig.http.HttpClient
-use abs.recommendations.settings
+use hearsay.settings
 
 // Writes are the dangerous calls, so bad ids stop before any request: a path
 // built from "../users" would be a write-capable request to the wrong place.

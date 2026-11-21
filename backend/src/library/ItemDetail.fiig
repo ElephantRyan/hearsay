@@ -1,5 +1,5 @@
-use abs.recommendations.absclient.catalog
-use abs.recommendations.ratings.rated
+use hearsay.absclient.catalog
+use hearsay.ratings.rated
 
 // One book with the ratings the viewer may see: everyone's recommended ones
 // and the viewer's own, private or not.

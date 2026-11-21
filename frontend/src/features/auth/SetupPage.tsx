@@ -65,7 +65,7 @@ export function SetupPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-4 py-10">
       <header className="text-center">
-        <h1 className="text-2xl font-semibold">Set up Recommends</h1>
+        <h1 className="text-2xl font-semibold">Set up Hearsay</h1>
         <p className="mt-1 text-sm text-muted">
           Connect this app to your Audiobookshelf server. Sign in with an Audiobookshelf admin
           account; you'll finish the rest on the settings page.

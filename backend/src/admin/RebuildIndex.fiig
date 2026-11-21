@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.matching
+use hearsay.common
+use hearsay.matching
 
 // POST /admin/library-index: rebuild the index linked servers' books are
 // matched against, and say how many books can be recognised and how.

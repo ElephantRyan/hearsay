@@ -1,5 +1,5 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.common
+use hearsay.absclient as client
+use hearsay.common
 
 // The same as apiErrorOfAbs, except a 404 here means the library, not a book.
 conversion apiErrorOfLibrary(error: client.AbsError) -> common.ApiError {

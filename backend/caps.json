@@ -1,5 +1,5 @@
 {
-    "Database": {"type": "sql", "driver": "sqlite", "dsn": "file:abs-recommendations.db"},
+    "Database": {"type": "sql", "driver": "sqlite", "dsn": "file:hearsay.db"},
     "Socket": {"type": "socket"},
     "ScheduleLock": {"type": "local"}
 }

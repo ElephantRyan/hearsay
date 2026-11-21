@@ -1,7 +1,7 @@
 // Who the session cookie belongs to. Every route that needs a signed-in
 // person starts here.
-use abs.recommendations.accounts
-use abs.recommendations.common
+use hearsay.accounts
+use hearsay.common
 
 activity currentUser(token: string | None) -> Result<accounts.Identity, common.ApiError> {
     match token {

@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // Forgets a saved setting by the name the admin screen uses, so the
 // environment's value applies again.

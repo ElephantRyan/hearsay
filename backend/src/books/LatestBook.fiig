@@ -1,6 +1,6 @@
-use abs.recommendations.absclient.catalog
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.absclient.catalog
+use hearsay.common
+use hearsay.settings
 
 // What ABS says about a book right now, for a step that must not act on a
 // stale or missing copy (rating it).

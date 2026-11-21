@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // Who is asking comes first (a stranger learns nothing about valid sorts),
 // then the sort: an unknown one is the caller's mistake.

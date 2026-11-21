@@ -4,7 +4,7 @@
 F="${FIIG:-fiig}"
 # One adapter per domain (src/<domain>/<Domain>Api.fiig), served together, and the
 # hourly collections sync (src/sync/SyncSchedule.fiig; caps.json binds a local lock).
-A=abs.recommendations
+A=hearsay
 exec "$F" serve -caps caps.json -env-file .env . \
     $A.sessions.sessionsApi $A.signin.signinApi $A.signin.oidc.oidcApi \
     $A.ratings.ratingsApi $A.ratings.rated.ratedApi $A.library.libraryApi $A.recommendations.recommendationsApi \

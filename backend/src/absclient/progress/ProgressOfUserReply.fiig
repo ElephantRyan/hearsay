@@ -1,4 +1,4 @@
-use abs.recommendations.absclient
+use hearsay.absclient
 
 // GET /api/users/{id}'s body as the books that person has started. Podcast
 // episodes are left out: this app rates books.

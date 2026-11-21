@@ -1,6 +1,6 @@
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.accounts
+use hearsay.common
+use hearsay.settings
 
 // Step one of Authentik sign-in: fresh state and PKCE verifier (256 random
 // bits each, ADR 0068), and the URL to send the browser to.

@@ -1,6 +1,6 @@
-use abs.recommendations.books
-use abs.recommendations.common
-use abs.recommendations.sessions
+use hearsay.books
+use hearsay.common
+use hearsay.sessions
 
 // A step several features need. It knows nothing about why it was called:
 // what a missing book means is the workflow's to say.

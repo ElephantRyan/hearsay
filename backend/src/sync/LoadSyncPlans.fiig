@@ -1,6 +1,6 @@
-use abs.recommendations.common
-use abs.recommendations.ratings.rated.RatedBooks
-use abs.recommendations.sessions
+use hearsay.common
+use hearsay.ratings.rated.RatedBooks
+use hearsay.sessions
 
 // What a sync would do for whoever the caller may sync: reads our tables and
 // plans, and touches nothing.

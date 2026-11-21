@@ -1,9 +1,9 @@
-use abs.recommendations.accounts
-use abs.recommendations.signin.authentik.AuthentikSignIn
-use abs.recommendations.signin.password.AbsPasswordSignIn
-use abs.recommendations.settings
-use abs.recommendations.settings.Abs
-use abs.recommendations.settings.Oidc
+use hearsay.accounts
+use hearsay.signin.authentik.AuthentikSignIn
+use hearsay.signin.password.AbsPasswordSignIn
+use hearsay.settings
+use hearsay.settings.Abs
+use hearsay.settings.Oidc
 
 // signInProvider can return either provider, so both are faked (ADR 0091 §4);
 // the one the attempt should not reach fails the test if it is called.

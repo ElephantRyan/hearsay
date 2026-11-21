@@ -1,10 +1,10 @@
 // One book with the ratings the viewer may see. A book nobody has rated yet
 // is fetched from ABS, so the page can offer the first rating.
-use abs.recommendations.books
-use abs.recommendations.common
-use abs.recommendations.ratings.rated
-use abs.recommendations.ratings.rated.RatedBooks
-use abs.recommendations.sessions
+use hearsay.books
+use hearsay.common
+use hearsay.ratings.rated
+use hearsay.ratings.rated.RatedBooks
+use hearsay.sessions
 
 activity loadItemDetail(session: string | None, itemId: string) -> Result<ItemDetail, common.ApiError> {
     me = sessions.currentUser(session)?

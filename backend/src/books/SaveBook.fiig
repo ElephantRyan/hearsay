@@ -1,4 +1,4 @@
-use abs.recommendations.absclient.catalog
+use hearsay.absclient.catalog
 
 // The cached copy of what ABS says about a book, refreshed on every rating
 // write so lists need no ABS call per card.

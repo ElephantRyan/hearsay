@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.ratings.rated
+use hearsay.common
+use hearsay.ratings.rated
 
 workflow listPicksOf(session: string | None, userId: string) -> Result<List<rated.RatingRow>, common.ApiError> {
     return picksOf(session, userId)

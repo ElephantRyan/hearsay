@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // The sign-in routes of the HTTP surface (PLAN.md section 4); serve-dev.sh serves
 // every domain's adapter together.

@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // What a person typed in the search box: None for blank (browse instead),
 // an error for something absurdly long, else the trimmed text.

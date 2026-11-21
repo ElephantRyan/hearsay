@@ -1,5 +1,5 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.accounts
+use hearsay.absclient as client
+use hearsay.accounts
 use fiig.http
 
 // A reply to a call made with this server's own ABS token, not the person's.

@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.common
+use hearsay.settings
 
 // DELETE /admin/settings/{name}: back to the environment's value.
 workflow resetSetting(session: string | None, name: string) -> Result<settings.SettingsView, common.ApiError> {

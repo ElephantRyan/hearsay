@@ -1,6 +1,6 @@
-use abs.recommendations.settings.SignInConfig
-use abs.recommendations.settings
-use abs.recommendations.settings.Oidc
+use hearsay.settings.SignInConfig
+use hearsay.settings
+use hearsay.settings.Oidc
 
 test signInModesFollowAuthMode {
     fake Oidc {

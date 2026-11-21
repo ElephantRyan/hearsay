@@ -1,5 +1,5 @@
-use abs.recommendations.accounts
-use abs.recommendations.common
+use hearsay.accounts
+use hearsay.common
 
 conversion apiErrorOfSignIn(error: accounts.SignInError) -> common.ApiError {
     match error {

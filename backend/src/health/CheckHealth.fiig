@@ -1,5 +1,5 @@
-use abs.recommendations.absclient.AbsServer
-use abs.recommendations.settings
+use hearsay.absclient.AbsServer
+use hearsay.settings
 
 // Liveness plus ABS reachability. The service is up if it answers; `abs`
 // says whether ABS's public /status does, or that no address is set yet.

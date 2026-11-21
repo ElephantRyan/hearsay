@@ -1,6 +1,6 @@
-use abs.recommendations.absclient.catalog
-use abs.recommendations.absclient.progress
-use abs.recommendations.ratings.rated
+use hearsay.absclient.catalog
+use hearsay.absclient.progress
+use hearsay.ratings.rated
 
 // What I have listened to, most recent first, each with my score if I gave one.
 // A book with progress but no metadata (gone from ABS) is left out.

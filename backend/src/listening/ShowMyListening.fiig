@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // GET /me/listening: what I am listening to and have finished, for the
 // "My books" screen and the Rate tab.

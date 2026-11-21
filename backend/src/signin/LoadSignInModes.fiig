@@ -1,4 +1,4 @@
-use abs.recommendations.settings
+use hearsay.settings
 
 // Which ways in the server offers. Authentik needs its whole application set;
 // until it is, password sign-in stays on even in `oidc` mode, so a half-finished

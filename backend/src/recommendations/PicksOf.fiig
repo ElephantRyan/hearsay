@@ -1,7 +1,7 @@
-use abs.recommendations.common
-use abs.recommendations.ratings.rated
-use abs.recommendations.ratings.rated.RatedBooks
-use abs.recommendations.sessions
+use hearsay.common
+use hearsay.ratings.rated
+use hearsay.ratings.rated.RatedBooks
+use hearsay.sessions
 
 activity picksOf(session: string | None, userId: string) -> Result<List<rated.RatingRow>, common.ApiError> {
     sessions.currentUser(session)?

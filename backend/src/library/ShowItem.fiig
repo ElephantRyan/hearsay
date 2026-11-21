@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 workflow showItem(session: string | None, itemId: string) -> Result<ItemDetail, common.ApiError> {
     return loadItemDetail(session, itemId)

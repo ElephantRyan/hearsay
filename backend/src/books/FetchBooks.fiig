@@ -1,7 +1,7 @@
-use abs.recommendations.absclient
-use abs.recommendations.absclient.catalog
-use abs.recommendations.absclient.catalog.AbsCatalog
-use abs.recommendations.common
+use hearsay.absclient
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
+use hearsay.common
 
 // Many books from ABS in one call, with the server's token.
 gateway fetchBooks(abs: absclient.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, common.ApiError>

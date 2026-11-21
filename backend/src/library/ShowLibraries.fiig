@@ -1,5 +1,5 @@
-use abs.recommendations.absclient.catalog
-use abs.recommendations.common
+use hearsay.absclient.catalog
+use hearsay.common
 
 workflow showLibraries(session: string | None) -> Result<List<catalog.AbsLibrary>, common.ApiError> {
     return listLibraries(session)

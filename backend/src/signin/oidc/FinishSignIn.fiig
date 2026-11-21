@@ -3,10 +3,10 @@
 // callback wasn't started by this browser (CSRF), and nothing is exchanged.
 // Every outcome is a place to send the browser, so a failure never leaves
 // someone staring at JSON.
-use abs.recommendations.accounts
-use abs.recommendations.sessions
-use abs.recommendations.signin
-use abs.recommendations.settings
+use hearsay.accounts
+use hearsay.sessions
+use hearsay.signin
+use hearsay.settings
 
 activity finishSignIn(code: string | None, state: string | None, error: string | None, pending: string | None) -> Landing {
     if not signin.loadSignInModes().oidc {

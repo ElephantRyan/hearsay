@@ -1,7 +1,7 @@
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.settings.SignInConfig
-use abs.recommendations.signin.authentik.AuthentikSignIn
+use hearsay.accounts
+use hearsay.common
+use hearsay.settings.SignInConfig
+use hearsay.signin.authentik.AuthentikSignIn
 
 test startOidcIsOffInPasswordOnlyMode {
     fake SignInConfig {

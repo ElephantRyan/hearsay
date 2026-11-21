@@ -87,7 +87,7 @@ export function AppShell() {
       </a>
       <header className="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
         <Link to="/" className="text-lg font-semibold text-text no-underline">
-          Recommends
+          Hearsay
         </Link>
         <nav aria-label="Main" className="hidden gap-1 sm:flex">
           {tabs.map((tab) => (

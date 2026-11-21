@@ -1,8 +1,8 @@
-use abs.recommendations.books
-use abs.recommendations.common
-use abs.recommendations.ratings.rated.RatedBooks
-use abs.recommendations.sessions
-use abs.recommendations.settings
+use hearsay.books
+use hearsay.common
+use hearsay.ratings.rated.RatedBooks
+use hearsay.sessions
+use hearsay.settings
 
 // The books I have started or finished in ABS, with my scores.
 activity loadMyListening(session: string | None) -> Result<List<ListenedBook>, common.ApiError> {

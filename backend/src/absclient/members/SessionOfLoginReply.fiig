@@ -1,4 +1,4 @@
-use abs.recommendations.absclient
+use hearsay.absclient
 
 // POST /login's body as the session it gives us.
 conversion sessionOfLoginReply(body: bytes) -> Result<AbsSession, absclient.AbsError> {

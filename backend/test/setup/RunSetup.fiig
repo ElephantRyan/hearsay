@@ -1,11 +1,11 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.members
-use abs.recommendations.absclient.members.AbsMembers
-use abs.recommendations.common
-use abs.recommendations.sessions
-use abs.recommendations.sessions.SessionConfig
-use abs.recommendations.settings
-use abs.recommendations.settings.Abs
+use hearsay.absclient as client
+use hearsay.absclient.members
+use hearsay.absclient.members.AbsMembers
+use hearsay.common
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.Abs
 
 test aNewServerIsClaimedByAnAbsAdmin {
     fake SessionConfig {

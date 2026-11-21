@@ -1,15 +1,15 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.catalog
-use abs.recommendations.absclient.catalog.AbsCatalog
-use abs.recommendations.absclient.collections.AbsCollections
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.ratings
-use abs.recommendations.sessions
-use abs.recommendations.sessions.SessionConfig
-use abs.recommendations.settings
-use abs.recommendations.settings.Abs
-use abs.recommendations.settings.SyncConfig
+use hearsay.absclient as client
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
+use hearsay.absclient.collections.AbsCollections
+use hearsay.accounts
+use hearsay.common
+use hearsay.ratings
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.Abs
+use hearsay.settings.SyncConfig
 
 test theScheduledSyncDoesNothingWhileMirroringIsOff {
     fake SyncConfig {

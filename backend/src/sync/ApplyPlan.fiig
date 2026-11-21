@@ -1,8 +1,8 @@
 // Carries out one planned change and records it. The only code in this app that
 // writes to ABS. A collection we made that ABS no longer has (someone deleted
 // it) is recreated; one that is already gone when we remove it is just forgotten.
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.collections.AbsCollections
+use hearsay.absclient as client
+use hearsay.absclient.collections.AbsCollections
 
 activity applyPlan(abs: client.AbsTarget, plan: SyncPlan, now: int) -> SyncResult {
     match plan.collectionId {

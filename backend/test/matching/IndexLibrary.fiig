@@ -1,9 +1,9 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.catalog
-use abs.recommendations.absclient.catalog.AbsCatalog
-use abs.recommendations.common
-use abs.recommendations.settings
-use abs.recommendations.settings.Abs
+use hearsay.absclient as client
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
+use hearsay.common
+use hearsay.settings
+use hearsay.settings.Abs
 
 test theIndexMatchesByAsinThenIsbnThenTitle {
     fake Abs {

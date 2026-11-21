@@ -1,8 +1,8 @@
-use abs.recommendations.absclient
-use abs.recommendations.settings.Abs
+use hearsay.absclient
+use hearsay.settings.Abs
 use fiig.http
 use fiig.http.HttpClient
-use abs.recommendations.settings
+use hearsay.settings
 
 // Replies are shaped like the live ABS 2.37.2's (checked 2026-11-19): a minified
 // listing carries one `authorName`, which may be null; a search nests the same

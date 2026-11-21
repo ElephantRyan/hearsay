@@ -1,5 +1,5 @@
-use abs.recommendations.books
-use abs.recommendations.common
+use hearsay.books
+use hearsay.common
 
 // Validates, stores, and returns what is now stored (an update keeps the
 // original created_at, so the stored row can differ from the one made here).

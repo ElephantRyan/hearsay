@@ -1,4 +1,4 @@
-use abs.recommendations.absclient.catalog
+use hearsay.absclient.catalog
 
 // Keeps our copy of a book current, so lists need no ABS call per card.
 activity rememberBook(book: catalog.Book, now: int) -> int {

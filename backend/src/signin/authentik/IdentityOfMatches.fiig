@@ -1,5 +1,5 @@
-use abs.recommendations.absclient.members
-use abs.recommendations.accounts
+use hearsay.absclient.members
+use hearsay.accounts
 
 // Exactly one ABS account must carry the email. None means the person has
 // never been through ABS's own OpenID login (ABS creates the account then),

@@ -1,4 +1,4 @@
-use abs.recommendations.ratings.rated
+use hearsay.ratings.rated
 
 // The GET /recommendations filters that apply to ratings before ranking:
 // one recommender, one library. A filter left out matches everything.

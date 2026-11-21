@@ -1,4 +1,4 @@
-use abs.recommendations.ratings.rated
+use hearsay.ratings.rated
 
 // Works out, without touching anything, what each named person's collections
 // should become. One collection per person per library, "<name> Recommends",
@@ -16,7 +16,7 @@ rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: Lis
             existing = collectionIn(theirs, libraryId)
             plans = append(
                 plans,
-                SyncPlan(userId: userId, libraryId: libraryId, name: "${group.at(0).username} Recommends", description: "Maintained by abs-recommendations. Edits here are overwritten on the next sync.", bookIds: map(r in ordered): r.itemId, collectionId: existing, action: createOrUpdate(existing)),
+                SyncPlan(userId: userId, libraryId: libraryId, name: "${group.at(0).username} Recommends", description: "Maintained by Hearsay. Edits here are overwritten on the next sync.", bookIds: map(r in ordered): r.itemId, collectionId: existing, action: createOrUpdate(existing)),
             )
         }
         for state in theirs {

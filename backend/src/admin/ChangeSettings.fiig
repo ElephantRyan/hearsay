@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.common
+use hearsay.settings
 
 // PUT /admin/settings: checks the whole change, then saves it, then answers
 // with the settings as they now stand.

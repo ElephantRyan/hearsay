@@ -1,6 +1,6 @@
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.ratings.rated
+use hearsay.accounts
+use hearsay.common
+use hearsay.ratings.rated
 
 test syncTargetsAreSelfUnlessAdmin {
     rows = [

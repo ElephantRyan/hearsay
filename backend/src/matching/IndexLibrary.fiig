@@ -1,6 +1,6 @@
-use abs.recommendations.absclient.catalog
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.absclient.catalog
+use hearsay.common
+use hearsay.settings
 
 // Rebuilds the index of every local book library from ABS, a page of 250 at a
 // time (about five calls for 1,100 books). On any failure the old index is

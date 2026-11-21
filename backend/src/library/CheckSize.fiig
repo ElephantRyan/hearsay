@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // How many books a page holds: 24 unless asked, never more than 100.
 rule checkSize(size: int | None) -> Result<int, common.ApiError> {

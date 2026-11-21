@@ -1,13 +1,13 @@
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.sessions
-use abs.recommendations.sessions.SessionConfig
-use abs.recommendations.settings
-use abs.recommendations.settings.Abs
-use abs.recommendations.settings.Oidc
-use abs.recommendations.settings.SignInConfig
-use abs.recommendations.settings.SyncConfig
-use abs.recommendations.signin
+use hearsay.accounts
+use hearsay.common
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.Abs
+use hearsay.settings.Oidc
+use hearsay.settings.SignInConfig
+use hearsay.settings.SyncConfig
+use hearsay.signin
 
 test onlyAnAdminSeesOrChangesSettings {
     fake SessionConfig {

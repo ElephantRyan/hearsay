@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.common
+use hearsay.settings
 
 // POST /sync. Off unless the server enabled it (a 404 to everyone, so a
 // disabled server says nothing about who is signed in), a preview unless the

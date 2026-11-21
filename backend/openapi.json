@@ -14,7 +14,7 @@
     }
   },
   "info": {
-    "title": "abs.recommendations.sessions.sessionsApi, abs.recommendations.signin.signinApi, abs.recommendations.signin.oidc.oidcApi, abs.recommendations.ratings.ratingsApi, abs.recommendations.ratings.rated.ratedApi, abs.recommendations.library.libraryApi, abs.recommendations.recommendations.recommendationsApi, abs.recommendations.sync.syncApi, abs.recommendations.listening.listeningApi, abs.recommendations.admin.adminApi, abs.recommendations.setup.setupApi, abs.recommendations.health.healthApi",
+    "title": "hearsay.sessions.sessionsApi, hearsay.signin.signinApi, hearsay.signin.oidc.oidcApi, hearsay.ratings.ratingsApi, hearsay.ratings.rated.ratedApi, hearsay.library.libraryApi, hearsay.recommendations.recommendationsApi, hearsay.sync.syncApi, hearsay.listening.listeningApi, hearsay.admin.adminApi, hearsay.setup.setupApi, hearsay.health.healthApi",
     "version": "0.0.0"
   },
   "openapi": "3.0.3",

@@ -1,11 +1,11 @@
 // The first run: proves the person is an admin of the Audiobookshelf at that
 // address, then saves the address. Nothing is saved for anyone else.
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.members.AbsMembers
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.settings
-use abs.recommendations.signin.password as passwordSignIn
+use hearsay.absclient as client
+use hearsay.absclient.members.AbsMembers
+use hearsay.accounts
+use hearsay.common
+use hearsay.settings
+use hearsay.signin.password as passwordSignIn
 
 activity claimServer(url: string, username: string, password: string) -> Result<accounts.Identity, common.ApiError> {
     if settings.absUrl() != None {

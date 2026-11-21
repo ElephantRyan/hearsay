@@ -1,6 +1,6 @@
-use abs.recommendations.common
-use abs.recommendations.sessions
-use abs.recommendations.settings
+use hearsay.common
+use hearsay.sessions
+use hearsay.settings
 
 // POST /setup: only while the server has no Audiobookshelf address. The address
 // is checked like the admin screen's, the login must be an ABS admin's, and

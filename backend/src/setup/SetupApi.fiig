@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.signin
+use hearsay.common
+use hearsay.signin
 
 // The first-run routes: whether setup is needed, and doing it. serve-dev.sh
 // serves every domain's adapter together.

@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.common
+use hearsay.settings
 
 // GET /admin/settings.
 workflow showSettings(session: string | None) -> Result<settings.SettingsView, common.ApiError> {

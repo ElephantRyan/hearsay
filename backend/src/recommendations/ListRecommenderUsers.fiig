@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 workflow listRecommenderUsers(session: string | None) -> Result<List<Recommender>, common.ApiError> {
     return listRecommenders(session)

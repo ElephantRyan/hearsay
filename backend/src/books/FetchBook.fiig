@@ -1,9 +1,9 @@
 // One book from ABS, with the server's token. ABS's failures become the app's
 // errors here, once: a 404 is "no such book", anything else is "unavailable".
-use abs.recommendations.absclient
-use abs.recommendations.absclient.catalog
-use abs.recommendations.absclient.catalog.AbsCatalog
-use abs.recommendations.common
+use hearsay.absclient
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
+use hearsay.common
 
 gateway fetchBook(abs: absclient.AbsTarget, itemId: string) -> Result<catalog.Book, common.ApiError>
     requires AbsCatalog

@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // The OIDC sign-in routes: off to the identity provider, and back.
 adapter http oidcApi {

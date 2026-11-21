@@ -1,8 +1,8 @@
 // Proves who a person is with whichever provider the rule picks, then
 // returns only the Identity. Nobody can sign in before Audiobookshelf's
 // address is set.
-use abs.recommendations.accounts
-use abs.recommendations.settings
+use hearsay.accounts
+use hearsay.settings
 
 activity signIn(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
     match settings.absUrl() {

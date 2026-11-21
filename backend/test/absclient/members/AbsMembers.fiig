@@ -1,4 +1,4 @@
-use abs.recommendations.absclient
+use hearsay.absclient
 use fiig.http
 use fiig.http.HttpClient
 

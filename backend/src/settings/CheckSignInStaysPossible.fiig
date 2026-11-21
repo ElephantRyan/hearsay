@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // Authentik-only sign-in can't be chosen until every Authentik setting is there,
 // counting the change itself: otherwise nobody could sign in to finish it.

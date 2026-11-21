@@ -1,8 +1,8 @@
 // Who is asking, if they are an Audiobookshelf admin or its owner (root). The
 // admin screen and its routes are theirs only.
-use abs.recommendations.accounts
-use abs.recommendations.common
-use abs.recommendations.sessions
+use hearsay.accounts
+use hearsay.common
+use hearsay.sessions
 
 activity requireAdmin(session: string | None) -> Result<accounts.Identity, common.ApiError> {
     me = sessions.currentUser(session)?

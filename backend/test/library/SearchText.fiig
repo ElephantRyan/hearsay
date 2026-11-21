@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 test searchTextIsTrimmedAndBounded {
     expect searchText(None) is Ok(None)

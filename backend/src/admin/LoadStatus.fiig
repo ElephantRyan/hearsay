@@ -1,8 +1,8 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsServer
-use abs.recommendations.absclient.members.AbsMembers
-use abs.recommendations.settings
-use abs.recommendations.signin.authentik.AuthentikSignIn
+use hearsay.absclient as client
+use hearsay.absclient.AbsServer
+use hearsay.absclient.members.AbsMembers
+use hearsay.settings
+use hearsay.signin.authentik.AuthentikSignIn
 
 // Is Audiobookshelf there, does this server's token work, and does Authentik
 // answer? Asks each of them every time.

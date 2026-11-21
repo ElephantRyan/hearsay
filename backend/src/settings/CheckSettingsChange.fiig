@@ -1,4 +1,4 @@
-use abs.recommendations.common
+use hearsay.common
 
 // Tidies and checks a change before anything is saved: addresses are http(s)
 // URLs with no trailing slash, the sign-in mode is one of the three, and no

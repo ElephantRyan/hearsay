@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.sessions
+use hearsay.common
+use hearsay.sessions
 
 // Deletes the signed-in person's rating of a book and says how many rows went.
 // Whether zero is a problem is the workflow's call.

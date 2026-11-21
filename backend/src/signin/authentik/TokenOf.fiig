@@ -1,4 +1,4 @@
-use abs.recommendations.accounts
+use hearsay.accounts
 
 // This server's own Audiobookshelf token, needed to find an account by email.
 // Without one, Authentik sign-in can't finish.

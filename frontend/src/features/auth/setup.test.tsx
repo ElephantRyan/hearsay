@@ -60,7 +60,7 @@ describe("first-run setup", () => {
     const sent = newServer();
     const router = mount("/");
 
-    expect(await screen.findByRole("heading", { name: "Set up Recommends" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Set up Hearsay" })).toBeInTheDocument();
     await userEvent.type(screen.getByLabelText("Audiobookshelf address"), "https://wrong.test");
     await userEvent.type(screen.getByLabelText("Admin username"), "owner");
     await userEvent.type(screen.getByLabelText("Password"), "pw");

@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.settings
+use hearsay.common
+use hearsay.settings
 
 // The admin routes of the HTTP surface: settings and a status check, for
 // Audiobookshelf admins only. serve-dev.sh serves every domain's adapter together.

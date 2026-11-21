@@ -1,8 +1,8 @@
-use abs.recommendations.accounts
+use hearsay.accounts
 use fiig.http
 use fiig.http.HttpClient
-use abs.recommendations.settings
-use abs.recommendations.settings.Oidc
+use hearsay.settings
+use hearsay.settings.Oidc
 
 // One fake plays Authentik and ABS, answering by URL. Replies are shaped like
 // the live servers': the OIDC discovery and userinfo shapes are the standard

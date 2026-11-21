@@ -1,4 +1,4 @@
-use abs.recommendations.ratings.rated
+use hearsay.ratings.rated
 
 // Ranks books by the average score of their recommended ratings, highest
 // first. Ties go to the book with more ratings, then to the most recently

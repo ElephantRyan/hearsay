@@ -1,7 +1,7 @@
-use abs.recommendations.absclient
-use abs.recommendations.absclient.catalog
-use abs.recommendations.absclient.catalog.AbsCatalog
-use abs.recommendations.common
+use hearsay.absclient
+use hearsay.absclient.catalog
+use hearsay.absclient.catalog.AbsCatalog
+use hearsay.common
 
 // A page of a library, A to Z. A 404 here means the library, not a book.
 gateway fetchPage(abs: absclient.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, common.ApiError>

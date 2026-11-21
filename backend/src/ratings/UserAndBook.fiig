@@ -1,5 +1,5 @@
-use abs.recommendations.absclient.catalog
-use abs.recommendations.accounts
+use hearsay.absclient.catalog
+use hearsay.accounts
 
 // Who is asking, and the book they asked about: the first step of every
 // feature that works on one book.

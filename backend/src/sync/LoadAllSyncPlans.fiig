@@ -1,4 +1,4 @@
-use abs.recommendations.ratings.rated.RatedBooks
+use hearsay.ratings.rated.RatedBooks
 
 // What a full sync would do, for everyone: the scheduled run's plan. Reads our
 // tables and touches nothing.

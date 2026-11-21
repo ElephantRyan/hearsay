@@ -1,5 +1,5 @@
 {
-    "path": "abs.recommendations",
+    "path": "hearsay",
     "kind": "application",
     "version": "0.1.0",
     "dependencies": {

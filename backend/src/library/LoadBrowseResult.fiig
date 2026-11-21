@@ -1,12 +1,12 @@
 // One page of a library, or the hits of a search when `typed` is given, with
 // the viewer's own scores. The inputs are already checked by the workflow.
-use abs.recommendations.absclient
-use abs.recommendations.absclient.catalog
-use abs.recommendations.common
-use abs.recommendations.ratings.rated
-use abs.recommendations.ratings.rated.RatedBooks
-use abs.recommendations.sessions
-use abs.recommendations.settings
+use hearsay.absclient
+use hearsay.absclient.catalog
+use hearsay.common
+use hearsay.ratings.rated
+use hearsay.ratings.rated.RatedBooks
+use hearsay.sessions
+use hearsay.settings
 
 activity loadBrowseResult(session: string | None, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, common.ApiError> {
     me = sessions.currentUser(session)?

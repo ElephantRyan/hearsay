@@ -6,9 +6,9 @@
 // `beginUrl` is outside the SignIn interface: only the OIDC path has a
 // redirect step. The caller makes `state` and `codeVerifier` (Random.bytes),
 // keeps them in a short-lived cookie, and passes them back at the callback.
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.members
-use abs.recommendations.accounts
+use hearsay.absclient as client
+use hearsay.absclient.members
+use hearsay.accounts
 use fiig.http
 use fiig.http.HttpClient
 

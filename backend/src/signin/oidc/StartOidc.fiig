@@ -1,5 +1,5 @@
-use abs.recommendations.common
-use abs.recommendations.signin
+use hearsay.common
+use hearsay.signin
 
 // Authentik sign-in exists unless the server is password-only.
 workflow startOidc() -> Result<OidcStart, common.ApiError> {

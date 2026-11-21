@@ -1,14 +1,14 @@
-use abs.recommendations.absclient as client
-use abs.recommendations.absclient.AbsServer
-use abs.recommendations.absclient.members
-use abs.recommendations.absclient.members.AbsMembers
-use abs.recommendations.accounts
-use abs.recommendations.sessions
-use abs.recommendations.sessions.SessionConfig
-use abs.recommendations.settings
-use abs.recommendations.settings.Abs
-use abs.recommendations.settings.Oidc
-use abs.recommendations.signin.authentik.AuthentikSignIn
+use hearsay.absclient as client
+use hearsay.absclient.AbsServer
+use hearsay.absclient.members
+use hearsay.absclient.members.AbsMembers
+use hearsay.accounts
+use hearsay.sessions
+use hearsay.sessions.SessionConfig
+use hearsay.settings
+use hearsay.settings.Abs
+use hearsay.settings.Oidc
+use hearsay.signin.authentik.AuthentikSignIn
 
 test statusSaysWhoTheTokenBelongsTo {
     fake SessionConfig {
