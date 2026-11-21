@@ -1,7 +1,0 @@
-use hearsay.sessions
-
-conversion syncErrorOfIdentity(error: sessions.IdentityError) -> SyncError {
-    match error {
-        sessions.IdentityError.NotSignedIn -> SyncError.NotSignedIn
-    }
-}

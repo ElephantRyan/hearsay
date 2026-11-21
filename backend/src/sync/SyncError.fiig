@@ -1,7 +1,6 @@
 // Every way syncing collections can be refused or can fail, as values the
-// caller must handle.
+// caller must handle. Who is asking is the adapter's to settle.
 enum SyncError {
-    NotSignedIn
     MirroringOff
     NotAllowed
     Unavailable(detail: string)

@@ -1,8 +1,13 @@
-// The sync routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
-// every domain's adapter together.
+use hearsay.accounts
+use hearsay.sessions
+
+// The sync routes of the HTTP surface; src/Hearsay.fiig serves every domain's
+// adapter together.
 adapter http syncApi {
+    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+
     POST "/sync?userId={userId}&dryRun={dryRun}" -> syncCollections(
-        session: string | None from cookie "sid",
+        me,
         userId: string | None,
         dryRun: bool | None,
     )
