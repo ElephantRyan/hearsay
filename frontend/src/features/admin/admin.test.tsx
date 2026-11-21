@@ -165,6 +165,10 @@ describe("the admin screen", () => {
     const sent = serve(settingsOf("false"));
     mount("/admin");
 
+    // Authentik is folded on a server that doesn't use it yet.
+
+    await userEvent.click(await screen.findByRole("heading", { name: "Authentik" }));
+
     await userEvent.type(
       await screen.findByLabelText("Issuer"),
       "https://auth.test/application/o/recommends/",
@@ -192,5 +196,21 @@ describe("the admin screen", () => {
       },
     ]);
     expect(screen.getByLabelText("Client secret")).toHaveValue("");
+  });
+
+  it("folds each section under its heading, and Authentik starts folded when unused", async () => {
+    serve(settingsOf("false"));
+    mount("/admin");
+
+    const signIn = await screen.findByText("How people sign in");
+    expect(signIn).toBeVisible();
+    expect(screen.getByLabelText("Issuer")).not.toBeVisible();
+
+    await userEvent.click(screen.getByRole("heading", { name: "Authentik" }));
+    expect(screen.getByLabelText("Issuer")).toBeVisible();
+    await userEvent.click(screen.getByRole("heading", { name: "Sign-in" }));
+    expect(signIn).not.toBeVisible();
+    await userEvent.click(screen.getByRole("heading", { name: "Collections" }));
+    expect(screen.queryByText(/Writing collections is off/)).not.toBeVisible();
   });
 });

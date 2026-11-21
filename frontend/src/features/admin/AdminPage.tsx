@@ -17,6 +17,7 @@ import {
   messageFor,
 } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
+import { Collapsible } from "../../components/ui/Collapsible";
 import { SettingsForm } from "./SettingsForm";
 
 /**
@@ -58,15 +59,19 @@ function Card({
   return (
     <section
       aria-labelledby={id}
-      className="rounded-card border border-border bg-surface p-4 shadow-card"
+      className="rounded-card border border-border bg-surface px-4 py-2 shadow-card"
     >
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 id={id} className="text-base font-semibold">
-          {title}
-        </h2>
-        {action}
-      </div>
-      {children}
+      <Collapsible
+        title={
+          <h2 id={id} className="text-base font-semibold">
+            {title}
+          </h2>
+        }
+        action={action}
+        className="pb-2"
+      >
+        {children}
+      </Collapsible>
     </section>
   );
 }

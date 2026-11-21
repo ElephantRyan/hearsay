@@ -3,6 +3,7 @@ import { useResetSetting, useSaveSettings } from "../../api/hooks";
 import type { AdminSettings, SettingName, SettingsChange, SettingValue } from "../../api/types";
 import { messageFor } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
+import { Collapsible } from "../../components/ui/Collapsible";
 
 type TextName = "absUrl" | "frontendUrl" | "oidcIssuer" | "oidcClientId" | "oidcRedirectUri";
 type SecretName = "serviceToken" | "oidcClientSecret";
@@ -43,6 +44,9 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
   const [mirror, setMirror] = useState(settings.mirrorEnabled.value === "true");
   const [mode, setMode] = useState(settings.authMode.value ?? "both");
   const [notice, setNotice] = useState<string | null>(null);
+  // Authentik starts folded on a server that doesn't use it.
+  const authentikInUse =
+    settings.authMode.value !== "abs" || settings.oidcIssuer.source !== "unset";
 
   const setText = (name: TextName) => (value: string) =>
     setTexts((current) => ({ ...current, [name]: value }));
@@ -80,123 +84,130 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-8">
-      <fieldset className="space-y-5">
-        <legend className="mb-3 text-sm font-semibold tracking-wide text-muted uppercase">
-          Audiobookshelf
-        </legend>
-        <TextField
-          label="Audiobookshelf address"
-          type="url"
-          placeholder="https://audiobooks.example.com"
-          value={texts.absUrl}
-          onChange={setText("absUrl")}
-          footer={<Source name="absUrl" setting={settings.absUrl} variable="ABS_URL" />}
-        />
-        <TextField
-          label="Audiobookshelf token"
-          secret
-          placeholder={
-            settings.serviceToken.source === "unset" ? "Paste a token" : "Leave empty to keep it"
-          }
-          value={secrets.serviceToken}
-          onChange={setSecret("serviceToken")}
-          hint="An API token of an Audiobookshelf admin account. The app uses it to look up books, read listening progress, and write collections. It is never shown again once saved."
-          footer={
-            <Source
-              name="serviceToken"
-              setting={settings.serviceToken}
-              variable="ABS_SERVICE_TOKEN"
+    <form onSubmit={onSubmit} noValidate className="space-y-5">
+      <div className="divide-y divide-border border-y border-border">
+        <Section title="Audiobookshelf">
+          <fieldset className="space-y-5" aria-label="Audiobookshelf">
+            <TextField
+              label="Audiobookshelf address"
+              type="url"
+              placeholder="https://audiobooks.example.com"
+              value={texts.absUrl}
+              onChange={setText("absUrl")}
+              footer={<Source name="absUrl" setting={settings.absUrl} variable="ABS_URL" />}
             />
-          }
-        />
-        <MirrorField checked={mirror} onChange={setMirror} setting={settings.mirrorEnabled} />
-      </fieldset>
+            <TextField
+              label="Audiobookshelf token"
+              secret
+              placeholder={
+                settings.serviceToken.source === "unset"
+                  ? "Paste a token"
+                  : "Leave empty to keep it"
+              }
+              value={secrets.serviceToken}
+              onChange={setSecret("serviceToken")}
+              hint="An API token of an Audiobookshelf admin account. The app uses it to look up books, read listening progress, and write collections. It is never shown again once saved."
+              footer={
+                <Source
+                  name="serviceToken"
+                  setting={settings.serviceToken}
+                  variable="ABS_SERVICE_TOKEN"
+                />
+              }
+            />
+            <MirrorField checked={mirror} onChange={setMirror} setting={settings.mirrorEnabled} />
+          </fieldset>
+        </Section>
 
-      <fieldset className="space-y-5">
-        <legend className="mb-3 text-sm font-semibold tracking-wide text-muted uppercase">
-          Sign-in
-        </legend>
-        <ModeField value={mode} onChange={setMode} setting={settings.authMode} />
-        <TextField
-          label="This app's address"
-          type="url"
-          placeholder={origin}
-          value={texts.frontendUrl}
-          onChange={setText("frontendUrl")}
-          hint="Where people open this app. Authentik sends them back here after they sign in."
-          suggestion={texts.frontendUrl === origin ? undefined : origin}
-          footer={
-            <Source name="frontendUrl" setting={settings.frontendUrl} variable="FRONTEND_URL" />
-          }
-        />
-      </fieldset>
+        <Section title="Sign-in">
+          <fieldset className="space-y-5" aria-label="Sign-in">
+            <ModeField value={mode} onChange={setMode} setting={settings.authMode} />
+            <TextField
+              label="This app's address"
+              type="url"
+              placeholder={origin}
+              value={texts.frontendUrl}
+              onChange={setText("frontendUrl")}
+              hint="Where people open this app. Authentik sends them back here after they sign in."
+              suggestion={texts.frontendUrl === origin ? undefined : origin}
+              footer={
+                <Source name="frontendUrl" setting={settings.frontendUrl} variable="FRONTEND_URL" />
+              }
+            />
+          </fieldset>
+        </Section>
 
-      <fieldset className="space-y-5">
-        <legend className="mb-1 text-sm font-semibold tracking-wide text-muted uppercase">
-          Authentik
-        </legend>
-        <p className="text-sm text-muted">
-          Only needed for signing in with Authentik. Make an OAuth2/OpenID provider and application
-          for this app in Authentik, then copy its details here. Authentik sign-in is offered once
-          all four are filled in.
-        </p>
-        <TextField
-          label="Issuer"
-          type="url"
-          placeholder="https://auth.example.com/application/o/recommends/"
-          value={texts.oidcIssuer}
-          onChange={setText("oidcIssuer")}
-          hint="The application's OpenID Configuration Issuer, from its provider page in Authentik."
-          footer={<Source name="oidcIssuer" setting={settings.oidcIssuer} variable="OIDC_ISSUER" />}
-        />
-        <TextField
-          label="Client ID"
-          value={texts.oidcClientId}
-          onChange={setText("oidcClientId")}
-          footer={
-            <Source name="oidcClientId" setting={settings.oidcClientId} variable="OIDC_CLIENT_ID" />
-          }
-        />
-        <TextField
-          label="Client secret"
-          secret
-          placeholder={
-            settings.oidcClientSecret.source === "unset"
-              ? "Paste the secret"
-              : "Leave empty to keep it"
-          }
-          value={secrets.oidcClientSecret}
-          onChange={setSecret("oidcClientSecret")}
-          footer={
-            <Source
-              name="oidcClientSecret"
-              setting={settings.oidcClientSecret}
-              variable="OIDC_CLIENT_SECRET"
+        <Section title="Authentik" defaultOpen={authentikInUse}>
+          <fieldset className="space-y-5" aria-label="Authentik">
+            <p className="text-sm text-muted">
+              Only needed for signing in with Authentik. Make an OAuth2/OpenID provider and
+              application for this app in Authentik, then copy its details here. Authentik sign-in
+              is offered once all four are filled in.
+            </p>
+            <TextField
+              label="Issuer"
+              type="url"
+              placeholder="https://auth.example.com/application/o/recommends/"
+              value={texts.oidcIssuer}
+              onChange={setText("oidcIssuer")}
+              hint="The application's OpenID Configuration Issuer, from its provider page in Authentik."
+              footer={
+                <Source name="oidcIssuer" setting={settings.oidcIssuer} variable="OIDC_ISSUER" />
+              }
             />
-          }
-        />
-        <TextField
-          label="Redirect URI"
-          type="url"
-          placeholder={`${origin}/api/auth/callback`}
-          value={texts.oidcRedirectUri}
-          onChange={setText("oidcRedirectUri")}
-          hint="Enter the same address in Authentik as the provider's redirect URI."
-          suggestion={
-            texts.oidcRedirectUri === `${origin}/api/auth/callback`
-              ? undefined
-              : `${origin}/api/auth/callback`
-          }
-          footer={
-            <Source
-              name="oidcRedirectUri"
-              setting={settings.oidcRedirectUri}
-              variable="OIDC_REDIRECT_URI"
+            <TextField
+              label="Client ID"
+              value={texts.oidcClientId}
+              onChange={setText("oidcClientId")}
+              footer={
+                <Source
+                  name="oidcClientId"
+                  setting={settings.oidcClientId}
+                  variable="OIDC_CLIENT_ID"
+                />
+              }
             />
-          }
-        />
-      </fieldset>
+            <TextField
+              label="Client secret"
+              secret
+              placeholder={
+                settings.oidcClientSecret.source === "unset"
+                  ? "Paste the secret"
+                  : "Leave empty to keep it"
+              }
+              value={secrets.oidcClientSecret}
+              onChange={setSecret("oidcClientSecret")}
+              footer={
+                <Source
+                  name="oidcClientSecret"
+                  setting={settings.oidcClientSecret}
+                  variable="OIDC_CLIENT_SECRET"
+                />
+              }
+            />
+            <TextField
+              label="Redirect URI"
+              type="url"
+              placeholder={`${origin}/api/auth/callback`}
+              value={texts.oidcRedirectUri}
+              onChange={setText("oidcRedirectUri")}
+              hint="Enter the same address in Authentik as the provider's redirect URI."
+              suggestion={
+                texts.oidcRedirectUri === `${origin}/api/auth/callback`
+                  ? undefined
+                  : `${origin}/api/auth/callback`
+              }
+              footer={
+                <Source
+                  name="oidcRedirectUri"
+                  setting={settings.oidcRedirectUri}
+                  variable="OIDC_REDIRECT_URI"
+                />
+              }
+            />
+          </fieldset>
+        </Section>
+      </div>
 
       {save.isError && (
         <p role="alert" className="text-sm text-danger">
@@ -376,5 +387,26 @@ function Source({
         </span>
       )}
     </div>
+  );
+}
+
+/** One group of settings: a heading that folds it away, between divider lines. */
+function Section({
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Collapsible
+      title={<h3 className="text-sm font-semibold tracking-wide text-muted uppercase">{title}</h3>}
+      defaultOpen={defaultOpen}
+      className="py-2"
+    >
+      <div className="pb-4">{children}</div>
+    </Collapsible>
   );
 }
