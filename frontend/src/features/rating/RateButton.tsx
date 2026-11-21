@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { useState } from "react";
 import { useItem, useMe } from "../../api/hooks";
 import { ErrorState, LoadingState } from "../../components/domain/StateViews";
@@ -23,9 +23,9 @@ export function RateButton({ itemId, title }: Props) {
         aria-label={`Rate ${title}`}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text"
+        className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border border-border bg-surface/90 text-muted shadow-card hover:text-text"
       >
-        <Star aria-hidden="true" className="h-5 w-5" />
+        <SquarePen aria-hidden="true" className="h-5 w-5" />
       </button>
       {open && (
         <Sheet title={title} onClose={() => setOpen(false)}>

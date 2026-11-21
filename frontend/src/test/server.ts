@@ -10,6 +10,7 @@ export const book = {
 };
 
 export const handlers = [
+  http.get("/api/me/listening", () => HttpResponse.json([])),
   http.get("/api/auth/modes", () => HttpResponse.json({ password: true, oidc: true })),
   http.get("/api/libraries", () => HttpResponse.json([library])),
   http.get("/api/recommendations/users", () =>

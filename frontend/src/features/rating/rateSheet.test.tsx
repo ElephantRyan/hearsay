@@ -76,7 +76,10 @@ describe("the rating sheet", () => {
     const sheet = await screen.findByRole("dialog", { name: book.title });
     expect(await within(sheet).findByLabelText("6")).toBeChecked();
     expect(within(sheet).getByRole("textbox")).toHaveValue("Slow start");
-    expect(within(sheet).getByRole("switch")).toBeChecked();
+    expect(within(sheet).getByRole("button", { name: "Recommend this book" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
     expect(within(sheet).getByRole("button", { name: "Update rating" })).toBeInTheDocument();
 
     await userEvent.keyboard("{Escape}");

@@ -64,6 +64,13 @@ export const useItem = (itemId: string) =>
     queryFn: async () => unwrap(await api.GET("/items/{itemId}", { params: { path: { itemId } } })),
   });
 
+/** The books I have started or finished in ABS, most recent first, with my scores. */
+export const useMyListening = () =>
+  useQuery({
+    queryKey: keys.listening,
+    queryFn: async () => unwrap(await api.GET("/me/listening")),
+  });
+
 export const useMyRatings = (sort: RatingSort) =>
   useQuery({
     queryKey: keys.myRatings(sort),
@@ -120,6 +127,7 @@ async function refreshAfterRatingChange(
     queryClient.invalidateQueries({ queryKey: keys.recommenders }),
     queryClient.invalidateQueries({ queryKey: keys.item(itemId) }),
     queryClient.invalidateQueries({ queryKey: keys.allPicks }),
+    queryClient.invalidateQueries({ queryKey: keys.listening }),
   ]);
 }
 

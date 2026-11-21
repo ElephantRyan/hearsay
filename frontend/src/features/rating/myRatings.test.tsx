@@ -50,14 +50,14 @@ describe("the my-ratings screen", () => {
     );
     mount("/me/ratings");
 
-    const toggle = await screen.findByRole("switch", { name: "Recommend Book number 1" });
-    expect(toggle).toHaveAttribute("aria-checked", "false");
+    const toggle = await screen.findByRole("button", { name: "Recommend Book number 1" });
+    expect(toggle).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByText("Only you")).toBeInTheDocument();
 
     await userEvent.click(toggle);
 
     expect(await screen.findByText("Shared with everyone")).toBeInTheDocument();
-    expect(toggle).toHaveAttribute("aria-checked", "true");
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
     expect(sent).toEqual([{ itemId: "it-1", score: 7, note: "note 1", recommended: true }]);
   });
 
@@ -71,14 +71,14 @@ describe("the my-ratings screen", () => {
     );
     mount("/me/ratings");
 
-    const toggle = await screen.findByRole("switch", { name: "Recommend Book number 1" });
+    const toggle = await screen.findByRole("button", { name: "Recommend Book number 1" });
     await userEvent.click(toggle);
 
     const row = toggle.closest("li") as HTMLElement;
     expect(await within(row).findByRole("alert")).toHaveTextContent(
       "Couldn't change who sees this: Audiobookshelf is unreachable",
     );
-    expect(toggle).toHaveAttribute("aria-checked", "true");
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
     expect(within(row).getByText("Shared with everyone")).toBeInTheDocument();
   });
 });

@@ -5,10 +5,10 @@ import { coverUrl } from "../../lib/format";
 interface Props {
   itemId: string;
   title: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "fill";
 }
 
-const sizes = { sm: "w-14", md: "w-20", lg: "w-40" } as const;
+const sizes = { sm: "w-14", md: "w-20", lg: "w-40", fill: "w-full" } as const;
 
 /** A fixed 1:1 cover (audiobooks are square), with placeholder art when ABS has none. */
 export function BookCover({ itemId, title, size = "md" }: Props) {

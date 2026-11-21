@@ -1,6 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { usePicks } from "../../api/hooks";
-import { BookRow } from "../../components/domain/BookRow";
+import { BookCard } from "../../components/domain/BookCard";
+import { BookGrid } from "../../components/domain/BookGrid";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { listTitle } from "../../lib/format";
@@ -21,20 +22,28 @@ export function UserListPage() {
         <EmptyState title="Nothing here">This person hasn't recommended any books.</EmptyState>
       )}
       {picks.data && picks.data.length > 0 && (
-        <ol className="space-y-3">
+        <BookGrid ordered label={name ? listTitle(name) : "Recommendations"}>
           {picks.data.map((pick, index) => (
-            <BookRow
+            <BookCard
               key={pick.itemId}
-              position={index + 1}
               itemId={pick.itemId}
               title={pick.title}
-              action={<RateButton itemId={pick.itemId} title={pick.title} />}
               authors={pick.authors}
-              detail={pick.note ? <span className="line-clamp-2">{pick.note}</span> : undefined}
-              aside={<RatingBadge score={pick.score} />}
+              badge={
+                <span className="rounded-full bg-black/70 px-2 py-0.5 text-xs font-semibold text-white tabular-nums">
+                  {index + 1}
+                </span>
+              }
+              action={<RateButton itemId={pick.itemId} title={pick.title} />}
+              meta={
+                <div className="space-y-1">
+                  <RatingBadge score={pick.score} />
+                  {pick.note && <p className="line-clamp-3">{pick.note}</p>}
+                </div>
+              }
             />
           ))}
-        </ol>
+        </BookGrid>
       )}
     </div>
   );

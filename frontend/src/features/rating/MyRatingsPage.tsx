@@ -1,16 +1,18 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { Eye, EyeOff } from "lucide-react";
 import { useId } from "react";
 import { useMyRatings, useRateItem } from "../../api/hooks";
 import type { RatingRow, RatingSort } from "../../api/types";
-import { BookRow } from "../../components/domain/BookRow";
+import { BookCard } from "../../components/domain/BookCard";
+import { BookGrid } from "../../components/domain/BookGrid";
 import { RatingBadge } from "../../components/domain/RatingBadge";
+import { RecommendButton } from "../../components/domain/RecommendButton";
 import {
   EmptyState,
   ErrorState,
   LoadingState,
   messageFor,
 } from "../../components/domain/StateViews";
+import { MineTabs } from "../mine/MineTabs";
 import { RateButton } from "./RateButton";
 
 const sorts: { value: RatingSort; label: string }[] = [
@@ -27,8 +29,9 @@ export function MyRatingsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-end justify-between gap-3">
-        <h1 className="text-xl font-semibold">My ratings</h1>
+      <h1 className="text-xl font-semibold">My books</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <MineTabs />
         <div>
           <label htmlFor={sortId} className="mb-1 block text-sm font-medium">
             Sort by
@@ -52,63 +55,58 @@ export function MyRatingsPage() {
       {ratings.isError && <ErrorState error={ratings.error} onRetry={() => ratings.refetch()} />}
       {ratings.data && ratings.data.length === 0 && (
         <EmptyState title="You haven't rated anything yet">
-          Open a book from the recommendations to give it a score.
+          The Rate tab goes through the books you've listened to, one at a time.
         </EmptyState>
       )}
       {ratings.data && ratings.data.length > 0 && (
-        <ul className="space-y-3">
+        <BookGrid label="My ratings">
           {ratings.data.map((row) => (
             <MyRating key={row.itemId} row={row} />
           ))}
-        </ul>
+        </BookGrid>
       )}
     </div>
   );
 }
 
 /**
- * One of my ratings, with its publish switch right on the row (FRONTEND.md section 5). Flipping it
- * saves the same score and note; the row changes at once and flips back if the server refuses.
+ * One of my ratings, with its thumbs up right on the card (FRONTEND.md section 5). Pressing it
+ * saves the same score and note; the card changes at once and flips back if the server refuses.
  */
 function MyRating({ row }: { row: RatingRow }) {
   const rate = useRateItem();
   const shared = row.recommended;
-  const flip = () =>
-    rate.mutate({ itemId: row.itemId, score: row.score, note: row.note, recommended: !shared });
 
   return (
-    <BookRow
+    <BookCard
       itemId={row.itemId}
       title={row.title}
       authors={row.authors}
-      detail={shared ? "Shared with everyone" : "Only you"}
-      aside={<RatingBadge score={row.score} />}
       action={
-        <div className="flex">
-          <RateButton itemId={row.itemId} title={row.title} />
-          <button
-            type="button"
-            role="switch"
-            aria-checked={shared}
-            aria-label={`Recommend ${row.title}`}
+        <>
+          <RecommendButton
+            on={shared}
+            label={`Recommend ${row.title}`}
             disabled={rate.isPending}
-            onClick={flip}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text disabled:opacity-60"
-          >
-            {shared ? (
-              <Eye aria-hidden="true" className="h-5 w-5 text-accent" />
-            ) : (
-              <EyeOff aria-hidden="true" className="h-5 w-5" />
-            )}
-          </button>
-        </div>
+            onChange={(on) =>
+              rate.mutate({ itemId: row.itemId, score: row.score, note: row.note, recommended: on })
+            }
+          />
+          <RateButton itemId={row.itemId} title={row.title} />
+        </>
       }
-      footer={
-        rate.isError && (
-          <p role="alert" className="text-sm text-danger">
-            Couldn't change who sees this: {messageFor(rate.error)}
-          </p>
-        )
+      meta={
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <RatingBadge score={row.score} />
+            <span>{shared ? "Shared with everyone" : "Only you"}</span>
+          </div>
+          {rate.isError && (
+            <p role="alert" className="text-danger">
+              Couldn't change who sees this: {messageFor(rate.error)}
+            </p>
+          )}
+        </div>
       }
     />
   );

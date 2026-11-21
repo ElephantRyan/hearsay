@@ -14,4 +14,5 @@ export const keys = {
   allBrowse: ["browse"] as const,
   myRatings: (sort: RatingSort) => ["my-ratings", sort] as const,
   allMyRatings: ["my-ratings"] as const,
+  listening: ["listening"] as const,
 };

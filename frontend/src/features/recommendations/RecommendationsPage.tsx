@@ -1,7 +1,8 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useId } from "react";
 import { useRecommendations, useRecommenders } from "../../api/hooks";
-import { BookRow } from "../../components/domain/BookRow";
+import { BookCard } from "../../components/domain/BookCard";
+import { BookGrid } from "../../components/domain/BookGrid";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
@@ -88,19 +89,23 @@ export function RecommendationsPage() {
         </EmptyState>
       )}
       {list.data && list.data.length > 0 && (
-        <ol className="space-y-3" aria-label="Recommended books, best first">
+        <BookGrid ordered label="Recommended books, best first">
           {list.data.map((book, index) => (
-            <BookRow
+            <BookCard
               key={book.itemId}
-              position={index + 1}
               itemId={book.itemId}
               title={book.title}
-              action={<RateButton itemId={book.itemId} title={book.title} />}
               authors={book.authors}
-              aside={<RatingBadge score={book.average} count={book.count} />}
+              badge={
+                <span className="rounded-full bg-black/70 px-2 py-0.5 text-xs font-semibold text-white tabular-nums">
+                  {index + 1}
+                </span>
+              }
+              action={<RateButton itemId={book.itemId} title={book.title} />}
+              meta={<RatingBadge score={book.average} count={book.count} />}
             />
           ))}
-        </ol>
+        </BookGrid>
       )}
     </div>
   );

@@ -2,7 +2,8 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { BROWSE_PAGE_SIZE, useBrowse, useLibraries } from "../../api/hooks";
-import { BookRow } from "../../components/domain/BookRow";
+import { BookCard } from "../../components/domain/BookCard";
+import { BookGrid } from "../../components/domain/BookGrid";
 import { LibraryPicker } from "../../components/domain/LibraryPicker";
 import { Pager } from "../../components/domain/Pager";
 import { RatingBadge } from "../../components/domain/RatingBadge";
@@ -112,22 +113,22 @@ export function BrowsePage() {
           )}
 
           {results.data.items.length > 0 && (
-            <ul className={`space-y-3 ${results.isPlaceholderData ? "opacity-60" : ""}`}>
+            <BookGrid dimmed={results.isPlaceholderData}>
               {results.data.items.map((book) => (
-                <BookRow
+                <BookCard
                   key={book.itemId}
                   itemId={book.itemId}
                   title={book.title}
+                  authors={book.authors}
                   action={<RateButton itemId={book.itemId} title={book.title} />}
-                  authors={book.authors || "Unknown author"}
-                  aside={
+                  meta={
                     book.myScore === undefined || book.myScore === null ? undefined : (
                       <RatingBadge score={book.myScore} />
                     )
                   }
                 />
               ))}
-            </ul>
+            </BookGrid>
           )}
 
           {!searching && (

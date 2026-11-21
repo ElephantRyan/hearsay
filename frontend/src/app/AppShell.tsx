@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { Home, LogOut, Search, Star, Users } from "lucide-react";
+import { Home, Library, LogOut, Search, Star, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { useMe, useSignOut } from "../api/hooks";
 
@@ -35,6 +35,16 @@ const tabs: Tab[] = [
     ),
   },
   {
+    key: "rate",
+    label: "Rate",
+    icon: <Star aria-hidden="true" className="h-5 w-5" />,
+    link: (className, content) => (
+      <Link to="/rate" className={className}>
+        {content}
+      </Link>
+    ),
+  },
+  {
     key: "all",
     label: "All",
     icon: <Users aria-hidden="true" className="h-5 w-5" />,
@@ -47,9 +57,9 @@ const tabs: Tab[] = [
   {
     key: "mine",
     label: "Mine",
-    icon: <Star aria-hidden="true" className="h-5 w-5" />,
+    icon: <Library aria-hidden="true" className="h-5 w-5" />,
     link: (className, content) => (
-      <Link to="/me/ratings" search={{ sort: "newest" }} className={className}>
+      <Link to="/me/books" search={{ shelf: "listening" }} className={className}>
         {content}
       </Link>
     ),
@@ -68,7 +78,7 @@ export function AppShell() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-3xl flex-col">
+    <div className="mx-auto flex min-h-dvh max-w-6xl flex-col">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-surface focus:p-3"

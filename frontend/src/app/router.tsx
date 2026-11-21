@@ -117,6 +117,21 @@ const myRatingsRoute = createRoute({
   component: lazyRouteComponent(() => import("../features/rating/MyRatingsPage"), "MyRatingsPage"),
 });
 
+const myBooksRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/me/books",
+  validateSearch: z.object({
+    shelf: z.enum(["listening", "finished"]).catch("listening"),
+  }),
+  component: lazyRouteComponent(() => import("../features/mine/MyBooksPage"), "MyBooksPage"),
+});
+
+const rateRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/rate",
+  component: lazyRouteComponent(() => import("../features/rate/RatePage"), "RatePage"),
+});
+
 const routeTree = rootRoute.addChildren([
   signInRoute,
   appRoute.addChildren([
@@ -127,6 +142,8 @@ const routeTree = rootRoute.addChildren([
     userListRoute,
     itemRoute,
     myRatingsRoute,
+    myBooksRoute,
+    rateRoute,
   ]),
 ]);
 
