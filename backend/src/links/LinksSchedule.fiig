@@ -1,0 +1,8 @@
+// Keeps what linked servers recommend current (fiig ADR 0112), hourly as the
+// collections sync is. An Err is logged by the runtime.
+adapter schedule linksSchedule {
+    every "1h" -> fetchOnSchedule() {
+        Ok(_) -> done
+        Err(_) -> done
+    }
+}

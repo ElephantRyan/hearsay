@@ -41,4 +41,5 @@ test noRouteAnswersWithoutASession {
     expect links.inviteServer(None) is Err(links.LinkError.NotSignedIn)
     expect links.linkServer(None, links.LinkRequest(code: "https://elsewhere.test#x")) is Err(links.LinkError.NotSignedIn)
     expect links.unlinkServer(None, "l1") is Err(links.LinkError.NotSignedIn)
+    expect links.refreshLink(None, "l1") is Err(links.LinkError.NotSignedIn)
 }

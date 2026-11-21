@@ -1,10 +1,17 @@
 // A linked server as the admin screen lists it. Its keys never leave the
 // server. linkedBy is the admin's user id, or "invite" when the other side
-// took up this server's invite.
+// took up this server's invite. The rest is the last fetch (all None until the
+// first): when it worked, how many recommendations came and how many are books
+// here; and while it doesn't answer, since when and why.
 model LinkedServer {
     id: string
     name: string
     address: string
     linkedAt: int
     linkedBy: string
+    lastFetchedAt: int | None
+    ratings: int | None
+    matched: int | None
+    notAnsweringSince: int | None
+    problem: string | None
 }

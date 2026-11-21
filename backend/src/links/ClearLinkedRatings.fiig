@@ -1,0 +1,6 @@
+// Forgets everything fetched from one server, before a fetch writes it again.
+gateway clearLinkedRatings(linkId: string) -> int
+    requires Database
+{
+    return Database.execute("DELETE FROM linked_rating WHERE link_id = ?", linkId)
+}

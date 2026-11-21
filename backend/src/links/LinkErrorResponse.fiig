@@ -11,5 +11,6 @@ conversion linkErrorResponse(error: LinkError) -> HttpResponse<string> {
         LinkError.PeerUnreachable -> HttpResponse(status: 502, body: "the other server didn't answer at that address")
         LinkError.PeerLoginPage -> HttpResponse(status: 502, body: "the other server answered with a login page: its login must let /api/federation/ through (LINKED.md section 4)")
         LinkError.PeerRefused(reason) -> HttpResponse(status: 502, body: "the other server refused: ${reason}")
+        LinkError.IndexUnavailable(detail) -> HttpResponse(status: 503, body: "this server's library couldn't be indexed to match books against: ${detail}")
     }
 }

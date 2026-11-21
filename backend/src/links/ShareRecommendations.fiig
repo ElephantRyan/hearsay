@@ -1,0 +1,6 @@
+// GET /federation/recommendations: this server's recommendations, to a linked
+// server's key only.
+workflow shareRecommendations(authorization: string | None) -> Result<List<SharedRating>, FederationError> {
+    linkOfKey(authorization)?
+    return Ok(sharedRatings())
+}

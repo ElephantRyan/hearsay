@@ -1,21 +1,15 @@
-// Tells the other server, then forgets the link and its keys here whether or
-// not it answered. Unlinked.told says which.
+// Tells the other server, then forgets the link, its keys and what was fetched
+// from it here whether or not it answered. Unlinked.told says which.
 activity removeLink(id: string) -> Result<Unlinked, LinkError> {
-    match peerKeyOf(id) {
-        None -> {
-            return Err(LinkError.UnknownLink)
+    peer = peerToFetch(id)?
+    told: bool = false
+    match PeerServer.unlink(peer.address, peer.keyOut) {
+        Ok(_) -> {
+            told = true
         }
-        peer -> {
-            told: bool = false
-            match PeerServer.unlink(peer.address, peer.keyOut) {
-                Ok(_) -> {
-                    told = true
-                }
-                Err(_) -> {
-                }
-            }
-            deleteLink(id)
-            return Ok(Unlinked(name: peer.name, told: told))
+        Err(_) -> {
         }
     }
+    deleteLink(id)
+    return Ok(Unlinked(name: peer.name, told: told))
 }

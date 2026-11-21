@@ -1,0 +1,10 @@
+use hearsay.settings
+
+// Why the library index couldn't be rebuilt, in words for the admin screen
+// and the scheduled fetch's log.
+conversion indexProblemOfSettings(error: settings.SettingsError) -> string {
+    match error {
+        settings.SettingsError.NoAbsUrl -> "no Audiobookshelf address is set"
+        settings.SettingsError.NoServiceToken -> "no Audiobookshelf token is set"
+    }
+}

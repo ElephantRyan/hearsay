@@ -1,0 +1,4 @@
+// How many books the index holds: 0 until it has been built.
+activity indexSize() -> int {
+    return indexedBooks()
+}

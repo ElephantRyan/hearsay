@@ -1,5 +1,6 @@
 // Every way an admin's linking request can be refused, as values the caller
-// must handle. The Peer* ones are the other server's answer, or its silence.
+// must handle. The Peer* ones are the other server's answer, or its silence;
+// IndexUnavailable is this server's own library index, which matching needs.
 enum LinkError {
     NotSignedIn
     NotAdmin
@@ -10,4 +11,5 @@ enum LinkError {
     PeerUnreachable
     PeerLoginPage
     PeerRefused(reason: string)
+    IndexUnavailable(detail: string)
 }

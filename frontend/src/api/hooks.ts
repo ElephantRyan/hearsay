@@ -309,6 +309,19 @@ export function useLinkServer() {
   });
 }
 
+/**
+ * Fetch a linked server's recommendations now. A server that doesn't answer still comes back
+ * as a server, with its problem; only a refusal by this one is an error.
+ */
+export function useRefreshLink() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) =>
+      unwrap(await api.POST("/admin/links/{id}/refresh", { params: { path: { id } } })),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.adminLinks }),
+  });
+}
+
 /** Unlink a server. The answer says whether that server could be told. */
 export function useUnlinkServer() {
   const queryClient = useQueryClient();

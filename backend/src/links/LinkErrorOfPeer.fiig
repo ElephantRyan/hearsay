@@ -17,8 +17,11 @@ private {
         if status == 409 {
             return "it is already linked to this server; unlink it there first"
         }
-        if status == 503 {
+        if status == 412 {
             return "it has no server name yet; its admin needs to set one"
+        }
+        if status >= 502 and status <= 504 {
+            return "it isn't answering: the proxy in front of it answered ${status}"
         }
         if status == 404 {
             return "it doesn't know linking; it may be an older Hearsay"

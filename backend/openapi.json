@@ -128,14 +128,34 @@
                       "id": {
                         "type": "string"
                       },
+                      "lastFetchedAt": {
+                        "nullable": true,
+                        "type": "integer"
+                      },
                       "linkedAt": {
                         "type": "integer"
                       },
                       "linkedBy": {
                         "type": "string"
                       },
+                      "matched": {
+                        "nullable": true,
+                        "type": "integer"
+                      },
                       "name": {
                         "type": "string"
+                      },
+                      "notAnsweringSince": {
+                        "nullable": true,
+                        "type": "integer"
+                      },
+                      "problem": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "ratings": {
+                        "nullable": true,
+                        "type": "integer"
                       }
                     },
                     "required": [
@@ -212,6 +232,16 @@
               }
             },
             "description": ""
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
           }
         },
         "security": [
@@ -253,14 +283,34 @@
                     "id": {
                       "type": "string"
                     },
+                    "lastFetchedAt": {
+                      "nullable": true,
+                      "type": "integer"
+                    },
                     "linkedAt": {
                       "type": "integer"
                     },
                     "linkedBy": {
                       "type": "string"
                     },
+                    "matched": {
+                      "nullable": true,
+                      "type": "integer"
+                    },
                     "name": {
                       "type": "string"
+                    },
+                    "notAnsweringSince": {
+                      "nullable": true,
+                      "type": "integer"
+                    },
+                    "problem": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "ratings": {
+                      "nullable": true,
+                      "type": "integer"
                     }
                   },
                   "required": [
@@ -327,6 +377,16 @@
             "description": ""
           },
           "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -422,6 +482,16 @@
             "description": ""
           },
           "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -527,6 +597,163 @@
             "description": ""
           },
           "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          },
+          {}
+        ]
+      }
+    },
+    "/admin/links/{id}/refresh": {
+      "post": {
+        "operationId": "refreshLink",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "address": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "lastFetchedAt": {
+                      "nullable": true,
+                      "type": "integer"
+                    },
+                    "linkedAt": {
+                      "type": "integer"
+                    },
+                    "linkedBy": {
+                      "type": "string"
+                    },
+                    "matched": {
+                      "nullable": true,
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "notAnsweringSince": {
+                      "nullable": true,
+                      "type": "integer"
+                    },
+                    "problem": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "ratings": {
+                      "nullable": true,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "address",
+                    "id",
+                    "linkedAt",
+                    "linkedBy",
+                    "name"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1606,7 +1833,7 @@
             },
             "description": ""
           },
-          "503": {
+          "412": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1713,7 +1940,127 @@
             },
             "description": ""
           },
-          "503": {
+          "412": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/federation/recommendations": {
+      "get": {
+        "operationId": "shareRecommendations",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "properties": {
+                      "asin": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "authors": {
+                        "type": "string"
+                      },
+                      "isbn": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "note": {
+                        "type": "string"
+                      },
+                      "personId": {
+                        "type": "string"
+                      },
+                      "score": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "integer"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "authors",
+                      "note",
+                      "personId",
+                      "score",
+                      "title",
+                      "updatedAt",
+                      "username"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "412": {
             "content": {
               "application/json": {
                 "schema": {

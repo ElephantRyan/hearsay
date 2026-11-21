@@ -68,6 +68,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/links/{id}/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["refreshLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/settings": {
         parameters: {
             query?: never;
@@ -175,6 +191,22 @@ export interface paths {
         put?: never;
         post: operations["acceptLink"];
         delete: operations["dropLink"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/federation/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["shareRecommendations"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -497,9 +529,14 @@ export interface operations {
                     "application/json": {
                         address: string;
                         id: string;
+                        lastFetchedAt?: number | null;
                         linkedAt: number;
                         linkedBy: string;
+                        matched?: number | null;
                         name: string;
+                        notAnsweringSince?: number | null;
+                        problem?: string | null;
+                        ratings?: number | null;
                     }[];
                 };
             };
@@ -551,6 +588,14 @@ export interface operations {
                     "application/json": string;
                 };
             };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
         };
     };
     linkServer: {
@@ -576,9 +621,14 @@ export interface operations {
                     "application/json": {
                         address: string;
                         id: string;
+                        lastFetchedAt?: number | null;
                         linkedAt: number;
                         linkedBy: string;
+                        matched?: number | null;
                         name: string;
+                        notAnsweringSince?: number | null;
+                        problem?: string | null;
+                        ratings?: number | null;
                     };
                 };
             };
@@ -623,6 +673,14 @@ export interface operations {
                 };
             };
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -700,6 +758,14 @@ export interface operations {
                     "application/json": string;
                 };
             };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
         };
     };
     unlinkServer: {
@@ -765,6 +831,102 @@ export interface operations {
                 };
             };
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    refreshLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        address: string;
+                        id: string;
+                        lastFetchedAt?: number | null;
+                        linkedAt: number;
+                        linkedBy: string;
+                        matched?: number | null;
+                        name: string;
+                        notAnsweringSince?: number | null;
+                        problem?: string | null;
+                        ratings?: number | null;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1333,6 +1495,77 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    shareRecommendations: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        asin?: string | null;
+                        authors: string;
+                        isbn?: string | null;
+                        note: string;
+                        personId: string;
+                        score: number;
+                        title: string;
+                        updatedAt: number;
+                        username: string;
+                    }[];
+                };
             };
             400: {
                 headers: {

@@ -110,6 +110,22 @@ function serveLinks(sent: { method: string; path: string; body?: unknown }[], to
       links = [...links, linked];
       return HttpResponse.json(linked);
     }),
+    http.post("/api/admin/links/:id/refresh", ({ params }) => {
+      sent.push({ method: "POST", path: `/admin/links/${params.id}/refresh` });
+      links = links.map((link) =>
+        link.id === params.id
+          ? {
+              ...link,
+              lastFetchedAt: Date.UTC(2026, 10, 21, 14),
+              ratings: 3,
+              matched: 2,
+              notAnsweringSince: Date.UTC(2026, 10, 21, 13),
+              problem: "it didn't answer",
+            }
+          : link,
+      );
+      return HttpResponse.json(links.find((link) => link.id === params.id));
+    }),
     http.delete("/api/admin/links/:id", ({ params }) => {
       sent.push({ method: "DELETE", path: `/admin/links/${params.id}` });
       links = links.filter((link) => link.id !== params.id);
@@ -309,5 +325,21 @@ describe("the admin screen", () => {
     expect(await screen.findByText(/Give this server a name/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Make a link code" })).toBeDisabled();
     expect(screen.getByLabelText("This server's name")).toHaveValue("");
+  });
+
+  it("fetches a linked server now, and says how many books matched or why it failed", async () => {
+    const sent = serve(settingsOf("false"));
+    serveLinks(sent);
+    mount("/admin");
+
+    const list = await screen.findByRole("list", { name: "Linked servers" });
+    expect(within(list).getByText(/Not fetched yet/)).toBeInTheDocument();
+    await userEvent.click(within(list).getByRole("button", { name: "Refresh now" }));
+
+    expect(
+      await within(list).findByText(/2 of 3 recommendations are books here/),
+    ).toBeInTheDocument();
+    expect(within(list).getByText(/Not answering since .*: it didn't answer/)).toBeInTheDocument();
+    expect(sent).toEqual([{ method: "POST", path: "/admin/links/l-1/refresh" }]);
   });
 });

@@ -23,6 +23,15 @@ capability RatedBooks {
         return Database.queryMany("SELECT * FROM rating_row WHERE recommended = 1")
     }
 
+    // Every recommended rating with what recognises its book on another server
+    // (LINKED.md section 2). Private ratings never leave through here either.
+    gateway shared() -> List<SharedRow>
+        requires Database
+        idempotent
+    {
+        return Database.queryMany("SELECT * FROM shared_rating")
+    }
+
     // What a viewer may see of one book: everyone's recommended ratings, plus
     // their own whether recommended or not.
     gateway visibleFor(itemId: string, viewerId: string) -> List<RatingRow>

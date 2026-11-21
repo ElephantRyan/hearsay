@@ -13,6 +13,15 @@ capability PeerServer {
         return Ok(accepted)
     }
 
+    // Every recommendation on the other server.
+    gateway recommendations(address: string, key: Secret) -> Result<List<SharedRating>, PeerError>
+        requires HttpClient
+    {
+        reply = peerReply(HttpClient.send(peerRequest(http.Method.Get, "${address}/api/federation/recommendations", key.reveal(), None)))?
+        ratings: List<SharedRating> = mapErr(e in json.decode(reply.body)): PeerError.Unreadable?
+        return Ok(ratings)
+    }
+
     // Tells the other server this link is gone.
     gateway unlink(address: string, key: Secret) -> Result<int, PeerError>
         requires HttpClient

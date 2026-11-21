@@ -1,0 +1,13 @@
+// A fetch that worked: when, how many came and how many matched. The server is
+// answering again, so any problem is cleared.
+gateway markFetched(id: string, now: int, ratings: int, matched: int) -> int
+    requires Database
+{
+    return Database.execute(
+        "UPDATE linked_server SET last_fetched_at = ?, ratings = ?, matched = ?, not_answering_since = NULL, problem = NULL WHERE id = ?",
+        now,
+        ratings,
+        matched,
+        id,
+    )
+}

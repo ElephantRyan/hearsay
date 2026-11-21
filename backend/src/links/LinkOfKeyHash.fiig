@@ -4,7 +4,7 @@ gateway linkOfKeyHash(keyInHash: string) -> LinkedServer | None
     idempotent
 {
     return Database.queryOne(
-        "SELECT id, name, address, linked_at, linked_by FROM linked_server WHERE key_in_hash = ?",
+        "SELECT id, name, address, linked_at, linked_by, last_fetched_at, ratings, matched, not_answering_since, problem FROM linked_server WHERE key_in_hash = ?",
         keyInHash,
     )
 }

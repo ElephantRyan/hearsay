@@ -1,0 +1,16 @@
+use hearsay.ratings.rated.RatedBooks
+
+// Every recommendation on this server, as a linked server is shown it.
+activity sharedRatings() -> List<SharedRating> {
+    return map(row in RatedBooks.shared()): SharedRating(
+        personId: keyHash("person:${row.userId}"),
+        username: row.username,
+        asin: row.asin,
+        isbn: row.isbn,
+        title: row.title,
+        authors: row.authors,
+        score: row.score,
+        note: row.note,
+        updatedAt: row.updatedAt,
+    )
+}

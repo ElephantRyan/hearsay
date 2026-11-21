@@ -10,6 +10,7 @@ import {
   useLinkServer,
   useMe,
   useRecommenders,
+  useRefreshLink,
   useSyncCollections,
   useUnlinkServer,
 } from "../../api/hooks";
@@ -345,6 +346,7 @@ function LinkRow({
   onUnlinked: (notice: string) => void;
 }) {
   const unlink = useUnlinkServer();
+  const refresh = useRefreshLink();
   const [confirming, setConfirming] = useState(false);
   return (
     <li className="rounded-lg border border-border px-3 py-2 text-sm">
@@ -353,6 +355,7 @@ function LinkRow({
           <p className="font-medium break-words">{link.name}</p>
           <p className="break-all text-muted">{link.address}</p>
           <p className="text-muted">Linked {dateOf(link.linkedAt)}</p>
+          <FetchState link={link} />
         </div>
         {confirming ? (
           <div className="flex gap-2">
@@ -376,11 +379,25 @@ function LinkRow({
             </Button>
           </div>
         ) : (
-          <Button variant="secondary" onClick={() => setConfirming(true)}>
-            Unlink
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => refresh.mutate(link.id)}
+              disabled={refresh.isPending}
+            >
+              {refresh.isPending ? "Fetching…" : "Refresh now"}
+            </Button>
+            <Button variant="secondary" onClick={() => setConfirming(true)}>
+              Unlink
+            </Button>
+          </div>
         )}
       </div>
+      {refresh.isError && (
+        <p role="alert" className="mt-2 text-danger">
+          {messageFor(refresh.error)}
+        </p>
+      )}
       {confirming && !unlink.isPending && (
         <p className="mt-2 text-muted">
           Its recommendations leave this server, and this server's leave it.
@@ -392,6 +409,33 @@ function LinkRow({
         </p>
       )}
     </li>
+  );
+}
+
+/** The last fetch from a linked server: how many of its recommendations are books here, or why it failed. */
+function FetchState({ link }: { link: LinkedServer }) {
+  return (
+    <>
+      {link.lastFetchedAt == null ? (
+        <p className="text-muted">
+          Not fetched yet. It is fetched every hour, or now with Refresh now.
+        </p>
+      ) : (
+        <p className="text-muted">
+          {link.matched} of {link.ratings}{" "}
+          {link.ratings === 1 ? "recommendation is a book" : "recommendations are books"} here ·
+          fetched {dateOf(link.lastFetchedAt)}
+        </p>
+      )}
+      {link.notAnsweringSince != null && (
+        <p className="flex items-start gap-1.5 text-danger">
+          <CircleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>
+            Not answering since {dateOf(link.notAnsweringSince)}: {link.problem}
+          </span>
+        </p>
+      )}
+    </>
   );
 }
 
