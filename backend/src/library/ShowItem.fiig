@@ -1,9 +1,8 @@
+use hearsay.accounts
 use hearsay.books
-use hearsay.sessions
 
 // One book's page. A book ABS does not have, and nobody has rated, is "no such book".
-workflow showItem(session: string | None, itemId: string) -> Result<ItemDetail, LibraryError> {
-    me = mapErr(e in sessions.currentUser(session)): libraryErrorOfIdentity(e)?
+workflow showItem(me: accounts.Identity, itemId: string) -> Result<ItemDetail, LibraryError> {
     book = mapErr(e in books.cachedBook(itemId)): libraryErrorOfBook(e)?
     return Ok(loadItemDetail(me.userId, book))
 }

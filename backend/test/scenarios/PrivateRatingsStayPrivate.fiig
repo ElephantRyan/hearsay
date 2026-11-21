@@ -32,11 +32,11 @@ test privateRatingsStayPrivate {
     bob = sessions.startSession(bobId).token
     expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
     expect ratings.putRating(bobId, "dune", ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
-    expect library.showItem(bob, "dune") is Ok(bobSees)
+    expect library.showItem(bobId, "dune") is Ok(bobSees)
     expect bobSees.ratings.length() == 1
     expect bobSees.count == 1
     expect bobSees.average == 6.00
-    expect library.showItem(ann, "dune") is Ok(annSees)
+    expect library.showItem(annId, "dune") is Ok(annSees)
     expect annSees.ratings.length() == 2
     expect annSees.count == 1
     expect annSees.average == 6.00

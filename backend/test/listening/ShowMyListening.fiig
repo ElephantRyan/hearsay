@@ -44,8 +44,7 @@ test myListeningIsMostRecentFirstWithMyScores {
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
     expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_)
-    expect showMyListening(None) is Err(ListeningError.NotSignedIn)
-    expect showMyListening(ann) is Ok(listened)
+    expect showMyListening(annId) is Ok(listened)
     expect listened == [ListenedBook(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "B. Author", finished: false, percent: 25, lastListenedAt: 300, myScore: None, recommended: false), ListenedBook(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author", finished: true, percent: 100, lastListenedAt: 100, myScore: 8, recommended: true)]
 }
 
@@ -75,8 +74,8 @@ test myListeningCachesWhatItLooksUp {
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
-    expect showMyListening(ann) is Ok(first)
-    expect showMyListening(ann) is Ok(second)
+    expect showMyListening(annId) is Ok(first)
+    expect showMyListening(annId) is Ok(second)
     expect second == first
 }
 
@@ -96,7 +95,7 @@ test myListeningSaysWhenAbsIsDown {
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
-    expect showMyListening(ann) is Err(ListeningError.Unavailable(why))
+    expect showMyListening(annId) is Err(ListeningError.Unavailable(why))
     expect why == "this server's Audiobookshelf token was refused; tell the server's admin"
 }
 
@@ -116,5 +115,5 @@ test myListeningSaysWhenAbsHasNoAccountForMe {
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
     ann = sessions.startSession(annId).token
-    expect showMyListening(ann) is Err(ListeningError.AccountNotFound)
+    expect showMyListening(annId) is Err(ListeningError.AccountNotFound)
 }

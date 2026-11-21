@@ -1,13 +1,13 @@
-use hearsay.sessions
+use hearsay.accounts
 use hearsay.settings
 
 // Browse a library A to Z, or search it. What a page, a size and a search text
-// may be is decided here; the activity only fetches.
-workflow showLibraryItems(session: string | None, libraryId: string, page: int | None, size: int | None, q: string | None) -> Result<BrowseResult, LibraryError> {
+// may be is decided here, before Audiobookshelf is asked anything; the activity
+// only fetches.
+workflow showLibraryItems(me: accounts.Identity, libraryId: string, page: int | None, size: int | None, q: string | None) -> Result<BrowseResult, LibraryError> {
     pageNumber = checkPage(page)?
     pageSize = checkSize(size)?
     typed = searchText(q)?
-    me = mapErr(e in sessions.currentUser(session)): libraryErrorOfIdentity(e)?
     abs = mapErr(e in settings.loadAbsTarget()): libraryErrorOfSettings(e)?
     return mapErr(e in loadBrowseResult(me.userId, abs, libraryId, pageNumber, pageSize, typed)): libraryErrorOfFault(e)
 }

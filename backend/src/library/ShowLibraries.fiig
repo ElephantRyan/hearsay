@@ -1,9 +1,8 @@
+use hearsay.accounts
 use hearsay.absclient.catalog
-use hearsay.sessions
 use hearsay.settings
 
-workflow showLibraries(session: string | None) -> Result<List<catalog.AbsLibrary>, LibraryError> {
-    mapErr(e in sessions.currentUser(session)): libraryErrorOfIdentity(e)?
+workflow showLibraries(me: accounts.Identity) -> Result<List<catalog.AbsLibrary>, LibraryError> {
     abs = mapErr(e in settings.loadAbsTarget()): libraryErrorOfSettings(e)?
     return mapErr(e in listLibraries(abs)): libraryErrorOfFault(e)
 }

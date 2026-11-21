@@ -1,6 +1,6 @@
-// Every way showing what a person has listened to can fail.
+// Every way showing what a person has listened to can fail. Who is asking is
+// the adapter's to settle.
 enum ListeningError {
-    NotSignedIn
     AccountNotFound
     BookNotFound
     Unavailable(detail: string)
