@@ -1,7 +1,0 @@
-// The status and message a client sees for each way a person's ratings can fail. 401 names
-// no scheme: the browser holds a cookie, not a challenge to answer.
-conversion ratedErrorResponse(error: RatedError) -> HttpResponse<string> {
-    match error {
-        RatedError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
-    }
-}

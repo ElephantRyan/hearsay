@@ -1,4 +1,0 @@
-// Why a person's ratings can't be shown: the viewer isn't signed in.
-enum RatedError {
-    NotSignedIn
-}

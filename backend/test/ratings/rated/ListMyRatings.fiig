@@ -1,17 +1,8 @@
 use hearsay.absclient as client
 use hearsay.accounts
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
 
 test myRatingsComeInAnyOrderAskedFor {
-    fake SessionConfig {
-        sessionMaxAge: 3600
-    }
-
-    token = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)).token
-    expect listMyRatings(token, None) is Ok(none)
-    expect none.length() == 0
-    expect listMyRatings(token, RatingOrder.Score) is Ok(byScore)
-    expect byScore.length() == 0
-    expect listMyRatings(None, None) is Err(RatedError.NotSignedIn)
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
+    expect listMyRatings(ann, None).length() == 0
+    expect listMyRatings(ann, RatingOrder.Score).length() == 0
 }

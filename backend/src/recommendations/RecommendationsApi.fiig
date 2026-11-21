@@ -1,39 +1,34 @@
-// The recommendations routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
-// every domain's adapter together.
+use hearsay.accounts
+use hearsay.sessions
+
+// The recommendations routes of the HTTP surface; src/Hearsay.fiig serves every
+// domain's adapter together. All of them need a signed-in person.
 adapter http recommendationsApi {
+    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+
     GET "/recommendations?userId={userId}&libraryId={libraryId}&minScore={minScore}" -> listRecommendations(
-        session: string | None from cookie "sid",
+        me,
         userId: string | None,
         libraryId: string | None,
         minScore: int | None,
     )
         produces "application/json"
     {
-        Ok(books) -> 200 books
-        Err(error) -> recommendationErrorResponse(error)
+        books -> 200 books
     }
-    GET "/recommendations/users" -> listRecommenderUsers(session: string | None from cookie "sid")
+    GET "/recommendations/users" -> listRecommenderUsers(me)
         produces "application/json"
     {
-        Ok(people) -> 200 people
-        Err(error) -> recommendationErrorResponse(error)
+        people -> 200 people
     }
-    GET "/recommendations/users/{userId}" -> listPicksOf(
-        session: string | None from cookie "sid",
-        userId: string,
-    )
+    GET "/recommendations/users/{userId}" -> listPicksOf(me, userId: string)
         produces "application/json"
     {
-        Ok(rows) -> 200 rows
-        Err(error) -> recommendationErrorResponse(error)
+        rows -> 200 rows
     }
-    GET "/recommendations/users/{userId}/missing" -> listMissingOf(
-        session: string | None from cookie "sid",
-        userId: string,
-    )
+    GET "/recommendations/users/{userId}/missing" -> listMissingOf(me, userId: string)
         produces "application/json"
     {
-        Ok(books) -> 200 books
-        Err(error) -> recommendationErrorResponse(error)
+        books -> 200 books
     }
 }

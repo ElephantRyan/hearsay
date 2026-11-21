@@ -1,7 +1,0 @@
-use hearsay.sessions
-
-conversion recommendationErrorOfIdentity(error: sessions.IdentityError) -> RecommendationError {
-    match error {
-        sessions.IdentityError.NotSignedIn -> RecommendationError.NotSignedIn
-    }
-}

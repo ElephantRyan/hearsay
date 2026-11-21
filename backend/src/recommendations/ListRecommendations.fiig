@@ -1,6 +1,5 @@
-use hearsay.sessions
+use hearsay.accounts
 
-workflow listRecommendations(session: string | None, userId: string | None, libraryId: string | None, minScore: int | None) -> Result<List<RecommendedBook>, RecommendationError> {
-    mapErr(e in sessions.currentUser(session)): recommendationErrorOfIdentity(e)?
-    return Ok(recommendations(userId, libraryId, minScore))
+workflow listRecommendations(me: accounts.Identity, userId: string | None, libraryId: string | None, minScore: int | None) -> List<RecommendedBook> {
+    return recommendations(userId, libraryId, minScore)
 }

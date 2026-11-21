@@ -3,8 +3,6 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
 use hearsay.ratings.rated
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
 
@@ -14,9 +12,6 @@ use hearsay.settings.Abs
 test ratingFlowCachesTheBookAndKeepsCreatedAt {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake SessionConfig {
-        sessionMaxAge: 3600
     }
     fake AbsCatalog {
         gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
@@ -31,7 +26,6 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
 
     settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    token = sessions.startSession(ann).token
     expect putRating(ann, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first)
     expect putRating(ann, "dune", RatingInput(score: 4, note: None, recommended: false)) is Ok(second)
     expect second.createdAt == first.createdAt
@@ -40,7 +34,7 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
     expect putRating(ann, "dune", RatingInput(score: 12, note: None, recommended: true)) is Err(RatingError.Invalid(field, reason))
     expect field == "score"
     expect putRating(ann, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(RatingError.BookNotFound)
-    expect rated.listMyRatings(token, None) is Ok(mine)
+    mine = rated.listMyRatings(ann, None)
     expect mine.length() == 1
     expect mine.at(0).title == "Dune"
     expect deleteMyRating(ann, "dune") is Ok(removed)
