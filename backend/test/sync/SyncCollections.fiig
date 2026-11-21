@@ -7,8 +7,14 @@ use abs.recommendations.common
 use abs.recommendations.ratings
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
+use abs.recommendations.settings.SyncConfig
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
 
 test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
@@ -16,12 +22,12 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
         mirrorEnabled: true
     }
     fake AbsCatalog {
-        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"))
         }
     }
     fake AbsCollections {
-        gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+        gateway createCollectionAsService(abs: client.AbsTarget, libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
             expect name == "ann Recommends"
             if calls(AbsCollections.createCollectionAsService) == 1 {
                 expect bookIds == ["b", "a"]
@@ -31,18 +37,19 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
             return Ok("col-${calls(AbsCollections.createCollectionAsService)}")
         }
 
-        gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+        gateway updateCollectionAsService(abs: client.AbsTarget, collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
             if collectionId == "col-1" and bookIds.length() == 1 {
                 return Err(client.AbsError.NotFound)
             }
             return Ok(200)
         }
 
-        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(abs: client.AbsTarget, collectionId: string) -> Result<int, client.AbsError> {
             return Ok(200)
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect ratings.putRating(ann, "a", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
     expect ratings.putRating(ann, "b", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_)
@@ -80,17 +87,17 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
         mirrorEnabled: false
     }
     fake AbsCollections {
-        gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+        gateway createCollectionAsService(abs: client.AbsTarget, libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
             expect false
             return Err(client.AbsError.NotFound)
         }
 
-        gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+        gateway updateCollectionAsService(abs: client.AbsTarget, collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
             expect false
             return Err(client.AbsError.NotFound)
         }
 
-        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(abs: client.AbsTarget, collectionId: string) -> Result<int, client.AbsError> {
             expect false
             return Err(client.AbsError.NotFound)
         }
@@ -110,16 +117,16 @@ test aPersonCannotSyncSomeoneElsesList {
         mirrorEnabled: true
     }
     fake AbsCollections {
-        gateway createCollectionAsService(libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
+        gateway createCollectionAsService(abs: client.AbsTarget, libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
             expect false
             return Err(client.AbsError.NotFound)
         }
 
-        gateway updateCollectionAsService(collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
+        gateway updateCollectionAsService(abs: client.AbsTarget, collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
             return Ok(200)
         }
 
-        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(abs: client.AbsTarget, collectionId: string) -> Result<int, client.AbsError> {
             return Ok(200)
         }
     }

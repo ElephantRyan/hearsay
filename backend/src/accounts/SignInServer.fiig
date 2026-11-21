@@ -1,0 +1,7 @@
+// What a sign-in provider needs to reach Audiobookshelf, loaded from settings by
+// the caller: its address, and this server's own token (None until an admin
+// sets one; only the Authentik path needs it, to find an account by email).
+model SignInServer {
+    absUrl: string
+    serviceToken: Secret | None
+}

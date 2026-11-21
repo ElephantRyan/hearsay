@@ -1,0 +1,4 @@
+// One saved setting's text, as the setting table holds it.
+model StoredValue {
+    value: string
+}

@@ -1,0 +1,15 @@
+// A saved setting, or None when the admin hasn't saved one.
+gateway storedText(name: string) -> string | None
+    requires Database
+    idempotent
+{
+    found: StoredValue | None = Database.queryOne("SELECT value FROM setting WHERE name = ?", name)
+    match found {
+        None -> {
+            return None
+        }
+        row -> {
+            return row.value
+        }
+    }
+}

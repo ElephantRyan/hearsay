@@ -7,8 +7,6 @@
 // redirect step. The caller makes `state` and `codeVerifier` (Random.bytes),
 // keeps them in a short-lived cookie, and passes them back at the callback.
 use abs.recommendations.absclient as client
-use abs.recommendations.absclient.Abs
-use abs.recommendations.absclient.AbsService
 use abs.recommendations.absclient.members
 use abs.recommendations.accounts
 use fiig.http
@@ -25,7 +23,7 @@ capability AuthentikSignIn provides accounts.SignIn {
         )
     }
 
-    gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError>
+    gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError>
         requires HttpClient
     {
         match attempt {
@@ -38,7 +36,8 @@ capability AuthentikSignIn provides accounts.SignIn {
                 profile = oidcReply(HttpClient.send(oidcGet(endpoints.userinfoEndpoint, token.accessToken)))?
                 info: OidcUserInfo = mapErr(e in json.decode(profile.body)): unreadable("user info")?
                 email = emailOf(info)?
-                listed = serviceReply(client.absReply(HttpClient.send(client.absGet(Abs.url, "/api/users", AbsService.token.reveal()))))?
+                serviceToken = tokenOf(server)?
+                listed = serviceReply(client.absReply(HttpClient.send(client.absGet(server.absUrl, "/api/users", serviceToken.reveal()))))?
                 everyone: members.AbsUsersReply = mapErr(e in json.decode(listed.body)): unreadable("list of Audiobookshelf users")?
                 return identityOfMatches(members.usersMatchingEmail(everyone.users, email))
             }

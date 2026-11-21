@@ -1,19 +1,12 @@
-use abs.recommendations.absclient.Abs
-use abs.recommendations.absclient.AbsService
 use abs.recommendations.accounts
 use fiig.http
 use fiig.http.HttpClient
+use abs.recommendations.settings
 
 // One fake plays Authentik and ABS, answering by URL. Replies are shaped like
 // the live servers': the OIDC discovery and userinfo shapes are the standard
 // ones; /api/users is the real ABS 2.37.2 shape, extra `token` member included.
 test authenticateFindsTheAbsUserByEmail {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -70,18 +63,14 @@ test authenticateFindsTheAbsUserByEmail {
     }
 
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Ok(identity)
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Ok(identity)
     expect identity == accounts.Identity(userId: "u-1", username: "ryan", userType: "admin")
     expect calls(HttpClient.send) == 4
 }
 
 test absRefusingTheServiceTokenIsOurProblemNotThePersons {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -110,18 +99,14 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
     }
 
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Unavailable(detail))
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Unavailable(detail))
     expect detail.contains("token was refused")
     expect not detail.contains("password")
 }
 
 test twoAbsAccountsWithOneEmailIsRefused {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -152,17 +137,13 @@ test twoAbsAccountsWithOneEmailIsRefused {
     }
 
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Refused(why))
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why))
     expect why.contains("more than one")
 }
 
 test noAbsAccountMeansSignInToAbsFirst {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -193,16 +174,12 @@ test noAbsAccountMeansSignInToAbsFirst {
     }
 
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.NoAccount)
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.NoAccount)
 }
 
 test noEmailFromTheProviderIsRefused {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -231,17 +208,13 @@ test noEmailFromTheProviderIsRefused {
     }
 
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Refused(why))
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why))
     expect why.contains("no email")
 }
 
 test passwordAttemptIsTheWrongMethod {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -256,17 +229,13 @@ test passwordAttemptIsTheWrongMethod {
     }
 
     attempt = accounts.SignInAttempt.Password("ryan", "pw")
-    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.WrongMethod)
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.WrongMethod)
     expect calls(HttpClient.send) == 0
 }
 
 test providerOutageIsUnavailable {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -297,17 +266,13 @@ test providerOutageIsUnavailable {
     }
 
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Unavailable(detail))
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Unavailable(detail))
     expect detail == "the identity provider answered 503"
 }
 
 test rejectedCodeIsRefused {
-    fake Abs {
-        url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc-token"
-    }
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
@@ -338,7 +303,9 @@ test rejectedCodeIsRefused {
     }
 
     attempt = accounts.SignInAttempt.AuthorizationCode("code-1", "verifier-1")
-    expect AuthentikSignIn.authenticate(attempt) is Err(accounts.SignInError.Refused(why))
+    settings.rememberSetting("abs.serviceToken", "svc-token", "test")
+    server = accounts.SignInServer(absUrl: "https://abs.test", serviceToken: settings.serviceToken())
+    expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why))
     expect why == "the identity provider did not accept this sign-in"
 }
 

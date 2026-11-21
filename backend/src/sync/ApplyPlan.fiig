@@ -4,16 +4,16 @@
 use abs.recommendations.absclient as client
 use abs.recommendations.absclient.collections.AbsCollections
 
-activity applyPlan(plan: SyncPlan, now: int) -> SyncResult {
+activity applyPlan(abs: client.AbsTarget, plan: SyncPlan, now: int) -> SyncResult {
     match plan.collectionId {
         None -> {
-            return createFor(plan, now)
+            return createFor(abs, plan, now)
         }
         existing -> {
             if plan.action == "remove" {
-                return removeFor(plan, existing)
+                return removeFor(abs, plan, existing)
             }
-            return updateFor(plan, existing, now)
+            return updateFor(abs, plan, existing, now)
         }
     }
 }
@@ -25,8 +25,8 @@ private {
         )
     }
 
-    createFor(plan: SyncPlan, now: int) -> SyncResult {
-        match AbsCollections.createCollectionAsService(plan.libraryId, plan.name, plan.description, plan.bookIds) {
+    createFor(abs: client.AbsTarget, plan: SyncPlan, now: int) -> SyncResult {
+        match AbsCollections.createCollectionAsService(abs, plan.libraryId, plan.name, plan.description, plan.bookIds) {
             Ok(id) -> {
                 remember(plan, id, now)
                 return syncResultOf(plan, "created", None)
@@ -37,8 +37,8 @@ private {
         }
     }
 
-    updateFor(plan: SyncPlan, existing: string, now: int) -> SyncResult {
-        match AbsCollections.updateCollectionAsService(existing, plan.name, plan.description, plan.bookIds) {
+    updateFor(abs: client.AbsTarget, plan: SyncPlan, existing: string, now: int) -> SyncResult {
+        match AbsCollections.updateCollectionAsService(abs, existing, plan.name, plan.description, plan.bookIds) {
             Ok(_) -> {
                 remember(plan, existing, now)
                 return syncResultOf(plan, "updated", None)
@@ -46,15 +46,15 @@ private {
             Err(error) -> {
                 if error == client.AbsError.NotFound {
                     deleteSyncState(plan.userId, plan.libraryId)
-                    return createFor(plan, now)
+                    return createFor(abs, plan, now)
                 }
                 return syncResultOf(plan, "failed", failedText(error))
             }
         }
     }
 
-    removeFor(plan: SyncPlan, existing: string) -> SyncResult {
-        match AbsCollections.deleteCollectionAsService(existing) {
+    removeFor(abs: client.AbsTarget, plan: SyncPlan, existing: string) -> SyncResult {
+        match AbsCollections.deleteCollectionAsService(abs, existing) {
             Ok(_) -> {
                 deleteSyncState(plan.userId, plan.libraryId)
                 return syncResultOf(plan, "removed", None)

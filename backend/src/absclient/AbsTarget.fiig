@@ -1,0 +1,6 @@
+// The Audiobookshelf server and this server's own token for it. The *AsService
+// gateways take one; the caller loads it from settings.
+model AbsTarget {
+    url: string
+    token: Secret
+}

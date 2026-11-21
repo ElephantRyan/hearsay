@@ -2,11 +2,12 @@ use abs.recommendations.books
 use abs.recommendations.common
 use abs.recommendations.ratings.rated.RatedBooks
 use abs.recommendations.sessions
+use abs.recommendations.settings
 
 // The books I have started or finished in ABS, with my scores.
 activity loadMyListening(session: string | None) -> Result<List<ListenedBook>, common.ApiError> {
     me = sessions.currentUser(session)?
-    started = fetchProgress(me.userId)?
+    started = fetchProgress(settings.loadAbsTarget()?, me.userId)?
     found = books.cachedBooks(map(p in started): p.itemId)?
     return Ok(listenedBooks(started, found, RatedBooks.byUser(me.userId)))
 }

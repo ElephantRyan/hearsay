@@ -8,13 +8,18 @@ use abs.recommendations.common
 use abs.recommendations.ratings
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
 
 test myListeningIsMostRecentFirstWithMyScores {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsProgress {
-        gateway progressAsService(userId: string) -> Result<List<progress.Progress>, client.AbsError> {
+        gateway progressAsService(abs: client.AbsTarget, userId: string) -> Result<List<progress.Progress>, client.AbsError> {
             expect userId == "u1"
             return Ok(
                 [progress.Progress(itemId: "a", finished: true, percent: 100, lastListenedAt: 100), progress.Progress(itemId: "b", finished: false, percent: 25, lastListenedAt: 300), progress.Progress(itemId: "gone", finished: false, percent: 50, lastListenedAt: 200)],
@@ -22,13 +27,13 @@ test myListeningIsMostRecentFirstWithMyScores {
         }
     }
     fake AbsCatalog {
-        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Alpha", authors: "A. Author"),
             )
         }
 
-        gateway itemsAsService(itemIds: List<string>) -> Result<List<catalog.Book>, client.AbsError> {
+        gateway itemsAsService(abs: client.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, client.AbsError> {
             expect itemIds == ["b", "gone"]
             return Ok(
                 [catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "B. Author")],
@@ -36,6 +41,7 @@ test myListeningIsMostRecentFirstWithMyScores {
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect ratings.putRating(ann, "a", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_)
     expect showMyListening(None) is Err(common.ApiError.Unauthenticated)
@@ -44,18 +50,21 @@ test myListeningIsMostRecentFirstWithMyScores {
 }
 
 test myListeningCachesWhatItLooksUp {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsProgress {
-        gateway progressAsService(userId: string) -> Result<List<progress.Progress>, client.AbsError> {
+        gateway progressAsService(abs: client.AbsTarget, userId: string) -> Result<List<progress.Progress>, client.AbsError> {
             return Ok(
                 [progress.Progress(itemId: "b", finished: false, percent: 25, lastListenedAt: 300)],
             )
         }
     }
     fake AbsCatalog {
-        gateway itemsAsService(itemIds: List<string>) -> Result<List<catalog.Book>, client.AbsError> {
+        gateway itemsAsService(abs: client.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, client.AbsError> {
             expect calls(AbsCatalog.itemsAsService) == 1
             return Ok(
                 [catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "B. Author")],
@@ -63,6 +72,7 @@ test myListeningCachesWhatItLooksUp {
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect showMyListening(ann) is Ok(first)
     expect showMyListening(ann) is Ok(second)
@@ -70,15 +80,19 @@ test myListeningCachesWhatItLooksUp {
 }
 
 test myListeningSaysWhenAbsIsDown {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsProgress {
-        gateway progressAsService(userId: string) -> Result<List<progress.Progress>, client.AbsError> {
+        gateway progressAsService(abs: client.AbsTarget, userId: string) -> Result<List<progress.Progress>, client.AbsError> {
             return Err(client.AbsError.Unauthorized)
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect showMyListening(ann) is Err(common.ApiError.Unavailable(why))
     expect why == "this server's Audiobookshelf token was refused; tell the server's admin"

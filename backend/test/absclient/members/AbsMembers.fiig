@@ -1,14 +1,10 @@
 use abs.recommendations.absclient
-use abs.recommendations.absclient.Abs
 use fiig.http
 use fiig.http.HttpClient
 
 // The reply body is the shape ABS 2.37.2 returned (checked live 2026-11-19):
 // extra members, including the legacy `token`, are ignored.
 test absLoginReadsTheRealReplyShape {
-    fake Abs {
-        url: "https://abs.test"
-    }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
             expect request.url == "https://abs.test/login"
@@ -19,15 +15,12 @@ test absLoginReadsTheRealReplyShape {
         }
     }
 
-    expect AbsMembers.login("ryan", "pw") is Ok(session)
+    expect AbsMembers.login("https://abs.test", "ryan", "pw") is Ok(session)
     expect session == AbsSession(userId: "u-1", username: "ryan", userType: "user", accessToken: "acc", refreshToken: "ref")
     expect calls(HttpClient.send) == 1
 }
 
 test absMeSendsTheToken {
-    fake Abs {
-        url: "https://abs.test"
-    }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
             expect http.headerValue(request.headers, "authorization") == "Bearer tok-1"
@@ -37,15 +30,12 @@ test absMeSendsTheToken {
         }
     }
 
-    expect AbsMembers.me("tok-1") is Ok(user)
+    expect AbsMembers.me("https://abs.test", "tok-1") is Ok(user)
     expect user == AbsUser(id: "u-1", username: "ryan", type: "admin")
 }
 
 // A refusal is a value, not a fault: wrong password, a server error.
 test absMemberRefusalsAreValues {
-    fake Abs {
-        url: "https://abs.test"
-    }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
             if request.url == "https://abs.test/login" {
@@ -65,7 +55,7 @@ test absMemberRefusalsAreValues {
         }
     }
 
-    expect AbsMembers.login("ryan", "wrong") is Err(absclient.AbsError.Unauthorized)
-    expect AbsMembers.me("tok") is Err(absclient.AbsError.Rejected(status))
+    expect AbsMembers.login("https://abs.test", "ryan", "wrong") is Err(absclient.AbsError.Unauthorized)
+    expect AbsMembers.me("https://abs.test", "tok") is Err(absclient.AbsError.Rejected(status))
     expect status == 500
 }

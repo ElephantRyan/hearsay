@@ -1,0 +1,6 @@
+// Forgets a saved setting, so the environment's value (if any) applies again.
+gateway clearSetting(name: string) -> int
+    requires Database
+{
+    return Database.execute("DELETE FROM setting WHERE name = ?", name)
+}

@@ -6,15 +6,20 @@ use abs.recommendations.common
 use abs.recommendations.ratings.rated
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
 
 // Signs in as a fake identity, then rates through the real activity with ABS
 // faked. The book is fetched on every write, so a changed title is cached.
 test ratingFlowCachesTheBookAndKeepsCreatedAt {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsCatalog {
-        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
             if itemId == "gone" {
                 return Err(client.AbsError.NotFound)
             }
@@ -24,6 +29,7 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     session = sessions.startSession(
         accounts.Identity(userId: "u1", username: "ann", userType: "user"),
     )

@@ -1,0 +1,14 @@
+use abs.recommendations.accounts
+
+// This server's own Audiobookshelf token, needed to find an account by email.
+// Without one, Authentik sign-in can't finish.
+rule tokenOf(server: accounts.SignInServer) -> Result<Secret, accounts.SignInError> {
+    match server.serviceToken {
+        None -> {
+            return Err(accounts.SignInError.Unavailable("this server has no Audiobookshelf token yet"))
+        }
+        token -> {
+            return Ok(token)
+        }
+    }
+}

@@ -1,8 +1,9 @@
 use abs.recommendations.absclient.catalog
 use abs.recommendations.common
+use abs.recommendations.settings
 
 // What ABS says about a book right now, for a step that must not act on a
 // stale or missing copy (rating it).
 activity latestBook(itemId: string) -> Result<catalog.Book, common.ApiError> {
-    return fetchBook(itemId)
+    return fetchBook(settings.loadAbsTarget()?, itemId)
 }

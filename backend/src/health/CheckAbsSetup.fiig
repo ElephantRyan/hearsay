@@ -1,5 +1,5 @@
 use abs.recommendations.absclient as client
 
-workflow checkAbsSetup(username: string, password: string, itemId: string) -> Result<AbsCheck, client.AbsError> {
-    return checkAbs(username, password, itemId)
+workflow checkAbsSetup(url: string, username: string, password: string, itemId: string) -> Result<AbsCheck, client.AbsError> {
+    return checkAbs(url, username, password, itemId)
 }

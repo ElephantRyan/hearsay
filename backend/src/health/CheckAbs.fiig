@@ -3,9 +3,9 @@ use abs.recommendations.absclient as client
 use abs.recommendations.absclient.catalog.AbsCatalog
 use abs.recommendations.absclient.members.AbsMembers
 
-activity checkAbs(username: string, password: string, itemId: string) -> Result<AbsCheck, client.AbsError> {
-    session = AbsMembers.login(username, password)?
-    user = AbsMembers.me(session.accessToken)?
-    book = AbsCatalog.item(session.accessToken, itemId)?
+activity checkAbs(url: string, username: string, password: string, itemId: string) -> Result<AbsCheck, client.AbsError> {
+    session = AbsMembers.login(url, username, password)?
+    user = AbsMembers.me(url, session.accessToken)?
+    book = AbsCatalog.item(url, session.accessToken, itemId)?
     return Ok(AbsCheck(username: user.username, userType: user.type, title: book.title))
 }

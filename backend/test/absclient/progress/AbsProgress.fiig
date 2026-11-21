@@ -1,17 +1,14 @@
 use abs.recommendations.absclient
-use abs.recommendations.absclient.Abs
-use abs.recommendations.absclient.AbsService
+use abs.recommendations.settings.Abs
 use fiig.http
 use fiig.http.HttpClient
+use abs.recommendations.settings
 
 // The reply is shaped like the live ABS 2.37.2's GET /api/users/{id} (checked
 // 2026-11-20): progress is a fraction, and podcast episodes share the list.
 test absProgressListsStartedBooks {
     fake Abs {
         url: "https://abs.test"
-    }
-    fake AbsService {
-        token: "svc"
     }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
@@ -24,7 +21,9 @@ test absProgressListsStartedBooks {
         }
     }
 
-    expect AbsProgress.progressAsService("u-1") is Ok(started)
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
+    expect settings.loadAbsTarget() is Ok(abs)
+    expect AbsProgress.progressAsService(abs, "u-1") is Ok(started)
     expect started.length() == 2
     expect started.at(0) == Progress(itemId: "b-1", finished: true, percent: 100, lastListenedAt: 1795000000000)
     expect started.at(1) == Progress(itemId: "b-2", finished: false, percent: 67, lastListenedAt: 1795128758043)
@@ -34,9 +33,6 @@ test absProgressRefusesAHostileIdWithoutCallingAbs {
     fake Abs {
         url: "https://abs.test"
     }
-    fake AbsService {
-        token: "svc"
-    }
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
             expect false
@@ -44,5 +40,7 @@ test absProgressRefusesAHostileIdWithoutCallingAbs {
         }
     }
 
-    expect AbsProgress.progressAsService("../../api/libraries") is Err(absclient.AbsError.NotFound)
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
+    expect settings.loadAbsTarget() is Ok(abs)
+    expect AbsProgress.progressAsService(abs, "../../api/libraries") is Err(absclient.AbsError.NotFound)
 }

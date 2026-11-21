@@ -1,11 +1,12 @@
 use abs.recommendations.absclient.catalog
 use abs.recommendations.common
+use abs.recommendations.settings
 
 // A book from our cached copy, or from ABS when nobody has rated it yet.
 activity cachedBook(itemId: string) -> Result<catalog.Book, common.ApiError> {
     match findBook(itemId) {
         None -> {
-            return fetchBook(itemId)
+            return fetchBook(settings.loadAbsTarget()?, itemId)
         }
         cached -> {
             return Ok(cached)

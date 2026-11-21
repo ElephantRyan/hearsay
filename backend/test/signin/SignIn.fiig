@@ -1,12 +1,17 @@
 use abs.recommendations.accounts
 use abs.recommendations.signin.authentik.AuthentikSignIn
 use abs.recommendations.signin.password.AbsPasswordSignIn
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
 
 // signInProvider can return either provider, so both are faked (ADR 0091 §4);
 // the one the attempt should not reach fails the test if it is called.
 test signInUsesTheChosenProvider {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake AbsPasswordSignIn {
-        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
             return Ok(accounts.Identity(userId: "u-pw", username: "ryan", userType: "user"))
         }
     }
@@ -15,11 +20,12 @@ test signInUsesTheChosenProvider {
             return Ok("https://idp.test/")
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
             return Ok(accounts.Identity(userId: "u-oidc", username: "ryan", userType: "user"))
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     expect signIn(accounts.SignInAttempt.Password("ryan", "pw")) is Ok(byPassword)
     expect byPassword.userId == "u-pw"
     expect signIn(accounts.SignInAttempt.AuthorizationCode("c", "v")) is Ok(byCode)

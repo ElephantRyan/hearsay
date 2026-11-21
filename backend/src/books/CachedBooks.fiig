@@ -1,5 +1,6 @@
 use abs.recommendations.absclient.catalog
 use abs.recommendations.common
+use abs.recommendations.settings
 
 // Many books, in the order asked: our cached copies, and the rest from ABS in
 // one call, which are then cached too. A book ABS no longer has is left out.
@@ -17,8 +18,9 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, common
         }
     }
     if missing.length() > 0 {
+        abs = settings.loadAbsTarget()?
         now = Clock.now()
-        for book in fetchBooks(missing)? {
+        for book in fetchBooks(abs, missing)? {
             saveBook(book, now)
             found = found.put(book.itemId, book)
         }

@@ -1,0 +1,5 @@
+// Where the Audiobookshelf server is, from the environment (PLAN.md section 8).
+// Optional: an admin may save it in the app instead (loadAbsUrl).
+config Abs {
+    url: string | None from env "ABS_URL"
+}

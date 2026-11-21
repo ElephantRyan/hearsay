@@ -3,9 +3,10 @@
 use abs.recommendations.absclient.catalog
 use abs.recommendations.common
 use abs.recommendations.sessions
+use abs.recommendations.settings
 
 activity listLibraries(session: string | None) -> Result<List<catalog.AbsLibrary>, common.ApiError> {
     sessions.currentUser(session)?
-    all = fetchLibraries()?
+    all = fetchLibraries(settings.loadAbsTarget()?)?
     return Ok(filter(library in all): library.mediaType == "book")
 }

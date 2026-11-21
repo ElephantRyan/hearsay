@@ -1,0 +1,4 @@
+// Saves one setting as the admin `by` gave it, timestamped now.
+activity rememberSetting(name: string, value: string, by: string) -> int {
+    return saveSetting(name, value, Clock.now(), by)
+}

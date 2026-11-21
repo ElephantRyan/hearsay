@@ -6,13 +6,18 @@ use abs.recommendations.common
 use abs.recommendations.ratings
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
 
 test browseListsSearchesAndMarksMyScores {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsCatalog {
-        gateway pageAsService(libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
+        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
             if libraryId == "gone" {
                 return Err(client.AbsError.NotFound)
             }
@@ -24,20 +29,21 @@ test browseListsSearchesAndMarksMyScores {
             )
         }
 
-        gateway searchAsService(libraryId: string, query: string, size: int) -> Result<catalog.BookPage, client.AbsError> {
+        gateway searchAsService(abs: client.AbsTarget, libraryId: string, query: string, size: int) -> Result<catalog.BookPage, client.AbsError> {
             expect query == "alp"
             return Ok(
                 catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author")]),
             )
         }
 
-        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Alpha", authors: "A. Author"),
             )
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     expect ratings.putRating(ann, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
     expect showLibraryItems(None, "lib-1", 2, None, None) is Err(common.ApiError.Unauthenticated)

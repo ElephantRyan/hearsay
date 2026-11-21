@@ -2,5 +2,5 @@
 // implementations, by AUTH_MODE. No provider's source mentions it; each
 // one's manifest says which capability group fulfills it.
 interface SignIn {
-    authenticate(attempt: SignInAttempt) -> Result<Identity, SignInError>
+    authenticate(attempt: SignInAttempt, server: SignInServer) -> Result<Identity, SignInError>
 }

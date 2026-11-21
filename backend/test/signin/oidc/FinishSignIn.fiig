@@ -4,10 +4,15 @@ use abs.recommendations.sessions.SessionConfig
 use abs.recommendations.accounts.SignInConfig
 use abs.recommendations.signin.authentik.AuthentikSignIn
 use abs.recommendations.signin.password.AbsPasswordSignIn
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
 
 // The callback only exchanges the code when the state matches the cookie.
 // Authentik is faked; a call to it from a mismatched callback fails the test.
 test oidcCallbackChecksStateBeforeExchanging {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
@@ -16,7 +21,7 @@ test oidcCallbackChecksStateBeforeExchanging {
         frontendUrl: "https://app.test"
     }
     fake AbsPasswordSignIn {
-        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
             expect false
             return Err(accounts.SignInError.WrongMethod)
         }
@@ -26,7 +31,7 @@ test oidcCallbackChecksStateBeforeExchanging {
             return Ok("https://idp.test/authorize?state=${state}")
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
             match attempt {
                 accounts.SignInAttempt.AuthorizationCode(code, verifier) -> {
                     expect verifier == "ver-1"
@@ -42,6 +47,7 @@ test oidcCallbackChecksStateBeforeExchanging {
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     good = finishSignIn("code-1", "st-1", None, "st-1.ver-1")
     expect good.location == "https://app.test"
     match good.session {
@@ -74,7 +80,7 @@ test finishSignInIsOffInPasswordOnlyMode {
         frontendUrl: "https://app.test"
     }
     fake AbsPasswordSignIn {
-        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
             expect false
             return Err(accounts.SignInError.WrongMethod)
         }
@@ -85,7 +91,7 @@ test finishSignInIsOffInPasswordOnlyMode {
             return Err(accounts.SignInError.WrongMethod)
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
             expect false
             return Err(accounts.SignInError.WrongMethod)
         }

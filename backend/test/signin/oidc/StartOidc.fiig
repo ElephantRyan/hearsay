@@ -14,7 +14,7 @@ test startOidcIsOffInPasswordOnlyMode {
             return Err(accounts.SignInError.WrongMethod)
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
             expect false
             return Err(accounts.SignInError.WrongMethod)
         }

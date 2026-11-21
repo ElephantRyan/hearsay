@@ -7,19 +7,25 @@ use abs.recommendations.ratings
 use abs.recommendations.recommendations
 use abs.recommendations.sessions
 use abs.recommendations.sessions.SessionConfig
+use abs.recommendations.settings
+use abs.recommendations.settings.Abs
 
 test privateRatingsStayPrivate {
+    fake Abs {
+        url: "https://abs.test"
+    }
     fake SessionConfig {
         sessionMaxAge: 3600
     }
     fake AbsCatalog {
-        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert"),
             )
         }
     }
 
+    settings.rememberSetting("abs.serviceToken", "svc", "test")
     ann = sessions.startSession(accounts.Identity(userId: "u1", username: "ann", userType: "user")).token
     bob = sessions.startSession(accounts.Identity(userId: "u2", username: "bob", userType: "user")).token
     expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)

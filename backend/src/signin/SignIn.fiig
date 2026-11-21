@@ -1,8 +1,17 @@
 // Proves who a person is with whichever provider the rule picks, then
-// returns only the Identity.
+// returns only the Identity. Nobody can sign in before Audiobookshelf's
+// address is set.
 use abs.recommendations.accounts
+use abs.recommendations.settings
 
 activity signIn(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
-    Provider = signInProvider(attempt)
-    return Provider.authenticate(attempt)
+    match settings.absUrl() {
+        None -> {
+            return Err(accounts.SignInError.Unavailable("this server isn't set up yet"))
+        }
+        url -> {
+            Provider = signInProvider(attempt)
+            return Provider.authenticate(attempt, accounts.SignInServer(absUrl: url, serviceToken: settings.serviceToken()))
+        }
+    }
 }

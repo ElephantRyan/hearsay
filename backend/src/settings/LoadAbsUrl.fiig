@@ -1,0 +1,13 @@
+use abs.recommendations.common
+
+// Where Audiobookshelf is, or the error for a server that isn't set up yet.
+activity loadAbsUrl() -> Result<string, common.ApiError> {
+    match absUrl() {
+        None -> {
+            return Err(common.ApiError.Unavailable("this server isn't set up yet: an admin needs to enter the Audiobookshelf address"))
+        }
+        url -> {
+            return Ok(url)
+        }
+    }
+}

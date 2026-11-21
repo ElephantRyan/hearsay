@@ -1,0 +1,16 @@
+use abs.recommendations.absclient
+use abs.recommendations.common
+
+// Audiobookshelf and this server's own token for it, or the error for a server
+// that isn't set up yet.
+activity loadAbsTarget() -> Result<absclient.AbsTarget, common.ApiError> {
+    url = loadAbsUrl()?
+    match serviceToken() {
+        None -> {
+            return Err(common.ApiError.Unavailable("this server isn't set up yet: an admin needs to enter its Audiobookshelf token"))
+        }
+        token -> {
+            return Ok(absclient.AbsTarget(url: url, token: token))
+        }
+    }
+}
