@@ -36,8 +36,8 @@ function writeAsk(ask: boolean) {
 }
 
 /**
- * The Rate tab: the books I've started or finished and not scored, one card at a time, most
- * recently listened first. A star saves the score (after a confirm, unless turned off); Skip
+ * The Rate tab: the books I've finished and not scored, one card at a time, most recently
+ * listened first; the ones I'm still listening to come after all of those. A star saves the score (after a confirm, unless turned off); Skip
  * sends the book to the back. Once every book left has been skipped, a closing card offers to go
  * through the skipped ones again.
  */
@@ -52,7 +52,13 @@ export function RatePage() {
   // The queue is fixed when the list first arrives, so a refetch after each save doesn't reshuffle it.
   useEffect(() => {
     if (queue === undefined && listening.data) {
-      setQueue(listening.data.filter((book) => book.myScore == null).map((book) => book.itemId));
+      const unrated = listening.data.filter((book) => book.myScore == null);
+      // The server sends most recent first; finished books lead, in that order.
+      const ordered = [
+        ...unrated.filter((book) => book.finished),
+        ...unrated.filter((book) => !book.finished),
+      ];
+      setQueue(ordered.map((book) => book.itemId));
     }
   }, [queue, listening.data]);
 

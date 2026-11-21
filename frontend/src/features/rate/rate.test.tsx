@@ -70,6 +70,24 @@ describe("the Rate tab", () => {
     expect(saved).toEqual([{ itemId: "it-1", score: 8, note: "", recommended: false }]);
   });
 
+  it("puts every finished book before the ones still being listened to", async () => {
+    serve([
+      listened(1, { finished: false, percent: 30 }),
+      listened(2),
+      listened(3, { finished: false, percent: 60 }),
+      listened(4),
+    ]);
+    mount("/rate");
+
+    expect(await card("Book number 2")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(await card("Book number 4")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(await card("Book number 1")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(await card("Book number 3")).toBeInTheDocument();
+  });
+
   it("saves the thumbs up with the score, and stops asking once told to", async () => {
     const saved = serve([listened(1), listened(2)]);
     mount("/rate");
