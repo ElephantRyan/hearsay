@@ -2,7 +2,6 @@
 # Local development server. The OIDC_* settings are needed only when AUTH_MODE
 # isn't `abs`; until the Authentik application exists, set AUTH_MODE=abs in .env.
 F="${FIIG:-fiig}"
-export ABS_SERVICE_TOKEN="${ABS_SERVICE_TOKEN:-placeholder}"
 # One adapter per domain (src/<domain>/<Domain>Api.fiig), served together.
 A=abs.recommendations
 exec "$F" serve -caps caps.json -env-file .env . \
