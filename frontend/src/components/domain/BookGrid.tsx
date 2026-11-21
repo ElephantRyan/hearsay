@@ -10,7 +10,7 @@ interface Props {
 
 /** Book cards in a grid: two across on a phone, up to six on a wide screen. */
 export function BookGrid({ children, label, ordered, dimmed }: Props) {
-  const className = `grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 ${dimmed ? "opacity-60" : ""}`;
+  const className = `grid grid-cols-2 gap-x-3 gap-y-5 sm:gap-x-4 sm:gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 ${dimmed ? "opacity-60" : ""}`;
   return ordered ? (
     <ol aria-label={label} className={className}>
       {children}
@@ -27,7 +27,7 @@ export function Shelf({ children, label }: { children: ReactNode; label: string 
   return (
     <ul
       aria-label={label}
-      className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 [&>li]:w-32 [&>li]:shrink-0 [&>li]:snap-start sm:[&>li]:w-40"
+      className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto overscroll-x-contain px-4 pb-2 [scrollbar-width:none] [&>li]:w-[38%] [&>li]:shrink-0 [&>li]:snap-start sm:gap-4 sm:[&>li]:w-40"
     >
       {children}
     </ul>

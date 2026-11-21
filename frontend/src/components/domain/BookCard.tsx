@@ -37,7 +37,7 @@ export function BookCard({ itemId, title, authors, badge, action, meta, percent 
       </Link>
       {meta && <div className="mt-1 text-xs text-muted">{meta}</div>}
       {badge && <div className="pointer-events-none absolute top-2 left-2">{badge}</div>}
-      {action && <div className="absolute top-1 right-1 flex flex-col gap-1">{action}</div>}
+      {action && <div className="absolute top-0 right-0 flex flex-col">{action}</div>}
     </li>
   );
 }

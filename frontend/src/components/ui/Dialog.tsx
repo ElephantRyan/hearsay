@@ -19,6 +19,8 @@ export function Dialog({ title, onClose, children }: Props) {
     const dialog = ref.current;
     if (!dialog) return;
     dialog.showModal();
+    // Closing here is unmounting, not the person closing it, so no close handler is wired to the
+    // element: React mounts twice in development, and one would shut the dialog as it opened.
     return () => dialog.close();
   }, []);
 
@@ -27,7 +29,6 @@ export function Dialog({ title, onClose, children }: Props) {
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      onClose={onClose}
       onCancel={(event) => {
         event.preventDefault();
         onClose();

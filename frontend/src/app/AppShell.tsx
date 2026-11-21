@@ -107,12 +107,12 @@ export function AppShell() {
             className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-muted hover:bg-surface-2"
           >
             <LogOut aria-hidden="true" className="h-4 w-4" />
-            <span>Sign out</span>
+            <span className="sr-only sm:not-sr-only">Sign out</span>
           </button>
         </div>
       </header>
 
-      <main id="main" className="flex-1 px-4 py-6 pb-24 sm:pb-6">
+      <main id="main" className="flex-1 px-4 pt-4 pb-28 sm:pt-6 sm:pb-6">
         <Outlet />
       </main>
 

@@ -23,9 +23,11 @@ export function RateButton({ itemId, title }: Props) {
         aria-label={`Rate ${title}`}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border border-border bg-surface/90 text-muted shadow-card hover:text-text"
+        className="group/btn inline-flex min-h-10 min-w-10 items-center justify-center"
       >
-        <SquarePen aria-hidden="true" className="h-5 w-5" />
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm group-hover/btn:bg-black/75">
+          <SquarePen aria-hidden="true" className="h-4 w-4" />
+        </span>
       </button>
       {open && (
         <Sheet title={title} onClose={() => setOpen(false)}>

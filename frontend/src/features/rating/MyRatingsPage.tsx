@@ -85,6 +85,7 @@ function MyRating({ row }: { row: RatingRow }) {
       action={
         <>
           <RecommendButton
+            size="card"
             on={shared}
             label={`Recommend ${row.title}`}
             disabled={rate.isPending}

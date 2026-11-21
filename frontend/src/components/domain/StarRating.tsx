@@ -34,11 +34,11 @@ export function StarRating({ value, onPick, disabled }: Props) {
             onFocus={() => setHover(score)}
             onBlur={() => setHover(undefined)}
             onClick={() => onPick(score)}
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-md text-accent focus-visible:outline-2 focus-visible:outline-[var(--focus)] disabled:opacity-60 sm:min-w-11 sm:flex-none"
+            className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-md px-px text-accent focus-visible:outline-2 focus-visible:outline-[var(--focus)] disabled:opacity-60 sm:min-w-11 sm:flex-none"
           >
             <Star
               aria-hidden="true"
-              className="h-7 w-7 sm:h-8 sm:w-8"
+              className="h-auto w-full max-w-7 sm:max-w-8"
               fill={score <= lit ? "currentColor" : "none"}
               strokeWidth={1.75}
             />
@@ -47,7 +47,7 @@ export function StarRating({ value, onPick, disabled }: Props) {
       </div>
       <p
         aria-hidden="true"
-        className="mt-1 h-5 text-center text-sm font-semibold tabular-nums text-muted"
+        className="h-5 text-center text-sm font-semibold tabular-nums text-muted"
       >
         {lit > 0 ? `${lit} / 10` : ""}
       </p>

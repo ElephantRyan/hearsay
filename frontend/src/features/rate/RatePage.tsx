@@ -84,9 +84,9 @@ export function RatePage() {
   }
 
   return (
-    <div className="mx-auto max-w-md space-y-5">
+    <div className="mx-auto max-w-md space-y-4">
       <div className="flex items-baseline justify-between gap-3">
-        <h1 className="text-xl font-semibold">Rate</h1>
+        <h1 className="sr-only text-xl font-semibold sm:not-sr-only">Rate</h1>
         {remaining.length > 0 && (
           <p className="text-sm text-muted">
             {remaining.length} {remaining.length === 1 ? "book" : "books"} to go
@@ -177,7 +177,7 @@ function RateCard({ book, ask, onAskChange, onSkip, onRated }: CardProps) {
     <>
       <article
         aria-label={book.title}
-        className="touch-pan-y rounded-card border border-border bg-surface p-5 shadow-card transition-transform select-none"
+        className="touch-pan-y rounded-card border border-border bg-surface p-4 shadow-card transition-transform select-none sm:p-5"
         style={
           dragX
             ? { transform: `translateX(${dragX}px) rotate(${dragX / 40}deg)`, transition: "none" }
@@ -200,30 +200,20 @@ function RateCard({ book, ask, onAskChange, onSkip, onRated }: CardProps) {
           setDragX(0);
         }}
       >
-        <div className="mx-auto w-56 sm:w-64">
+        <div className="mx-auto w-[min(16rem,24dvh)] sm:w-[min(16rem,30dvh)]">
           <BookCover itemId={book.itemId} title={book.title} size="fill" />
         </div>
-        <div className="mt-4 text-center">
-          <h2 className="break-words text-lg font-semibold leading-snug">{book.title}</h2>
+        <div className="mt-3 text-center">
+          <h2 className="line-clamp-2 break-words text-base font-semibold leading-snug sm:text-lg">
+            {book.title}
+          </h2>
           <p className="mt-0.5 text-muted">{book.authors || "Unknown author"}</p>
           <p className="mt-1 text-xs text-muted">
             {book.finished ? "Finished" : `${book.percent}% through`}
           </p>
         </div>
 
-        <div className="mt-5 space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <RecommendButton
-              size="lg"
-              on={recommended}
-              onChange={setRecommended}
-              label={`Recommend ${book.title}`}
-              disabled={rate.isPending}
-            />
-            <span className="text-sm text-muted">
-              {recommended ? "Recommending it to everyone" : "Recommend it?"}
-            </span>
-          </div>
+        <div className="mt-3 space-y-2">
           <StarRating
             value={rate.isPending ? rate.variables?.score : confirming}
             onPick={pick}
@@ -234,7 +224,20 @@ function RateCard({ book, ask, onAskChange, onSkip, onRated }: CardProps) {
               Couldn't save that: {messageFor(rate.error)}
             </p>
           )}
-          <div className="flex justify-center">
+          {/* The thumbs up and Skip share a row, so the card fits a small phone's screen. */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <RecommendButton
+                size="lg"
+                on={recommended}
+                onChange={setRecommended}
+                label={`Recommend ${book.title}`}
+                disabled={rate.isPending}
+              />
+              <span className="text-sm text-muted">
+                {recommended ? "Recommended" : "Recommend?"}
+              </span>
+            </div>
             <Button variant="ghost" onClick={onSkip} disabled={rate.isPending}>
               <SkipForward aria-hidden="true" className="h-4 w-4" />
               Skip

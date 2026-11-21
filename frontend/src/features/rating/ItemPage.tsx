@@ -31,8 +31,10 @@ export function ItemPage() {
 
   return (
     <div className="space-y-8">
-      <header className="flex gap-4">
-        <BookCover itemId={book.itemId} title={book.title} size="lg" />
+      <header className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
+        <div className="w-56 shrink-0 sm:w-40">
+          <BookCover itemId={book.itemId} title={book.title} size="fill" />
+        </div>
         <div className="min-w-0">
           <h1 className="break-words text-xl font-semibold leading-tight">{book.title}</h1>
           <p className="mt-1 text-muted">{book.authors}</p>
