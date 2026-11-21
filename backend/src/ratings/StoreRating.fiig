@@ -1,19 +1,20 @@
 use hearsay.books.BookCache
-use hearsay.common
+use hearsay.absclient.catalog
+use hearsay.accounts
 
 // Validates, stores, and returns what is now stored (an update keeps the
 // original created_at, so the stored row can differ from the one made here).
 // The book is cached on every write so lists need no ABS call per card.
 // The user, the book and the rating are written in one transaction, so a
 // fault midway leaves none of them.
-activity storeRating(found: UserAndBook, input: RatingInput) -> Result<Rating, common.ApiError> {
+activity storeRating(user: accounts.Identity, book: catalog.Book, input: RatingInput) -> Result<Rating, RatingError> {
     now = Clock.now()
-    rating = createRating(found.user.userId, found.book.itemId, input, now)?
+    rating = createRating(user.userId, book.itemId, input, now)?
     transaction Database {
-        upsertUser(found.user.userId, found.user.username, now)
-        BookCache.save(found.book, now)
+        upsertUser(user.userId, user.username, now)
+        BookCache.save(book, now)
         saveRating(rating)
-        stored = findRating(found.user.userId, found.book.itemId)
+        stored = findRating(user.userId, book.itemId)
         match stored {
             None -> {
                 return Ok(rating)

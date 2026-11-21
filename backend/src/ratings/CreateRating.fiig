@@ -1,17 +1,15 @@
-use hearsay.common
-
 // Makes the Rating to store from what a user sent. Rules are pure, so the
 // user, the item and the time come in as arguments.
-rule createRating(userId: string, itemId: string, input: RatingInput, now: int) -> Result<Rating, common.ApiError> {
+rule createRating(userId: string, itemId: string, input: RatingInput, now: int) -> Result<Rating, RatingError> {
     note = input.note or ""
     if input.score < 1 or input.score > 10 {
-        return Err(common.ApiError.Invalid("score", "must be from 1 to 10"))
+        return Err(RatingError.Invalid("score", "must be from 1 to 10"))
     }
     if note.length() > 280 {
-        return Err(common.ApiError.Invalid("note", "must be at most 280 characters"))
+        return Err(RatingError.Invalid("note", "must be at most 280 characters"))
     }
     if itemId.isBlank() {
-        return Err(common.ApiError.Invalid("itemId", "must not be blank"))
+        return Err(RatingError.Invalid("itemId", "must not be blank"))
     }
     return Ok(
         Rating(userId: userId, itemId: itemId, score: input.score, note: note, recommended: input.recommended, createdAt: now, updatedAt: now),

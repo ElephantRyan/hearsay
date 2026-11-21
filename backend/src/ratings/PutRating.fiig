@@ -1,8 +1,10 @@
-use hearsay.common
+use hearsay.books
+use hearsay.sessions
 
 // Rate a book: find out who is asking and what the book is, then store the
-// rating. A book ABS doesn't have is a 404 for this feature too.
-workflow putRating(session: string | None, itemId: string, input: RatingInput) -> Result<Rating, common.ApiError> {
-    found = loadUserAndBook(session, itemId)?
-    return storeRating(found, input)
+// rating. A book ABS doesn't have is "no such book" here.
+workflow putRating(session: string | None, itemId: string, input: RatingInput) -> Result<Rating, RatingError> {
+    me = mapErr(e in sessions.currentUser(session)): ratingErrorOfIdentity(e)?
+    book = mapErr(e in books.latestBook(itemId)): ratingErrorOfBook(e)?
+    return storeRating(me, book, input)
 }

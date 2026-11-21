@@ -1,0 +1,9 @@
+// Every way rating or unrating a book can be refused, as values the caller
+// must handle.
+enum RatingError {
+    NotSignedIn
+    Invalid(field: string, reason: string)
+    BookNotFound
+    NoRating
+    Unavailable(detail: string)
+}

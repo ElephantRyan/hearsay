@@ -1,9 +1,0 @@
-use hearsay.absclient.catalog
-use hearsay.accounts
-
-// Who is asking, and the book they asked about: the first step of every
-// feature that works on one book.
-model UserAndBook {
-    user: accounts.Identity
-    book: catalog.Book
-}

@@ -1,10 +1,11 @@
-use hearsay.common
+use hearsay.sessions
 
 // Removing a rating you never made is "not found", not a silent success.
-workflow deleteMyRating(session: string | None, itemId: string) -> Result<int, common.ApiError> {
-    removed = removeRating(session, itemId)?
+workflow deleteMyRating(session: string | None, itemId: string) -> Result<int, RatingError> {
+    me = mapErr(e in sessions.currentUser(session)): ratingErrorOfIdentity(e)?
+    removed = removeRating(me.userId, itemId)
     if removed == 0 {
-        return Err(common.ApiError.NotFound("rating of yours for that book"))
+        return Err(RatingError.NoRating)
     }
     return Ok(removed)
 }

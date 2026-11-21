@@ -1,9 +1,5 @@
-use hearsay.common
-use hearsay.sessions
-
-// Deletes the signed-in person's rating of a book and says how many rows went.
-// Whether zero is a problem is the workflow's call.
-activity removeRating(session: string | None, itemId: string) -> Result<int, common.ApiError> {
-    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
-    return Ok(deleteRating(me.userId, itemId))
+// Deletes a person's rating of a book and says how many rows went. Whether
+// zero is a problem is the workflow's call.
+activity removeRating(userId: string, itemId: string) -> int {
+    return deleteRating(userId, itemId)
 }
