@@ -8,6 +8,7 @@ import { Pager } from "../../components/domain/Pager";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { useDebounced } from "../../lib/useDebounced";
+import { RateButton } from "../rating/RateButton";
 
 /**
  * Browse a library A to Z or search it. The library, the search text and the
@@ -117,6 +118,7 @@ export function BrowsePage() {
                   key={book.itemId}
                   itemId={book.itemId}
                   title={book.title}
+                  action={<RateButton itemId={book.itemId} title={book.title} />}
                   authors={book.authors || "Unknown author"}
                   aside={
                     book.myScore === undefined || book.myScore === null ? undefined : (

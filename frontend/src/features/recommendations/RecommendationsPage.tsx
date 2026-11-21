@@ -5,6 +5,7 @@ import { BookRow } from "../../components/domain/BookRow";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
+import { RateButton } from "../rating/RateButton";
 
 /** The combined ranking. Filters live in the URL, so a filtered view can be shared. */
 export function RecommendationsPage() {
@@ -94,6 +95,7 @@ export function RecommendationsPage() {
               position={index + 1}
               itemId={book.itemId}
               title={book.title}
+              action={<RateButton itemId={book.itemId} title={book.title} />}
               authors={book.authors}
               aside={<RatingBadge score={book.average} count={book.count} />}
             />

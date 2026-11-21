@@ -4,6 +4,7 @@ import { BookRow } from "../../components/domain/BookRow";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { listTitle } from "../../lib/format";
+import { RateButton } from "../rating/RateButton";
 
 /** One person's list: "Ryan recommends", best first, with their notes. */
 export function UserListPage() {
@@ -27,6 +28,7 @@ export function UserListPage() {
               position={index + 1}
               itemId={pick.itemId}
               title={pick.title}
+              action={<RateButton itemId={pick.itemId} title={pick.title} />}
               authors={pick.authors}
               detail={pick.note ? <span className="line-clamp-2">{pick.note}</span> : undefined}
               aside={<RatingBadge score={pick.score} />}

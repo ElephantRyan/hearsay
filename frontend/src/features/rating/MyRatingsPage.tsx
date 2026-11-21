@@ -11,6 +11,7 @@ import {
   LoadingState,
   messageFor,
 } from "../../components/domain/StateViews";
+import { RateButton } from "./RateButton";
 
 const sorts: { value: RatingSort; label: string }[] = [
   { value: "newest", label: "Newest" },
@@ -83,21 +84,24 @@ function MyRating({ row }: { row: RatingRow }) {
       detail={shared ? "Shared with everyone" : "Only you"}
       aside={<RatingBadge score={row.score} />}
       action={
-        <button
-          type="button"
-          role="switch"
-          aria-checked={shared}
-          aria-label={`Recommend ${row.title}`}
-          disabled={rate.isPending}
-          onClick={flip}
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text disabled:opacity-60"
-        >
-          {shared ? (
-            <Eye aria-hidden="true" className="h-5 w-5 text-accent" />
-          ) : (
-            <EyeOff aria-hidden="true" className="h-5 w-5" />
-          )}
-        </button>
+        <div className="flex">
+          <RateButton itemId={row.itemId} title={row.title} />
+          <button
+            type="button"
+            role="switch"
+            aria-checked={shared}
+            aria-label={`Recommend ${row.title}`}
+            disabled={rate.isPending}
+            onClick={flip}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-text disabled:opacity-60"
+          >
+            {shared ? (
+              <Eye aria-hidden="true" className="h-5 w-5 text-accent" />
+            ) : (
+              <EyeOff aria-hidden="true" className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       }
       footer={
         rate.isError && (

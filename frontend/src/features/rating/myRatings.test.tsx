@@ -66,7 +66,7 @@ describe("the my-ratings screen", () => {
       signedIn,
       http.get("/api/ratings/mine", () => HttpResponse.json([myRating(1, true)])),
       http.put("/api/ratings/:itemId", () =>
-        HttpResponse.json({ message: "Audiobookshelf is unreachable" }, { status: 503 }),
+        HttpResponse.json("Audiobookshelf is unreachable", { status: 503 }),
       ),
     );
     mount("/me/ratings");
@@ -76,7 +76,7 @@ describe("the my-ratings screen", () => {
 
     const row = toggle.closest("li") as HTMLElement;
     expect(await within(row).findByRole("alert")).toHaveTextContent(
-      "Couldn't change who sees this",
+      "Couldn't change who sees this: Audiobookshelf is unreachable",
     );
     expect(toggle).toHaveAttribute("aria-checked", "true");
     expect(within(row).getByText("Shared with everyone")).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("removing a rating", () => {
   it("comes back if the server refuses", async () => {
     server.use(
       http.delete("/api/ratings/:itemId", () =>
-        HttpResponse.json({ message: "Audiobookshelf is unreachable" }, { status: 503 }),
+        HttpResponse.json("Audiobookshelf is unreachable", { status: 503 }),
       ),
       http.get("/api/ratings/mine", () =>
         HttpResponse.json([myRating(1, false), myRating(2, true)]),

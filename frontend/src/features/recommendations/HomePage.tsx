@@ -4,6 +4,7 @@ import { BookRow } from "../../components/domain/BookRow";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { RecommenderChip } from "../../components/domain/RecommenderChip";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
+import { RateButton } from "../rating/RateButton";
 
 /** The best of what everyone recommends, and who is recommending. */
 export function HomePage() {
@@ -67,6 +68,7 @@ export function HomePage() {
                 position={index + 1}
                 itemId={book.itemId}
                 title={book.title}
+                action={<RateButton itemId={book.itemId} title={book.title} />}
                 authors={book.authors}
                 aside={<RatingBadge score={book.average} count={book.count} />}
               />
