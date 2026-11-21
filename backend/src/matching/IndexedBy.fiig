@@ -1,0 +1,14 @@
+// The first local book whose `column` (asin, isbn or title_key) is `value`.
+// `column` is one of those three names, never a caller's text.
+gateway indexedBy(column: string, value: string) -> IndexEntry | None
+    requires Database
+    idempotent
+{
+    if column == "asin" {
+        return Database.queryOne("SELECT item_id, library_id, asin, isbn, title_key FROM library_index WHERE asin = ? ORDER BY item_id LIMIT 1", value)
+    }
+    if column == "isbn" {
+        return Database.queryOne("SELECT item_id, library_id, asin, isbn, title_key FROM library_index WHERE isbn = ? ORDER BY item_id LIMIT 1", value)
+    }
+    return Database.queryOne("SELECT item_id, library_id, asin, isbn, title_key FROM library_index WHERE title_key = ? ORDER BY item_id LIMIT 1", value)
+}

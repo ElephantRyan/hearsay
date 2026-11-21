@@ -1,0 +1,8 @@
+// What an index rebuild found: how many books, and how many can be recognised
+// by ASIN, by ISBN, or only by title and author.
+model IndexSummary {
+    books: int
+    withAsin: int
+    withIsbn: int
+    titleOnly: int
+}

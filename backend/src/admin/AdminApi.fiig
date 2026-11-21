@@ -29,6 +29,12 @@ adapter http adminApi {
         Ok(view) -> 200 view
         Err(error) -> common.apiErrorResponse(error)
     }
+    POST "/admin/library-index" -> rebuildIndex(session: string | None from cookie "sid")
+        produces "application/json"
+    {
+        Ok(summary) -> 200 summary
+        Err(error) -> common.apiErrorResponse(error)
+    }
     GET "/admin/status" -> showStatus(session: string | None from cookie "sid")
         produces "application/json"
     {

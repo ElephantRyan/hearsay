@@ -19,6 +19,99 @@
   },
   "openapi": "3.0.3",
   "paths": {
+    "/admin/library-index": {
+      "post": {
+        "operationId": "rebuildIndex",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "books": {
+                      "type": "integer"
+                    },
+                    "titleOnly": {
+                      "type": "integer"
+                    },
+                    "withAsin": {
+                      "type": "integer"
+                    },
+                    "withIsbn": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "books",
+                    "titleOnly",
+                    "withAsin",
+                    "withIsbn"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          },
+          {}
+        ]
+      }
+    },
     "/admin/settings": {
       "get": {
         "operationId": "showSettings",
@@ -1034,7 +1127,15 @@
                     },
                     "book": {
                       "properties": {
+                        "asin": {
+                          "nullable": true,
+                          "type": "string"
+                        },
                         "authors": {
+                          "type": "string"
+                        },
+                        "isbn": {
+                          "nullable": true,
                           "type": "string"
                         },
                         "itemId": {

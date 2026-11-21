@@ -1,0 +1,7 @@
+// The local book another server's book was recognised as, and how: "asin",
+// "isbn" or "title" (the weakest, marked so on the book page).
+model LocalMatch {
+    itemId: string
+    libraryId: string
+    how: string
+}

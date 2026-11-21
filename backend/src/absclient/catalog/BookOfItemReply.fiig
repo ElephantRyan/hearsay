@@ -13,7 +13,7 @@ conversion bookOfItemReply(body: bytes) -> Result<Book, absclient.AbsError> {
         }
     }
     return Ok(
-        Book(itemId: item.id, libraryId: item.libraryId, title: item.media.metadata.title, authors: line),
+        Book(itemId: item.id, libraryId: item.libraryId, title: item.media.metadata.title, authors: line, asin: item.media.metadata.asin, isbn: item.media.metadata.isbn),
     )
 }
 
@@ -33,6 +33,8 @@ private {
         title: string
         subtitle: string | None
         authors: List<AbsAuthor>
+        asin: string | None
+        isbn: string | None
     }
 
     model AbsAuthor {

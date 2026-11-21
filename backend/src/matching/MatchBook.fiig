@@ -1,0 +1,38 @@
+// The local book that another server's book is, by ASIN, then ISBN, then title
+// and first author (LINKED.md section 3); None when this library doesn't have it.
+activity matchBook(keys: BookKeys) -> LocalMatch | None {
+    match keys.asin {
+        None -> {
+        }
+        asin -> {
+            match indexedBy("asin", asin) {
+                None -> {
+                }
+                found -> {
+                    return LocalMatch(itemId: found.itemId, libraryId: found.libraryId, how: "asin")
+                }
+            }
+        }
+    }
+    match keys.isbn {
+        None -> {
+        }
+        isbn -> {
+            match indexedBy("isbn", isbn) {
+                None -> {
+                }
+                found -> {
+                    return LocalMatch(itemId: found.itemId, libraryId: found.libraryId, how: "isbn")
+                }
+            }
+        }
+    }
+    match indexedBy("title_key", keys.titleKey) {
+        None -> {
+            return None
+        }
+        found -> {
+            return LocalMatch(itemId: found.itemId, libraryId: found.libraryId, how: "title")
+        }
+    }
+}

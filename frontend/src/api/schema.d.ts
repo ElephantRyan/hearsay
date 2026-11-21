@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/admin/library-index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["rebuildIndex"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/settings": {
         parameters: {
             query?: never;
@@ -336,6 +352,70 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    rebuildIndex: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        books: number;
+                        titleOnly: number;
+                        withAsin: number;
+                        withIsbn: number;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
     showSettings: {
         parameters: {
             query?: never;
@@ -851,7 +931,9 @@ export interface operations {
                         /** Format: decimal */
                         average: number;
                         book: {
+                            asin?: string | null;
                             authors: string;
+                            isbn?: string | null;
                             itemId: string;
                             libraryId: string;
                             title: string;

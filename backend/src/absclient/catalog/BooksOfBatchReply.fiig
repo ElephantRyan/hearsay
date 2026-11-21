@@ -5,7 +5,7 @@ use abs.recommendations.absclient
 conversion booksOfBatchReply(body: bytes) -> Result<List<Book>, absclient.AbsError> {
     found: AbsBatchReply = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(failure: e)?
     return Ok(
-        map(item in found.libraryItems): Book(itemId: item.id, libraryId: item.libraryId, title: item.media.metadata.title, authors: item.media.metadata.authorName or ""),
+        map(item in found.libraryItems): bookOfListed(item),
     )
 }
 

@@ -1,8 +1,11 @@
 // A book as the API shows it: ABS owns the metadata, we cache only what a
-// list needs. `authors` is one display line, "A, B".
+// list needs. `authors` is one display line, "A, B". The ASIN and ISBN are as
+// ABS has them, to recognise the same book on a linked server (LINKED.md).
 model Book {
     itemId: string
     libraryId: string
     title: string
     authors: string
+    asin: string | None
+    isbn: string | None
 }

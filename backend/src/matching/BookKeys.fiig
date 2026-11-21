@@ -1,0 +1,9 @@
+// What recognises one book on two servers (LINKED.md section 3), each made
+// comparable: the ASIN in capitals, the ISBN as its digits (and a final X), and
+// the title and first author lower case without punctuation or a leading
+// article. A missing or empty ASIN or ISBN is None.
+model BookKeys {
+    asin: string | None
+    isbn: string | None
+    titleKey: string
+}
