@@ -1,6 +1,5 @@
 use hearsay.absclient as client
 use hearsay.accounts
-use hearsay.common
 
 test sessionsExpireAndEndWithLogOut {
     fake SessionConfig {

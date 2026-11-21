@@ -1,7 +1,6 @@
 use hearsay.absclient
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
-use hearsay.common
 
 gateway fetchHits(abs: absclient.AbsTarget, libraryId: string, query: string, size: int) -> Result<catalog.BookPage, absclient.AbsFault>
     requires AbsCatalog

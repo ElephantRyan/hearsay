@@ -1,9 +1,0 @@
-use hearsay.absclient as client
-
-conversion apiErrorOfAbs(error: client.AbsError) -> ApiError {
-    match client.faultOfAbs(error) {
-        client.AbsFault.Missing -> ApiError.NotFound("book with that id in Audiobookshelf")
-        client.AbsFault.Denied -> ApiError.Unavailable("this server's Audiobookshelf token was refused; tell the server's admin")
-        client.AbsFault.Down(detail) -> ApiError.Unavailable(detail)
-    }
-}

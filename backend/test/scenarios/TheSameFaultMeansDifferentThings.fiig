@@ -1,0 +1,20 @@
+use hearsay.absclient as client
+use hearsay.admin
+use hearsay.library
+use hearsay.listening
+use hearsay.setup
+
+// A step reports what happened; each feature says what that means for it.
+// The same two ABS answers read differently in four features, and every
+// reading is that feature's own (a gateway or an activity never words it).
+test theSameAbsAnswerMeansWhatEachFeatureAsked {
+    expect library.libraryErrorOfFault(client.AbsFault.Missing) == library.LibraryError.LibraryNotFound
+    expect listening.listeningErrorOfFault(client.AbsFault.Missing) == listening.ListeningError.AccountNotFound
+    expect admin.adminErrorOfFault(client.AbsFault.Missing) == admin.AdminError.LibraryNotFound
+    expect setup.setupErrorOfFault(client.AbsFault.Missing) == setup.SetupError.Invalid("absUrl", "doesn't look like an Audiobookshelf server")
+
+    // A refused token is the server's problem everywhere except at setup,
+    // where the token is the person's own login.
+    expect library.libraryErrorOfFault(client.AbsFault.Denied) == library.LibraryError.Unavailable("this server's Audiobookshelf token was refused; tell the server's admin")
+    expect setup.setupErrorOfFault(client.AbsFault.Denied) == setup.SetupError.WrongLogin
+}

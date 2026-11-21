@@ -1,0 +1,38 @@
+use hearsay.admin
+use hearsay.library
+use hearsay.listening
+use hearsay.ratings
+use hearsay.ratings.rated
+use hearsay.recommendations
+use hearsay.sessions
+use hearsay.settings
+use hearsay.settings.SyncConfig
+use hearsay.sync
+
+// Auth is a first line in each workflow (fiig has no way to ask for it at the
+// route, GAPS G61), so forgetting that line makes a route public and nothing
+// else would notice. Add a workflow here when a route is added: with no
+// session, each one must refuse and do nothing else.
+test noRouteAnswersWithoutASession {
+    fake SyncConfig {
+        mirrorEnabled: true
+    }
+
+    expect sessions.whoAmI(None) is Err(sessions.IdentityError.NotSignedIn)
+    expect ratings.putRating(None, "a", ratings.RatingInput(score: 5, note: None, recommended: true)) is Err(ratings.RatingError.NotSignedIn)
+    expect ratings.deleteMyRating(None, "a") is Err(ratings.RatingError.NotSignedIn)
+    expect rated.listMyRatings(None, None) is Err(rated.RatedError.NotSignedIn)
+    expect recommendations.listRecommendations(None, None, None, None) is Err(recommendations.RecommendationError.NotSignedIn)
+    expect recommendations.listRecommenderUsers(None) is Err(recommendations.RecommendationError.NotSignedIn)
+    expect recommendations.listPicksOf(None, "u1") is Err(recommendations.RecommendationError.NotSignedIn)
+    expect library.showLibraries(None) is Err(library.LibraryError.NotSignedIn)
+    expect library.showLibraryItems(None, "lib-1", None, None, None) is Err(library.LibraryError.NotSignedIn)
+    expect library.showItem(None, "a") is Err(library.LibraryError.NotSignedIn)
+    expect listening.showMyListening(None) is Err(listening.ListeningError.NotSignedIn)
+    expect sync.syncCollections(None, None, true) is Err(sync.SyncError.NotSignedIn)
+    expect admin.showSettings(None) is Err(admin.AdminError.NotSignedIn)
+    expect admin.changeSettings(None, settings.SettingsChange(mirrorEnabled: true)) is Err(admin.AdminError.NotSignedIn)
+    expect admin.resetSetting(None, "absUrl") is Err(admin.AdminError.NotSignedIn)
+    expect admin.rebuildIndex(None) is Err(admin.AdminError.NotSignedIn)
+    expect admin.showStatus(None) is Err(admin.AdminError.NotSignedIn)
+}

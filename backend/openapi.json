@@ -344,6 +344,11 @@
                     "type": "string"
                   },
                   "authMode": {
+                    "enum": [
+                      "abs",
+                      "oidc",
+                      "both"
+                    ],
                     "nullable": true,
                     "type": "string"
                   },
@@ -855,6 +860,12 @@
                       "type": "string"
                     },
                     "serviceAccountType": {
+                      "enum": [
+                        "root",
+                        "admin",
+                        "user",
+                        "guest"
+                      ],
                       "nullable": true,
                       "type": "string"
                     }
@@ -990,26 +1001,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
           },
           "403": {
             "content": {
@@ -1246,16 +1237,6 @@
             },
             "description": ""
           },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "404": {
             "content": {
               "application/json": {
@@ -1329,16 +1310,6 @@
             "description": ""
           },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1492,16 +1463,6 @@
             },
             "description": ""
           },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "404": {
             "content": {
               "application/json": {
@@ -1544,6 +1505,12 @@
                       "type": "string"
                     },
                     "userType": {
+                      "enum": [
+                        "root",
+                        "admin",
+                        "user",
+                        "guest"
+                      ],
                       "type": "string"
                     },
                     "username": {
@@ -1561,47 +1528,7 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1677,27 +1604,7 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1745,6 +1652,11 @@
             "name": "sort",
             "required": false,
             "schema": {
+              "enum": [
+                "score",
+                "newest",
+                "title"
+              ],
               "type": "string"
             }
           }
@@ -1811,47 +1723,7 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1898,16 +1770,6 @@
             "description": ""
           },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2046,16 +1908,6 @@
             },
             "description": ""
           },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "404": {
             "content": {
               "application/json": {
@@ -2161,47 +2013,7 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2253,47 +2065,7 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2387,47 +2159,7 @@
             },
             "description": ""
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2495,6 +2227,12 @@
                       "type": "string"
                     },
                     "userType": {
+                      "enum": [
+                        "root",
+                        "admin",
+                        "user",
+                        "guest"
+                      ],
                       "type": "string"
                     },
                     "username": {
@@ -2507,26 +2245,6 @@
                     "username"
                   ],
                   "type": "object"
-                }
-              }
-            },
-            "description": ""
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
                 }
               }
             },
@@ -2627,6 +2345,12 @@
                       "type": "string"
                     },
                     "userType": {
+                      "enum": [
+                        "root",
+                        "admin",
+                        "user",
+                        "guest"
+                      ],
                       "type": "string"
                     },
                     "username": {
@@ -2654,37 +2378,7 @@
             },
             "description": ""
           },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
           "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": ""
-          },
-          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2726,6 +2420,15 @@
                   "items": {
                     "properties": {
                       "action": {
+                        "enum": [
+                          "would-create",
+                          "would-update",
+                          "would-remove",
+                          "created",
+                          "updated",
+                          "removed",
+                          "failed"
+                        ],
                         "type": "string"
                       },
                       "books": {
@@ -2751,16 +2454,6 @@
                     "type": "object"
                   },
                   "type": "array"
-                }
-              }
-            },
-            "description": ""
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
                 }
               }
             },

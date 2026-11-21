@@ -21,12 +21,15 @@ export type AdminStatus = Ok<paths["/admin/status"]["get"]>;
 export type SyncResult = Ok<paths["/sync"]["post"]>[number];
 export type SetupState = Ok<paths["/setup"]["get"]>;
 
+/** How people sign in: the `AUTH_MODE` values. */
+export type AuthMode = "abs" | "oidc" | "both";
+
 /** What PUT /admin/settings takes: only the settings being changed. */
 export interface SettingsChange {
   absUrl?: string;
   serviceToken?: string;
   mirrorEnabled?: boolean;
-  authMode?: string;
+  authMode?: AuthMode;
   frontendUrl?: string;
   oidcIssuer?: string;
   oidcClientId?: string;

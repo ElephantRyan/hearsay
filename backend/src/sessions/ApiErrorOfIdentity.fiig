@@ -1,8 +1,0 @@
-use hearsay.common
-
-// Bridge until each domain words this itself; deleted with common.ApiError.
-conversion apiErrorOfIdentity(error: IdentityError) -> common.ApiError {
-    match error {
-        IdentityError.NotSignedIn -> common.ApiError.Unauthenticated
-    }
-}

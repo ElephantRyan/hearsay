@@ -1,6 +1,6 @@
 import { type FormEvent, type ReactNode, useId, useState } from "react";
 import { useResetSetting, useSaveSettings } from "../../api/hooks";
-import type { AdminSettings, SettingName, SettingsChange, SettingValue } from "../../api/types";
+import type { AdminSettings, AuthMode, SettingName, SettingsChange, SettingValue } from "../../api/types";
 import { messageFor } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
 import { Collapsible } from "../../components/ui/Collapsible";
@@ -62,7 +62,7 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
       if (secrets[name].trim() !== "") change[name] = secrets[name];
     }
     if (mirror !== (settings.mirrorEnabled.value === "true")) change.mirrorEnabled = mirror;
-    if (mode !== settings.authMode.value) change.authMode = mode;
+    if (mode !== settings.authMode.value) change.authMode = mode as AuthMode;
     return change;
   }
 

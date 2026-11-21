@@ -523,7 +523,8 @@ export interface operations {
             content: {
                 "application/json": {
                     absUrl?: string | null;
-                    authMode?: string | null;
+                    /** @enum {string|null} */
+                    authMode?: "abs" | "oidc" | "both" | null;
                     frontendUrl?: string | null;
                     mirrorEnabled?: boolean | null;
                     oidcClientId?: string | null;
@@ -739,7 +740,8 @@ export interface operations {
                         authentik: string;
                         problem?: string | null;
                         serviceAccount?: string | null;
-                        serviceAccountType?: string | null;
+                        /** @enum {string|null} */
+                        serviceAccountType?: "root" | "admin" | "user" | "guest" | null;
                     };
                 };
             };
@@ -824,22 +826,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
             };
             403: {
                 headers: {
@@ -971,14 +957,6 @@ export interface operations {
                     "application/json": string;
                 };
             };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1027,14 +1005,6 @@ export interface operations {
                 };
             };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1110,14 +1080,6 @@ export interface operations {
                     "application/json": string;
                 };
             };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1152,44 +1114,13 @@ export interface operations {
                 content: {
                     "application/json": {
                         userId: string;
-                        userType: string;
+                        /** @enum {string} */
+                        userType: "root" | "admin" | "user" | "guest";
                         username: string;
                     };
                 };
             };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1226,23 +1157,7 @@ export interface operations {
                     }[];
                 };
             };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1271,7 +1186,7 @@ export interface operations {
     listMyRatings: {
         parameters: {
             query?: {
-                sort?: string;
+                sort?: "score" | "newest" | "title";
             };
             header?: never;
             path?: never;
@@ -1299,39 +1214,7 @@ export interface operations {
                     }[];
                 };
             };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1392,14 +1275,6 @@ export interface operations {
                     "application/json": string;
                 };
             };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1444,14 +1319,6 @@ export interface operations {
                 };
             };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1507,39 +1374,7 @@ export interface operations {
                     }[];
                 };
             };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1570,39 +1405,7 @@ export interface operations {
                     }[];
                 };
             };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1643,39 +1446,7 @@ export interface operations {
                     }[];
                 };
             };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1708,25 +1479,10 @@ export interface operations {
                 content: {
                     "application/json": {
                         userId: string;
-                        userType: string;
+                        /** @enum {string} */
+                        userType: "root" | "admin" | "user" | "guest";
                         username: string;
                     };
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
                 };
             };
             403: {
@@ -1817,7 +1573,8 @@ export interface operations {
                 content: {
                     "application/json": {
                         userId: string;
-                        userType: string;
+                        /** @enum {string} */
+                        userType: "root" | "admin" | "user" | "guest";
                         username: string;
                     };
                 };
@@ -1830,31 +1587,7 @@ export interface operations {
                     "application/json": string;
                 };
             };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1882,20 +1615,13 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        action: string;
+                        /** @enum {string} */
+                        action: "would-create" | "would-update" | "would-remove" | "created" | "updated" | "removed" | "failed";
                         books: number;
                         error?: string | null;
                         libraryId: string;
                         userId: string;
                     }[];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
                 };
             };
             401: {
