@@ -6,7 +6,7 @@ use hearsay.settings
 // time (about five calls for 1,100 books). On any failure the old index is
 // kept: nothing is cleared until every page has arrived.
 activity indexLibrary() -> Result<IndexSummary, common.ApiError> {
-    abs = settings.loadAbsTarget()?
+    abs = mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?
     libraries = filter(library in fetchLibraryList(abs)?): library.mediaType == "book"
     books: List<catalog.Book> = []
     for library in libraries {

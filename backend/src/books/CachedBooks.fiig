@@ -1,10 +1,9 @@
 use hearsay.absclient.catalog
-use hearsay.common
 use hearsay.settings
 
 // Many books, in the order asked: our cached copies, and the rest from ABS in
 // one call, which are then cached too. A book ABS no longer has is left out.
-activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, common.ApiError> {
+activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookError> {
     found: Map<string, catalog.Book> = [:]
     missing: List<string> = []
     for itemId in itemIds {
@@ -18,7 +17,7 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, common
         }
     }
     if missing.length() > 0 {
-        abs = settings.loadAbsTarget()?
+        abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?
         now = Clock.now()
         for book in fetchBooks(abs, missing)? {
             BookCache.save(book, now)

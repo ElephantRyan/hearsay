@@ -6,7 +6,7 @@ use hearsay.common
 use hearsay.sessions
 
 activity requireAdmin(session: string | None) -> Result<accounts.Identity, common.ApiError> {
-    me = sessions.currentUser(session)?
+    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
     if not client.canAdminister(me.userType) {
         return Err(common.ApiError.Refused("only an admin can do this"))
     }

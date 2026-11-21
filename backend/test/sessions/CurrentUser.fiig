@@ -11,11 +11,11 @@ test sessionsExpireAndEndWithLogOut {
     session = startSession(identity)
     expect currentUser(session.token) is Ok(found)
     expect found == identity
-    expect currentUser("not-a-token") is Err(common.ApiError.Unauthenticated)
-    expect currentUser(None) is Err(common.ApiError.Unauthenticated)
+    expect currentUser("not-a-token") is Err(IdentityError.NotSignedIn)
+    expect currentUser(None) is Err(IdentityError.NotSignedIn)
     saveSession(tokenHash("old"), identity, 1)
-    expect currentUser("old") is Err(common.ApiError.Unauthenticated)
+    expect currentUser("old") is Err(IdentityError.NotSignedIn)
     expect logOut(session.token) == 1
-    expect currentUser(session.token) is Err(common.ApiError.Unauthenticated)
+    expect currentUser(session.token) is Err(IdentityError.NotSignedIn)
     expect logOut(None) == 0
 }

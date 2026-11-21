@@ -2,5 +2,6 @@ use hearsay.accounts
 use hearsay.common
 
 workflow whoAmI(session: string | None) -> Result<accounts.Identity, common.ApiError> {
-    return currentUser(session)
+    me = mapErr(e in currentUser(session)): apiErrorOfIdentity(e)?
+    return Ok(me)
 }

@@ -12,7 +12,7 @@ workflow syncCollections(session: string | None, userId: string | None, dryRun: 
     if wantsDryRun(dryRun) {
         return Ok(preview(plans))
     }
-    return Ok(applyPlans(settings.loadAbsTarget()?, plans))
+    return Ok(applyPlans(mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?, plans))
 }
 
 private {

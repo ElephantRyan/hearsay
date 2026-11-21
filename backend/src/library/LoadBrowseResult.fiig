@@ -9,8 +9,8 @@ use hearsay.sessions
 use hearsay.settings
 
 activity loadBrowseResult(session: string | None, libraryId: string, page: int, size: int, typed: string | None) -> Result<BrowseResult, common.ApiError> {
-    me = sessions.currentUser(session)?
-    found = fetchBooks(settings.loadAbsTarget()?, libraryId, page, size, typed)?
+    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
+    found = fetchBooks(mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?, libraryId, page, size, typed)?
     mine = RatedBooks.byUser(me.userId)
     return Ok(
         BrowseResult(total: found.total, page: found.page, limit: found.limit, items: withMyScores(found.books, mine)),

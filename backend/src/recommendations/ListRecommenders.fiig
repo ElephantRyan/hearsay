@@ -3,6 +3,6 @@ use hearsay.ratings.rated.RatedBooks
 use hearsay.sessions
 
 activity listRecommenders(session: string | None) -> Result<List<Recommender>, common.ApiError> {
-    sessions.currentUser(session)?
+    mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
     return Ok(recommendersOf(RatedBooks.recommended()))
 }

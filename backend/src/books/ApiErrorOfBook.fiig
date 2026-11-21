@@ -1,0 +1,9 @@
+use hearsay.common
+
+// Bridge until each domain words this itself; deleted with common.ApiError.
+conversion apiErrorOfBook(error: BookError) -> common.ApiError {
+    match error {
+        BookError.Missing -> common.ApiError.NotFound("book with that id in Audiobookshelf")
+        BookError.Unavailable(detail) -> common.ApiError.Unavailable(detail)
+    }
+}

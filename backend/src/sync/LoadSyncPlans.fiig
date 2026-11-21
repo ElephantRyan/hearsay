@@ -5,7 +5,7 @@ use hearsay.sessions
 // What a sync would do for whoever the caller may sync: reads our tables and
 // plans, and touches nothing.
 activity loadSyncPlans(session: string | None, userId: string | None) -> Result<List<SyncPlan>, common.ApiError> {
-    me = sessions.currentUser(session)?
+    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
     rows = RatedBooks.recommended()
     states = allSyncStates()
     targets = syncTargets(me, userId, everyoneToSync(rows, states))?

@@ -1,17 +1,16 @@
 // Who the session cookie belongs to. Every route that needs a signed-in
 // person starts here.
 use hearsay.accounts
-use hearsay.common
 
-activity currentUser(token: string | None) -> Result<accounts.Identity, common.ApiError> {
+activity currentUser(token: string | None) -> Result<accounts.Identity, IdentityError> {
     match token {
         None -> {
-            return Err(common.ApiError.Unauthenticated)
+            return Err(IdentityError.NotSignedIn)
         }
         found -> {
             match findSession(tokenHash(found), Clock.now()) {
                 None -> {
-                    return Err(common.ApiError.Unauthenticated)
+                    return Err(IdentityError.NotSignedIn)
                 }
                 identity -> {
                     return Ok(identity)

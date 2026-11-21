@@ -5,7 +5,7 @@ use hearsay.sessions
 // A step several features need. It knows nothing about why it was called:
 // what a missing book means is the workflow's to say.
 activity loadUserAndBook(session: string | None, itemId: string) -> Result<UserAndBook, common.ApiError> {
-    me = sessions.currentUser(session)?
-    book = books.latestBook(itemId)?
+    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
+    book = mapErr(e in books.latestBook(itemId)): books.apiErrorOfBook(e)?
     return Ok(UserAndBook(user: me, book: book))
 }

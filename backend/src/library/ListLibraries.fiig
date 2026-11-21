@@ -6,7 +6,7 @@ use hearsay.sessions
 use hearsay.settings
 
 activity listLibraries(session: string | None) -> Result<List<catalog.AbsLibrary>, common.ApiError> {
-    sessions.currentUser(session)?
-    all = fetchLibraries(settings.loadAbsTarget()?)?
+    mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
+    all = fetchLibraries(mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?)?
     return Ok(filter(library in all): library.mediaType == "book")
 }

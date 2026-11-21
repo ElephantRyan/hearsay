@@ -1,0 +1,5 @@
+// What a server that isn't set up yet is missing.
+enum SettingsError {
+    NoAbsUrl
+    NoServiceToken
+}

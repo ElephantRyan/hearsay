@@ -3,10 +3,9 @@
 use hearsay.absclient
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
-use hearsay.common
 
-gateway fetchBook(abs: absclient.AbsTarget, itemId: string) -> Result<catalog.Book, common.ApiError>
+gateway fetchBook(abs: absclient.AbsTarget, itemId: string) -> Result<catalog.Book, BookError>
     requires AbsCatalog
 {
-    return mapErr(e in AbsCatalog.itemAsService(abs, itemId)): common.apiErrorOfAbs(e)
+    return mapErr(e in AbsCatalog.itemAsService(abs, itemId)): bookErrorOfAbs(e)
 }

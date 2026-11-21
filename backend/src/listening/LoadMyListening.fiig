@@ -6,8 +6,8 @@ use hearsay.settings
 
 // The books I have started or finished in ABS, with my scores.
 activity loadMyListening(session: string | None) -> Result<List<ListenedBook>, common.ApiError> {
-    me = sessions.currentUser(session)?
-    started = fetchProgress(settings.loadAbsTarget()?, me.userId)?
-    found = books.cachedBooks(map(p in started): p.itemId)?
+    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
+    started = fetchProgress(mapErr(e in settings.loadAbsTarget()): settings.apiErrorOfSettings(e)?, me.userId)?
+    found = mapErr(e in books.cachedBooks(map(p in started): p.itemId)): books.apiErrorOfBook(e)?
     return Ok(listenedBooks(started, found, RatedBooks.byUser(me.userId)))
 }

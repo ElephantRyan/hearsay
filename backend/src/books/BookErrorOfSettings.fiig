@@ -1,0 +1,9 @@
+use hearsay.settings
+
+// A server that isn't set up can't be asked for a book.
+conversion bookErrorOfSettings(error: settings.SettingsError) -> BookError {
+    match error {
+        settings.SettingsError.NoAbsUrl -> BookError.Unavailable("this server isn't set up yet: an admin needs to enter the Audiobookshelf address")
+        settings.SettingsError.NoServiceToken -> BookError.Unavailable("this server isn't set up yet: an admin needs to enter its Audiobookshelf token")
+    }
+}

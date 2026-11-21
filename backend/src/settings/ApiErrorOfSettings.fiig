@@ -1,0 +1,9 @@
+use hearsay.common
+
+// Bridge until each domain words this itself; deleted with common.ApiError.
+conversion apiErrorOfSettings(error: SettingsError) -> common.ApiError {
+    match error {
+        SettingsError.NoAbsUrl -> common.ApiError.Unavailable("this server isn't set up yet: an admin needs to enter the Audiobookshelf address")
+        SettingsError.NoServiceToken -> common.ApiError.Unavailable("this server isn't set up yet: an admin needs to enter its Audiobookshelf token")
+    }
+}

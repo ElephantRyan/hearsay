@@ -3,6 +3,6 @@ use hearsay.sessions
 
 // The signed-in person's ratings, newest first (the order the database gives).
 activity loadMyRatings(session: string | None) -> Result<List<RatingRow>, common.ApiError> {
-    me = sessions.currentUser(session)?
+    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
     return Ok(RatedBooks.byUser(me.userId))
 }

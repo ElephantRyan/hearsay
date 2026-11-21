@@ -1,11 +1,10 @@
 use hearsay.absclient
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
-use hearsay.common
 
 // Many books from ABS in one call, with the server's token.
-gateway fetchBooks(abs: absclient.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, common.ApiError>
+gateway fetchBooks(abs: absclient.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, BookError>
     requires AbsCatalog
 {
-    return mapErr(e in AbsCatalog.itemsAsService(abs, itemIds)): common.apiErrorOfAbs(e)
+    return mapErr(e in AbsCatalog.itemsAsService(abs, itemIds)): bookErrorOfAbs(e)
 }

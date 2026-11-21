@@ -1,0 +1,6 @@
+// Why a book couldn't be had from Audiobookshelf: it has no such book, or
+// it can't be asked right now (not set up, refused our token, down).
+enum BookError {
+    Missing
+    Unavailable(detail: string)
+}

@@ -1,0 +1,4 @@
+// Why a session token didn't give an identity.
+enum IdentityError {
+    NotSignedIn
+}

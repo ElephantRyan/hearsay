@@ -7,9 +7,9 @@ use hearsay.ratings.rated.RatedBooks
 use hearsay.sessions
 
 activity loadItemDetail(session: string | None, itemId: string) -> Result<ItemDetail, common.ApiError> {
-    me = sessions.currentUser(session)?
+    me = mapErr(e in sessions.currentUser(session)): sessions.apiErrorOfIdentity(e)?
     rows = RatedBooks.visibleFor(itemId, me.userId)
-    book = books.cachedBook(itemId)?
+    book = mapErr(e in books.cachedBook(itemId)): books.apiErrorOfBook(e)?
     return Ok(
         ItemDetail(book: book, average: averageOf(rows), count: count(r in rows): r.recommended, ratings: rows),
     )
