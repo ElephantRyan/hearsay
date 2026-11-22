@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useMyListening, useRecommendations, useRecommenders } from "../../api/hooks";
+import { useMyListening, useRecommendations, useRecommenders, useUpNext } from "../../api/hooks";
 import { BookCard } from "../../components/domain/BookCard";
 import { Shelf } from "../../components/domain/BookGrid";
 import { RatingBadge } from "../../components/domain/RatingBadge";
@@ -9,13 +9,23 @@ import { EmptyState, ErrorState, LoadingState } from "../../components/domain/St
 import { RateButton } from "../rating/RateButton";
 import { UpNextButton } from "../upnext/UpNextButton";
 
-/** What I'm in the middle of, what I've finished and not scored, and what everyone recommends. */
+/**
+ * What I'm in the middle of, what I've finished and not scored, what everyone recommends, and
+ * what's on my Up next list.
+ */
 export function HomePage() {
   const listening = useMyListening();
   const top = useRecommendations({});
   const people = useRecommenders();
+  const upNext = useUpNext();
 
   const inProgress = listening.data?.filter((book) => !book.finished) ?? [];
+  // How far into each book I am, for the bar along an Up next cover, as Continue listening has.
+  const percentOf = new Map(
+    (listening.data ?? [])
+      .filter((book) => !book.finished)
+      .map((book) => [book.itemId, book.percent]),
+  );
   const toRate = listening.data?.filter((book) => book.finished && book.myScore == null) ?? [];
 
   return (
@@ -142,6 +152,31 @@ export function HomePage() {
           </ul>
         )}
       </ShelfSection>
+
+      {upNext.data && upNext.data.length > 0 && (
+        <ShelfSection
+          id="up-next"
+          title="Up next"
+          more={
+            <Link to="/me/up-next" className="text-sm">
+              See all
+            </Link>
+          }
+        >
+          <Shelf label="Up next">
+            {upNext.data.slice(0, 20).map((book) => (
+              <BookCard
+                key={book.itemId}
+                itemId={book.itemId}
+                title={book.title}
+                authors={book.authors}
+                percent={percentOf.get(book.itemId)}
+                action={<RateButton itemId={book.itemId} title={book.title} />}
+              />
+            ))}
+          </Shelf>
+        </ShelfSection>
+      )}
     </div>
   );
 }

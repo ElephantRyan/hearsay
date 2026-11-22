@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { mount } from "../test/mount";
@@ -61,5 +61,49 @@ describe("the app against the API's contract", () => {
       "/recommendations/users/u-1",
     );
     await waitFor(() => expect(router.state.location.pathname).toBe("/"));
+  });
+
+  it("ends the home screen with my Up next list, in my order, as a shelf", async () => {
+    const upNext = (n: number, position: number) => ({
+      itemId: `it-${n}`,
+      libraryId: "lib-1",
+      title: `Book number ${n}`,
+      authors: "An Author",
+      position,
+      addedAt: 1795000000000,
+    });
+    server.use(
+      http.get("/api/me", () =>
+        HttpResponse.json({ userId: "u-1", username: "ryan", userType: "user" }),
+      ),
+      http.get("/api/me/up-next", () => HttpResponse.json([upNext(7, 0), upNext(3, 1)])),
+    );
+    mount("/");
+
+    const shelf = await screen.findByRole("region", { name: "Up next" });
+    const titles = within(shelf)
+      .getAllByRole("link")
+      .map((link) => link.textContent?.match(/^Book number \d+/)?.[0])
+      .filter((title) => title !== undefined);
+    expect(titles).toEqual(["Book number 7", "Book number 3"]);
+    expect(within(shelf).getByRole("link", { name: "See all" })).toHaveAttribute(
+      "href",
+      "/me/up-next",
+    );
+    // the last section on the page
+    const sections = screen.getAllByRole("region");
+    expect(sections[sections.length - 1]).toBe(shelf);
+  });
+
+  it("leaves the Up next shelf out while the list is empty", async () => {
+    server.use(
+      http.get("/api/me", () =>
+        HttpResponse.json({ userId: "u-1", username: "ryan", userType: "user" }),
+      ),
+    );
+    mount("/");
+
+    expect(await screen.findByText(/after the rabbit/i)).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Up next" })).not.toBeInTheDocument();
   });
 });
