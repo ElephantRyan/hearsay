@@ -6,6 +6,6 @@ workflow resetSetting(
     admin: accounts.Admin,
     name: string,
 ) -> Result<settings.SettingsView, AdminError> {
-    mapErr(e in settings.forgetSetting(name)): adminErrorOfChange(e)?;
+    mapErr(e in settings.forgetSetting(name, admin.identity.userId)): adminErrorOfChange(e)?;
     return Ok(settings.describeSettings());
 }

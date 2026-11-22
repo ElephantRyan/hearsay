@@ -1,82 +1,26 @@
 // The settings as they stand, and where each comes from. Never a secret's value.
 activity describeSettings() -> SettingsView {
     return SettingsView(
-        absUrl: textSetting(storedText("abs.url"), Abs.url),
-        serviceToken: secretSetting(storedText("abs.serviceToken"), "abs.serviceToken"),
-        mirrorEnabled: textSetting(
-            storedText("sync.mirrorEnabled"),
-            boolText(SyncConfig.mirrorEnabled),
-        ),
-        authMode: textSetting(storedText("signin.authMode"), authModeText(SignInConfig.authMode)),
-        frontendUrl: textSetting(storedText("signin.frontendUrl"), SignInConfig.frontendUrl),
-        oidcIssuer: textSetting(storedText("oidc.issuer"), Oidc.issuer),
-        oidcClientId: textSetting(storedText("oidc.clientId"), Oidc.clientId),
-        oidcClientSecret: secretSetting(storedText("oidc.clientSecret"), "oidc.clientSecret"),
-        oidcRedirectUri: textSetting(storedText("oidc.redirectUri"), Oidc.redirectUri),
-        serverName: textSetting(storedText("server.name"), ServerConfig.name),
+        absUrl: shown(Abs.url, SettingName.AbsUrl),
+        serviceToken: hidden(SettingName.ServiceToken),
+        mirrorEnabled: shown(boolText(SyncConfig.mirrorEnabled), SettingName.MirrorEnabled),
+        authMode: shown(authModeText(SignInConfig.authMode), SettingName.AuthMode),
+        frontendUrl: shown(SignInConfig.frontendUrl, SettingName.FrontendUrl),
+        oidcIssuer: shown(Oidc.issuer, SettingName.OidcIssuer),
+        oidcClientId: shown(Oidc.clientId, SettingName.OidcClientId),
+        oidcClientSecret: hidden(SettingName.OidcClientSecret),
+        oidcRedirectUri: shown(Oidc.redirectUri, SettingName.OidcRedirectUri),
+        serverName: shown(ServerConfig.name, SettingName.ServerName),
     );
 }
 
 private {
-    textSetting(saved: string | None, env: string | None) -> SettingValue {
-        return match (saved) {
-            None -> {
-                return match (env) {
-                    None -> {
-                        return SettingValue(value: None, source: "unset");
-                    }
-
-                    given -> {
-                        return SettingValue(value: given, source: "environment");
-                    }
-                }
-            }
-
-            given -> {
-                return SettingValue(value: given, source: "saved");
-            }
-        }
+    shown(value: string | None, name: SettingName) -> SettingValue {
+        return SettingValue(value: value, source: sourceText(settingSourceOf(name)));
     }
 
-    // The environment is read only when nothing is saved.
-    secretSetting(saved: string | None, name: string) -> SettingValue {
-        return match (saved) {
-            None -> {
-                if (envSecretSet(name)) {
-                    return SettingValue(value: None, source: "environment");
-                }
-
-                return SettingValue(value: None, source: "unset");
-            }
-
-            given -> {
-                return SettingValue(value: None, source: "saved");
-            }
-        }
-    }
-
-    envSecretSet(name: string) -> bool {
-        if (name == "abs.serviceToken") {
-            match (AbsService.token) {
-                None -> {
-                    return false;
-                }
-
-                given -> {
-                    return true;
-                }
-            }
-        }
-
-        return match (Oidc.clientSecret) {
-            None -> {
-                return false;
-            }
-
-            given -> {
-                return true;
-            }
-        }
+    hidden(name: SettingName) -> SettingValue {
+        return SettingValue(value: None, source: sourceText(settingSourceOf(name)));
     }
 
     boolText(on: bool) -> string {

@@ -1,0 +1,10 @@
+// A save or clear the runtime refused, as the admin screen's field error.
+conversion settingsChangeErrorOf(field: string, error: SettingError) -> SettingsChangeError {
+    return match (error) {
+        SettingError.Invalid(reason) -> SettingsChangeError.Invalid(field, reason)
+        SettingError.SetByDeployment -> SettingsChangeError.Invalid(
+            field,
+            "is set by this server's environment",
+        )
+    }
+}

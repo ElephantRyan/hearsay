@@ -1,0 +1,16 @@
+// A setting by the name the admin screen uses (its SettingsView field), or None.
+conversion settingNamed(name: string) -> SettingName | None {
+    return match (name) {
+        "absUrl" -> SettingName.AbsUrl
+        "serviceToken" -> SettingName.ServiceToken
+        "mirrorEnabled" -> SettingName.MirrorEnabled
+        "authMode" -> SettingName.AuthMode
+        "frontendUrl" -> SettingName.FrontendUrl
+        "oidcIssuer" -> SettingName.OidcIssuer
+        "oidcClientId" -> SettingName.OidcClientId
+        "oidcClientSecret" -> SettingName.OidcClientSecret
+        "oidcRedirectUri" -> SettingName.OidcRedirectUri
+        "serverName" -> SettingName.ServerName
+        _ -> None
+    }
+}

@@ -9,6 +9,8 @@ workflow changeSettings(
 ) -> Result<settings.SettingsView, AdminError> {
     checked = mapErr(e in settings.checkSettingsChange(change)): adminErrorOfChange(e)?;
     mapErr(e in settings.checkSignInStaysPossible(checked)): adminErrorOfChange(e)?;
-    settings.applySettingsChange(checked, admin.identity.userId);
+    mapErr(e in settings.applySettingsChange(checked, admin.identity.userId)): adminErrorOfChange(
+        e,
+    )?;
     return Ok(settings.describeSettings());
 }

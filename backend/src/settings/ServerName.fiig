@@ -1,5 +1,4 @@
-// What this server is called to linked servers: the admin's saved name, or else
-// SERVER_NAME. None until one of them is set.
+// What this server is called to linked servers. None until one is saved or set.
 activity serverName() -> string | None {
-    return storedText("server.name") ?? ServerConfig.name;
+    return ServerConfig.name;
 }

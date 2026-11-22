@@ -1,13 +1,4 @@
-// Whether this server may write collections into ABS at all: the admin's saved
-// choice, or else MIRROR_ENABLED.
+// Whether this server may write collections into ABS at all.
 activity mirrorEnabled() -> bool {
-    return match (storedText("sync.mirrorEnabled")) {
-        None -> {
-            return SyncConfig.mirrorEnabled;
-        }
-
-        saved -> {
-            return saved == "true";
-        }
-    }
+    return SyncConfig.mirrorEnabled;
 }

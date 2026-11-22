@@ -1,4 +1,16 @@
-// Forgets a saved setting, so the environment's value (if any) applies again.
-gateway clearSetting(name: string) -> int requires Database {
-    return Database.execute("DELETE FROM setting WHERE name = ?", name);
+// Forgets a saved setting, so its environment variable (if any) applies again.
+gateway clearSetting(name: SettingName, by: string) -> Result<None, SettingError>
+        requires Settings {
+    return match (name) {
+        SettingName.AbsUrl -> Settings.clear("abs.url", by: by)
+        SettingName.ServiceToken -> Settings.clear("abs.serviceToken", by: by)
+        SettingName.MirrorEnabled -> Settings.clear("sync.mirrorEnabled", by: by)
+        SettingName.AuthMode -> Settings.clear("signin.authMode", by: by)
+        SettingName.FrontendUrl -> Settings.clear("signin.frontendUrl", by: by)
+        SettingName.OidcIssuer -> Settings.clear("oidc.issuer", by: by)
+        SettingName.OidcClientId -> Settings.clear("oidc.clientId", by: by)
+        SettingName.OidcClientSecret -> Settings.clear("oidc.clientSecret", by: by)
+        SettingName.OidcRedirectUri -> Settings.clear("oidc.redirectUri", by: by)
+        SettingName.ServerName -> Settings.clear("server.name", by: by)
+    }
 }

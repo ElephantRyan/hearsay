@@ -1,14 +1,14 @@
 // Authentik-only sign-in can't be chosen until every Authentik setting is there,
 // counting the change itself: otherwise nobody could sign in to finish it.
 activity checkSignInStaysPossible(change: SettingsChange) -> Result<int, SettingsChangeError> {
-    mode = change.authMode ?? currentAuthMode();
+    mode = change.authMode ?? SignInConfig.authMode;
     if (mode != AuthMode.Oidc) {
         return Ok(0);
     }
 
-    issuer = change.oidcIssuer ?? storedText("oidc.issuer") ?? Oidc.issuer;
-    clientId = change.oidcClientId ?? storedText("oidc.clientId") ?? Oidc.clientId;
-    redirectUri = change.oidcRedirectUri ?? storedText("oidc.redirectUri") ?? Oidc.redirectUri;
+    issuer = change.oidcIssuer ?? Oidc.issuer;
+    clientId = change.oidcClientId ?? Oidc.clientId;
+    redirectUri = change.oidcRedirectUri ?? Oidc.redirectUri;
     if (issuer == None || clientId == None || redirectUri == None || !secretThere(change)) {
         return Err(
             SettingsChangeError.Invalid(
@@ -27,7 +27,7 @@ private {
             return true;
         }
 
-        return match (storedSecret("oidc.clientSecret") ?? Oidc.clientSecret) {
+        return match (Oidc.clientSecret) {
             None -> {
                 return false;
             }

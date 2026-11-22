@@ -1,11 +1,11 @@
-// The Authentik application made for this app (PLAN.md section 5), from the
-// environment. issuer is the application's OpenID issuer URL; the endpoints come
-// from its discovery document. Each is optional: an admin may save them in the
-// app instead (oidcSettings), and Authentik sign-in is offered only once all
-// four are set.
+// The Authentik application made for this app (PLAN.md section 5), each part
+// saved in the app or else from its OIDC_* variable. issuer is the
+// application's OpenID issuer URL; the endpoints come from its discovery
+// document. Authentik sign-in is offered only once all four are set
+// (oidcSettingsOf).
 wire Oidc {
-    issuer: string | None from env "OIDC_ISSUER"
-    clientId: string | None from env "OIDC_CLIENT_ID"
-    clientSecret: Secret | None from env "OIDC_CLIENT_SECRET"
-    redirectUri: string | None from env "OIDC_REDIRECT_URI"
+    issuer: string | None from setting "oidc.issuer" ?? env "OIDC_ISSUER"
+    clientId: string | None from setting "oidc.clientId" ?? env "OIDC_CLIENT_ID"
+    clientSecret: Secret | None from setting "oidc.clientSecret" ?? env "OIDC_CLIENT_SECRET"
+    redirectUri: string | None from setting "oidc.redirectUri" ?? env "OIDC_REDIRECT_URI"
 }

@@ -1,5 +1,4 @@
-// Where the app's pages are, for a finished Authentik sign-in to land: the
-// admin's saved address, or else FRONTEND_URL.
+// Where the browser app is, for links and redirects back to it.
 activity frontendUrl() -> string {
-    return storedText("signin.frontendUrl") ?? SignInConfig.frontendUrl;
+    return SignInConfig.frontendUrl;
 }

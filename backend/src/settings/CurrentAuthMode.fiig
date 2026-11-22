@@ -1,13 +1,4 @@
-// The admin's saved choice, or else AUTH_MODE. Saves are checked, so a saved
-// value that spells no mode only means someone edited the table: it is ignored.
+// Which sign-in routes answer.
 activity currentAuthMode() -> AuthMode {
-    return match (storedText("signin.authMode")) {
-        None -> {
-            return SignInConfig.authMode;
-        }
-
-        text -> {
-            return authModeOfText(text) ?? SignInConfig.authMode;
-        }
-    }
+    return SignInConfig.authMode;
 }

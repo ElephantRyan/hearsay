@@ -1,27 +1,26 @@
 use hearsay.accounts
 
-// The Authentik application, each part saved in the app or else from its
-// OIDC_* variable; None until all four are there.
+// The Authentik application; None until all four parts are there.
 activity oidcSettingsOf() -> accounts.OidcSettings | None {
-    return match (storedText("oidc.issuer") ?? Oidc.issuer) {
+    return match (Oidc.issuer) {
         None -> {
             return None;
         }
 
         issuer -> {
-            return match (storedText("oidc.clientId") ?? Oidc.clientId) {
+            return match (Oidc.clientId) {
                 None -> {
                     return None;
                 }
 
                 clientId -> {
-                    return match (storedText("oidc.redirectUri") ?? Oidc.redirectUri) {
+                    return match (Oidc.redirectUri) {
                         None -> {
                             return None;
                         }
 
                         redirectUri -> {
-                            return match (storedSecret("oidc.clientSecret") ?? Oidc.clientSecret) {
+                            return match (Oidc.clientSecret) {
                                 None -> {
                                     return None;
                                 }

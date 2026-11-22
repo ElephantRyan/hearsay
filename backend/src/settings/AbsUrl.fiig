@@ -1,5 +1,4 @@
-// Where Audiobookshelf is: the admin's saved address, or else ABS_URL. None
-// until one of them is set.
+// Where the Audiobookshelf server is, for the workflows that ask.
 activity absUrl() -> string | None {
-    return storedText("abs.url") ?? Abs.url;
+    return Abs.url;
 }

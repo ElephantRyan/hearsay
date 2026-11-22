@@ -1,7 +1,7 @@
 // The ABS token this server uses for its own calls: looking up books, reading
 // listening progress, writing collections, and (when AUTH_MODE allows Authentik)
-// finding a person's account by email. Optional: an admin may save it in the
-// app instead (loadAbsTarget).
+// finding a person's account by email. Saved in the app, or else
+// ABS_SERVICE_TOKEN (loadAbsTarget).
 wire AbsService {
-    token: Secret | None from env "ABS_SERVICE_TOKEN"
+    token: Secret | None from setting "abs.serviceToken" ?? env "ABS_SERVICE_TOKEN"
 }

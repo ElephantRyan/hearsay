@@ -1,5 +1,4 @@
-// This server's own Audiobookshelf token: the admin's saved one, or else
-// ABS_SERVICE_TOKEN. None until one of them is set.
+// This server's own Audiobookshelf token. None until one is saved or set.
 activity serviceToken() -> Secret | None {
-    return storedSecret("abs.serviceToken") ?? AbsService.token;
+    return AbsService.token;
 }

@@ -1,53 +1,71 @@
 // Saves every setting a checked change gives; `by` is the admin's user id.
-activity applySettingsChange(change: SettingsChange, by: string) -> int {
-    saved: int = 0;
-    saved = saved + saveGiven("abs.url", change.absUrl, by);
-    saved = saved + saveGiven("abs.serviceToken", change.serviceToken, by);
-    match (change.mirrorEnabled) {
-        None -> {
-        }
-
-        on -> {
-            saved = saved + rememberSetting("sync.mirrorEnabled", textOf(on), by);
-        }
-    }
-
-    match (change.authMode) {
-        None -> {
-        }
-
-        mode -> {
-            saved = saved + rememberSetting("signin.authMode", authModeText(mode), by);
-        }
-    }
-
-    saved = saved + saveGiven("signin.frontendUrl", change.frontendUrl, by);
-    saved = saved + saveGiven("oidc.issuer", change.oidcIssuer, by);
-    saved = saved + saveGiven("oidc.clientId", change.oidcClientId, by);
-    saved = saved + saveGiven("oidc.clientSecret", change.oidcClientSecret, by);
-    saved = saved + saveGiven("oidc.redirectUri", change.oidcRedirectUri, by);
-    saved = saved + saveGiven("server.name", change.serverName, by);
-    return saved;
+activity applySettingsChange(
+    change: SettingsChange,
+    by: string,
+) -> Result<None, SettingsChangeError> {
+    mapErr(e in saveGiven(SettingName.AbsUrl, change.absUrl, by)): settingsChangeErrorOf(
+        "absUrl",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.ServiceToken, change.serviceToken, by)): settingsChangeErrorOf(
+        "serviceToken",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.MirrorEnabled, boolText(change.mirrorEnabled), by)): settingsChangeErrorOf(
+        "mirrorEnabled",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.AuthMode, modeText(change.authMode), by)): settingsChangeErrorOf(
+        "authMode",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.FrontendUrl, change.frontendUrl, by)): settingsChangeErrorOf(
+        "frontendUrl",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.OidcIssuer, change.oidcIssuer, by)): settingsChangeErrorOf(
+        "oidcIssuer",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.OidcClientId, change.oidcClientId, by)): settingsChangeErrorOf(
+        "oidcClientId",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.OidcClientSecret, change.oidcClientSecret, by)): settingsChangeErrorOf(
+        "oidcClientSecret",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.OidcRedirectUri, change.oidcRedirectUri, by)): settingsChangeErrorOf(
+        "oidcRedirectUri",
+        e,
+    )?;
+    mapErr(e in saveGiven(SettingName.ServerName, change.serverName, by)): settingsChangeErrorOf(
+        "serverName",
+        e,
+    )?;
+    return Ok(None);
 }
 
 private {
-    saveGiven(name: string, value: string | None, by: string) -> int {
-        return match (value) {
-            None -> {
-                return 0;
-            }
-
-            given -> {
-                return rememberSetting(name, given, by);
-            }
+    saveGiven(name: SettingName, text: string | None, by: string) -> Result<None, SettingError> {
+        return match (text) {
+            None -> Ok(None)
+            given -> saveSetting(name, given, by)
         }
     }
 
-    textOf(on: bool) -> string {
-        if (on) {
-            return "true";
+    boolText(on: bool | None) -> string | None {
+        return match (on) {
+            None -> None
+            true -> "true"
+            false -> "false"
         }
+    }
 
-        return "false";
+    modeText(mode: AuthMode | None) -> string | None {
+        return match (mode) {
+            None -> None
+            given -> authModeText(given)
+        }
     }
 }

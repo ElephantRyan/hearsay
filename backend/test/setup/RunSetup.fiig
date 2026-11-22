@@ -4,15 +4,10 @@ use hearsay.absclient.members.AbsMembers
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
-use hearsay.settings.Abs
 
 test aNewServerIsClaimedByAnAbsAdmin {
     fake SessionConfig {
         sessionMaxAge: 3600
-    }
-
-    fake Abs {
-        url: None
     }
 
     fake AbsMembers {
