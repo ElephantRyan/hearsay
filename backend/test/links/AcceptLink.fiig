@@ -15,12 +15,12 @@ use hearsay.settings.SignInConfig;
 // can match books.
 test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     fake ServerConfig {
-        name: "Ryan's library";
+        name: "The family library";
     }
 
     fake SignInConfig {
         authMode: settings.AuthMode.Abs;
-        frontendUrl: "https://ryan.test";
+        frontendUrl: "https://family.test";
     }
 
     fake AbsCatalog {
@@ -86,9 +86,9 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     );
     expect inviteServer(admin) is Ok(invite);
     expect calls(AbsCatalog.pageAsService) == 1;
-    expect invite.code.startsWith("https://ryan.test#");
+    expect invite.code.startsWith("https://family.test#");
     expect inviteCodeOf(invite.code) is Ok(code);
-    expect code.address == "https://ryan.test";
+    expect code.address == "https://family.test";
     alexKey = newKey();
     offer = LinkOffer(
         secret: code.secret,
@@ -98,7 +98,7 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     );
     expect acceptLink(LinkOffer(secret: "not-the-secret", name: "x", address: "https://x.test", key: alexKey)) is Err(FederationError.BadInvite);
     expect acceptLink(offer) is Ok(accepted);
-    expect accepted.name == "Ryan's library";
+    expect accepted.name == "The family library";
     expect acceptLink(offer) is Err(FederationError.BadInvite);
     links = listLinks(admin);
     expect links.length() == 1;
@@ -138,7 +138,7 @@ test anExpiredInviteIsRefused {
 
 test aBadOfferStillSpendsTheInvite {
     fake ServerConfig {
-        name: "Ryan's library";
+        name: "The family library";
     }
 
     secret = newKey();
@@ -153,7 +153,7 @@ test aBadOfferStillSpendsTheInvite {
 // couldn't match any book.
 test anInviteWaitsForTheLibraryIndex {
     fake ServerConfig {
-        name: "Ryan's library";
+        name: "The family library";
     }
 
     fake AbsCatalog {

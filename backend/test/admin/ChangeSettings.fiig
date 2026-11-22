@@ -32,12 +32,12 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     change = settings.SettingsChange(
         absUrl: "https://abs.home.test/",
         serviceToken: "new-token",
-        serverName: "Ryan's library",
+        serverName: "The family library",
     );
     expect changeSettings(root, change) is Ok(after);
     expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved");
     expect after.serviceToken == settings.SettingValue(value: None, source: "saved");
-    expect after.serverName == settings.SettingValue(value: "Ryan's library", source: "saved");
+    expect after.serverName == settings.SettingValue(value: "The family library", source: "saved");
     expect settings.absUrl() == "https://abs.home.test";
     expect tokenIs("new-token");
     expect resetSetting(root, "absUrl") is Ok(reset);
@@ -62,14 +62,14 @@ test anAdminSavesSettingsAndCanForgetThem {
         absUrl: "  https://abs.home.test/ ",
         serviceToken: "new-token",
         mirrorEnabled: true,
-        serverName: " Ryan's library ",
+        serverName: " The family library ",
     );
     expect changeSettings(root, change) is Ok(after);
     expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved");
     expect after.serviceToken == settings.SettingValue(value: None, source: "saved");
     expect after.mirrorEnabled == settings.SettingValue(value: "true", source: "saved");
-    expect after.serverName == settings.SettingValue(value: "Ryan's library", source: "saved");
-    expect settings.serverName() == "Ryan's library";
+    expect after.serverName == settings.SettingValue(value: "The family library", source: "saved");
+    expect settings.serverName() == "The family library";
     expect settings.absUrl() == "https://abs.home.test";
     expect tokenIs("new-token");
     expect settings.mirrorEnabled();

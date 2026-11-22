@@ -20,12 +20,12 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
     }
 
     fake ServerConfig {
-        name: "Ryan's library";
+        name: "The family library";
     }
 
     fake SignInConfig {
         authMode: settings.AuthMode.Abs;
-        frontendUrl: "https://ryan.test";
+        frontendUrl: "https://family.test";
     }
 
     fake AbsCatalog {

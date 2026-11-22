@@ -60,19 +60,19 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if (request.url == "https://ryan.test/api/federation/link" && request.method == http.Method.Post) {
+            if (request.url == "https://family.test/api/federation/link" && request.method == http.Method.Post) {
                 return Ok(
                     http.Reply(
                         status: 200,
                         headers: [],
                         body: json.encode(
-                            LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")),
+                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k")),
                         ),
                     ),
                 );
             }
 
-            if (request.url == "https://ryan.test/api/federation/fetch") {
+            if (request.url == "https://family.test/api/federation/fetch") {
                 return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
             }
 
@@ -80,7 +80,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                 return Err(http.HttpError.InvalidRequest(reason: "gone"));
             }
 
-            expect request.url == "https://ryan.test/api/federation/recommendations";
+            expect request.url == "https://family.test/api/federation/recommendations";
             expect http.headerValue(request.headers, "authorization") == "Bearer ${"k".padRight(43, "k")}";
             if (calls(HttpClient.send) == 2) {
                 return Ok(
@@ -169,7 +169,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
             userType: client.AbsUserType.Admin,
         ),
     );
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link);
+    expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
     // Linking builds the empty index, then fetches at once.
     first = link;
     expect calls(AbsCatalog.pageAsService) == 1;
@@ -260,19 +260,19 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if (request.url == "https://ryan.test/api/federation/link") {
+            if (request.url == "https://family.test/api/federation/link") {
                 return Ok(
                     http.Reply(
                         status: 200,
                         headers: [],
                         body: json.encode(
-                            LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")),
+                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k")),
                         ),
                     ),
                 );
             }
 
-            if (request.url == "https://ryan.test/api/federation/fetch") {
+            if (request.url == "https://family.test/api/federation/fetch") {
                 return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
             }
 
@@ -310,7 +310,7 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
             userType: client.AbsUserType.Admin,
         ),
     );
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link);
+    expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
     expect fetchOnSchedule() is Err(FetchError.IndexNotRebuilt(problem));
     expect problem == "Audiobookshelf answered 502";
     expect calls(AbsCatalog.librariesAsService) == 2;

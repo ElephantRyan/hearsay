@@ -52,7 +52,7 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
             key = "k".padRight(43, "k");
-            if (request.url == "https://ryan.test/api/federation/link" && request.method == http.Method.Post) {
+            if (request.url == "https://family.test/api/federation/link" && request.method == http.Method.Post) {
                 expect http.headerValue(request.headers, "content-type") == "application/json";
                 match (request.body) {
                     None -> {
@@ -71,13 +71,13 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
                     http.Reply(
                         status: 200,
                         headers: [http.Header(name: "Content-Type", value: "application/json")],
-                        body: json.encode(LinkAcceptance(name: "Ryan's library", key: key)),
+                        body: json.encode(LinkAcceptance(name: "The family library", key: key)),
                     ),
                 );
             }
 
             expect http.headerValue(request.headers, "authorization") == "Bearer ${key}";
-            if (request.url == "https://ryan.test/api/federation/recommendations") {
+            if (request.url == "https://family.test/api/federation/recommendations") {
                 return Ok(
                     http.Reply(
                         status: 200,
@@ -101,12 +101,12 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
                 );
             }
 
-            if (request.url == "https://ryan.test/api/federation/fetch") {
+            if (request.url == "https://family.test/api/federation/fetch") {
                 expect request.method == http.Method.Post;
                 return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
             }
 
-            expect request.url == "https://ryan.test/api/federation/link";
+            expect request.url == "https://family.test/api/federation/link";
             expect request.method == http.Method.Delete;
             return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
         }
@@ -119,20 +119,20 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
             userType: client.AbsUserType.Root,
         ),
     );
-    code = "  https://ryan.test/#${"s".padRight(43, "s")} ";
+    code = "  https://family.test/#${"s".padRight(43, "s")} ";
     expect linkServer(admin, LinkRequest(code: code)) is Ok(link);
-    expect link.name == "Ryan's library";
-    expect link.address == "https://ryan.test";
+    expect link.name == "The family library";
+    expect link.address == "https://family.test";
     expect link.linkedBy == "a1";
     expect link.lastFetchedAt != None;
     expect link.ratings == 1;
     expect link.matched == 1;
     expect calls(HttpClient.send) == 3;
     expect linkServer(admin, LinkRequest(code: code)) is Err(LinkError.AlreadyLinked(name));
-    expect name == "Ryan's library";
+    expect name == "The family library";
     expect calls(HttpClient.send) == 3;
     expect unlinkServer(admin, link.id) is Ok(unlinked);
-    expect unlinked == Unlinked(name: "Ryan's library", told: true);
+    expect unlinked == Unlinked(name: "The family library", told: true);
     expect unlinkServer(admin, link.id) is Err(LinkError.UnknownLink);
     none = listLinks(admin);
     expect none.length() == 0;
@@ -228,8 +228,8 @@ test aLoginPageOrARefusalKeepsNothing {
     expect linkServer(admin, LinkRequest(code: "https://gone.test#${secret}")) is Err(LinkError.PeerUnreachable);
     expect linkServer(admin, LinkRequest(code: "https://alex.test#${secret}")) is Err(LinkError.Invalid(_, own));
     expect own.contains("own");
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test")) is Err(LinkError.Invalid(_, _));
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#short")) is Err(LinkError.Invalid(_, _));
+    expect linkServer(admin, LinkRequest(code: "https://family.test")) is Err(LinkError.Invalid(_, _));
+    expect linkServer(admin, LinkRequest(code: "https://family.test#short")) is Err(LinkError.Invalid(_, _));
     none = listLinks(admin);
     expect none.length() == 0;
     expect calls(AbsCatalog.pageAsService) == 1;
@@ -267,7 +267,7 @@ test linkingWaitsForTheLibraryIndex {
             userType: client.AbsUserType.Admin,
         ),
     );
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Err(LinkError.IndexUnavailable(_));
+    expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Err(LinkError.IndexUnavailable(_));
     expect calls(HttpClient.send) == 0;
 }
 
@@ -296,13 +296,13 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if (request.url == "https://ryan.test/api/federation/link" && request.method == http.Method.Post) {
+            if (request.url == "https://family.test/api/federation/link" && request.method == http.Method.Post) {
                 return Ok(
                     http.Reply(
                         status: 200,
                         headers: [],
                         body: json.encode(
-                            LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")),
+                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k")),
                         ),
                     ),
                 );
@@ -319,12 +319,12 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
             userType: client.AbsUserType.Admin,
         ),
     );
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link);
+    expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
     expect link.problem == "it didn't answer";
     expect link.lastFetchedAt == None;
     expect calls(HttpClient.send) == 3;
     expect unlinkServer(admin, link.id) is Ok(unlinked);
-    expect unlinked == Unlinked(name: "Ryan's library", told: false);
+    expect unlinked == Unlinked(name: "The family library", told: false);
     none = listLinks(admin);
     expect none.length() == 0;
 }

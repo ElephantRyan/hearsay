@@ -24,7 +24,7 @@ function settingsOf(mirror: "true" | "false", source = "environment"): AdminSett
     oidcClientId: { value: null, source: "unset" },
     oidcClientSecret: { value: null, source: "unset" },
     oidcRedirectUri: { value: null, source: "unset" },
-    serverName: { value: "Ryan's library", source: "environment" },
+    serverName: { value: "The family library", source: "environment" },
   };
 }
 
@@ -335,15 +335,15 @@ describe("the admin screen", () => {
     expect(screen.getByLabelText("This server's name")).toHaveValue("");
 
     // Naming it makes linking possible at once, without a reload, and the name stays in the box.
-    await userEvent.type(screen.getByLabelText("This server's name"), "Ryan's library");
+    await userEvent.type(screen.getByLabelText("This server's name"), "The family library");
     await userEvent.click(screen.getByRole("button", { name: "Save settings" }));
     expect(await screen.findByText("Saved.")).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: "Make a link code" })).toBeEnabled();
-    expect(screen.getByLabelText("This server's name")).toHaveValue("Ryan's library");
+    expect(screen.getByLabelText("This server's name")).toHaveValue("The family library");
     expect(sent).toContainEqual({
       method: "PUT",
       path: "/admin/settings",
-      body: { serverName: "Ryan's library" },
+      body: { serverName: "The family library" },
     });
   });
 

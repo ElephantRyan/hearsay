@@ -154,7 +154,7 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
           <fieldset className="space-y-5" aria-label="Linked servers">
             <TextField
               label="This server's name"
-              placeholder="Ryan's library"
+              placeholder="The family library"
               value={texts.serverName}
               onChange={setText("serverName")}
               hint="What the servers linked to this one call it. Linking waits until it has one."

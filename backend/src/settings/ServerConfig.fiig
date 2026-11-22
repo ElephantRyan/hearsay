@@ -1,5 +1,5 @@
 // What this server is called to the servers linked to it (LINKED.md section 4):
-// "Ryan's library", say. Saved in the app, or else SERVER_NAME; linking waits
+// "The family library", say. Saved in the app, or else SERVER_NAME; linking waits
 // until one of them is set.
 wire ServerConfig {
     name: string | None from setting "server.name" ?? env "SERVER_NAME";
