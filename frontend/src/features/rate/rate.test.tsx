@@ -125,15 +125,20 @@ describe("the Rate tab", () => {
     mount("/rate");
 
     expect(await card("Book number 1")).toBeInTheDocument();
+    expect(screen.getByText("2 books to go")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Skip" }));
     expect(await card("Book number 2")).toBeInTheDocument();
+    // a skip counts down, as a save does
+    expect(screen.getByText("1 book to go")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Skip" }));
 
     expect(await screen.findByText("That's everything unrated")).toBeInTheDocument();
     expect(screen.queryByRole("article")).not.toBeInTheDocument();
+    expect(screen.queryByText(/to go/)).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Go through the 2 skipped books" }));
 
     expect(await card("Book number 1")).toBeInTheDocument();
+    expect(screen.getByText("2 books to go")).toBeInTheDocument();
   });
 
   it("keeps the book and says why when the save is refused", async () => {

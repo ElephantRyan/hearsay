@@ -59,6 +59,8 @@ export function RatePage() {
   // Skipped books go to the back, so the front is skipped only once every book left has been.
   const allSkipped = current !== undefined && skipped.has(current);
   const book = current === undefined ? undefined : byId.get(current);
+  // "To go" is what this pass hasn't shown yet: a skip counts down like a save does.
+  const toGo = remaining.filter((id) => !skipped.has(id)).length;
   const unscored = queueOf(listening.data, "unscored");
 
   function goThroughUnscored() {
@@ -82,9 +84,9 @@ export function RatePage() {
     <div className="mx-auto max-w-md space-y-4">
       <div className="flex items-baseline justify-between gap-3">
         <h1 className="sr-only text-xl font-semibold sm:not-sr-only">Rate</h1>
-        {remaining.length > 0 && (
+        {toGo > 0 && (
           <p className="text-sm text-muted">
-            {remaining.length} {remaining.length === 1 ? "book" : "books"} to go
+            {toGo} {toGo === 1 ? "book" : "books"} to go
           </p>
         )}
       </div>
