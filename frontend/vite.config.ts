@@ -20,6 +20,8 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    // Tests ask the (fake) server where ABS is, whatever a local .env builds in.
+    env: { VITE_ABS_URL: "" },
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
   },

@@ -87,6 +87,12 @@ describe("the browse screen", () => {
     expect(screen.queryByLabelText("Library")).not.toBeInTheDocument();
     expect(asked[0]?.pathname).toBe(`/api/libraries/${library.id}/items`);
     expect(asked[0]?.searchParams.get("size")).toBe("24");
+    // covers come straight from ABS, at the address the server has for it
+    await waitFor(() =>
+      expect(document.querySelector("img")?.getAttribute("src")).toBe(
+        "https://abs.test/api/items/it-1/cover",
+      ),
+    );
   });
 
   it("offers a library picker only when there are several, and switches libraries", async () => {

@@ -23,6 +23,10 @@ adapter http libraryApi {
         Err(error) -> libraryErrorResponse(error),
     }
 
+    GET "/abs" -> showAbsAddress(me) produces "application/json" {
+        address -> 200 address,
+    }
+
     GET "/items/{itemId}" -> showItem(me, itemId: string) produces "application/json" {
         Ok(detail) -> 200 detail,
         Err(error) -> libraryErrorResponse(error),

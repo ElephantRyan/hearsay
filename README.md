@@ -86,18 +86,26 @@ nginx, which passes `/api/` on to the API), `api`, and `worker` (the hourly coll
 with the SQLite database on the `hearsay-data` volume.
 
 ```sh
-cp hearsay.env.example hearsay.env      # fill it in; anything marked "or the admin screen" can wait
-ABS_PUBLIC_URL=https://audiobooks.example.com docker compose up -d --build
+git clone https://github.com/ElephantRyan/hearsay.git && cd hearsay
+docker compose up -d --build
 ```
+
+Then open it and follow the first-run setup: it asks where Audiobookshelf is and for an ABS
+admin's login, which claims the server. The token, sign-in modes, Authentik, mirroring and the
+server's name are on the admin screen after that. Nothing needs configuring beforehand; to set
+any of it from the environment instead, copy `hearsay.env.example` to `hearsay.env`.
 
 - The backend runs on fiig `v0.1.0-alpha.3` (`ghcr.io/elephantryan/fiig:v0.1.0-alpha.3`), the
   release it is tested on. Set `FIIG_IMAGE` to try another.
-- `ABS_PUBLIC_URL` is the Audiobookshelf address browsers load covers from. It is built into the
-  browser app, so change it with `docker compose up -d --build`.
+- Covers load straight from Audiobookshelf, at the address saved in setup. If browsers reach ABS
+  at a different address (setup was given a Docker-internal one, say), set `ABS_PUBLIC_URL` to
+  theirs and rebuild with `docker compose up -d --build`.
 - Only port 8080 (`HEARSAY_PORT`) is published. Put your reverse proxy, with HTTPS, in front of
-  it, and set `FRONTEND_URL` to the address it serves. Sign-in cookies are `Secure`, so outside
+  it, and do the first-run setup through it: setup saves the address it was opened at as the app's
+  own, for link codes and Authentik redirects. Sign-in cookies are `Secure`, so outside
   `localhost` the app needs HTTPS.
-- These three can live in a `.env` file next to `docker-compose.yml`, which compose reads itself.
+- `HEARSAY_PORT`, `ABS_PUBLIC_URL` and `FIIG_IMAGE` can live in a `.env` file next to
+  `docker-compose.yml`, which compose reads itself.
 
 To update, pull and run the same `docker compose up -d --build`; migrations apply on start. Back
 up the database with `docker compose stop` and a copy of the `hearsay-data` volume.

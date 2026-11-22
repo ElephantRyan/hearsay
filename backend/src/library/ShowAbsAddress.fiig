@@ -1,0 +1,8 @@
+use hearsay.accounts;
+use hearsay.settings;
+
+// GET /abs. Covers come straight from ABS, which serves them without signing
+// in, so the browser app asks where ABS is rather than having it built in.
+workflow showAbsAddress(me: accounts.Identity) -> AbsAddress {
+    return AbsAddress(url: settings.absUrl());
+}

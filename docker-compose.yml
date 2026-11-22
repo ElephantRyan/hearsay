@@ -1,12 +1,15 @@
 # Hearsay on one Docker host: the browser app (web), the API (api), and the
 # hourly collections sync (worker), sharing one SQLite database on a volume.
 #
-#   cp hearsay.env.example hearsay.env    # then fill it in
-#   ABS_PUBLIC_URL=https://audiobooks.example.com docker compose up -d --build
+#   docker compose up -d --build
 #
-# ABS_PUBLIC_URL, HEARSAY_PORT and FIIG_IMAGE (the fiig release the backend
-# runs on, pinned below) can also go in a .env file next to this one, which
-# compose reads by itself.
+# Nothing needs configuring first: the first visit asks where Audiobookshelf is
+# and for an ABS admin's login, and the rest is on the admin screen. Settings
+# can also come from hearsay.env (see hearsay.env.example), if it exists.
+#
+# HEARSAY_PORT, ABS_PUBLIC_URL (only if browsers reach ABS at another address
+# than the one the server saves) and FIIG_IMAGE (the fiig release the backend
+# runs on, pinned below) can go in a .env file next to this one.
 #
 # Point your reverse proxy (with HTTPS) at port 8080; that is the only port
 # published. The API and worker are reachable only from the web container.
@@ -18,7 +21,9 @@ x-backend: &backend
     args:
       FIIG_IMAGE: ${FIIG_IMAGE:-ghcr.io/elephantryan/fiig:v0.1.0-alpha.3}
   image: hearsay-backend
-  env_file: hearsay.env
+  env_file:
+    - path: hearsay.env
+      required: false
   volumes:
     - hearsay-data:/data
   restart: unless-stopped

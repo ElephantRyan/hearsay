@@ -1,5 +1,6 @@
 import { BookOpen } from "lucide-react";
 import { useState } from "react";
+import { useAbsUrl } from "../../api/hooks";
 import { coverUrl } from "../../lib/format";
 
 interface Props {
@@ -12,7 +13,7 @@ const sizes = { sm: "w-14", md: "w-20", lg: "w-40", fill: "w-full" } as const;
 
 /** A fixed 1:1 cover (audiobooks are square), with placeholder art when ABS has none. */
 export function BookCover({ itemId, title, size = "md" }: Props) {
-  const src = coverUrl(itemId);
+  const src = coverUrl(itemId, useAbsUrl());
   const [failed, setFailed] = useState(false);
   const showImage = src !== undefined && !failed;
 

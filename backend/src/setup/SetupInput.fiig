@@ -1,7 +1,9 @@
-// The body of POST /setup: where Audiobookshelf is, and an admin's login there.
-// The password goes to ABS's /login and is dropped, as at sign-in.
+// The body of POST /setup: where Audiobookshelf is, an admin's login there, and
+// (sent by the browser app) the address the app itself is open at. The password
+// goes to ABS's /login and is dropped, as at sign-in.
 model SetupInput {
     absUrl: string;
+    frontendUrl: string | None;
     username: string;
     password: string;
 }

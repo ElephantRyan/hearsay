@@ -53,10 +53,14 @@ test aNewServerIsClaimedByAnAbsAdmin {
     expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "wrong")) is Err(SetupError.WrongLogin);
     expect runSetup(SetupInput(absUrl: "https://abs.home.test", username: "reader", password: "right")) is Err(SetupError.NotAdmin);
     expect showSetup() == SetupState(needed: true);
-    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "right")) is Ok(session);
+    expect runSetup(SetupInput(absUrl: "https://abs.home.test", frontendUrl: "ftp://hearsay.home.test", username: "owner", password: "right")) is Err(SetupError.Invalid("frontendUrl", _));
+    expect settings.frontendUrl() == "http://localhost:5173";
+    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", frontendUrl: "https://hearsay.home.test/", username: "owner", password: "right")) is Ok(session);
     expect sessions.signedIn(session.token) is Ok(me);
     expect me.userType == client.AbsUserType.Root;
     expect settings.absUrl() == "https://abs.home.test";
+    // The address the admin set up from is the app's own, for links and sign-in redirects.
+    expect settings.frontendUrl() == "https://hearsay.home.test";
     expect showSetup() == SetupState(needed: false);
     expect runSetup(SetupInput(absUrl: "https://elsewhere.test", username: "owner", password: "right")) is Err(SetupError.AlreadySetUp);
     expect settings.absUrl() == "https://abs.home.test";

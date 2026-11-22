@@ -77,8 +77,20 @@ describe("first-run setup", () => {
     expect(await screen.findByText(/Almost done: paste an Audiobookshelf/)).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/admin");
     expect(sent).toEqual([
-      { absUrl: "https://wrong.test", username: "owner", password: "pw" },
-      { absUrl: "https://abs.home.test", username: "owner", password: "pw" },
+      {
+        absUrl: "https://wrong.test",
+        username: "owner",
+        password: "pw",
+        // the address the app is open at, saved as its own
+        frontendUrl: "http://localhost:3000",
+      },
+      {
+        absUrl: "https://abs.home.test",
+        username: "owner",
+        password: "pw",
+        // the address the app is open at, saved as its own
+        frontendUrl: "http://localhost:3000",
+      },
     ]);
   });
 

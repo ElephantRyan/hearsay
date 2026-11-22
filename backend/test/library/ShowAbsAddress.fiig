@@ -1,0 +1,22 @@
+use hearsay.absclient as client;
+use hearsay.accounts;
+use hearsay.settings.Abs;
+
+// The browser app loads covers from wherever ABS is set to be, saved or not.
+test theAbsAddressIsTheOneSetForTheServer {
+    fake Abs {
+        url: "https://abs.test";
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect showAbsAddress(ann) == AbsAddress(url: "https://abs.test");
+}
+
+test aServerNotSetUpHasNoAbsAddress {
+    fake Abs {
+        url: None;
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect showAbsAddress(ann) == AbsAddress(url: None);
+}

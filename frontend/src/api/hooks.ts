@@ -6,6 +6,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { builtInAbsUrl } from "../lib/format";
 import { api } from "./client";
 import { ApiError, messageOf, unwrap } from "./errors";
 import { keys } from "./keys";
@@ -386,8 +387,28 @@ export const useSetupState = () =>
 export function useRunSetup() {
   const queryClient = useQueryClient();
   return useMutation({
+    // The address the app is open at becomes its own, for links and sign-in redirects.
     mutationFn: async (input: { absUrl: string; username: string; password: string }) =>
-      unwrap(await api.POST("/setup", { body: input })),
+      unwrap(
+        await api.POST("/setup", {
+          body: { ...input, frontendUrl: globalThis.location?.origin ?? null },
+        }),
+      ),
     onSuccess: () => queryClient.invalidateQueries(),
   });
+}
+
+/**
+ * Where browsers reach Audiobookshelf, for covers and "Open in Audiobookshelf": the address built
+ * into the app if there is one, or else the server's (saved in the app, or ABS_URL). Undefined
+ * until it is known. A settings change refetches it with everything else.
+ */
+export function useAbsUrl(): string | undefined {
+  const server = useQuery({
+    queryKey: keys.abs,
+    enabled: builtInAbsUrl === undefined,
+    staleTime: Number.POSITIVE_INFINITY,
+    queryFn: async () => unwrap(await api.GET("/abs")),
+  });
+  return builtInAbsUrl ?? server.data?.url?.replace(/\/$/, "") ?? undefined;
 }

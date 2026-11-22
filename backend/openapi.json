@@ -28,6 +28,44 @@
   },
   "openapi": "3.0.3",
   "paths": {
+    "/abs": {
+      "get": {
+        "operationId": "showAbsAddress",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "url": {
+                      "nullable": true,
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sessionsMe": []
+          }
+        ]
+      }
+    },
     "/admin/library-index": {
       "post": {
         "operationId": "rebuildIndex",
@@ -3246,6 +3284,10 @@
               "schema": {
                 "properties": {
                   "absUrl": {
+                    "type": "string"
+                  },
+                  "frontendUrl": {
+                    "nullable": true,
                     "type": "string"
                   },
                   "password": {

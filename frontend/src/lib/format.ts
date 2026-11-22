@@ -1,18 +1,24 @@
-const absUrl = (import.meta.env.VITE_ABS_URL as string | undefined)?.replace(/\/$/, "");
+/**
+ * The Audiobookshelf address built into this copy of the app (VITE_ABS_URL), for a server whose
+ * saved ABS address is one browsers can't reach, such as a Docker-internal name. Usually unset:
+ * the app asks the server instead (useAbsUrl).
+ */
+export const builtInAbsUrl =
+  (import.meta.env.VITE_ABS_URL as string | undefined)?.replace(/\/$/, "") || undefined;
 
 /**
- * ABS serves covers without authentication, so the browser loads them
- * straight from ABS. With no VITE_ABS_URL the UI shows placeholder art.
+ * ABS serves covers without authentication, so the browser loads them straight from ABS at
+ * `absUrl`. Undefined, and placeholder art shown, while there's no ABS address.
  */
-export function coverUrl(itemId: string): string | undefined {
+export function coverUrl(itemId: string, absUrl: string | undefined): string | undefined {
   return absUrl ? `${absUrl}/api/items/${encodeURIComponent(itemId)}/cover` : undefined;
 }
 
 /**
  * The book in ABS's own web app, where Play is one tap away. ABS serves its web app under
- * /audiobookshelf/ (its default router base path). Undefined when there's no VITE_ABS_URL.
+ * /audiobookshelf/ (its default router base path). Undefined while there's no ABS address.
  */
-export function absItemUrl(itemId: string): string | undefined {
+export function absItemUrl(itemId: string, absUrl: string | undefined): string | undefined {
   return absUrl ? `${absUrl}/audiobookshelf/item/${encodeURIComponent(itemId)}` : undefined;
 }
 

@@ -1,7 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { ApiError } from "../../api/errors";
-import { useItem, useMe } from "../../api/hooks";
+import { useAbsUrl, useItem, useMe } from "../../api/hooks";
 import { BookCover } from "../../components/domain/BookCover";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { RecommenderChip } from "../../components/domain/RecommenderChip";
@@ -13,6 +13,7 @@ export function ItemPage() {
   const { itemId } = useParams({ from: "/app/items/$itemId" });
   const item = useItem(itemId);
   const me = useMe();
+  const absUrl = useAbsUrl();
 
   if (item.isPending) return <LoadingState rows={2} label="Loading book" />;
   if (item.isError) {
@@ -29,7 +30,7 @@ export function ItemPage() {
   const { book, average, count, ratings } = item.data;
   const mine = ratings.find((row) => row.userId === me.data?.userId);
   const others = ratings.filter((row) => row.userId !== me.data?.userId);
-  const listenUrl = absItemUrl(book.itemId);
+  const listenUrl = absItemUrl(book.itemId, absUrl);
 
   return (
     <div className="space-y-8">

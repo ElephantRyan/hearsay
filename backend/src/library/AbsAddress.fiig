@@ -1,0 +1,6 @@
+// Where Audiobookshelf is, for the browser app's covers and "Open in
+// Audiobookshelf" links: the address saved in the app, or else ABS_URL. None
+// until one is set.
+model AbsAddress {
+    url: string | None;
+}

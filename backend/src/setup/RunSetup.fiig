@@ -2,11 +2,13 @@ use hearsay.absclient as client;
 use hearsay.sessions;
 use hearsay.settings;
 
-// POST /setup: only while the server has no Audiobookshelf address. The address
-// is checked like the admin screen's, the login must be an ABS admin's, and
-// that admin is signed in, ready to finish on the admin screen.
+// POST /setup: only while the server has no Audiobookshelf address. The
+// addresses are checked like the admin screen's, the login must be an ABS
+// admin's, and that admin is signed in, ready to finish on the admin screen.
+// The app's own address, if sent, is saved too, so links and sign-in
+// redirects point at it rather than at FRONTEND_URL's default.
 workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
-    checked = mapErr(e in settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl))):
+    checked = mapErr(e in settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl, frontendUrl: input.frontendUrl))):
             setupErrorOfChange(e)?;
     return match (checked.absUrl) {
         None -> {
@@ -24,7 +26,7 @@ workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
                 return Err(SetupError.NotAdmin);
             }
 
-            mapErr(e in settings.applySettingsChange(settings.SettingsChange(absUrl: url), identity.userId)):
+            mapErr(e in settings.applySettingsChange(settings.SettingsChange(absUrl: url, frontendUrl: checked.frontendUrl), identity.userId)):
                     setupErrorOfChange(e)?;
             return Ok(sessions.startSession(identity));
         },
