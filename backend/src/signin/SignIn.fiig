@@ -4,14 +4,24 @@
 use hearsay.accounts
 use hearsay.settings
 
-activity signIn(attempt: accounts.SignInAttempt) -> Result<accounts.Identity, accounts.SignInError> {
-    match settings.absUrl() {
+activity signIn(
+    attempt: accounts.SignInAttempt,
+) -> Result<accounts.Identity, accounts.SignInError> {
+    return match (settings.absUrl()) {
         None -> {
-            return Err(accounts.SignInError.Unavailable("this server isn't set up yet"))
+            return Err(accounts.SignInError.Unavailable("this server isn't set up yet"));
         }
+
         url -> {
-            Provider = signInProvider(attempt)
-            return Provider.authenticate(attempt, accounts.SignInServer(absUrl: url, serviceToken: settings.serviceToken(), oidc: settings.oidcSettingsOf()))
+            Provider = signInProvider(attempt);
+            return Provider.authenticate(
+                attempt,
+                accounts.SignInServer(
+                    absUrl: url,
+                    serviceToken: settings.serviceToken(),
+                    oidc: settings.oidcSettingsOf(),
+                ),
+            );
         }
     }
 }

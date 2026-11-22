@@ -3,5 +3,5 @@
 // server has no library index (it is built when an invite is made), since
 // matching would find nothing; the hourly fetch builds it.
 workflow fetchForCaller(peer: LinkedServer) -> int {
-    return fetchIfIndexed(peer.id)
+    return fetchIfIndexed(peer.id);
 }

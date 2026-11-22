@@ -12,34 +12,60 @@ test signInUsesTheChosenProvider {
     fake AbsService {
         token: "svc"
     }
+
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
         clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake AbsPasswordSignIn {
-        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            return Ok(accounts.Identity(userId: "u-pw", username: "ryan", userType: client.AbsUserType.User))
+        gateway authenticate(
+            attempt: accounts.SignInAttempt,
+            server: accounts.SignInServer,
+        ) -> Result<accounts.Identity, accounts.SignInError> {
+            return Ok(
+                accounts.Identity(
+                    userId: "u-pw",
+                    username: "ryan",
+                    userType: client.AbsUserType.User,
+                ),
+            );
         }
     }
+
     fake AuthentikSignIn {
-        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
-            return Ok("https://idp.test/")
+        gateway beginUrl(
+            oidc: accounts.OidcSettings,
+            state: string,
+            codeVerifier: string,
+        ) -> Result<string, accounts.SignInError> {
+            return Ok("https://idp.test/");
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            return Ok(accounts.Identity(userId: "u-oidc", username: "ryan", userType: client.AbsUserType.User))
+        gateway authenticate(
+            attempt: accounts.SignInAttempt,
+            server: accounts.SignInServer,
+        ) -> Result<accounts.Identity, accounts.SignInError> {
+            return Ok(
+                accounts.Identity(
+                    userId: "u-oidc",
+                    username: "ryan",
+                    userType: client.AbsUserType.User,
+                ),
+            );
         }
     }
 
-    expect signIn(accounts.SignInAttempt.Password("ryan", "pw")) is Ok(byPassword)
-    expect byPassword.userId == "u-pw"
-    expect signIn(accounts.SignInAttempt.AuthorizationCode("c", "v")) is Ok(byCode)
-    expect byCode.userId == "u-oidc"
-    expect calls(AbsPasswordSignIn.authenticate) == 1
-    expect calls(AuthentikSignIn.authenticate) == 1
+    expect signIn(accounts.SignInAttempt.Password("ryan", "pw")) is Ok(byPassword);
+    expect byPassword.userId == "u-pw";
+    expect signIn(accounts.SignInAttempt.AuthorizationCode("c", "v")) is Ok(byCode);
+    expect byCode.userId == "u-oidc";
+    expect calls(AbsPasswordSignIn.authenticate) == 1;
+    expect calls(AuthentikSignIn.authenticate) == 1;
 }

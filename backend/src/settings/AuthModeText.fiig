@@ -1,6 +1,6 @@
 // How a saved setting spells a mode.
 conversion authModeText(mode: AuthMode) -> string {
-    match mode {
+    return match (mode) {
         AuthMode.Abs -> "abs"
         AuthMode.Oidc -> "oidc"
         AuthMode.Both -> "both"

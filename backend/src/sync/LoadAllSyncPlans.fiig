@@ -4,7 +4,7 @@ use hearsay.links
 // (LINKED.md section 6): the scheduled run's plan. Reads our tables and
 // touches nothing.
 activity loadAllSyncPlans() -> List<SyncPlan> {
-    rows = links.everyRecommendation()
-    states = allSyncStates()
-    return planSync(rows, states, everyoneToSync(rows, states))
+    rows = links.everyRecommendation();
+    states = allSyncStates();
+    return planSync(rows, states, everyoneToSync(rows, states));
 }

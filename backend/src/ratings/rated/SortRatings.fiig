@@ -1,5 +1,5 @@
 rule sortRatings(rows: List<RatingRow>, order: RatingOrder) -> List<RatingRow> {
-    match order {
+    return match (order) {
         RatingOrder.Score -> sorted(r in rows): r.score descending then r.updatedAt descending
         RatingOrder.Newest -> sorted(r in rows): r.updatedAt descending
         RatingOrder.Title -> sorted(r in rows): r.title

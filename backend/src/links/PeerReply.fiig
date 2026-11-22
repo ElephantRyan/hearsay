@@ -4,26 +4,29 @@ use fiig.http
 // redirects or answers with its page, never Hearsay's JSON, so either is a
 // LoginPage rather than a refusal by the server itself.
 conversion peerReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Reply, PeerError> {
-    match sent {
+    return match (sent) {
         Err(failure) -> Err(PeerError.Unreachable(failure: failure))
         Ok(reply) -> {
-            if reply.status >= 300 and reply.status < 400 {
-                return Err(PeerError.LoginPage)
+            if (reply.status >= 300 && reply.status < 400) {
+                return Err(PeerError.LoginPage);
             }
-            if isPage(http.headerValue(reply.headers, "content-type")) {
-                return Err(PeerError.LoginPage)
+
+            if (isPage(http.headerValue(reply.headers, "content-type"))) {
+                return Err(PeerError.LoginPage);
             }
-            if reply.status != 200 and reply.status != 204 {
-                return Err(PeerError.Rejected(status: reply.status))
+
+            if (reply.status != 200 && reply.status != 204) {
+                return Err(PeerError.Rejected(status: reply.status));
             }
-            return Ok(reply)
+
+            return Ok(reply);
         }
     }
 }
 
 private {
     isPage(contentType: string | None) -> bool {
-        match contentType {
+        return match (contentType) {
             None -> false
             given -> given.lowercase().contains("text/html")
         }

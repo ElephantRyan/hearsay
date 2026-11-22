@@ -4,15 +4,21 @@ use hearsay.accounts
 // Exactly one ABS account must carry the email. None means the person has
 // never been through ABS's own OpenID login (ABS creates the account then),
 // and more than one means we can't tell whose ratings these are.
-conversion identityOfMatches(matches: List<members.AbsUserEntry>) -> Result<accounts.Identity, accounts.SignInError> {
-    if matches.length() == 0 {
-        return Err(accounts.SignInError.NoAccount)
+conversion identityOfMatches(
+    matches: List<members.AbsUserEntry>,
+) -> Result<accounts.Identity, accounts.SignInError> {
+    if (matches.length() == 0) {
+        return Err(accounts.SignInError.NoAccount);
     }
-    if matches.length() > 1 {
+
+    if (matches.length() > 1) {
         return Err(
-            accounts.SignInError.Refused("more than one Audiobookshelf account has your email; ask the server's admin"),
-        )
+            accounts.SignInError.Refused(
+                "more than one Audiobookshelf account has your email; ask the server's admin",
+            ),
+        );
     }
-    user = matches.at(0)
-    return Ok(accounts.Identity(userId: user.id, username: user.username, userType: user.type))
+
+    user = matches.at(0);
+    return Ok(accounts.Identity(userId: user.id, username: user.username, userType: user.type));
 }

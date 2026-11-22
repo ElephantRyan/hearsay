@@ -3,7 +3,7 @@
 // from its discovery document. Each is optional: an admin may save them in the
 // app instead (oidcSettings), and Authentik sign-in is offered only once all
 // four are set.
-config Oidc {
+wire Oidc {
     issuer: string | None from env "OIDC_ISSUER"
     clientId: string | None from env "OIDC_CLIENT_ID"
     clientSecret: Secret | None from env "OIDC_CLIENT_SECRET"

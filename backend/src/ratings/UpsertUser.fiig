@@ -1,12 +1,10 @@
 // Remembers a username for showing names beside ratings (PLAN.md section 3).
-gateway upsertUser(userId: string, username: string, now: int) -> int
-    requires Database
-{
+gateway upsertUser(userId: string, username: string, now: int) -> int requires Database {
     return Database.execute(
         "INSERT INTO app_user (user_id, username, display_name, last_seen_at) VALUES (?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET username = excluded.username, display_name = excluded.display_name, last_seen_at = excluded.last_seen_at",
         userId,
         username,
         username,
         now,
-    )
+    );
 }

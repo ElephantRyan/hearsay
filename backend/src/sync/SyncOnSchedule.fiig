@@ -5,18 +5,21 @@ use hearsay.settings
 // fails comes back as an Err, so the run is logged; the rest still ran, and
 // the next run tries again.
 workflow syncOnSchedule() -> Result<int, SyncError> {
-    if not settings.mirrorEnabled() {
-        return Ok(0)
+    if (!settings.mirrorEnabled()) {
+        return Ok(0);
     }
-    plans = loadAllSyncPlans()
-    if plans.length() == 0 {
-        return Ok(0)
+
+    plans = loadAllSyncPlans();
+    if (plans.length() == 0) {
+        return Ok(0);
     }
-    abs = mapErr(e in settings.loadAbsTarget()): syncErrorOfSettings(e)?
-    results = applyPlans(abs, plans)
-    failed = filter(r in results): r.action == SyncOutcome.Failed
-    if failed.length() > 0 {
-        return Err(SyncError.SomeWritesFailed(failed.length(), results.length()))
+
+    abs = mapErr(e in settings.loadAbsTarget()): syncErrorOfSettings(e)?;
+    results = applyPlans(abs, plans);
+    failed = filter(r in results): r.action == SyncOutcome.Failed;
+    if (failed.length() > 0) {
+        return Err(SyncError.SomeWritesFailed(failed.length(), results.length()));
     }
-    return Ok(results.length())
+
+    return Ok(results.length());
 }

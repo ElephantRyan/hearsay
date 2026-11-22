@@ -1,8 +1,14 @@
 // The status and message a client sees for each way listening can fail.
 conversion listeningErrorResponse(error: ListeningError) -> HttpResponse<string> {
-    match error {
-        ListeningError.AccountNotFound -> HttpResponse(status: 404, body: "no Audiobookshelf account for you")
-        ListeningError.BookNotFound -> HttpResponse(status: 404, body: "no book with that id in Audiobookshelf")
+    return match (error) {
+        ListeningError.AccountNotFound -> HttpResponse(
+            status: 404,
+            body: "no Audiobookshelf account for you",
+        )
+        ListeningError.BookNotFound -> HttpResponse(
+            status: 404,
+            body: "no book with that id in Audiobookshelf",
+        )
         ListeningError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
     }
 }

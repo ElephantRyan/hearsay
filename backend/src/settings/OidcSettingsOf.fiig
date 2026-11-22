@@ -3,27 +3,36 @@ use hearsay.accounts
 // The Authentik application, each part saved in the app or else from its
 // OIDC_* variable; None until all four are there.
 activity oidcSettingsOf() -> accounts.OidcSettings | None {
-    match storedText("oidc.issuer") or Oidc.issuer {
+    return match (storedText("oidc.issuer") ?? Oidc.issuer) {
         None -> {
-            return None
+            return None;
         }
+
         issuer -> {
-            match storedText("oidc.clientId") or Oidc.clientId {
+            return match (storedText("oidc.clientId") ?? Oidc.clientId) {
                 None -> {
-                    return None
+                    return None;
                 }
+
                 clientId -> {
-                    match storedText("oidc.redirectUri") or Oidc.redirectUri {
+                    return match (storedText("oidc.redirectUri") ?? Oidc.redirectUri) {
                         None -> {
-                            return None
+                            return None;
                         }
+
                         redirectUri -> {
-                            match storedSecret("oidc.clientSecret") or Oidc.clientSecret {
+                            return match (storedSecret("oidc.clientSecret") ?? Oidc.clientSecret) {
                                 None -> {
-                                    return None
+                                    return None;
                                 }
+
                                 clientSecret -> {
-                                    return accounts.OidcSettings(issuer: issuer, clientId: clientId, clientSecret: clientSecret, redirectUri: redirectUri)
+                                    return accounts.OidcSettings(
+                                        issuer: issuer,
+                                        clientId: clientId,
+                                        clientSecret: clientSecret,
+                                        redirectUri: redirectUri,
+                                    );
                                 }
                             }
                         }

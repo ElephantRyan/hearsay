@@ -3,13 +3,14 @@ use fiig.http
 // A sent request as ABS answers it: unreachable, a refusal by status, or a
 // 200 reply to decode.
 conversion absReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Reply, AbsError> {
-    match sent {
+    return match (sent) {
         Err(failure) -> Err(AbsError.Unreachable(failure: failure))
         Ok(reply) -> {
-            if reply.status != 200 {
-                return Err(absFailure(reply.status))
+            if (reply.status != 200) {
+                return Err(absFailure(reply.status));
             }
-            return Ok(reply)
+
+            return Ok(reply);
         }
     }
 }
@@ -18,12 +19,14 @@ private {
     // What a non-200 reply from ABS means. 401 is a bad or expired token (or a
     // wrong password at login); 404 is an item that isn't there.
     absFailure(status: int) -> AbsError {
-        if status == 401 {
-            return AbsError.Unauthorized
+        if (status == 401) {
+            return AbsError.Unauthorized;
         }
-        if status == 404 {
-            return AbsError.NotFound
+
+        if (status == 404) {
+            return AbsError.NotFound;
         }
-        return AbsError.Rejected(status)
+
+        return AbsError.Rejected(status);
     }
 }

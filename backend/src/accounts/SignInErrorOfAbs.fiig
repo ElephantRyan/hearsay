@@ -3,7 +3,7 @@ use hearsay.absclient as client
 // A wrong password or an unknown user is the person's mistake; anything else
 // is ours or ABS's. Shared by every provider that talks to ABS.
 conversion signInErrorOfAbs(error: client.AbsError) -> SignInError {
-    match client.faultOfAbs(error) {
+    return match (client.faultOfAbs(error)) {
         client.AbsFault.Missing -> SignInError.Refused("wrong username or password")
         client.AbsFault.Denied -> SignInError.Refused("wrong username or password")
         client.AbsFault.Down(detail) -> SignInError.Unavailable(detail)

@@ -3,9 +3,14 @@ use hearsay.absclient as client
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.absclient.members.AbsMembers
 
-activity checkAbs(url: string, username: string, password: string, itemId: string) -> Result<AbsCheck, client.AbsError> {
-    session = AbsMembers.login(url, username, password)?
-    user = AbsMembers.me(url, session.accessToken)?
-    book = AbsCatalog.item(url, session.accessToken, itemId)?
-    return Ok(AbsCheck(username: user.username, userType: user.type, title: book.title))
+activity checkAbs(
+    url: string,
+    username: string,
+    password: string,
+    itemId: string,
+) -> Result<AbsCheck, client.AbsError> {
+    session = AbsMembers.login(url, username, password)?;
+    user = AbsMembers.me(url, session.accessToken)?;
+    book = AbsCatalog.item(url, session.accessToken, itemId)?;
+    return Ok(AbsCheck(username: user.username, userType: user.type, title: book.title));
 }

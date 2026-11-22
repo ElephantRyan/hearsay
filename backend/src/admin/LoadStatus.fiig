@@ -7,22 +7,29 @@ use hearsay.signin.authentik.AuthentikSignIn
 // Is Audiobookshelf there, does this server's token work, and does Authentik
 // answer? Asks each of them every time.
 activity loadStatus() -> AdminStatus {
-    return withAuthentik(absStatus(), authentikStatus())
+    return withAuthentik(absStatus(), authentikStatus());
 }
 
 private {
     absStatus() -> AdminStatus {
-        match settings.absUrl() {
+        return match (settings.absUrl()) {
             None -> {
-                return status("not set up", None, None, "No Audiobookshelf address is set.")
+                return status("not set up", None, None, "No Audiobookshelf address is set.");
             }
+
             url -> {
-                match AbsServer.status(url) {
+                return match (AbsServer.status(url)) {
                     Err(_) -> {
-                        return status("unreachable", None, None, "Audiobookshelf didn't answer at that address.")
+                        return status(
+                            "unreachable",
+                            None,
+                            None,
+                            "Audiobookshelf didn't answer at that address.",
+                        );
                     }
+
                     Ok(_) -> {
-                        return withAccount(url)
+                        return withAccount(url);
                     }
                 }
             }
@@ -30,17 +37,19 @@ private {
     }
 
     withAccount(url: string) -> AdminStatus {
-        match settings.serviceToken() {
+        return match (settings.serviceToken()) {
             None -> {
-                return status("reachable", None, None, "No Audiobookshelf token is set.")
+                return status("reachable", None, None, "No Audiobookshelf token is set.");
             }
+
             token -> {
-                match AbsMembers.meAsService(client.AbsTarget(url: url, token: token)) {
+                return match (AbsMembers.meAsService(client.AbsTarget(url: url, token: token))) {
                     Ok(user) -> {
-                        return status("reachable", user.username, user.type, None)
+                        return status("reachable", user.username, user.type, None);
                     }
+
                     Err(error) -> {
-                        return status("reachable", None, None, tokenProblem(error))
+                        return status("reachable", None, None, tokenProblem(error));
                     }
                 }
             }
@@ -48,34 +57,53 @@ private {
     }
 
     authentikStatus() -> string {
-        match settings.oidcSettingsOf() {
+        return match (settings.oidcSettingsOf()) {
             None -> {
-                return "not set up"
+                return "not set up";
             }
+
             oidc -> {
-                match AuthentikSignIn.discover(oidc) {
+                return match (AuthentikSignIn.discover(oidc)) {
                     Ok(_) -> {
-                        return "answering"
+                        return "answering";
                     }
+
                     Err(_) -> {
-                        return "not answering"
+                        return "not answering";
                     }
                 }
             }
         }
     }
 
-    status(abs: string, account: string | None, accountType: client.AbsUserType | None, problem: string | None) -> AdminStatus {
-        return AdminStatus(abs: abs, authentik: "not set up", serviceAccount: account, serviceAccountType: accountType, problem: problem)
+    status(
+        abs: string,
+        account: string | None,
+        accountType: client.AbsUserType | None,
+        problem: string | None,
+    ) -> AdminStatus {
+        return AdminStatus(
+            abs: abs,
+            authentik: "not set up",
+            serviceAccount: account,
+            serviceAccountType: accountType,
+            problem: problem,
+        );
     }
 
     withAuthentik(found: AdminStatus, authentik: string) -> AdminStatus {
-        return AdminStatus(abs: found.abs, authentik: authentik, serviceAccount: found.serviceAccount, serviceAccountType: found.serviceAccountType, problem: found.problem)
+        return AdminStatus(
+            abs: found.abs,
+            authentik: authentik,
+            serviceAccount: found.serviceAccount,
+            serviceAccountType: found.serviceAccountType,
+            problem: found.problem,
+        );
     }
 
     // Short, safe words for a failed token check. Never the token or a body.
     tokenProblem(error: client.AbsError) -> string {
-        match error {
+        return match (error) {
             client.AbsError.NotFound -> "Audiobookshelf answered 404 to /api/me."
             client.AbsError.Unauthorized -> "Audiobookshelf refused the token."
             client.AbsError.Rejected(status) -> "Audiobookshelf answered ${status} to the token."

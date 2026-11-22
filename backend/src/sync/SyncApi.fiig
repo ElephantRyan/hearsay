@@ -10,8 +10,7 @@ adapter http syncApi {
         userId: string | None,
         dryRun: bool | None,
     )
-        produces "application/json"
-    {
+            produces "application/json" {
         Ok(results) -> 200 results
         Err(error) -> syncErrorResponse(error)
     }

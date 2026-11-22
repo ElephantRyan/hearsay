@@ -6,9 +6,10 @@ use hearsay.settings
 // library index, built now if it never has been: the other server asks this
 // one to fetch as soon as it links, and that fetch has to be quick.
 workflow inviteServer(admin: accounts.Admin) -> Result<LinkInvite, LinkError> {
-    if settings.serverName() == None {
-        return Err(LinkError.NoServerName)
+    if (settings.serverName() == None) {
+        return Err(LinkError.NoServerName);
     }
-    readyIndex()?
-    return Ok(openInvite(admin.identity.userId))
+
+    readyIndex()?;
+    return Ok(openInvite(admin.identity.userId));
 }

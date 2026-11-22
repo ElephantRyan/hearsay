@@ -3,9 +3,9 @@ use hearsay.settings
 // A new invite from admin `by`: this server's address and a fresh secret, of
 // which only the hash is kept.
 activity openInvite(by: string) -> LinkInvite {
-    secret = newKey()
-    now = Clock.now()
-    expiresAt = now + 24 * 60 * 60 * 1000
-    saveInvite(keyHash(secret), expiresAt, now, by)
-    return LinkInvite(code: "${settings.frontendUrl()}#${secret}", expiresAt: expiresAt)
+    secret = newKey();
+    now = Clock.now();
+    expiresAt = now + 24 * 60 * 60 * 1000;
+    saveInvite(keyHash(secret), expiresAt, now, by);
+    return LinkInvite(code: "${settings.frontendUrl()}#${secret}", expiresAt: expiresAt);
 }

@@ -1,9 +1,7 @@
 // The health routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http healthApi {
-    GET "/health" -> healthCheck()
-        produces "application/json"
-    {
+    GET "/health" -> healthCheck() produces "application/json" {
         status -> 200 status
     }
 }

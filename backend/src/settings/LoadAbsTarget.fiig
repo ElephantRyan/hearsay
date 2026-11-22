@@ -3,13 +3,14 @@ use hearsay.absclient
 // Audiobookshelf and this server's own token for it, or the error for a server
 // that isn't set up yet.
 activity loadAbsTarget() -> Result<absclient.AbsTarget, SettingsError> {
-    url = loadAbsUrl()?
-    match serviceToken() {
+    url = loadAbsUrl()?;
+    return match (serviceToken()) {
         None -> {
-            return Err(SettingsError.NoServiceToken)
+            return Err(SettingsError.NoServiceToken);
         }
+
         token -> {
-            return Ok(absclient.AbsTarget(url: url, token: token))
+            return Ok(absclient.AbsTarget(url: url, token: token));
         }
     }
 }

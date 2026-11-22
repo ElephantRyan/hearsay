@@ -2,12 +2,12 @@
 // OpenID login to an account by email (authOpenIDMatchExistingBy), so this is
 // the same match.
 rule usersMatchingEmail(users: List<AbsUserEntry>, email: string) -> List<AbsUserEntry> {
-    return filter(user in users): hasEmail(user.email, email)
+    return filter(user in users): hasEmail(user.email, email);
 }
 
 private {
     hasEmail(candidate: string | None, wanted: string) -> bool {
-        match candidate {
+        return match (candidate) {
             None -> false
             found -> found.equalsIgnoringCase(wanted)
         }

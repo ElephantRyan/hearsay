@@ -5,6 +5,6 @@ use hearsay.ratings.rated.RatedBooks
 // books this library has), with linked names marked where they clash. What
 // averages, the ranked list, recommenders and picks are made from.
 activity everyRecommendation() -> List<rated.RatingRow> {
-    everyone = RatedBooks.recommended().concat(LinkedRatings.matched())
-    return withServerNames(everyone, everyone)
+    everyone = RatedBooks.recommended().concat(LinkedRatings.matched());
+    return withServerNames(everyone, everyone);
 }

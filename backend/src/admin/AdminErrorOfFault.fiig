@@ -2,9 +2,11 @@ use hearsay.absclient as client
 
 // Here a 404 from ABS means a library it listed has gone.
 conversion adminErrorOfFault(fault: client.AbsFault) -> AdminError {
-    match fault {
+    return match (fault) {
         client.AbsFault.Missing -> AdminError.LibraryNotFound
-        client.AbsFault.Denied -> AdminError.Unavailable("this server's Audiobookshelf token was refused; tell the server's admin")
+        client.AbsFault.Denied -> AdminError.Unavailable(
+            "this server's Audiobookshelf token was refused; tell the server's admin",
+        )
         client.AbsFault.Down(detail) -> AdminError.Unavailable(detail)
     }
 }

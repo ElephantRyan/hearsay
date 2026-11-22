@@ -1,8 +1,5 @@
-gateway allSyncStates() -> List<SyncState>
-    requires Database
-    idempotent
-{
+gateway allSyncStates() -> List<SyncState> requires Database idempotent {
     return Database.queryMany(
         "SELECT user_id, library_id, collection_id, last_synced_at, last_error FROM sync_state",
-    )
+    );
 }

@@ -1,48 +1,59 @@
 // Forgets a saved setting by the name the admin screen uses, so the
 // environment's value applies again.
 activity forgetSetting(name: string) -> Result<int, SettingsChangeError> {
-    match storedName(name) {
+    return match (storedName(name)) {
         None -> {
-            return Err(SettingsChangeError.UnknownSetting(name))
+            return Err(SettingsChangeError.UnknownSetting(name));
         }
+
         stored -> {
-            return Ok(clearSetting(stored))
+            return Ok(clearSetting(stored));
         }
     }
 }
 
 private {
     storedName(name: string) -> string | None {
-        if name == "absUrl" {
-            return "abs.url"
+        if (name == "absUrl") {
+            return "abs.url";
         }
-        if name == "serviceToken" {
-            return "abs.serviceToken"
+
+        if (name == "serviceToken") {
+            return "abs.serviceToken";
         }
-        if name == "mirrorEnabled" {
-            return "sync.mirrorEnabled"
+
+        if (name == "mirrorEnabled") {
+            return "sync.mirrorEnabled";
         }
-        if name == "authMode" {
-            return "signin.authMode"
+
+        if (name == "authMode") {
+            return "signin.authMode";
         }
-        if name == "frontendUrl" {
-            return "signin.frontendUrl"
+
+        if (name == "frontendUrl") {
+            return "signin.frontendUrl";
         }
-        if name == "oidcIssuer" {
-            return "oidc.issuer"
+
+        if (name == "oidcIssuer") {
+            return "oidc.issuer";
         }
-        if name == "oidcClientId" {
-            return "oidc.clientId"
+
+        if (name == "oidcClientId") {
+            return "oidc.clientId";
         }
-        if name == "oidcClientSecret" {
-            return "oidc.clientSecret"
+
+        if (name == "oidcClientSecret") {
+            return "oidc.clientSecret";
         }
-        if name == "oidcRedirectUri" {
-            return "oidc.redirectUri"
+
+        if (name == "oidcRedirectUri") {
+            return "oidc.redirectUri";
         }
-        if name == "serverName" {
-            return "server.name"
+
+        if (name == "serverName") {
+            return "server.name";
         }
-        return None
+
+        return None;
     }
 }

@@ -4,15 +4,17 @@ use hearsay.settings
 // invite is checked and spent before anything else, so a caller without one
 // learns nothing more.
 workflow acceptLink(offer: LinkOffer) -> Result<LinkAcceptance, FederationError> {
-    if not spendInvite(offer.secret) {
-        return Err(FederationError.BadInvite)
+    if (!spendInvite(offer.secret)) {
+        return Err(FederationError.BadInvite);
     }
-    match settings.serverName() {
+
+    return match (settings.serverName()) {
         None -> {
-            return Err(FederationError.NoServerName)
+            return Err(FederationError.NoServerName);
         }
+
         name -> {
-            return keepLink(checkOffer(offer)?, name)
+            return keepLink(checkOffer(offer)?, name);
         }
     }
 }

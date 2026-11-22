@@ -1,6 +1,10 @@
 use hearsay.links
 
-activity recommendations(userId: string | None, libraryId: string | None, minScore: int | None) -> List<RecommendedBook> {
-    rows = filterRows(links.everyRecommendation(), userId, libraryId)
-    return atLeast(rankRecommendations(rows), minScore)
+activity recommendations(
+    userId: string | None,
+    libraryId: string | None,
+    minScore: int | None,
+) -> List<RecommendedBook> {
+    rows = filterRows(links.everyRecommendation(), userId, libraryId);
+    return atLeast(rankRecommendations(rows), minScore);
 }

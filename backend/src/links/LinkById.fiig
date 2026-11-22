@@ -1,6 +1,6 @@
-gateway linkById(id: string) -> LinkedServer | None
-    requires Database
-    idempotent
-{
-    return Database.queryOne("SELECT id, name, address, linked_at, linked_by, last_fetched_at, ratings, matched, not_answering_since, problem FROM linked_server WHERE id = ?", id)
+gateway linkById(id: string) -> LinkedServer | None requires Database idempotent {
+    return Database.queryOne(
+        "SELECT id, name, address, linked_at, linked_by, last_fetched_at, ratings, matched, not_answering_since, problem FROM linked_server WHERE id = ?",
+        id,
+    );
 }

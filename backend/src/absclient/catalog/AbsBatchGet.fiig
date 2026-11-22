@@ -6,10 +6,14 @@ rule absBatchGet(base: string, itemIds: List<string>, token: string) -> http.Req
     return http.Request(
         method: http.Method.Post,
         url: "${base}/api/items/batch/get",
-        headers: [http.Header(name: "Authorization", value: "Bearer ${token}"), http.Header(name: "Content-Type", value: "application/json"), http.Header(name: "Accept", value: "application/json")],
+        headers: [
+            http.Header(name: "Authorization", value: "Bearer ${token}"),
+            http.Header(name: "Content-Type", value: "application/json"),
+            http.Header(name: "Accept", value: "application/json"),
+        ],
         body: json.encode(AbsBatchBody(libraryItemIds: itemIds)),
         timeoutMillis: 20000,
-    )
+    );
 }
 
 private {

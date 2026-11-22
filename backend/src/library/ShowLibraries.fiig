@@ -3,6 +3,6 @@ use hearsay.absclient.catalog
 use hearsay.settings
 
 workflow showLibraries(me: accounts.Identity) -> Result<List<catalog.AbsLibrary>, LibraryError> {
-    abs = mapErr(e in settings.loadAbsTarget()): libraryErrorOfSettings(e)?
-    return mapErr(e in listLibraries(abs)): libraryErrorOfFault(e)
+    abs = mapErr(e in settings.loadAbsTarget()): libraryErrorOfSettings(e)?;
+    return mapErr(e in listLibraries(abs)): libraryErrorOfFault(e);
 }

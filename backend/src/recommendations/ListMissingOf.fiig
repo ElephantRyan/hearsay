@@ -4,5 +4,5 @@ use hearsay.links
 // GET /recommendations/users/{userId}/missing: what a linked server's person
 // recommends that this library doesn't have.
 workflow listMissingOf(me: accounts.Identity, userId: string) -> List<links.MissingBook> {
-    return links.missingOf(userId)
+    return links.missingOf(userId);
 }

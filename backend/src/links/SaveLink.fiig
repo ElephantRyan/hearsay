@@ -1,6 +1,4 @@
-gateway saveLink(link: LinkedServer, keyOut: string, keyInHash: string) -> int
-    requires Database
-{
+gateway saveLink(link: LinkedServer, keyOut: string, keyInHash: string) -> int requires Database {
     return Database.execute(
         "INSERT INTO linked_server (id, name, address, key_out, key_in_hash, linked_at, linked_by) VALUES (?, ?, ?, ?, ?, ?, ?)",
         link.id,
@@ -10,5 +8,5 @@ gateway saveLink(link: LinkedServer, keyOut: string, keyInHash: string) -> int
         keyInHash,
         link.linkedAt,
         link.linkedBy,
-    )
+    );
 }

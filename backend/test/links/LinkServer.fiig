@@ -17,137 +17,251 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake ServerConfig {
         name: "Alex's library"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://alex.test"
     }
+
     fake AbsCatalog {
-        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
-            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        gateway librariesAsService(
+            abs: client.AbsTarget,
+        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "dune-here", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None)]))
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(
+                catalog.BookPage(
+                    total: 1,
+                    page: 0,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "dune-here",
+                            libraryId: "lib-1",
+                            title: "Dune",
+                            authors: "Frank Herbert",
+                            asin: "B0DUNE",
+                            isbn: None,
+                        ),
+                    ],
+                ),
+            );
         }
     }
+
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            key = "k".padRight(43, "k")
-            if request.url == "https://ryan.test/api/federation/link" and request.method == http.Method.Post {
-                expect http.headerValue(request.headers, "content-type") == "application/json"
-                match request.body {
+            key = "k".padRight(43, "k");
+            if (request.url == "https://ryan.test/api/federation/link" && request.method == http.Method.Post) {
+                expect http.headerValue(request.headers, "content-type") == "application/json";
+                match (request.body) {
                     None -> {
-                        expect false
+                        expect false;
                     }
+
                     sent -> {
-                        decoded: Result<LinkOffer, JsonError> = json.decode(sent)
-                        expect decoded is Ok(offer)
-                        expect offer == LinkOffer(secret: "s".padRight(43, "s"), name: "Alex's library", address: "https://alex.test", key: offer.key)
-                        expect offer.key.length() == 43
+                        decoded: Result<LinkOffer, JsonError> = json.decode(sent);
+                        expect decoded is Ok(offer);
+                        expect offer == LinkOffer(secret: "s".padRight(43, "s"), name: "Alex's library", address: "https://alex.test", key: offer.key);
+                        expect offer.key.length() == 43;
                     }
                 }
+
                 return Ok(
-                    http.Reply(status: 200, headers: [http.Header(name: "Content-Type", value: "application/json")], body: json.encode(LinkAcceptance(name: "Ryan's library", key: key))),
-                )
+                    http.Reply(
+                        status: 200,
+                        headers: [http.Header(name: "Content-Type", value: "application/json")],
+                        body: json.encode(LinkAcceptance(name: "Ryan's library", key: key)),
+                    ),
+                );
             }
-            expect http.headerValue(request.headers, "authorization") == "Bearer ${key}"
-            if request.url == "https://ryan.test/api/federation/recommendations" {
-                return Ok(http.Reply(status: 200, headers: [], body: json.encode([SharedRating(personId: "p1", username: "ryan", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 9, note: "great", updatedAt: 1)])))
+
+            expect http.headerValue(request.headers, "authorization") == "Bearer ${key}";
+            if (request.url == "https://ryan.test/api/federation/recommendations") {
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: json.encode(
+                            [
+                                SharedRating(
+                                    personId: "p1",
+                                    username: "ryan",
+                                    asin: "B0DUNE",
+                                    isbn: None,
+                                    title: "Dune",
+                                    authors: "Frank Herbert",
+                                    score: 9,
+                                    note: "great",
+                                    updatedAt: 1,
+                                ),
+                            ],
+                        ),
+                    ),
+                );
             }
-            if request.url == "https://ryan.test/api/federation/fetch" {
-                expect request.method == http.Method.Post
-                return Ok(http.Reply(status: 204, headers: [], body: "".utf8()))
+
+            if (request.url == "https://ryan.test/api/federation/fetch") {
+                expect request.method == http.Method.Post;
+                return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
             }
-            expect request.url == "https://ryan.test/api/federation/link"
-            expect request.method == http.Method.Delete
-            return Ok(http.Reply(status: 204, headers: [], body: "".utf8()))
+
+            expect request.url == "https://ryan.test/api/federation/link";
+            expect request.method == http.Method.Delete;
+            return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
         }
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Root))
-    code = "  https://ryan.test/#${"s".padRight(43, "s")} "
-    expect linkServer(admin, LinkRequest(code: code)) is Ok(link)
-    expect link.name == "Ryan's library"
-    expect link.address == "https://ryan.test"
-    expect link.linkedBy == "a1"
-    expect link.lastFetchedAt != None
-    expect link.ratings == 1
-    expect link.matched == 1
-    expect calls(HttpClient.send) == 3
-    expect linkServer(admin, LinkRequest(code: code)) is Err(LinkError.AlreadyLinked(name))
-    expect name == "Ryan's library"
-    expect calls(HttpClient.send) == 3
-    expect unlinkServer(admin, link.id) is Ok(unlinked)
-    expect unlinked == Unlinked(name: "Ryan's library", told: true)
-    expect unlinkServer(admin, link.id) is Err(LinkError.UnknownLink)
-    none = listLinks(admin)
-    expect none.length() == 0
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Root,
+        ),
+    );
+    code = "  https://ryan.test/#${"s".padRight(43, "s")} ";
+    expect linkServer(admin, LinkRequest(code: code)) is Ok(link);
+    expect link.name == "Ryan's library";
+    expect link.address == "https://ryan.test";
+    expect link.linkedBy == "a1";
+    expect link.lastFetchedAt != None;
+    expect link.ratings == 1;
+    expect link.matched == 1;
+    expect calls(HttpClient.send) == 3;
+    expect linkServer(admin, LinkRequest(code: code)) is Err(LinkError.AlreadyLinked(name));
+    expect name == "Ryan's library";
+    expect calls(HttpClient.send) == 3;
+    expect unlinkServer(admin, link.id) is Ok(unlinked);
+    expect unlinked == Unlinked(name: "Ryan's library", told: true);
+    expect unlinkServer(admin, link.id) is Err(LinkError.UnknownLink);
+    none = listLinks(admin);
+    expect none.length() == 0;
 }
 
 test aLoginPageOrARefusalKeepsNothing {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake ServerConfig {
         name: "Alex's library"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://alex.test"
     }
+
     fake AbsCatalog {
-        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
-            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        gateway librariesAsService(
+            abs: client.AbsTarget,
+        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "dune-here", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None)]))
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(
+                catalog.BookPage(
+                    total: 1,
+                    page: 0,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "dune-here",
+                            libraryId: "lib-1",
+                            title: "Dune",
+                            authors: "Frank Herbert",
+                            asin: "B0DUNE",
+                            isbn: None,
+                        ),
+                    ],
+                ),
+            );
         }
     }
+
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if request.url.startsWith("https://login.test") {
+            if (request.url.startsWith("https://login.test")) {
                 return Ok(
-                    http.Reply(status: 302, headers: [http.Header(name: "Location", value: "https://auth.test/flow")], body: "".utf8()),
-                )
+                    http.Reply(
+                        status: 302,
+                        headers: [http.Header(name: "Location", value: "https://auth.test/flow")],
+                        body: "".utf8(),
+                    ),
+                );
             }
-            if request.url.startsWith("https://page.test") {
+
+            if (request.url.startsWith("https://page.test")) {
                 return Ok(
-                    http.Reply(status: 200, headers: [http.Header(name: "Content-Type", value: "text/html; charset=utf-8")], body: "<html></html>".utf8()),
-                )
+                    http.Reply(
+                        status: 200,
+                        headers: [
+                            http.Header(name: "Content-Type", value: "text/html; charset=utf-8"),
+                        ],
+                        body: "<html></html>".utf8(),
+                    ),
+                );
             }
-            if request.url.startsWith("https://old.test") {
+
+            if (request.url.startsWith("https://old.test")) {
                 return Ok(
-                    http.Reply(status: 403, headers: [http.Header(name: "Content-Type", value: "text/plain")], body: "this link code is used, expired, or wrong".utf8()),
-                )
+                    http.Reply(
+                        status: 403,
+                        headers: [http.Header(name: "Content-Type", value: "text/plain")],
+                        body: "this link code is used, expired, or wrong".utf8(),
+                    ),
+                );
             }
-            return Err(http.HttpError.InvalidRequest(reason: "no such host"))
+
+            return Err(http.HttpError.InvalidRequest(reason: "no such host"));
         }
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
-    secret = "s".padRight(43, "s")
-    expect linkServer(admin, LinkRequest(code: "https://login.test#${secret}")) is Err(LinkError.PeerLoginPage)
-    expect linkServer(admin, LinkRequest(code: "https://page.test#${secret}")) is Err(LinkError.PeerLoginPage)
-    expect linkServer(admin, LinkRequest(code: "https://old.test#${secret}")) is Err(LinkError.PeerRefused(reason))
-    expect reason.contains("used, expired, or mistyped")
-    expect linkServer(admin, LinkRequest(code: "https://gone.test#${secret}")) is Err(LinkError.PeerUnreachable)
-    expect linkServer(admin, LinkRequest(code: "https://alex.test#${secret}")) is Err(LinkError.Invalid(_, own))
-    expect own.contains("own")
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test")) is Err(LinkError.Invalid(_, _))
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#short")) is Err(LinkError.Invalid(_, _))
-    none = listLinks(admin)
-    expect none.length() == 0
-    expect calls(AbsCatalog.pageAsService) == 1
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    secret = "s".padRight(43, "s");
+    expect linkServer(admin, LinkRequest(code: "https://login.test#${secret}")) is Err(LinkError.PeerLoginPage);
+    expect linkServer(admin, LinkRequest(code: "https://page.test#${secret}")) is Err(LinkError.PeerLoginPage);
+    expect linkServer(admin, LinkRequest(code: "https://old.test#${secret}")) is Err(LinkError.PeerRefused(reason));
+    expect reason.contains("used, expired, or mistyped");
+    expect linkServer(admin, LinkRequest(code: "https://gone.test#${secret}")) is Err(LinkError.PeerUnreachable);
+    expect linkServer(admin, LinkRequest(code: "https://alex.test#${secret}")) is Err(LinkError.Invalid(_, own));
+    expect own.contains("own");
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test")) is Err(LinkError.Invalid(_, _));
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test#short")) is Err(LinkError.Invalid(_, _));
+    none = listLinks(admin);
+    expect none.length() == 0;
+    expect calls(AbsCatalog.pageAsService) == 1;
 }
 
 // No other server is contacted when this library can't be indexed.
@@ -155,32 +269,49 @@ test linkingWaitsForTheLibraryIndex {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake ServerConfig {
         name: "Alex's library"
     }
+
     fake AbsCatalog {
-        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
-            return Err(client.AbsError.Rejected(status: 502))
+        gateway librariesAsService(
+            abs: client.AbsTarget,
+        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Err(client.AbsError.Rejected(status: 502));
         }
 
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            expect false
-            return Err(client.AbsError.Rejected(status: 502))
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            expect false;
+            return Err(client.AbsError.Rejected(status: 502));
         }
     }
+
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            expect false
-            return Err(http.HttpError.InvalidRequest(reason: "unexpected"))
+            expect false;
+            return Err(http.HttpError.InvalidRequest(reason: "unexpected"));
         }
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Err(LinkError.IndexUnavailable(_))
-    expect calls(HttpClient.send) == 0
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Err(LinkError.IndexUnavailable(_));
+    expect calls(HttpClient.send) == 0;
 }
 
 // A link stands even when the first fetch, and telling the other server to
@@ -189,43 +320,68 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake ServerConfig {
         name: "Alex's library"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://alex.test"
     }
+
     fake AbsCatalog {
-        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
-            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        gateway librariesAsService(
+            abs: client.AbsTarget,
+        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            return Ok(catalog.BookPage(total: 0, page: 0, limit: size, books: []))
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(catalog.BookPage(total: 0, page: 0, limit: size, books: []));
         }
     }
+
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if request.url == "https://ryan.test/api/federation/link" and request.method == http.Method.Post {
+            if (request.url == "https://ryan.test/api/federation/link" && request.method == http.Method.Post) {
                 return Ok(
-                    http.Reply(status: 200, headers: [], body: json.encode(LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")))),
-                )
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: json.encode(
+                            LinkAcceptance(name: "Ryan's library", key: "k".padRight(43, "k")),
+                        ),
+                    ),
+                );
             }
-            return Err(http.HttpError.InvalidRequest(reason: "gone"))
+
+            return Err(http.HttpError.InvalidRequest(reason: "gone"));
         }
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "alex", userType: client.AbsUserType.Admin))
-    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link)
-    expect link.problem == "it didn't answer"
-    expect link.lastFetchedAt == None
-    expect calls(HttpClient.send) == 3
-    expect unlinkServer(admin, link.id) is Ok(unlinked)
-    expect unlinked == Unlinked(name: "Ryan's library", told: false)
-    none = listLinks(admin)
-    expect none.length() == 0
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect linkServer(admin, LinkRequest(code: "https://ryan.test#${"s".padRight(43, "s")}")) is Ok(link);
+    expect link.problem == "it didn't answer";
+    expect link.lastFetchedAt == None;
+    expect calls(HttpClient.send) == 3;
+    expect unlinkServer(admin, link.id) is Ok(unlinked);
+    expect unlinked == Unlinked(name: "Ryan's library", told: false);
+    none = listLinks(admin);
+    expect none.length() == 0;
 }

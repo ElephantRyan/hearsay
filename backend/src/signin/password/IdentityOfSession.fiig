@@ -6,5 +6,5 @@ conversion identityOfSession(session: members.AbsSession) -> accounts.Identity {
         userId: session.userId,
         username: session.username,
         userType: session.userType,
-    )
+    );
 }

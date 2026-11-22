@@ -11,7 +11,7 @@ test sortRatingsByScoreNewestAndTitle {
         recommended: false,
         createdAt: 1,
         updatedAt: 3,
-    )
+    );
     b = RatingRow(
         userId: "u1",
         username: "n",
@@ -24,8 +24,8 @@ test sortRatingsByScoreNewestAndTitle {
         recommended: false,
         createdAt: 2,
         updatedAt: 1,
-    )
-    expect sortRatings([a, b], RatingOrder.Score) == [b, a]
-    expect sortRatings([a, b], RatingOrder.Newest) == [a, b]
-    expect sortRatings([a, b], RatingOrder.Title) == [b, a]
+    );
+    expect sortRatings([a, b], RatingOrder.Score) == [b, a];
+    expect sortRatings([a, b], RatingOrder.Newest) == [a, b];
+    expect sortRatings([a, b], RatingOrder.Title) == [b, a];
 }

@@ -3,10 +3,11 @@ use hearsay.matching
 // The library index, built first if it never has been: matching against an
 // empty one would find nothing.
 activity readyIndex() -> Result<int, LinkError> {
-    books = matching.indexSize()
-    if books > 0 {
-        return Ok(books)
+    books = matching.indexSize();
+    if (books > 0) {
+        return Ok(books);
     }
-    summary = mapErr(e in rebuildIndex()): LinkError.IndexUnavailable(e)?
-    return Ok(summary.books)
+
+    summary = mapErr(e in rebuildIndex()): LinkError.IndexUnavailable(e)?;
+    return Ok(summary.books);
 }

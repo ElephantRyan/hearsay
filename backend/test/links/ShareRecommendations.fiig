@@ -19,59 +19,113 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake ServerConfig {
         name: "Ryan's library"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://ryan.test"
     }
+
     fake AbsCatalog {
-        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
-            if itemId == "dune" {
-                return Ok(catalog.Book(itemId: "dune", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None))
+        gateway itemAsService(
+            abs: client.AbsTarget,
+            itemId: string,
+        ) -> Result<catalog.Book, client.AbsError> {
+            if (itemId == "dune") {
+                return Ok(
+                    catalog.Book(
+                        itemId: "dune",
+                        libraryId: "lib-1",
+                        title: "Dune",
+                        authors: "Frank Herbert",
+                        asin: "B0DUNE",
+                        isbn: None,
+                    ),
+                );
             }
-            return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Book ${itemId}", authors: "Someone", asin: None, isbn: None))
+
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Book ${itemId}",
+                    authors: "Someone",
+                    asin: None,
+                    isbn: None,
+                ),
+            );
         }
 
-        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
-            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        gateway librariesAsService(
+            abs: client.AbsTarget,
+        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "old", libraryId: "lib-1", title: "Book old", authors: "Someone", asin: "b0old", isbn: "978-0-1")]))
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(
+                catalog.BookPage(
+                    total: 1,
+                    page: 0,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "old",
+                            libraryId: "lib-1",
+                            title: "Book old",
+                            authors: "Someone",
+                            asin: "b0old",
+                            isbn: "978-0-1",
+                        ),
+                    ],
+                ),
+            );
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs)
-    expect matching.indexLibrary(abs) is Ok(_)
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 9, note: "great", recommended: true)) is Ok(_)
-    expect ratings.putRating(annId, "old", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_)
-    expect ratings.putRating(annId, "secret", ratings.RatingInput(score: 2, note: "private", recommended: false)) is Ok(_)
-
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin))
-    expect inviteServer(admin) is Ok(invite)
-    expect inviteCodeOf(invite.code) is Ok(code)
-    expect acceptLink(LinkOffer(secret: code.secret, name: "Alex's library", address: "https://alex.test", key: newKey())) is Ok(accepted)
-
-    expect callingServer(None) is Err(PeerRefusal.NoKey)
-    expect callingServer("Bearer ${newKey()}") is Err(PeerRefusal.UnknownKey)
-    expect callingServer("Bearer ${accepted.key}") is Ok(caller)
-    shared = shareRecommendations(caller)
-    expect shared.length() == 2
-    dune = filter(rating in shared): rating.title == "Dune"
-    expect dune.first() == SharedRating(personId: keyHash("person:u1"), username: "ann", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 9, note: "great", updatedAt: dune.first().updatedAt)
-    expect dune.first().personId != "u1"
-    old = filter(rating in shared): rating.title == "Book old"
-    expect old.first().asin == "B0OLD"
-    expect old.first().isbn == "97801"
-    expect (filter(rating in shared): rating.note == "private").length() == 0
+    expect settings.loadAbsTarget() is Ok(abs);
+    expect matching.indexLibrary(abs) is Ok(_);
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 9, note: "great", recommended: true)) is Ok(_);
+    expect ratings.putRating(annId, "old", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_);
+    expect ratings.putRating(annId, "secret", ratings.RatingInput(score: 2, note: "private", recommended: false)) is Ok(_);
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "ryan",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect inviteServer(admin) is Ok(invite);
+    expect inviteCodeOf(invite.code) is Ok(code);
+    expect acceptLink(LinkOffer(secret: code.secret, name: "Alex's library", address: "https://alex.test", key: newKey())) is Ok(accepted);
+    expect callingServer(None) is Err(PeerRefusal.NoKey);
+    expect callingServer("Bearer ${newKey()}") is Err(PeerRefusal.UnknownKey);
+    expect callingServer("Bearer ${accepted.key}") is Ok(caller);
+    shared = shareRecommendations(caller);
+    expect shared.length() == 2;
+    dune = filter(rating in shared): rating.title == "Dune";
+    expect dune.first() == SharedRating(personId: keyHash("person:u1"), username: "ann", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 9, note: "great", updatedAt: dune.first().updatedAt);
+    expect dune.first().personId != "u1";
+    old = filter(rating in shared): rating.title == "Book old";
+    expect old.first().asin == "B0OLD";
+    expect old.first().isbn == "97801";
+    expect (filter(rating in shared): rating.note == "private").length() == 0;
 }

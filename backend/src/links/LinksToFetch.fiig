@@ -1,4 +1,4 @@
 // Every linked server, for the scheduled fetch.
 activity linksToFetch() -> List<PeerKey> {
-    return linkedPeers()
+    return linkedPeers();
 }

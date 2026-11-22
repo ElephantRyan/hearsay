@@ -3,13 +3,14 @@ use hearsay.settings
 
 // A book from our cached copy, or from ABS when nobody has rated it yet.
 activity cachedBook(itemId: string) -> Result<catalog.Book, BookError> {
-    match findBook(itemId) {
+    return match (findBook(itemId)) {
         None -> {
-            abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?
-            return fetchBook(abs, itemId)
+            abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?;
+            return fetchBook(abs, itemId);
         }
+
         cached -> {
-            return Ok(cached)
+            return Ok(cached);
         }
     }
 }

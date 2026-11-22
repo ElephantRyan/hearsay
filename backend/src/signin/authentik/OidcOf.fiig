@@ -2,12 +2,15 @@ use hearsay.accounts
 
 // The Authentik application, or the refusal for a server that hasn't set it up.
 rule oidcOf(server: accounts.SignInServer) -> Result<accounts.OidcSettings, accounts.SignInError> {
-    match server.oidc {
+    return match (server.oidc) {
         None -> {
-            return Err(accounts.SignInError.Unavailable("Authentik sign-in isn't set up on this server"))
+            return Err(
+                accounts.SignInError.Unavailable("Authentik sign-in isn't set up on this server"),
+            );
         }
+
         oidc -> {
-            return Ok(oidc)
+            return Ok(oidc);
         }
     }
 }

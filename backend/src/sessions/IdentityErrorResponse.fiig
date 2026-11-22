@@ -1,7 +1,7 @@
 // The status and message a client sees when a session doesn't give an
 // identity. 401 names no scheme: the browser holds a cookie, not a challenge.
 conversion identityErrorResponse(error: IdentityError) -> HttpResponse<string> {
-    match error {
+    return match (error) {
         IdentityError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
     }
 }

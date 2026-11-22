@@ -10,35 +10,57 @@ test aNewServerIsClaimedByAnAbsAdmin {
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake Abs {
         url: None
     }
+
     fake AbsMembers {
-        gateway login(url: string, username: string, password: string) -> Result<members.AbsSession, client.AbsError> {
-            expect url == "https://abs.home.test"
-            if password != "right" {
-                return Err(client.AbsError.Unauthorized)
+        gateway login(
+            url: string,
+            username: string,
+            password: string,
+        ) -> Result<members.AbsSession, client.AbsError> {
+            expect url == "https://abs.home.test";
+            if (password != "right") {
+                return Err(client.AbsError.Unauthorized);
             }
-            if username == "reader" {
-                return Ok(members.AbsSession(userId: "u2", username: "reader", userType: client.AbsUserType.User, accessToken: "t", refreshToken: "r"))
+
+            if (username == "reader") {
+                return Ok(
+                    members.AbsSession(
+                        userId: "u2",
+                        username: "reader",
+                        userType: client.AbsUserType.User,
+                        accessToken: "t",
+                        refreshToken: "r",
+                    ),
+                );
             }
-            return Ok(members.AbsSession(userId: "r1", username: "owner", userType: client.AbsUserType.Root, accessToken: "t", refreshToken: "r"))
+
+            return Ok(
+                members.AbsSession(
+                    userId: "r1",
+                    username: "owner",
+                    userType: client.AbsUserType.Root,
+                    accessToken: "t",
+                    refreshToken: "r",
+                ),
+            );
         }
     }
 
-    expect showSetup() == SetupState(needed: true)
-    expect runSetup(SetupInput(absUrl: "ftp://abs.home.test", username: "owner", password: "right")) is Err(SetupError.Invalid(field, _))
-    expect field == "absUrl"
-    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "wrong")) is Err(SetupError.WrongLogin)
-    expect runSetup(SetupInput(absUrl: "https://abs.home.test", username: "reader", password: "right")) is Err(SetupError.NotAdmin)
-    expect showSetup() == SetupState(needed: true)
-
-    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "right")) is Ok(session)
-    expect sessions.signedIn(session.token) is Ok(me)
-    expect me.userType == client.AbsUserType.Root
-    expect settings.absUrl() == "https://abs.home.test"
-    expect showSetup() == SetupState(needed: false)
-
-    expect runSetup(SetupInput(absUrl: "https://elsewhere.test", username: "owner", password: "right")) is Err(SetupError.AlreadySetUp)
-    expect settings.absUrl() == "https://abs.home.test"
+    expect showSetup() == SetupState(needed: true);
+    expect runSetup(SetupInput(absUrl: "ftp://abs.home.test", username: "owner", password: "right")) is Err(SetupError.Invalid(field, _));
+    expect field == "absUrl";
+    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "wrong")) is Err(SetupError.WrongLogin);
+    expect runSetup(SetupInput(absUrl: "https://abs.home.test", username: "reader", password: "right")) is Err(SetupError.NotAdmin);
+    expect showSetup() == SetupState(needed: true);
+    expect runSetup(SetupInput(absUrl: "https://abs.home.test/", username: "owner", password: "right")) is Ok(session);
+    expect sessions.signedIn(session.token) is Ok(me);
+    expect me.userType == client.AbsUserType.Root;
+    expect settings.absUrl() == "https://abs.home.test";
+    expect showSetup() == SetupState(needed: false);
+    expect runSetup(SetupInput(absUrl: "https://elsewhere.test", username: "owner", password: "right")) is Err(SetupError.AlreadySetUp);
+    expect settings.absUrl() == "https://abs.home.test";
 }

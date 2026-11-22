@@ -1,6 +1,4 @@
 // Removes a user's rating; the result is how many rows went (0 or 1).
-gateway deleteRating(userId: string, itemId: string) -> int
-    requires Database
-{
-    return Database.execute("DELETE FROM rating WHERE user_id = ? AND item_id = ?", userId, itemId)
+gateway deleteRating(userId: string, itemId: string) -> int requires Database {
+    return Database.execute("DELETE FROM rating WHERE user_id = ? AND item_id = ?", userId, itemId);
 }

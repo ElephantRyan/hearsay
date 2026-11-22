@@ -2,32 +2,38 @@
 // added since can match, then every linked server fetched. With no links it
 // does nothing at all.
 workflow fetchOnSchedule() -> Result<int, FetchError> {
-    peers = linksToFetch()
-    if peers.length() == 0 {
-        return Ok(0)
+    peers = linksToFetch();
+    if (peers.length() == 0) {
+        return Ok(0);
     }
-    indexed = rebuildIndex()
-    failed: int = 0
-    for peer in peers {
-        match fetchLink(peer) {
+
+    indexed = rebuildIndex();
+    failed: int = 0;
+    for (peer in peers) {
+        match (fetchLink(peer)) {
             Err(_) -> {
             }
+
             Ok(link) -> {
-                if link.problem != None {
-                    failed = failed + 1
+                if (link.problem != None) {
+                    failed = failed + 1;
                 }
             }
         }
     }
-    match indexed {
+
+    match (indexed) {
         Err(problem) -> {
-            return Err(FetchError.IndexNotRebuilt(problem))
+            return Err(FetchError.IndexNotRebuilt(problem));
         }
+
         Ok(_) -> {
         }
     }
-    if failed > 0 {
-        return Err(FetchError.SomeServersSilent(failed, peers.length()))
+
+    if (failed > 0) {
+        return Err(FetchError.SomeServersSilent(failed, peers.length()));
     }
-    return Ok(peers.length())
+
+    return Ok(peers.length());
 }

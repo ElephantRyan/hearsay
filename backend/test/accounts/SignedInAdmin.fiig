@@ -2,13 +2,13 @@ use hearsay.absclient as client
 
 // The admin role: an owner or an admin, and nobody else.
 test onlyAnAdminOrTheOwnerIsAnAdmin {
-    ann = Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    guest = Identity(userId: "u2", username: "gus", userType: client.AbsUserType.Guest)
-    boss = Identity(userId: "u3", username: "boss", userType: client.AbsUserType.Admin)
-    owner = Identity(userId: "u4", username: "owner", userType: client.AbsUserType.Root)
-    expect signedInAdmin(ann) is Err(AdminRefusal.NotAnAdmin)
-    expect signedInAdmin(guest) is Err(AdminRefusal.NotAnAdmin)
-    expect signedInAdmin(boss) is Ok(admin)
-    expect admin == Admin(identity: boss)
-    expect signedInAdmin(owner) is Ok(_)
+    ann = Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    guest = Identity(userId: "u2", username: "gus", userType: client.AbsUserType.Guest);
+    boss = Identity(userId: "u3", username: "boss", userType: client.AbsUserType.Admin);
+    owner = Identity(userId: "u4", username: "owner", userType: client.AbsUserType.Root);
+    expect signedInAdmin(ann) is Err(AdminRefusal.NotAnAdmin);
+    expect signedInAdmin(guest) is Err(AdminRefusal.NotAnAdmin);
+    expect signedInAdmin(boss) is Ok(admin);
+    expect admin == Admin(identity: boss);
+    expect signedInAdmin(owner) is Ok(_);
 }

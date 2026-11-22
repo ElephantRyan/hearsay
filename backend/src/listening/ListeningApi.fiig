@@ -5,9 +5,7 @@ use hearsay.sessions
 adapter http listeningApi {
     wire sessions.me
 
-    GET "/me/listening" -> showMyListening(me)
-        produces "application/json"
-    {
+    GET "/me/listening" -> showMyListening(me) produces "application/json" {
         Ok(books) -> 200 books
         Err(error) -> listeningErrorResponse(error)
     }

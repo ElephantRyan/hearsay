@@ -1,5 +1,5 @@
 use hearsay.accounts
 
 workflow whoAmI(me: accounts.Identity) -> accounts.Identity {
-    return me
+    return me;
 }

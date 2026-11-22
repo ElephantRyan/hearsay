@@ -2,9 +2,10 @@ use hearsay.signin
 
 // Authentik sign-in exists unless the server is password-only.
 workflow startOidc() -> Result<OidcStart, signin.LoginError> {
-    modes = signin.loadSignInModes()
-    if not modes.oidc {
-        return Err(signin.LoginError.OidcNotOffered)
+    modes = signin.loadSignInModes();
+    if (!modes.oidc) {
+        return Err(signin.LoginError.OidcNotOffered);
     }
-    return mapErr(e in beginSignIn()): signin.loginErrorOfSignIn(e)
+
+    return mapErr(e in beginSignIn()): signin.loginErrorOfSignIn(e);
 }

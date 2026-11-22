@@ -1,11 +1,9 @@
 // Spends an invite: 1 if it was there and unexpired, which also deletes it, so
 // a second use finds nothing.
-gateway useInvite(secretHash: string, now: int) -> int
-    requires Database
-{
+gateway useInvite(secretHash: string, now: int) -> int requires Database {
     return Database.execute(
         "DELETE FROM link_invite WHERE secret_hash = ? AND expires_at > ?",
         secretHash,
         now,
-    )
+    );
 }

@@ -3,8 +3,8 @@
 use hearsay.accounts
 
 activity startSession(identity: accounts.Identity) -> Session {
-    token = Random.bytes(count: 32).toBase64Url()
-    maxAge = SessionConfig.sessionMaxAge
-    saveSession(tokenHash(token), identity, Clock.now() + maxAge * 1000)
-    return Session(token: token, identity: identity, maxAge: maxAge)
+    token = Random.bytes(count: 32).toBase64Url();
+    maxAge = SessionConfig.sessionMaxAge;
+    saveSession(tokenHash(token), identity, Clock.now() + maxAge * 1000);
+    return Session(token: token, identity: identity, maxAge: maxAge);
 }

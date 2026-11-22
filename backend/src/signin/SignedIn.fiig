@@ -10,5 +10,5 @@ conversion signedIn(session: sessions.Session) -> HttpResponse<accounts.Identity
         body: session.identity,
         headers: ["Cache-Control": "no-store"],
         cookies: [Cookie(name: "sid", value: session.token, maxAge: session.maxAge)],
-    )
+    );
 }

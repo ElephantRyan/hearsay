@@ -4,27 +4,33 @@ use hearsay.ratings.rated
 // `everyone` has it too, here or on another linked server: then their server's
 // name goes after it, "ryan · Alex's library" (LINKED.md section 6). This
 // server's own people are never marked.
-rule withServerNames(rows: List<rated.RatingRow>, everyone: List<rated.RatingRow>) -> List<rated.RatingRow> {
-    byName = groupBy(r in everyone): r.username.lowercase()
-    return map(row in rows): named(row, byName.atOrNone(row.username.lowercase()))
+rule withServerNames(
+    rows: List<rated.RatingRow>,
+    everyone: List<rated.RatingRow>,
+) -> List<rated.RatingRow> {
+    byName = groupBy(r in everyone): r.username.lowercase();
+    return map(row in rows): named(row, byName.atOrNone(row.username.lowercase()));
 }
 
 private {
     named(row: rated.RatingRow, sameName: List<rated.RatingRow> | None) -> rated.RatingRow {
-        match row.via {
+        return match (row.via) {
             None -> {
-                return row
+                return row;
             }
+
             server -> {
-                match sameName {
+                return match (sameName) {
                     None -> {
-                        return row
+                        return row;
                     }
+
                     others -> {
-                        if (filter(o in others): o.userId != row.userId).length() == 0 {
-                            return row
+                        if ((filter(o in others): o.userId != row.userId).length() == 0) {
+                            return row;
                         }
-                        return copy(row, username: "${row.username} · ${server}")
+
+                        return copy(row, username: "${row.username} · ${server}");
                     }
                 }
             }

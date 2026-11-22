@@ -1,14 +1,21 @@
 // Keeps a checked offer's server and the key to call it with, and answers with
 // this server's name and the key it will accept from it.
 activity keepLink(offer: LinkOffer, name: string) -> Result<LinkAcceptance, FederationError> {
-    if linkAt(offer.address) != None {
-        return Err(FederationError.AlreadyLinked)
+    if (linkAt(offer.address) != None) {
+        return Err(FederationError.AlreadyLinked);
     }
-    keyIn = newKey()
+
+    keyIn = newKey();
     saveLink(
-        LinkedServer(id: Random.uuid(), name: offer.name, address: offer.address, linkedAt: Clock.now(), linkedBy: "invite"),
+        LinkedServer(
+            id: Random.uuid(),
+            name: offer.name,
+            address: offer.address,
+            linkedAt: Clock.now(),
+            linkedBy: "invite",
+        ),
         offer.key,
         keyHash(keyIn),
-    )
-    return Ok(LinkAcceptance(name: name, key: keyIn))
+    );
+    return Ok(LinkAcceptance(name: name, key: keyIn));
 }

@@ -1,6 +1,4 @@
-gateway saveLinkedRating(rating: LinkedRating) -> int
-    requires Database
-{
+gateway saveLinkedRating(rating: LinkedRating) -> int requires Database {
     return Database.execute(
         "INSERT INTO linked_rating (link_id, person_id, username, asin, isbn, title, authors, score, note, updated_at, item_id, library_id, matched_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         rating.linkId,
@@ -16,5 +14,5 @@ gateway saveLinkedRating(rating: LinkedRating) -> int
         rating.itemId,
         rating.libraryId,
         rating.matchedBy,
-    )
+    );
 }

@@ -1,7 +1,5 @@
 // Forgets a linked server, its keys, and every rating fetched from it.
-gateway deleteLink(id: string) -> int
-    requires Database
-{
-    Database.execute("DELETE FROM linked_rating WHERE link_id = ?", id)
-    return Database.execute("DELETE FROM linked_server WHERE id = ?", id)
+gateway deleteLink(id: string) -> int requires Database {
+    Database.execute("DELETE FROM linked_rating WHERE link_id = ?", id);
+    return Database.execute("DELETE FROM linked_server WHERE id = ?", id);
 }

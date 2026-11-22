@@ -22,68 +22,160 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake AbsCatalog {
-        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
-            return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None))
+        gateway itemAsService(
+            abs: client.AbsTarget,
+            itemId: string,
+        ) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                    asin: "B0DUNE",
+                    isbn: None,
+                ),
+            );
         }
     }
 
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 8, note: "here", recommended: true)) is Ok(_)
-
-    saveLink(LinkedServer(id: "l1", name: "Alex's library", address: "https://alex.test", linkedAt: 1, linkedBy: "invite"), "key-out-1", "hash-1")
-    saveLink(LinkedServer(id: "l2", name: "Sam's place", address: "https://sam.test", linkedAt: 1, linkedBy: "invite"), "key-out-2", "hash-2")
-    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p1", username: "Ann", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 10, note: "there", updatedAt: 5, itemId: "dune", libraryId: "lib-1", matchedBy: "asin"))
-    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: None, isbn: None, title: "Dune", authors: "Frank Herbert", score: 6, note: "", updatedAt: 6, itemId: "dune", libraryId: "lib-1", matchedBy: "title"))
-    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0ELSE", isbn: None, title: "Not Here", authors: "Nobody", score: 9, note: "find it", updatedAt: 7, itemId: None, libraryId: None, matchedBy: None))
-    saveLinkedRating(LinkedRating(linkId: "l2", personId: "p9", username: "sam", asin: None, isbn: "123", title: "The Hobbit", authors: "J. R. R. Tolkien", score: 7, note: "", updatedAt: 8, itemId: "hobbit", libraryId: "lib-1", matchedBy: "isbn"))
-
-    everyone = everyRecommendation()
-    expect everyone.length() == 4
-    names = sorted(r in everyone): r.username
-    expect (map(r in names): r.username) == ["Ann · Alex's library", "ann", "sam · Alex's library", "sam · Sam's place"]
-
-    expect recommendations.recommendations(None, None, None) is books
-    expect books.length() == 2
-    expect books.first().itemId == "dune"
-    expect books.first().count == 3
-    expect books.first().average == math.divide(math.toDecimal(24), math.toDecimal(3), places: 2, rounding: Rounding.HalfUp)
-    expect books.last().title == "The Hobbit"
-
-    people = recommendations.listRecommenders()
-    expect people.length() == 4
-    expect (filter(p in people): p.userId == "u1").first().via == None
-    expect (filter(p in people): p.userId == "linked-l1-p2").first().via == "Alex's library"
-
-    picks = recommendations.picksOf("linked-l1-p2")
-    expect (map(r in picks): r.title) == ["Dune"]
-    missing = missingOf("linked-l1-p2")
-    expect missing == [MissingBook(title: "Not Here", authors: "Nobody", score: 9, note: "find it", updatedAt: 7, via: "Alex's library")]
-    expect missingOf("u1").length() == 0
-    expect missingOf("linked-l2-p9").length() == 0
-
-    expect settings.loadAbsTarget() is Ok(abs)
-    expect AbsCatalog.itemAsService(abs, "dune") is Ok(dune)
-    page = library.loadItemDetail("u1", dune)
-    expect page.count == 3
-    expect page.average == books.first().average
-    weak = filter(r in page.ratings): r.matchedBy == "title"
-    expect weak.length() == 1
-    expect weak.first().username == "sam · Alex's library"
-    expect weak.first().via == "Alex's library"
-    expect (filter(r in page.ratings): r.via == None).first().username == "ann"
-
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 8, note: "here", recommended: true)) is Ok(_);
+    saveLink(
+        LinkedServer(
+            id: "l1",
+            name: "Alex's library",
+            address: "https://alex.test",
+            linkedAt: 1,
+            linkedBy: "invite",
+        ),
+        "key-out-1",
+        "hash-1",
+    );
+    saveLink(
+        LinkedServer(
+            id: "l2",
+            name: "Sam's place",
+            address: "https://sam.test",
+            linkedAt: 1,
+            linkedBy: "invite",
+        ),
+        "key-out-2",
+        "hash-2",
+    );
+    saveLinkedRating(
+        LinkedRating(
+            linkId: "l1",
+            personId: "p1",
+            username: "Ann",
+            asin: "B0DUNE",
+            isbn: None,
+            title: "Dune",
+            authors: "Frank Herbert",
+            score: 10,
+            note: "there",
+            updatedAt: 5,
+            itemId: "dune",
+            libraryId: "lib-1",
+            matchedBy: "asin",
+        ),
+    );
+    saveLinkedRating(
+        LinkedRating(
+            linkId: "l1",
+            personId: "p2",
+            username: "sam",
+            asin: None,
+            isbn: None,
+            title: "Dune",
+            authors: "Frank Herbert",
+            score: 6,
+            note: "",
+            updatedAt: 6,
+            itemId: "dune",
+            libraryId: "lib-1",
+            matchedBy: "title",
+        ),
+    );
+    saveLinkedRating(
+        LinkedRating(
+            linkId: "l1",
+            personId: "p2",
+            username: "sam",
+            asin: "B0ELSE",
+            isbn: None,
+            title: "Not Here",
+            authors: "Nobody",
+            score: 9,
+            note: "find it",
+            updatedAt: 7,
+            itemId: None,
+            libraryId: None,
+            matchedBy: None,
+        ),
+    );
+    saveLinkedRating(
+        LinkedRating(
+            linkId: "l2",
+            personId: "p9",
+            username: "sam",
+            asin: None,
+            isbn: "123",
+            title: "The Hobbit",
+            authors: "J. R. R. Tolkien",
+            score: 7,
+            note: "",
+            updatedAt: 8,
+            itemId: "hobbit",
+            libraryId: "lib-1",
+            matchedBy: "isbn",
+        ),
+    );
+    everyone = everyRecommendation();
+    expect everyone.length() == 4;
+    names = sorted(r in everyone): r.username;
+    expect (map(r in names): r.username) == ["Ann · Alex's library", "ann", "sam · Alex's library", "sam · Sam's place"];
+    expect recommendations.recommendations(None, None, None) is books;
+    expect books.length() == 2;
+    expect books.first().itemId == "dune";
+    expect books.first().count == 3;
+    expect books.first().average == math.divide(math.toDecimal(24), math.toDecimal(3), places: 2, rounding: Rounding.HalfUp);
+    expect books.last().title == "The Hobbit";
+    people = recommendations.listRecommenders();
+    expect people.length() == 4;
+    expect (filter(p in people): p.userId == "u1").first().via == None;
+    expect (filter(p in people): p.userId == "linked-l1-p2").first().via == "Alex's library";
+    picks = recommendations.picksOf("linked-l1-p2");
+    expect (map(r in picks): r.title) == ["Dune"];
+    missing = missingOf("linked-l1-p2");
+    expect missing == [MissingBook(title: "Not Here", authors: "Nobody", score: 9, note: "find it", updatedAt: 7, via: "Alex's library")];
+    expect missingOf("u1").length() == 0;
+    expect missingOf("linked-l2-p9").length() == 0;
+    expect settings.loadAbsTarget() is Ok(abs);
+    expect AbsCatalog.itemAsService(abs, "dune") is Ok(dune);
+    page = library.loadItemDetail("u1", dune);
+    expect page.count == 3;
+    expect page.average == books.first().average;
+    weak = filter(r in page.ratings): r.matchedBy == "title";
+    expect weak.length() == 1;
+    expect weak.first().username == "sam · Alex's library";
+    expect weak.first().via == "Alex's library";
+    expect (filter(r in page.ratings): r.via == None).first().username == "ann";
     // Unlinked: its ratings leave every list.
-    deleteLink("l1")
-    expect everyRecommendation().length() == 2
-    expect (map(r in everyRecommendation()): r.username) == ["ann", "sam"] or (map(r in everyRecommendation()): r.username) == ["sam", "ann"]
+    deleteLink("l1");
+    expect everyRecommendation().length() == 2;
+    expect (map(r in everyRecommendation()): r.username) == ["ann", "sam"] || (map(r in everyRecommendation()): r.username) == ["sam", "ann"];
 }
 
 // A linked server's person gets a "<name> Recommends" collection in this ABS,
@@ -94,49 +186,121 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake AbsCollections {
-        gateway createCollectionAsService(abs: client.AbsTarget, libraryId: string, name: string, description: string, bookIds: List<string>) -> Result<string, client.AbsError> {
-            expect libraryId == "lib-1"
-            expect name == "sam Recommends"
-            expect description.startsWith("Recommended on Alex's library.")
-            expect bookIds == ["hobbit", "dune"]
-            return Ok("col-sam")
+        gateway createCollectionAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            name: string,
+            description: string,
+            bookIds: List<string>,
+        ) -> Result<string, client.AbsError> {
+            expect libraryId == "lib-1";
+            expect name == "sam Recommends";
+            expect description.startsWith("Recommended on Alex's library.");
+            expect bookIds == ["hobbit", "dune"];
+            return Ok("col-sam");
         }
 
-        gateway updateCollectionAsService(abs: client.AbsTarget, collectionId: string, name: string, description: string, bookIds: List<string>) -> Result<int, client.AbsError> {
-            expect false
-            return Ok(1)
+        gateway updateCollectionAsService(
+            abs: client.AbsTarget,
+            collectionId: string,
+            name: string,
+            description: string,
+            bookIds: List<string>,
+        ) -> Result<int, client.AbsError> {
+            expect false;
+            return Ok(1);
         }
 
-        gateway deleteCollectionAsService(abs: client.AbsTarget, collectionId: string) -> Result<int, client.AbsError> {
-            expect collectionId == "col-sam"
-            return Ok(1)
+        gateway deleteCollectionAsService(
+            abs: client.AbsTarget,
+            collectionId: string,
+        ) -> Result<int, client.AbsError> {
+            expect collectionId == "col-sam";
+            return Ok(1);
         }
     }
 
-    saveLink(LinkedServer(id: "l1", name: "Alex's library", address: "https://alex.test", linkedAt: 1, linkedBy: "invite"), "key-out", "hash")
-    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 6, note: "", updatedAt: 6, itemId: "dune", libraryId: "lib-1", matchedBy: "asin"))
-    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0HOBBIT", isbn: None, title: "The Hobbit", authors: "J. R. R. Tolkien", score: 9, note: "", updatedAt: 7, itemId: "hobbit", libraryId: "lib-1", matchedBy: "asin"))
-    saveLinkedRating(LinkedRating(linkId: "l1", personId: "p2", username: "sam", asin: "B0ELSE", isbn: None, title: "Not Here", authors: "Nobody", score: 10, note: "", updatedAt: 8, itemId: None, libraryId: None, matchedBy: None))
-
-    plans = sync.loadAllSyncPlans()
-    expect plans.length() == 1
-    expect plans.first().userId == "linked-l1-p2"
-    expect plans.first().action == sync.SyncAction.Create
-
-    expect settings.loadAbsTarget() is Ok(abs)
-    results = sync.applyPlans(abs, plans)
-    expect results.first().action == sync.SyncOutcome.Created
-    expect results.first().books == 2
-
-    deleteLink("l1")
-    gone = sync.loadAllSyncPlans()
-    expect gone.length() == 1
-    expect gone.first().action == sync.SyncAction.Remove
-    expect gone.first().collectionId == "col-sam"
-    expect sync.applyPlans(abs, gone).first().action == sync.SyncOutcome.Removed
-    expect sync.loadAllSyncPlans().length() == 0
+    saveLink(
+        LinkedServer(
+            id: "l1",
+            name: "Alex's library",
+            address: "https://alex.test",
+            linkedAt: 1,
+            linkedBy: "invite",
+        ),
+        "key-out",
+        "hash",
+    );
+    saveLinkedRating(
+        LinkedRating(
+            linkId: "l1",
+            personId: "p2",
+            username: "sam",
+            asin: "B0DUNE",
+            isbn: None,
+            title: "Dune",
+            authors: "Frank Herbert",
+            score: 6,
+            note: "",
+            updatedAt: 6,
+            itemId: "dune",
+            libraryId: "lib-1",
+            matchedBy: "asin",
+        ),
+    );
+    saveLinkedRating(
+        LinkedRating(
+            linkId: "l1",
+            personId: "p2",
+            username: "sam",
+            asin: "B0HOBBIT",
+            isbn: None,
+            title: "The Hobbit",
+            authors: "J. R. R. Tolkien",
+            score: 9,
+            note: "",
+            updatedAt: 7,
+            itemId: "hobbit",
+            libraryId: "lib-1",
+            matchedBy: "asin",
+        ),
+    );
+    saveLinkedRating(
+        LinkedRating(
+            linkId: "l1",
+            personId: "p2",
+            username: "sam",
+            asin: "B0ELSE",
+            isbn: None,
+            title: "Not Here",
+            authors: "Nobody",
+            score: 10,
+            note: "",
+            updatedAt: 8,
+            itemId: None,
+            libraryId: None,
+            matchedBy: None,
+        ),
+    );
+    plans = sync.loadAllSyncPlans();
+    expect plans.length() == 1;
+    expect plans.first().userId == "linked-l1-p2";
+    expect plans.first().action == sync.SyncAction.Create;
+    expect settings.loadAbsTarget() is Ok(abs);
+    results = sync.applyPlans(abs, plans);
+    expect results.first().action == sync.SyncOutcome.Created;
+    expect results.first().books == 2;
+    deleteLink("l1");
+    gone = sync.loadAllSyncPlans();
+    expect gone.length() == 1;
+    expect gone.first().action == sync.SyncAction.Remove;
+    expect gone.first().collectionId == "col-sam";
+    expect sync.applyPlans(abs, gone).first().action == sync.SyncOutcome.Removed;
+    expect sync.loadAllSyncPlans().length() == 0;
 }

@@ -1,6 +1,6 @@
 // What the admin screen says about a fetch that didn't work.
 conversion problemOfPeer(error: PeerError) -> string {
-    match error {
+    return match (error) {
         PeerError.Unreachable(failure) -> "it didn't answer"
         PeerError.LoginPage -> "it answered with a login page: its login must let /api/federation/ through"
         PeerError.Unreadable -> "its answer couldn't be read"
@@ -10,12 +10,14 @@ conversion problemOfPeer(error: PeerError) -> string {
 
 private {
     rejection(status: int) -> string {
-        if status == 401 {
-            return "it refused this server's key: it may have unlinked this server"
+        if (status == 401) {
+            return "it refused this server's key: it may have unlinked this server";
         }
-        if status >= 502 and status <= 504 {
-            return "it isn't answering: the proxy in front of it answered ${status}"
+
+        if (status >= 502 && status <= 504) {
+            return "it isn't answering: the proxy in front of it answered ${status}";
         }
-        return "it answered ${status}"
+
+        return "it answered ${status}";
     }
 }

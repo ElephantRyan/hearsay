@@ -1,8 +1,14 @@
 // The status and message a client sees for each way signing in can fail.
 conversion loginErrorResponse(error: LoginError) -> HttpResponse<string> {
-    match error {
-        LoginError.PasswordNotOffered -> HttpResponse(status: 404, body: "no password sign-in on this server")
-        LoginError.OidcNotOffered -> HttpResponse(status: 404, body: "no Authentik sign-in on this server")
+    return match (error) {
+        LoginError.PasswordNotOffered -> HttpResponse(
+            status: 404,
+            body: "no password sign-in on this server",
+        )
+        LoginError.OidcNotOffered -> HttpResponse(
+            status: 404,
+            body: "no Authentik sign-in on this server",
+        )
         LoginError.Refused(reason) -> HttpResponse(status: 403, body: reason)
         LoginError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
     }

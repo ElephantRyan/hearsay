@@ -2,8 +2,13 @@ use hearsay.absclient
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 
-gateway fetchHits(abs: absclient.AbsTarget, libraryId: string, query: string, size: int) -> Result<catalog.BookPage, absclient.AbsFault>
-    requires AbsCatalog
-{
-    return mapErr(e in AbsCatalog.searchAsService(abs, libraryId, query, size)): absclient.faultOfAbs(e)
+gateway fetchHits(
+    abs: absclient.AbsTarget,
+    libraryId: string,
+    query: string,
+    size: int,
+) -> Result<catalog.BookPage, absclient.AbsFault> requires AbsCatalog {
+    return mapErr(e in AbsCatalog.searchAsService(abs, libraryId, query, size)): absclient.faultOfAbs(
+        e,
+    );
 }

@@ -5,6 +5,6 @@ use hearsay.settings
 // POST /admin/library-index: rebuild the index linked servers' books are
 // matched against, and say how many books can be recognised and how.
 workflow rebuildIndex(admin: accounts.Admin) -> Result<matching.IndexSummary, AdminError> {
-    abs = mapErr(e in settings.loadAbsTarget()): adminErrorOfSettings(e)?
-    return mapErr(e in matching.indexLibrary(abs)): adminErrorOfFault(e)
+    abs = mapErr(e in settings.loadAbsTarget()): adminErrorOfSettings(e)?;
+    return mapErr(e in matching.indexLibrary(abs)): adminErrorOfFault(e);
 }

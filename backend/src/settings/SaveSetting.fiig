@@ -1,12 +1,10 @@
 // Saves one setting, replacing what was there. `by` is the admin's user id.
-gateway saveSetting(name: string, value: string, now: int, by: string) -> int
-    requires Database
-{
+gateway saveSetting(name: string, value: string, now: int, by: string) -> int requires Database {
     return Database.execute(
         "INSERT INTO setting (name, value, updated_at, updated_by) VALUES (?, ?, ?, ?) ON CONFLICT (name) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at, updated_by = excluded.updated_by",
         name,
         value,
         now,
         by,
-    )
+    );
 }

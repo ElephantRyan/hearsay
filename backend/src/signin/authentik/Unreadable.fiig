@@ -1,5 +1,5 @@
 use hearsay.accounts
 
 conversion unreadable(what: string) -> accounts.SignInError {
-    return accounts.SignInError.Unavailable("the ${what} could not be read")
+    return accounts.SignInError.Unavailable("the ${what} could not be read");
 }

@@ -3,9 +3,12 @@ use hearsay.links
 
 // What sync would do for whoever the caller may sync, linked servers' people
 // included: reads tables and plans, and touches nothing.
-activity loadSyncPlans(me: accounts.Identity, userId: string | None) -> Result<List<SyncPlan>, SyncError> {
-    rows = links.everyRecommendation()
-    states = allSyncStates()
-    targets = syncTargets(me, userId, everyoneToSync(rows, states))?
-    return Ok(planSync(rows, states, targets))
+activity loadSyncPlans(
+    me: accounts.Identity,
+    userId: string | None,
+) -> Result<List<SyncPlan>, SyncError> {
+    rows = links.everyRecommendation();
+    states = allSyncStates();
+    targets = syncTargets(me, userId, everyoneToSync(rows, states))?;
+    return Ok(planSync(rows, states, targets));
 }

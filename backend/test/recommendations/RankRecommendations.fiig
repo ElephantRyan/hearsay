@@ -11,16 +11,16 @@ test rankingOrdersByAverageThenCountThenRecency {
         row("u1", "kim", 8, true, 7),
         row("u2", "kim", 9, true, 8),
         row("u1", "secret", 10, false, 9),
-    ]
-    ranked = rankRecommendations(rows)
-    expect ranked.length() == 4
-    expect ranked.at(0).itemId == "emma"
-    expect ranked.at(1).itemId == "ubik"
-    expect ranked.at(2).itemId == "kim"
-    expect ranked.at(3).itemId == "dune"
-    expect ranked.at(1).average == 8.67
-    expect ranked.at(2).average == 8.5
-    expect ranked.at(1).title == "Title of ubik"
+    ];
+    ranked = rankRecommendations(rows);
+    expect ranked.length() == 4;
+    expect ranked.at(0).itemId == "emma";
+    expect ranked.at(1).itemId == "ubik";
+    expect ranked.at(2).itemId == "kim";
+    expect ranked.at(3).itemId == "dune";
+    expect ranked.at(1).average == 8.67;
+    expect ranked.at(2).average == 8.5;
+    expect ranked.at(1).title == "Title of ubik";
 }
 
 private {
@@ -37,6 +37,6 @@ private {
             recommended: recommended,
             createdAt: at,
             updatedAt: at,
-        )
+        );
     }
 }

@@ -2,6 +2,9 @@ use hearsay.absclient
 use hearsay.absclient.progress
 
 // What ABS says I have started.
-activity loadProgress(abs: absclient.AbsTarget, userId: string) -> Result<List<progress.Progress>, absclient.AbsFault> {
-    return fetchProgress(abs, userId)
+activity loadProgress(
+    abs: absclient.AbsTarget,
+    userId: string,
+) -> Result<List<progress.Progress>, absclient.AbsFault> {
+    return fetchProgress(abs, userId);
 }

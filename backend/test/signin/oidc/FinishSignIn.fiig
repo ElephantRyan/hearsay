@@ -16,98 +16,137 @@ test oidcCallbackChecksStateBeforeExchanging {
     fake AbsService {
         token: "svc"
     }
+
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
         clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Both
         frontendUrl: "https://app.test"
     }
+
     fake AbsPasswordSignIn {
-        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            expect false
-            return Err(accounts.SignInError.WrongMethod)
+        gateway authenticate(
+            attempt: accounts.SignInAttempt,
+            server: accounts.SignInServer,
+        ) -> Result<accounts.Identity, accounts.SignInError> {
+            expect false;
+            return Err(accounts.SignInError.WrongMethod);
         }
     }
+
     fake AuthentikSignIn {
-        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
-            return Ok("https://idp.test/authorize?state=${state}")
+        gateway beginUrl(
+            oidc: accounts.OidcSettings,
+            state: string,
+            codeVerifier: string,
+        ) -> Result<string, accounts.SignInError> {
+            return Ok("https://idp.test/authorize?state=${state}");
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            match attempt {
+        gateway authenticate(
+            attempt: accounts.SignInAttempt,
+            server: accounts.SignInServer,
+        ) -> Result<accounts.Identity, accounts.SignInError> {
+            return match (attempt) {
                 accounts.SignInAttempt.AuthorizationCode(code, verifier) -> {
-                    expect verifier == "ver-1"
-                    if code == "unknown-person" {
-                        return Err(accounts.SignInError.NoAccount)
+                    expect verifier == "ver-1";
+                    if (code == "unknown-person") {
+                        return Err(accounts.SignInError.NoAccount);
                     }
-                    return Ok(accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User))
+
+                    return Ok(
+                        accounts.Identity(
+                            userId: "u1",
+                            username: "ann",
+                            userType: client.AbsUserType.User,
+                        ),
+                    );
                 }
+
                 accounts.SignInAttempt.Password(username, password) -> {
-                    return Err(accounts.SignInError.WrongMethod)
+                    return Err(accounts.SignInError.WrongMethod);
                 }
             }
         }
     }
 
-    good = finishSignIn("code-1", "st-1", None, "st-1.ver-1")
-    expect good.location == "https://app.test"
-    match good.session {
+    good = finishSignIn("code-1", "st-1", None, "st-1.ver-1");
+    expect good.location == "https://app.test";
+    match (good.session) {
         None -> {
-            expect false
+            expect false;
         }
+
         opened -> {
-            expect sessions.signedIn(opened.token) is Ok(me)
-            expect me.userId == "u1"
+            expect sessions.signedIn(opened.token) is Ok(me);
+            expect me.userId == "u1";
         }
     }
-    expect finishSignIn("code-1", "WRONG", None, "st-1.ver-1").location == "https://app.test/sign-in?error=state"
-    expect finishSignIn("code-1", "st-1", None, None).location == "https://app.test/sign-in?error=state"
-    expect finishSignIn("code-1", "st-1", None, "garbage").location == "https://app.test/sign-in?error=state"
-    expect finishSignIn(None, "st-1", None, "st-1.ver-1").location == "https://app.test/sign-in?error=missing"
-    expect finishSignIn(None, None, "access_denied", None).location == "https://app.test/sign-in?error=denied"
-    expect finishSignIn("unknown-person", "st-1", None, "st-1.ver-1").location == "https://app.test/sign-in?error=no-account"
-    expect calls(AuthentikSignIn.authenticate) == 2
-    expect startOidc() is Ok(start)
-    expect start.url.startsWith("https://idp.test/authorize?state=")
-    expect start.pending.split(".").length() == 2
+
+    expect finishSignIn("code-1", "WRONG", None, "st-1.ver-1").location == "https://app.test/sign-in?error=state";
+    expect finishSignIn("code-1", "st-1", None, None).location == "https://app.test/sign-in?error=state";
+    expect finishSignIn("code-1", "st-1", None, "garbage").location == "https://app.test/sign-in?error=state";
+    expect finishSignIn(None, "st-1", None, "st-1.ver-1").location == "https://app.test/sign-in?error=missing";
+    expect finishSignIn(None, None, "access_denied", None).location == "https://app.test/sign-in?error=denied";
+    expect finishSignIn("unknown-person", "st-1", None, "st-1.ver-1").location == "https://app.test/sign-in?error=no-account";
+    expect calls(AuthentikSignIn.authenticate) == 2;
+    expect startOidc() is Ok(start);
+    expect start.url.startsWith("https://idp.test/authorize?state=");
+    expect start.pending.split(".").length() == 2;
 }
 
 test finishSignInIsOffInPasswordOnlyMode {
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
+
     fake AbsPasswordSignIn {
-        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            expect false
-            return Err(accounts.SignInError.WrongMethod)
+        gateway authenticate(
+            attempt: accounts.SignInAttempt,
+            server: accounts.SignInServer,
+        ) -> Result<accounts.Identity, accounts.SignInError> {
+            expect false;
+            return Err(accounts.SignInError.WrongMethod);
         }
     }
+
     fake AuthentikSignIn {
-        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
-            expect false
-            return Err(accounts.SignInError.WrongMethod)
+        gateway beginUrl(
+            oidc: accounts.OidcSettings,
+            state: string,
+            codeVerifier: string,
+        ) -> Result<string, accounts.SignInError> {
+            expect false;
+            return Err(accounts.SignInError.WrongMethod);
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            expect false
-            return Err(accounts.SignInError.WrongMethod)
+        gateway authenticate(
+            attempt: accounts.SignInAttempt,
+            server: accounts.SignInServer,
+        ) -> Result<accounts.Identity, accounts.SignInError> {
+            expect false;
+            return Err(accounts.SignInError.WrongMethod);
         }
     }
 
-    expect finishSignIn("c", "s", None, "s.v").location == "https://app.test/sign-in?error=disabled"
-    expect calls(AuthentikSignIn.authenticate) == 0
+    expect finishSignIn("c", "s", None, "s.v").location == "https://app.test/sign-in?error=disabled";
+    expect calls(AuthentikSignIn.authenticate) == 0;
 }

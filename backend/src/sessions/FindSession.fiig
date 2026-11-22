@@ -3,12 +3,11 @@ use hearsay.accounts
 // The identity behind a live session, or None if the token is unknown or past
 // its expiry.
 gateway findSession(tokenHash: string, now: int) -> accounts.Identity | None
-    requires Database
-    idempotent
-{
+        requires Database
+        idempotent {
     return Database.queryOne(
         "SELECT user_id, username, user_type FROM session WHERE token_hash = ? AND expires_at > ?",
         tokenHash,
         now,
-    )
+    );
 }

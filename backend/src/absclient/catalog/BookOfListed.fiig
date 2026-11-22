@@ -8,12 +8,12 @@ conversion bookOfListed(item: AbsListedItem) -> Book {
         authors: authorLine(item.media.metadata.authorName),
         asin: item.media.metadata.asin,
         isbn: item.media.metadata.isbn,
-    )
+    );
 }
 
 private {
     authorLine(name: string | None) -> string {
-        match name {
+        return match (name) {
             None -> ""
             given -> given
         }

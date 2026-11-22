@@ -5,13 +5,11 @@ adapter http sessionsApi {
 
     // Logging out with no session is fine, so this route settles no principal.
     DELETE "/session" public -> endSession(session: string | None from cookie "sid")
-        produces "application/json"
-    {
+            produces "application/json" {
         _ -> signedOut()
     }
-    GET "/me" -> whoAmI(me)
-        produces "application/json"
-    {
+
+    GET "/me" -> whoAmI(me) produces "application/json" {
         identity -> 200 identity
     }
 }

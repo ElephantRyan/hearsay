@@ -1,9 +1,18 @@
 // The status and message a client sees for each way setup can fail.
 conversion setupErrorResponse(error: SetupError) -> HttpResponse<string> {
-    match error {
+    return match (error) {
         SetupError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
-        SetupError.AlreadySetUp -> HttpResponse(status: 403, body: "this server is already set up; sign in instead")
-        SetupError.WrongLogin -> HttpResponse(status: 403, body: "that username or password wasn't right")
-        SetupError.NotAdmin -> HttpResponse(status: 403, body: "only an Audiobookshelf admin can set up this server")
+        SetupError.AlreadySetUp -> HttpResponse(
+            status: 403,
+            body: "this server is already set up; sign in instead",
+        )
+        SetupError.WrongLogin -> HttpResponse(
+            status: 403,
+            body: "that username or password wasn't right",
+        )
+        SetupError.NotAdmin -> HttpResponse(
+            status: 403,
+            body: "only an Audiobookshelf admin can set up this server",
+        )
     }
 }

@@ -1,7 +1,7 @@
 // What was last fetched from one server.
-gateway linkedRatingsOf(linkId: string) -> List<LinkedRating>
-    requires Database
-    idempotent
-{
-    return Database.queryMany("SELECT * FROM linked_rating WHERE link_id = ? ORDER BY username, title", linkId)
+gateway linkedRatingsOf(linkId: string) -> List<LinkedRating> requires Database idempotent {
+    return Database.queryMany(
+        "SELECT * FROM linked_rating WHERE link_id = ? ORDER BY username, title",
+        linkId,
+    );
 }

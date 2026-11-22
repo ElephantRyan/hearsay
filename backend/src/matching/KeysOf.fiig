@@ -1,45 +1,52 @@
 // A book's keys, from what ABS has for it.
 rule keysOf(asin: string | None, isbn: string | None, title: string, authors: string) -> BookKeys {
-    return BookKeys(asin: asinKey(asin), isbn: isbnKey(isbn), titleKey: "${plainText(title, true)}|${plainText(firstAuthor(authors), false)}")
+    return BookKeys(
+        asin: asinKey(asin),
+        isbn: isbnKey(isbn),
+        titleKey: "${plainText(title, true)}|${plainText(firstAuthor(authors), false)}",
+    );
 }
 
 private {
     asinKey(asin: string | None) -> string | None {
-        match asin {
+        return match (asin) {
             None -> None
             given -> nonEmpty(given.trim().uppercase())
         }
     }
 
     isbnKey(isbn: string | None) -> string | None {
-        match isbn {
+        return match (isbn) {
             None -> None
             given -> nonEmpty(given.replaceAll("-", "").replaceAll(" ", "").trim().uppercase())
         }
     }
 
     nonEmpty(text: string) -> string | None {
-        if text == "" {
-            return None
+        if (text == "") {
+            return None;
         }
-        return text
+
+        return text;
     }
 
     firstAuthor(authors: string) -> string {
-        return authors.split(",").first()
+        return authors.split(",").first();
     }
 
     // Lower case, punctuation (straight and curly quotes, dashes) as spaces,
     // single spaces, and for a title no leading "the", "a" or "an".
     plainText(text: string, isTitle: bool) -> string {
-        spaced: string = text.lowercase()
-        for mark in [".", ",", ":", ";", "!", "?", "'", "\"", "’", "‘", "“", "”", "(", ")", "[", "]", "-", "–", "—", "&", "/"] {
-            spaced = spaced.replaceAll(mark, " ")
+        spaced: string = text.lowercase();
+        for (mark in [".", ",", ":", ";", "!", "?", "'", "\"", "’", "‘", "“", "”", "(", ")", "[", "]", "-", "–", "—", "&", "/"]) {
+            spaced = spaced.replaceAll(mark, " ");
         }
-        words = filter(word in spaced.split(" ")): word != ""
-        if isTitle and words.length() > 1 and (words.first() == "the" or words.first() == "a" or words.first() == "an") {
-            return words.slice(1, words.length()).join(" ")
+
+        words = filter(word in spaced.split(" ")): word != "";
+        if (isTitle && words.length() > 1 && (words.first() == "the" || words.first() == "a" || words.first() == "an")) {
+            return words.slice(1, words.length()).join(" ");
         }
-        return words.join(" ")
+
+        return words.join(" ");
     }
 }

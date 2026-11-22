@@ -5,8 +5,7 @@ adapter http ratedApi {
     wire sessions.me
 
     GET "/ratings/mine?sort={sort}" -> listMyRatings(me, sort: RatingOrder | None)
-        produces "application/json"
-    {
+            produces "application/json" {
         rows -> 200 rows
     }
 }

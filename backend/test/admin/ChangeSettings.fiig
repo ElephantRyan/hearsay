@@ -13,160 +13,204 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     fake AbsService {
         token: "old-token"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
+
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
         clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake Abs {
         url: "https://from-env.test"
     }
+
     fake SyncConfig {
         mirrorEnabled: false
     }
+
     fake ServerConfig {
         name: None
     }
 
-    root = accounts.Admin(identity: accounts.Identity(userId: "r1", username: "owner", userType: client.AbsUserType.Root))
-    before = showSettings(root)
-    expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
-    expect before.mirrorEnabled == settings.SettingValue(value: "false", source: "environment")
-    expect before.serverName == settings.SettingValue(value: None, source: "unset")
+    root = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "r1",
+            username: "owner",
+            userType: client.AbsUserType.Root,
+        ),
+    );
+    before = showSettings(root);
+    expect before.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment");
+    expect before.mirrorEnabled == settings.SettingValue(value: "false", source: "environment");
+    expect before.serverName == settings.SettingValue(value: None, source: "unset");
     change = settings.SettingsChange(
         absUrl: "  https://abs.home.test/ ",
         serviceToken: "new-token",
         mirrorEnabled: true,
         serverName: " Ryan's library ",
-    )
-    expect changeSettings(root, change) is Ok(after)
-    expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved")
-    expect after.serviceToken == settings.SettingValue(value: None, source: "saved")
-    expect after.mirrorEnabled == settings.SettingValue(value: "true", source: "saved")
-    expect after.serverName == settings.SettingValue(value: "Ryan's library", source: "saved")
-    expect settings.serverName() == "Ryan's library"
-    expect settings.loadAbsTarget() is Ok(target)
-    expect target.url == "https://abs.home.test"
-    expect target.token.matches("new-token")
-    expect settings.mirrorEnabled()
-    expect resetSetting(root, "absUrl") is Ok(reset)
-    expect reset.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
-    expect resetSetting(root, "password") is Err(AdminError.UnknownSetting(_))
+    );
+    expect changeSettings(root, change) is Ok(after);
+    expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved");
+    expect after.serviceToken == settings.SettingValue(value: None, source: "saved");
+    expect after.mirrorEnabled == settings.SettingValue(value: "true", source: "saved");
+    expect after.serverName == settings.SettingValue(value: "Ryan's library", source: "saved");
+    expect settings.serverName() == "Ryan's library";
+    expect settings.loadAbsTarget() is Ok(target);
+    expect target.url == "https://abs.home.test";
+    expect target.token.matches("new-token");
+    expect settings.mirrorEnabled();
+    expect resetSetting(root, "absUrl") is Ok(reset);
+    expect reset.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment");
+    expect resetSetting(root, "password") is Err(AdminError.UnknownSetting(_));
 }
 
 test aBadChangeSavesNothing {
     fake AbsService {
         token: "old-token"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
+
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
         clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake Abs {
         url: "https://from-env.test"
     }
+
     fake SyncConfig {
         mirrorEnabled: false
     }
+
     fake ServerConfig {
         name: None
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
-    expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid(field, _))
-    expect field == "absUrl"
-    expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid(blank, _))
-    expect blank == "serviceToken"
-    view = showSettings(admin)
-    expect view.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment")
-    expect settings.loadAbsTarget() is Ok(target)
-    expect target.token.matches("old-token")
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "boss",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid(field, _));
+    expect field == "absUrl";
+    expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid(blank, _));
+    expect blank == "serviceToken";
+    view = showSettings(admin);
+    expect view.absUrl == settings.SettingValue(value: "https://from-env.test", source: "environment");
+    expect settings.loadAbsTarget() is Ok(target);
+    expect target.token.matches("old-token");
 }
 
 test switchingToAuthentikTurnsPasswordSignInOff {
     fake AbsService {
         token: "old-token"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
+
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SyncConfig {
         mirrorEnabled: false
     }
+
     fake ServerConfig {
         name: None
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
-    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "boss",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false);
     change = settings.SettingsChange(
         authMode: settings.AuthMode.Oidc,
         oidcClientSecret: "new-secret",
         oidcRedirectUri: "https://app.home.test/api/auth/callback/",
-    )
-    expect changeSettings(admin, change) is Ok(view)
-    expect view.authMode == settings.SettingValue(value: "oidc", source: "saved")
-    expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved")
-    expect view.oidcRedirectUri == settings.SettingValue(value: "https://app.home.test/api/auth/callback", source: "saved")
-    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
-    expect settings.loadAbsTarget() is Ok(_)
-    expect resetSetting(admin, "authMode") is Ok(back)
-    expect back.authMode == settings.SettingValue(value: "abs", source: "environment")
-    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
+    );
+    expect changeSettings(admin, change) is Ok(view);
+    expect view.authMode == settings.SettingValue(value: "oidc", source: "saved");
+    expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved");
+    expect view.oidcRedirectUri == settings.SettingValue(value: "https://app.home.test/api/auth/callback", source: "saved");
+    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true);
+    expect settings.loadAbsTarget() is Ok(_);
+    expect resetSetting(admin, "authMode") is Ok(back);
+    expect back.authMode == settings.SettingValue(value: "abs", source: "environment");
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false);
 }
 
 test authentikOnlyWaitsForEveryAuthentikSetting {
     fake AbsService {
         token: "svc"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Oidc
         frontendUrl: "https://app.test"
     }
+
     fake Oidc {
         issuer: None
         clientId: "cid"
         clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SyncConfig {
         mirrorEnabled: false
     }
+
     fake ServerConfig {
         name: None
     }
 
     // AUTH_MODE=oidc with no issuer: password sign-in stays on rather than lock everyone out.
-    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
-    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _))
-    expect field == "authMode"
-    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view)
-    expect view.authMode.value == "oidc"
-    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false);
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "boss",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _));
+    expect field == "authMode";
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcIssuer: "https://idp.test/application/o/abs/")) is Ok(view);
+    expect view.authMode.value == "oidc";
+    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true);
 }
 
 // Every Authentik setting but the client secret: Authentik-only is refused, so
@@ -175,32 +219,43 @@ test authentikOnlyWaitsForTheClientSecret {
     fake AbsService {
         token: "svc"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
+
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/"
         clientId: "cid"
         clientSecret: None
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SyncConfig {
         mirrorEnabled: false
     }
+
     fake ServerConfig {
         name: None
     }
 
-    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "boss", userType: client.AbsUserType.Admin))
-    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _))
-    expect field == "authMode"
-    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false)
-    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcClientSecret: "csec")) is Ok(view)
-    expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved")
-    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true)
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false);
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "boss",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid(field, _));
+    expect field == "authMode";
+    expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false);
+    expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcClientSecret: "csec")) is Ok(view);
+    expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved");
+    expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true);
 }

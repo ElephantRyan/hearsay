@@ -4,44 +4,34 @@
 capability RatedBooks {
     // All of one user's ratings, private ones included; the caller only asks for
     // the signed-in user's own.
-    gateway byUser(userId: string) -> List<RatingRow>
-        requires Database
-        idempotent
-    {
+    gateway byUser(userId: string) -> List<RatingRow> requires Database idempotent {
         return Database.queryMany(
             "SELECT * FROM rating_row WHERE user_id = ? ORDER BY updated_at DESC",
             userId,
-        )
+        );
     }
 
     // Every recommended rating with its book, for ranking and for the list of
     // recommenders. Private ratings never leave the database through here.
-    gateway recommended() -> List<RatingRow>
-        requires Database
-        idempotent
-    {
-        return Database.queryMany("SELECT * FROM rating_row WHERE recommended = 1")
+    gateway recommended() -> List<RatingRow> requires Database idempotent {
+        return Database.queryMany("SELECT * FROM rating_row WHERE recommended = 1");
     }
 
     // Every recommended rating with what recognises its book on another server
     // (LINKED.md section 2). Private ratings never leave through here either.
-    gateway shared() -> List<SharedRow>
-        requires Database
-        idempotent
-    {
-        return Database.queryMany("SELECT * FROM shared_rating")
+    gateway shared() -> List<SharedRow> requires Database idempotent {
+        return Database.queryMany("SELECT * FROM shared_rating");
     }
 
     // What a viewer may see of one book: everyone's recommended ratings, plus
     // their own whether recommended or not.
     gateway visibleFor(itemId: string, viewerId: string) -> List<RatingRow>
-        requires Database
-        idempotent
-    {
+            requires Database
+            idempotent {
         return Database.queryMany(
             "SELECT * FROM rating_row WHERE item_id = ? AND (recommended = 1 OR user_id = ?) ORDER BY updated_at DESC",
             itemId,
             viewerId,
-        )
+        );
     }
 }

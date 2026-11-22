@@ -7,55 +7,70 @@ use fiig.http.HttpClient
 test absLoginReadsTheRealReplyShape {
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            expect request.url == "https://abs.test/login"
-            expect request.method == http.Method.Post
+            expect request.url == "https://abs.test/login";
+            expect request.method == http.Method.Post;
             return Ok(
-                http.Reply(status: 200, headers: [], body: "{\"user\":{\"id\":\"u-1\",\"username\":\"ryan\",\"email\":null,\"type\":\"user\",\"token\":\"legacy\",\"mediaProgress\":[],\"permissions\":{\"download\":true},\"accessToken\":\"acc\",\"refreshToken\":\"ref\"},\"userDefaultLibraryId\":\"lib-1\",\"Source\":\"docker\"}".utf8()),
-            )
+                http.Reply(
+                    status: 200,
+                    headers: [],
+                    body: "{\"user\":{\"id\":\"u-1\",\"username\":\"ryan\",\"email\":null,\"type\":\"user\",\"token\":\"legacy\",\"mediaProgress\":[],\"permissions\":{\"download\":true},\"accessToken\":\"acc\",\"refreshToken\":\"ref\"},\"userDefaultLibraryId\":\"lib-1\",\"Source\":\"docker\"}".utf8(),
+                ),
+            );
         }
     }
 
-    expect AbsMembers.login("https://abs.test", "ryan", "pw") is Ok(session)
-    expect session == AbsSession(userId: "u-1", username: "ryan", userType: absclient.AbsUserType.User, accessToken: "acc", refreshToken: "ref")
-    expect calls(HttpClient.send) == 1
+    expect AbsMembers.login("https://abs.test", "ryan", "pw") is Ok(session);
+    expect session == AbsSession(userId: "u-1", username: "ryan", userType: absclient.AbsUserType.User, accessToken: "acc", refreshToken: "ref");
+    expect calls(HttpClient.send) == 1;
 }
 
 test absMeSendsTheToken {
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            expect http.headerValue(request.headers, "authorization") == "Bearer tok-1"
+            expect http.headerValue(request.headers, "authorization") == "Bearer tok-1";
             return Ok(
-                http.Reply(status: 200, headers: [], body: "{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"permissions\":{}}".utf8()),
-            )
+                http.Reply(
+                    status: 200,
+                    headers: [],
+                    body: "{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"permissions\":{}}".utf8(),
+                ),
+            );
         }
     }
 
-    expect AbsMembers.me("https://abs.test", "tok-1") is Ok(user)
-    expect user == AbsUser(id: "u-1", username: "ryan", type: absclient.AbsUserType.Admin)
+    expect AbsMembers.me("https://abs.test", "tok-1") is Ok(user);
+    expect user == AbsUser(id: "u-1", username: "ryan", type: absclient.AbsUserType.Admin);
 }
 
 // A refusal is a value, not a fault: wrong password, a server error.
 test absMemberRefusalsAreValues {
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            if request.url == "https://abs.test/login" {
+            if (request.url == "https://abs.test/login") {
                 return Ok(
-                    http.Reply(status: 401, headers: [], body: "Invalid username or password".utf8()),
-                )
+                    http.Reply(
+                        status: 401,
+                        headers: [],
+                        body: "Invalid username or password".utf8(),
+                    ),
+                );
             }
-            if request.url == "https://abs.test/api/items/gone" {
-                return Ok(http.Reply(status: 404, headers: [], body: "Not Found".utf8()))
+
+            if (request.url == "https://abs.test/api/items/gone") {
+                return Ok(http.Reply(status: 404, headers: [], body: "Not Found".utf8()));
             }
-            if request.url == "https://abs.test/api/items/odd" {
+
+            if (request.url == "https://abs.test/api/items/odd") {
                 return Ok(
                     http.Reply(status: 200, headers: [], body: "<html>not json</html>".utf8()),
-                )
+                );
             }
-            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()))
+
+            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()));
         }
     }
 
-    expect AbsMembers.login("https://abs.test", "ryan", "wrong") is Err(absclient.AbsError.Unauthorized)
-    expect AbsMembers.me("https://abs.test", "tok") is Err(absclient.AbsError.Rejected(status))
-    expect status == 500
+    expect AbsMembers.login("https://abs.test", "ryan", "wrong") is Err(absclient.AbsError.Unauthorized);
+    expect AbsMembers.me("https://abs.test", "tok") is Err(absclient.AbsError.Rejected(status));
+    expect status == 500;
 }

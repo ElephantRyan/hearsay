@@ -1,20 +1,24 @@
 // 302 to the frontend. When the sign-in worked it carries the session cookie;
 // either way the one-use oidc cookie is deleted.
 conversion landed(landing: Landing) -> HttpResponse<None> {
-    match landing.session {
+    return match (landing.session) {
         None -> {
             return HttpResponse(
                 status: 302,
                 headers: ["Location": landing.location, "Cache-Control": "no-store"],
                 cookies: [Cookie(name: "oidc", value: "", maxAge: 0)],
-            )
+            );
         }
+
         session -> {
             return HttpResponse(
                 status: 302,
                 headers: ["Location": landing.location, "Cache-Control": "no-store"],
-                cookies: [Cookie(name: "sid", value: session.token, maxAge: session.maxAge), Cookie(name: "oidc", value: "", maxAge: 0)],
-            )
+                cookies: [
+                    Cookie(name: "sid", value: session.token, maxAge: session.maxAge),
+                    Cookie(name: "oidc", value: "", maxAge: 0),
+                ],
+            );
         }
     }
 }

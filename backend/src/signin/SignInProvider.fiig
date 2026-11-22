@@ -7,7 +7,7 @@ use hearsay.signin.authentik.AuthentikSignIn
 use hearsay.signin.password.AbsPasswordSignIn
 
 rule signInProvider(attempt: accounts.SignInAttempt) -> accounts.SignIn {
-    match attempt {
+    return match (attempt) {
         accounts.SignInAttempt.Password(username, password) -> AbsPasswordSignIn
         accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> AuthentikSignIn
     }

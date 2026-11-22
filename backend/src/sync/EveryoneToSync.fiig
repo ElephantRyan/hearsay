@@ -3,16 +3,18 @@ use hearsay.ratings.rated
 // Everyone whose collections a full sync touches: whoever has a recommendation,
 // and whoever still has a collection of ours to clear out.
 rule everyoneToSync(rows: List<rated.RatingRow>, states: List<SyncState>) -> List<string> {
-    ids: List<string> = []
-    for row in rows {
-        if row.recommended and not ids.contains(row.userId) {
-            ids = append(ids, row.userId)
+    ids: List<string> = [];
+    for (row in rows) {
+        if (row.recommended && !ids.contains(row.userId)) {
+            ids = append(ids, row.userId);
         }
     }
-    for state in states {
-        if not ids.contains(state.userId) {
-            ids = append(ids, state.userId)
+
+    for (state in states) {
+        if (!ids.contains(state.userId)) {
+            ids = append(ids, state.userId);
         }
     }
-    return ids
+
+    return ids;
 }

@@ -1,32 +1,40 @@
 use fiig.http
 
 // A request to another server, with the key it accepts when there is one.
-rule peerRequest(method: http.Method, url: string, key: string | None, body: bytes | None) -> http.Request {
+rule peerRequest(
+    method: http.Method,
+    url: string,
+    key: string | None,
+    body: bytes | None,
+) -> http.Request {
     return http.Request(
         method: method,
         url: url,
         headers: peerHeaders(key, body != None),
         body: body,
         timeoutMillis: 10000,
-    )
+    );
 }
 
 private {
     peerHeaders(key: string | None, hasBody: bool) -> List<http.Header> {
-        headers: List<http.Header> = [http.Header(name: "Accept", value: "application/json")]
-        match key {
+        headers: List<http.Header> = [http.Header(name: "Accept", value: "application/json")];
+        match (key) {
             None -> {
             }
+
             given -> {
                 headers = append(
                     headers,
                     http.Header(name: "Authorization", value: "Bearer ${given}"),
-                )
+                );
             }
         }
-        if hasBody {
-            headers = append(headers, http.Header(name: "Content-Type", value: "application/json"))
+
+        if (hasBody) {
+            headers = append(headers, http.Header(name: "Content-Type", value: "application/json"));
         }
-        return headers
+
+        return headers;
     }
 }

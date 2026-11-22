@@ -3,8 +3,8 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 
 // The book libraries on ABS, for an index rebuild.
-gateway fetchLibraryList(abs: absclient.AbsTarget) -> Result<List<catalog.AbsLibrary>, absclient.AbsFault>
-    requires AbsCatalog
-{
-    return mapErr(e in AbsCatalog.librariesAsService(abs)): absclient.faultOfAbs(e)
+gateway fetchLibraryList(
+    abs: absclient.AbsTarget,
+) -> Result<List<catalog.AbsLibrary>, absclient.AbsFault> requires AbsCatalog {
+    return mapErr(e in AbsCatalog.librariesAsService(abs)): absclient.faultOfAbs(e);
 }

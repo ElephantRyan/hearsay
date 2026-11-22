@@ -1,13 +1,16 @@
 test keysIgnoreCasePunctuationAndALeadingArticle {
-    tolkien = keysOf(" b00abc123 ", "978-0-14-311852-7", "The Hobbit: There and Back Again", "J. R. R. Tolkien, Rob Inglis")
-    expect tolkien == BookKeys(asin: "B00ABC123", isbn: "9780143118527", titleKey: "hobbit there and back again|j r r tolkien")
-
+    tolkien = keysOf(
+        " b00abc123 ",
+        "978-0-14-311852-7",
+        "The Hobbit: There and Back Again",
+        "J. R. R. Tolkien, Rob Inglis",
+    );
+    expect tolkien == BookKeys(asin: "B00ABC123", isbn: "9780143118527", titleKey: "hobbit there and back again|j r r tolkien");
     // Another server's copy, written differently: same title key.
-    other = keysOf(None, "", "Hobbit — There and Back Again", "J.R.R. Tolkien")
-    expect other.asin == None
-    expect other.isbn == None
-    expect other.titleKey == "hobbit there and back again|j r r tolkien"
-
-    expect keysOf(None, None, "It’s Not “Fine” (Book 2)", "").titleKey == "it s not fine book 2|"
-    expect keysOf(None, None, "A", "Someone").titleKey == "a|someone"
+    other = keysOf(None, "", "Hobbit — There and Back Again", "J.R.R. Tolkien");
+    expect other.asin == None;
+    expect other.isbn == None;
+    expect other.titleKey == "hobbit there and back again|j r r tolkien";
+    expect keysOf(None, None, "It’s Not “Fine” (Book 2)", "").titleKey == "it s not fine book 2|";
+    expect keysOf(None, None, "A", "Someone").titleKey == "a|someone";
 }

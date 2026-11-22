@@ -1,6 +1,4 @@
 // Forgets the whole index, before a rebuild writes it again.
-gateway clearIndex() -> int
-    requires Database
-{
-    return Database.execute("DELETE FROM library_index")
+gateway clearIndex() -> int requires Database {
+    return Database.execute("DELETE FROM library_index");
 }

@@ -4,17 +4,19 @@ use hearsay.settings
 // Liveness plus ABS reachability. The service is up if it answers; `abs`
 // says whether ABS's public /status does, or that no address is set yet.
 activity checkHealth() -> Health {
-    match settings.absUrl() {
+    return match (settings.absUrl()) {
         None -> {
-            return Health(ok: true, abs: "not set up")
+            return Health(ok: true, abs: "not set up");
         }
+
         url -> {
-            match AbsServer.status(url) {
+            return match (AbsServer.status(url)) {
                 Ok(_) -> {
-                    return Health(ok: true, abs: "reachable")
+                    return Health(ok: true, abs: "reachable");
                 }
+
                 Err(_) -> {
-                    return Health(ok: true, abs: "unreachable")
+                    return Health(ok: true, abs: "unreachable");
                 }
             }
         }

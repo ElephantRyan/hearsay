@@ -1,11 +1,30 @@
 use fiig.http
 
-conversion tokenRequest(endpoint: string, code: string, verifier: string, redirectUri: string, clientId: string, clientSecret: string) -> http.Request {
+conversion tokenRequest(
+    endpoint: string,
+    code: string,
+    verifier: string,
+    redirectUri: string,
+    clientId: string,
+    clientSecret: string,
+) -> http.Request {
     return http.Request(
         method: http.Method.Post,
         url: endpoint,
-        headers: [http.Header(name: "Content-Type", value: "application/x-www-form-urlencoded"), http.Header(name: "Accept", value: "application/json")],
-        body: http.formEncode([http.Header(name: "grant_type", value: "authorization_code"), http.Header(name: "code", value: code), http.Header(name: "redirect_uri", value: redirectUri), http.Header(name: "client_id", value: clientId), http.Header(name: "client_secret", value: clientSecret), http.Header(name: "code_verifier", value: verifier)]),
+        headers: [
+            http.Header(name: "Content-Type", value: "application/x-www-form-urlencoded"),
+            http.Header(name: "Accept", value: "application/json"),
+        ],
+        body: http.formEncode(
+            [
+                http.Header(name: "grant_type", value: "authorization_code"),
+                http.Header(name: "code", value: code),
+                http.Header(name: "redirect_uri", value: redirectUri),
+                http.Header(name: "client_id", value: clientId),
+                http.Header(name: "client_secret", value: clientSecret),
+                http.Header(name: "code_verifier", value: verifier),
+            ],
+        ),
         timeoutMillis: 10000,
-    )
+    );
 }

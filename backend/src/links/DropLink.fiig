@@ -1,5 +1,5 @@
 // DELETE /federation/link: the calling server has unlinked, so this one
 // forgets it and its keys too.
 workflow dropLink(peer: LinkedServer) -> int {
-    return forgetLink(peer)
+    return forgetLink(peer);
 }

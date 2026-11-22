@@ -1,11 +1,12 @@
 // Where Audiobookshelf is, or the error for a server that isn't set up yet.
 activity loadAbsUrl() -> Result<string, SettingsError> {
-    match absUrl() {
+    return match (absUrl()) {
         None -> {
-            return Err(SettingsError.NoAbsUrl)
+            return Err(SettingsError.NoAbsUrl);
         }
+
         url -> {
-            return Ok(url)
+            return Ok(url);
         }
     }
 }

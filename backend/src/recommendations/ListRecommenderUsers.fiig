@@ -1,5 +1,5 @@
 use hearsay.accounts
 
 workflow listRecommenderUsers(me: accounts.Identity) -> List<Recommender> {
-    return listRecommenders()
+    return listRecommenders();
 }

@@ -5,10 +5,11 @@ use fiig.http
 // safe, so a looser validId could never let "../users" reach ABS. Anything
 // that isn't an ABS id is NotFound.
 conversion absPathId(id: string) -> Result<string, AbsError> {
-    if not validId(id) {
-        return Err(AbsError.NotFound)
+    if (!validId(id)) {
+        return Err(AbsError.NotFound);
     }
-    match http.pathSegment(id) {
+
+    return match (http.pathSegment(id)) {
         None -> Err(AbsError.NotFound)
         safe -> Ok(safe)
     }

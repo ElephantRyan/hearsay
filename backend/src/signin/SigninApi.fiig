@@ -1,15 +1,13 @@
 // The sign-in routes of the HTTP surface (PLAN.md section 4); src/Hearsay.fiig serves
 // every domain's adapter together.
 adapter http signinApi {
-    GET "/auth/modes" -> showSignInModes()
-        produces "application/json"
-    {
+    GET "/auth/modes" -> showSignInModes() produces "application/json" {
         modes -> 200 modes
     }
+
     POST "/session" -> passwordSignIn(input: PasswordLogin)
-        consumes "application/json"
-        produces "application/json"
-    {
+            consumes "application/json"
+            produces "application/json" {
         Ok(session) -> signedIn(session)
         Err(error) -> loginErrorResponse(error)
     }

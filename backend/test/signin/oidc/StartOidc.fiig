@@ -8,18 +8,26 @@ test startOidcIsOffInPasswordOnlyMode {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://app.test"
     }
+
     fake AuthentikSignIn {
-        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string) -> Result<string, accounts.SignInError> {
-            expect false
-            return Err(accounts.SignInError.WrongMethod)
+        gateway beginUrl(
+            oidc: accounts.OidcSettings,
+            state: string,
+            codeVerifier: string,
+        ) -> Result<string, accounts.SignInError> {
+            expect false;
+            return Err(accounts.SignInError.WrongMethod);
         }
 
-        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer) -> Result<accounts.Identity, accounts.SignInError> {
-            expect false
-            return Err(accounts.SignInError.WrongMethod)
+        gateway authenticate(
+            attempt: accounts.SignInAttempt,
+            server: accounts.SignInServer,
+        ) -> Result<accounts.Identity, accounts.SignInError> {
+            expect false;
+            return Err(accounts.SignInError.WrongMethod);
         }
     }
 
-    expect startOidc() is Err(signin.LoginError.OidcNotOffered)
-    expect calls(AuthentikSignIn.beginUrl) == 0
+    expect startOidc() is Err(signin.LoginError.OidcNotOffered);
+    expect calls(AuthentikSignIn.beginUrl) == 0;
 }

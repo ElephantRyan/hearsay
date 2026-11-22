@@ -2,6 +2,6 @@ use hearsay.accounts
 
 // An unknown sort never gets here: the route refuses it with a 400.
 workflow listMyRatings(me: accounts.Identity, sort: RatingOrder | None) -> List<RatingRow> {
-    rows = loadMyRatings(me.userId)
-    return sortRatings(rows, sort or RatingOrder.Newest)
+    rows = loadMyRatings(me.userId);
+    return sortRatings(rows, sort ?? RatingOrder.Newest);
 }

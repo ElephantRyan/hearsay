@@ -2,7 +2,7 @@
 // which sign-in routes answer. frontendUrl is where a
 // finished Authentik sign-in lands. A value an admin saves in the app wins
 // (authMode, frontendUrl).
-config SignInConfig {
+wire SignInConfig {
     authMode: AuthMode from env "AUTH_MODE" = AuthMode.Both
     frontendUrl: string from env "FRONTEND_URL" = "http://localhost:5173"
 }

@@ -1,8 +1,7 @@
 use hearsay.accounts
 
 gateway saveSession(tokenHash: string, identity: accounts.Identity, expiresAt: int) -> int
-    requires Database
-{
+        requires Database {
     return Database.execute(
         "INSERT INTO session (token_hash, user_id, username, user_type, expires_at) VALUES (?, ?, ?, ?, ?)",
         tokenHash,
@@ -10,5 +9,5 @@ gateway saveSession(tokenHash: string, identity: accounts.Identity, expiresAt: i
         identity.username,
         identity.userType,
         expiresAt,
-    )
+    );
 }

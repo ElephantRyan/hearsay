@@ -11,41 +11,49 @@ test absProgressListsStartedBooks {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            expect request.method == http.Method.Get
-            expect request.url == "https://abs.test/api/users/u-1"
-            expect http.headerValue(request.headers, "authorization") == "Bearer svc"
+            expect request.method == http.Method.Get;
+            expect request.url == "https://abs.test/api/users/u-1";
+            expect http.headerValue(request.headers, "authorization") == "Bearer svc";
             return Ok(
-                http.Reply(status: 200, headers: [], body: "{\"id\":\"u-1\",\"username\":\"ann\",\"mediaProgress\":[{\"id\":\"p1\",\"libraryItemId\":\"b-1\",\"mediaItemType\":\"book\",\"isFinished\":true,\"progress\":1,\"lastUpdate\":1795000000000,\"finishedAt\":1795000000000},{\"id\":\"p2\",\"libraryItemId\":\"b-2\",\"mediaItemType\":\"book\",\"isFinished\":false,\"progress\":0.6670773110970304,\"lastUpdate\":1795128758043,\"finishedAt\":null},{\"id\":\"p3\",\"libraryItemId\":\"pod-1\",\"episodeId\":\"e1\",\"mediaItemType\":\"podcastEpisode\",\"isFinished\":false,\"progress\":0.5,\"lastUpdate\":1795000000001}]}".utf8()),
-            )
+                http.Reply(
+                    status: 200,
+                    headers: [],
+                    body: "{\"id\":\"u-1\",\"username\":\"ann\",\"mediaProgress\":[{\"id\":\"p1\",\"libraryItemId\":\"b-1\",\"mediaItemType\":\"book\",\"isFinished\":true,\"progress\":1,\"lastUpdate\":1795000000000,\"finishedAt\":1795000000000},{\"id\":\"p2\",\"libraryItemId\":\"b-2\",\"mediaItemType\":\"book\",\"isFinished\":false,\"progress\":0.6670773110970304,\"lastUpdate\":1795128758043,\"finishedAt\":null},{\"id\":\"p3\",\"libraryItemId\":\"pod-1\",\"episodeId\":\"e1\",\"mediaItemType\":\"podcastEpisode\",\"isFinished\":false,\"progress\":0.5,\"lastUpdate\":1795000000001}]}".utf8(),
+                ),
+            );
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs)
-    expect AbsProgress.progressAsService(abs, "u-1") is Ok(started)
-    expect started.length() == 2
-    expect started.at(0) == Progress(itemId: "b-1", finished: true, percent: 100, lastListenedAt: 1795000000000)
-    expect started.at(1) == Progress(itemId: "b-2", finished: false, percent: 67, lastListenedAt: 1795128758043)
+    expect settings.loadAbsTarget() is Ok(abs);
+    expect AbsProgress.progressAsService(abs, "u-1") is Ok(started);
+    expect started.length() == 2;
+    expect started.at(0) == Progress(itemId: "b-1", finished: true, percent: 100, lastListenedAt: 1795000000000);
+    expect started.at(1) == Progress(itemId: "b-2", finished: false, percent: 67, lastListenedAt: 1795128758043);
 }
 
 test absProgressRefusesAHostileIdWithoutCallingAbs {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            expect false
-            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()))
+            expect false;
+            return Ok(http.Reply(status: 500, headers: [], body: "".utf8()));
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs)
-    expect AbsProgress.progressAsService(abs, "../../api/libraries") is Err(absclient.AbsError.NotFound)
+    expect settings.loadAbsTarget() is Ok(abs);
+    expect AbsProgress.progressAsService(abs, "../../api/libraries") is Err(absclient.AbsError.NotFound);
 }

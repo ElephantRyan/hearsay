@@ -4,20 +4,27 @@ use hearsay.accounts
 // Whose lists a sync touches: "admin or self" (PLAN.md section 4). A person
 // syncs their own; an admin may name anyone, or leave it out for everyone who
 // has recommendations or a collection of ours (everyoneToSync, from the caller).
-rule syncTargets(me: accounts.Identity, requested: string | None, everyone: List<string>) -> Result<List<string>, SyncError> {
-    admin = roles.canAdminister(me.userType)
-    match requested {
+rule syncTargets(
+    me: accounts.Identity,
+    requested: string | None,
+    everyone: List<string>,
+) -> Result<List<string>, SyncError> {
+    admin = roles.canAdminister(me.userType);
+    return match (requested) {
         None -> {
-            if not admin {
-                return Ok([me.userId])
+            if (!admin) {
+                return Ok([me.userId]);
             }
-            return Ok(everyone)
+
+            return Ok(everyone);
         }
+
         named -> {
-            if named != me.userId and not admin {
-                return Err(SyncError.NotAllowed)
+            if (named != me.userId && !admin) {
+                return Err(SyncError.NotAllowed);
             }
-            return Ok([named])
+
+            return Ok([named]);
         }
     }
 }

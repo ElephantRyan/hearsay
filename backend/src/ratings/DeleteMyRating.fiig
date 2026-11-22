@@ -2,9 +2,10 @@ use hearsay.accounts
 
 // Removing a rating you never made is "not found", not a silent success.
 workflow deleteMyRating(me: accounts.Identity, itemId: string) -> Result<int, RatingError> {
-    removed = removeRating(me.userId, itemId)
-    if removed == 0 {
-        return Err(RatingError.NoRating)
+    removed = removeRating(me.userId, itemId);
+    if (removed == 0) {
+        return Err(RatingError.NoRating);
     }
-    return Ok(removed)
+
+    return Ok(removed);
 }

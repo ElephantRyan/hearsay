@@ -1,15 +1,13 @@
 // The library_index table's row count.
-gateway indexedBooks() -> int
-    requires Database
-    idempotent
-{
-    found: IndexCount | None = Database.queryOne("SELECT COUNT(*) AS books FROM library_index")
-    match found {
+gateway indexedBooks() -> int requires Database idempotent {
+    found: IndexCount | None = Database.queryOne("SELECT COUNT(*) AS books FROM library_index");
+    return match (found) {
         None -> {
-            return 0
+            return 0;
         }
+
         counted -> {
-            return counted.books
+            return counted.books;
         }
     }
 }

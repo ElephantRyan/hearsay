@@ -5,32 +5,51 @@ use hearsay.absclient
 // time (about five calls for 1,100 books). On any failure the old index is
 // kept: nothing is cleared until every page has arrived.
 activity indexLibrary(abs: absclient.AbsTarget) -> Result<IndexSummary, absclient.AbsFault> {
-    libraries = filter(library in fetchLibraryList(abs)?): library.mediaType == "book"
-    books: List<catalog.Book> = []
-    for library in libraries {
-        page: int = 0
-        more: bool = true
-        while more {
-            found = fetchLibraryPage(abs, library.id, page, 250)?
-            for book in found.books {
-                books = append(books, book)
+    libraries = filter(library in fetchLibraryList(abs)?): library.mediaType == "book";
+    books: List<catalog.Book> = [];
+    for (library in libraries) {
+        page: int = 0;
+        more: bool = true;
+        while (more) {
+            found = fetchLibraryPage(abs, library.id, page, 250)?;
+            for (book in found.books) {
+                books = append(books, book);
             }
-            page = page + 1
-            more = found.books.length() > 0 and page * 250 < found.total
+
+            page = page + 1;
+            more = found.books.length() > 0 && page * 250 < found.total;
         }
     }
-    now = Clock.now()
-    clearIndex()
-    withAsin: int = 0
-    withIsbn: int = 0
-    for book in books {
-        keys = keysOf(book.asin, book.isbn, book.title, book.authors)
-        saveIndexEntry(IndexEntry(itemId: book.itemId, libraryId: book.libraryId, asin: keys.asin, isbn: keys.isbn, titleKey: keys.titleKey), now)
-        if keys.asin != None {
-            withAsin = withAsin + 1
-        } else if keys.isbn != None {
-            withIsbn = withIsbn + 1
+
+    now = Clock.now();
+    clearIndex();
+    withAsin: int = 0;
+    withIsbn: int = 0;
+    for (book in books) {
+        keys = keysOf(book.asin, book.isbn, book.title, book.authors);
+        saveIndexEntry(
+            IndexEntry(
+                itemId: book.itemId,
+                libraryId: book.libraryId,
+                asin: keys.asin,
+                isbn: keys.isbn,
+                titleKey: keys.titleKey,
+            ),
+            now,
+        );
+        if (keys.asin != None) {
+            withAsin = withAsin + 1;
+        } else if (keys.isbn != None) {
+            withIsbn = withIsbn + 1;
         }
     }
-    return Ok(IndexSummary(books: books.length(), withAsin: withAsin, withIsbn: withIsbn, titleOnly: books.length() - withAsin - withIsbn))
+
+    return Ok(
+        IndexSummary(
+            books: books.length(),
+            withAsin: withAsin,
+            withIsbn: withIsbn,
+            titleOnly: books.length() - withAsin - withIsbn,
+        ),
+    );
 }

@@ -1,5 +1,5 @@
 // GET /federation/recommendations: this server's recommendations, to a linked
 // server only (the adapter has settled that it is one).
 workflow shareRecommendations(peer: LinkedServer) -> List<SharedRating> {
-    return sharedRatings()
+    return sharedRatings();
 }

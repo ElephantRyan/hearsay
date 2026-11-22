@@ -5,12 +5,11 @@ use hearsay.sessions
 adapter http libraryApi {
     wire sessions.me
 
-    GET "/libraries" -> showLibraries(me)
-        produces "application/json"
-    {
+    GET "/libraries" -> showLibraries(me) produces "application/json" {
         Ok(libraries) -> 200 libraries
         Err(error) -> libraryErrorResponse(error)
     }
+
     GET "/libraries/{libraryId}/items?page={page}&size={size}&q={q}" -> showLibraryItems(
         me,
         libraryId: string,
@@ -18,14 +17,12 @@ adapter http libraryApi {
         size: int | None,
         q: string | None,
     )
-        produces "application/json"
-    {
+            produces "application/json" {
         Ok(result) -> 200 result
         Err(error) -> libraryErrorResponse(error)
     }
-    GET "/items/{itemId}" -> showItem(me, itemId: string)
-        produces "application/json"
-    {
+
+    GET "/items/{itemId}" -> showItem(me, itemId: string) produces "application/json" {
         Ok(detail) -> 200 detail
         Err(error) -> libraryErrorResponse(error)
     }

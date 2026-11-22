@@ -1,4 +1,4 @@
 // How long a session lasts (PLAN.md section 8).
-config SessionConfig {
+wire SessionConfig {
     sessionMaxAge: int from env "SESSION_MAX_AGE" = 7 * 24 * 60 * 60
 }

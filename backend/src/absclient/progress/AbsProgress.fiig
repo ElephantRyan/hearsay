@@ -6,11 +6,16 @@ use fiig.http.HttpClient
 // GET /api/users/{id} is admin-only, and it is the one place ABS lists another
 // account's progress.
 capability AbsProgress {
-    gateway progressAsService(abs: absclient.AbsTarget, userId: string) -> Result<List<Progress>, absclient.AbsError>
-        requires HttpClient
-    {
-        userIdSegment = absclient.absPathId(userId)?
-        reply = absclient.absReply(HttpClient.send(absclient.absGet(abs.url, "/api/users/${userIdSegment}", abs.token.reveal())))?
-        return progressOfUserReply(reply.body)
+    gateway progressAsService(
+        abs: absclient.AbsTarget,
+        userId: string,
+    ) -> Result<List<Progress>, absclient.AbsError> requires HttpClient {
+        userIdSegment = absclient.absPathId(userId)?;
+        reply = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(abs.url, "/api/users/${userIdSegment}", abs.token.reveal()),
+            ),
+        )?;
+        return progressOfUserReply(reply.body);
     }
 }

@@ -1,5 +1,5 @@
 // Where Audiobookshelf is: the admin's saved address, or else ABS_URL. None
 // until one of them is set.
 activity absUrl() -> string | None {
-    return storedText("abs.url") or Abs.url
+    return storedText("abs.url") ?? Abs.url;
 }

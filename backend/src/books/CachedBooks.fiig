@@ -4,35 +4,40 @@ use hearsay.settings
 // Many books, in the order asked: our cached copies, and the rest from ABS in
 // one call, which are then cached too. A book ABS no longer has is left out.
 activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookError> {
-    found: Map<string, catalog.Book> = [:]
-    missing: List<string> = []
-    for itemId in itemIds {
-        match findBook(itemId) {
+    found: Map<string, catalog.Book> = [:];
+    missing: List<string> = [];
+    for (itemId in itemIds) {
+        match (findBook(itemId)) {
             None -> {
-                missing = append(missing, itemId)
+                missing = append(missing, itemId);
             }
+
             cached -> {
-                found = found.put(itemId, cached)
+                found = found.put(itemId, cached);
             }
         }
     }
-    if missing.length() > 0 {
-        abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?
-        now = Clock.now()
-        for book in fetchBooks(abs, missing)? {
-            BookCache.save(book, now)
-            found = found.put(book.itemId, book)
+
+    if (missing.length() > 0) {
+        abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?;
+        now = Clock.now();
+        for (book in fetchBooks(abs, missing)?) {
+            BookCache.save(book, now);
+            found = found.put(book.itemId, book);
         }
     }
-    books: List<catalog.Book> = []
-    for itemId in itemIds {
-        match found.atOrNone(itemId) {
+
+    books: List<catalog.Book> = [];
+    for (itemId in itemIds) {
+        match (found.atOrNone(itemId)) {
             None -> {
             }
+
             book -> {
-                books = append(books, book)
+                books = append(books, book);
             }
         }
     }
-    return Ok(books)
+
+    return Ok(books);
 }

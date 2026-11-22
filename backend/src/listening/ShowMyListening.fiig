@@ -5,8 +5,8 @@ use hearsay.settings
 // GET /me/listening: what I am listening to and finished, for
 // "My books" screen and Rate tab.
 workflow showMyListening(me: accounts.Identity) -> Result<List<ListenedBook>, ListeningError> {
-    abs = mapErr(e in settings.loadAbsTarget()): listeningErrorOfSettings(e)?
-    started = mapErr(e in loadProgress(abs, me.userId)): listeningErrorOfFault(e)?
-    found = mapErr(e in books.cachedBooks(map(p in started): p.itemId)): listeningErrorOfBook(e)?
-    return Ok(listenedBooks(started, found, loadMyScores(me.userId)))
+    abs = mapErr(e in settings.loadAbsTarget()): listeningErrorOfSettings(e)?;
+    started = mapErr(e in loadProgress(abs, me.userId)): listeningErrorOfFault(e)?;
+    found = mapErr(e in books.cachedBooks(map(p in started): p.itemId)): listeningErrorOfBook(e)?;
+    return Ok(listenedBooks(started, found, loadMyScores(me.userId)));
 }

@@ -2,13 +2,17 @@ use hearsay.ratings.rated
 
 // The GET /recommendations filters that apply to ratings before ranking:
 // one recommender, one library. A filter left out matches everything.
-rule filterRows(rows: List<rated.RatingRow>, userId: string | None, libraryId: string | None) -> List<rated.RatingRow> {
-    return filter(r in rows): matches(r.userId, userId) and matches(r.libraryId, libraryId)
+rule filterRows(
+    rows: List<rated.RatingRow>,
+    userId: string | None,
+    libraryId: string | None,
+) -> List<rated.RatingRow> {
+    return filter(r in rows): matches(r.userId, userId) && matches(r.libraryId, libraryId);
 }
 
 private {
     matches(value: string, wanted: string | None) -> bool {
-        match wanted {
+        return match (wanted) {
             None -> true
             given -> value == given
         }

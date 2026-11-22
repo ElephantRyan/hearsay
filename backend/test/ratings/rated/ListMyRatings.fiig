@@ -2,7 +2,7 @@ use hearsay.absclient as client
 use hearsay.accounts
 
 test myRatingsComeInAnyOrderAskedFor {
-    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    expect listMyRatings(ann, None).length() == 0
-    expect listMyRatings(ann, RatingOrder.Score).length() == 0
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect listMyRatings(ann, None).length() == 0;
+    expect listMyRatings(ann, RatingOrder.Score).length() == 0;
 }

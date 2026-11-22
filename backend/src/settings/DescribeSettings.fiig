@@ -3,7 +3,10 @@ activity describeSettings() -> SettingsView {
     return SettingsView(
         absUrl: textSetting(storedText("abs.url"), Abs.url),
         serviceToken: secretSetting(storedText("abs.serviceToken"), "abs.serviceToken"),
-        mirrorEnabled: textSetting(storedText("sync.mirrorEnabled"), boolText(SyncConfig.mirrorEnabled)),
+        mirrorEnabled: textSetting(
+            storedText("sync.mirrorEnabled"),
+            boolText(SyncConfig.mirrorEnabled),
+        ),
         authMode: textSetting(storedText("signin.authMode"), authModeText(SignInConfig.authMode)),
         frontendUrl: textSetting(storedText("signin.frontendUrl"), SignInConfig.frontendUrl),
         oidcIssuer: textSetting(storedText("oidc.issuer"), Oidc.issuer),
@@ -11,68 +14,76 @@ activity describeSettings() -> SettingsView {
         oidcClientSecret: secretSetting(storedText("oidc.clientSecret"), "oidc.clientSecret"),
         oidcRedirectUri: textSetting(storedText("oidc.redirectUri"), Oidc.redirectUri),
         serverName: textSetting(storedText("server.name"), ServerConfig.name),
-    )
+    );
 }
 
 private {
     textSetting(saved: string | None, env: string | None) -> SettingValue {
-        match saved {
+        return match (saved) {
             None -> {
-                match env {
+                return match (env) {
                     None -> {
-                        return SettingValue(value: None, source: "unset")
+                        return SettingValue(value: None, source: "unset");
                     }
+
                     given -> {
-                        return SettingValue(value: given, source: "environment")
+                        return SettingValue(value: given, source: "environment");
                     }
                 }
             }
+
             given -> {
-                return SettingValue(value: given, source: "saved")
+                return SettingValue(value: given, source: "saved");
             }
         }
     }
 
     // The environment is read only when nothing is saved.
     secretSetting(saved: string | None, name: string) -> SettingValue {
-        match saved {
+        return match (saved) {
             None -> {
-                if envSecretSet(name) {
-                    return SettingValue(value: None, source: "environment")
+                if (envSecretSet(name)) {
+                    return SettingValue(value: None, source: "environment");
                 }
-                return SettingValue(value: None, source: "unset")
+
+                return SettingValue(value: None, source: "unset");
             }
+
             given -> {
-                return SettingValue(value: None, source: "saved")
+                return SettingValue(value: None, source: "saved");
             }
         }
     }
 
     envSecretSet(name: string) -> bool {
-        if name == "abs.serviceToken" {
-            match AbsService.token {
+        if (name == "abs.serviceToken") {
+            match (AbsService.token) {
                 None -> {
-                    return false
+                    return false;
                 }
+
                 given -> {
-                    return true
+                    return true;
                 }
             }
         }
-        match Oidc.clientSecret {
+
+        return match (Oidc.clientSecret) {
             None -> {
-                return false
+                return false;
             }
+
             given -> {
-                return true
+                return true;
             }
         }
     }
 
     boolText(on: bool) -> string {
-        if on {
-            return "true"
+        if (on) {
+            return "true";
         }
-        return "false"
+
+        return "false";
     }
 }

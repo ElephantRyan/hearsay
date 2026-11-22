@@ -2,11 +2,21 @@ use hearsay.absclient as client
 
 test usersMatchingEmailIgnoresCaseAndSkipsUsersWithoutOne {
     users = [
-        AbsUserEntry(id: "u-1", username: "ryan", type: client.AbsUserType.Admin, email: "Ryan@Example.com"),
+        AbsUserEntry(
+            id: "u-1",
+            username: "ryan",
+            type: client.AbsUserType.Admin,
+            email: "Ryan@Example.com",
+        ),
         AbsUserEntry(id: "u-2", username: "mom", type: client.AbsUserType.User, email: None),
-        AbsUserEntry(id: "u-3", username: "sam", type: client.AbsUserType.User, email: "sam@example.com"),
-    ]
-    expect usersMatchingEmail(users, "ryan@example.com").length() == 1
-    expect usersMatchingEmail(users, "ryan@example.com").at(0).id == "u-1"
-    expect usersMatchingEmail(users, "nobody@example.com").length() == 0
+        AbsUserEntry(
+            id: "u-3",
+            username: "sam",
+            type: client.AbsUserType.User,
+            email: "sam@example.com",
+        ),
+    ];
+    expect usersMatchingEmail(users, "ryan@example.com").length() == 1;
+    expect usersMatchingEmail(users, "ryan@example.com").at(0).id == "u-1";
+    expect usersMatchingEmail(users, "nobody@example.com").length() == 0;
 }

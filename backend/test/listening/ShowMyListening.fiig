@@ -14,114 +14,187 @@ test myListeningIsMostRecentFirstWithMyScores {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake AbsProgress {
-        gateway progressAsService(abs: client.AbsTarget, userId: string) -> Result<List<progress.Progress>, client.AbsError> {
-            expect userId == "u1"
+        gateway progressAsService(
+            abs: client.AbsTarget,
+            userId: string,
+        ) -> Result<List<progress.Progress>, client.AbsError> {
+            expect userId == "u1";
             return Ok(
-                [progress.Progress(itemId: "a", finished: true, percent: 100, lastListenedAt: 100), progress.Progress(itemId: "b", finished: false, percent: 25, lastListenedAt: 300), progress.Progress(itemId: "gone", finished: false, percent: 50, lastListenedAt: 200)],
-            )
+                [
+                    progress.Progress(
+                        itemId: "a",
+                        finished: true,
+                        percent: 100,
+                        lastListenedAt: 100,
+                    ),
+                    progress.Progress(
+                        itemId: "b",
+                        finished: false,
+                        percent: 25,
+                        lastListenedAt: 300,
+                    ),
+                    progress.Progress(
+                        itemId: "gone",
+                        finished: false,
+                        percent: 50,
+                        lastListenedAt: 200,
+                    ),
+                ],
+            );
         }
     }
+
     fake AbsCatalog {
-        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(
+            abs: client.AbsTarget,
+            itemId: string,
+        ) -> Result<catalog.Book, client.AbsError> {
             return Ok(
-                catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Alpha", authors: "A. Author"),
-            )
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Alpha",
+                    authors: "A. Author",
+                ),
+            );
         }
 
-        gateway itemsAsService(abs: client.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, client.AbsError> {
-            expect itemIds == ["b", "gone"]
+        gateway itemsAsService(
+            abs: client.AbsTarget,
+            itemIds: List<string>,
+        ) -> Result<List<catalog.Book>, client.AbsError> {
+            expect itemIds == ["b", "gone"];
             return Ok(
-                [catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "B. Author")],
-            )
+                [
+                    catalog.Book(
+                        itemId: "b",
+                        libraryId: "lib-1",
+                        title: "Beta",
+                        authors: "B. Author",
+                    ),
+                ],
+            );
         }
     }
 
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_)
-    expect showMyListening(annId) is Ok(listened)
-    expect listened == [ListenedBook(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "B. Author", finished: false, percent: 25, lastListenedAt: 300, myScore: None, recommended: false), ListenedBook(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author", finished: true, percent: 100, lastListenedAt: 100, myScore: 8, recommended: true)]
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_);
+    expect showMyListening(annId) is Ok(listened);
+    expect listened == [ListenedBook(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "B. Author", finished: false, percent: 25, lastListenedAt: 300, myScore: None, recommended: false), ListenedBook(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author", finished: true, percent: 100, lastListenedAt: 100, myScore: 8, recommended: true)];
 }
 
 test myListeningCachesWhatItLooksUp {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake AbsProgress {
-        gateway progressAsService(abs: client.AbsTarget, userId: string) -> Result<List<progress.Progress>, client.AbsError> {
+        gateway progressAsService(
+            abs: client.AbsTarget,
+            userId: string,
+        ) -> Result<List<progress.Progress>, client.AbsError> {
             return Ok(
                 [progress.Progress(itemId: "b", finished: false, percent: 25, lastListenedAt: 300)],
-            )
-        }
-    }
-    fake AbsCatalog {
-        gateway itemsAsService(abs: client.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, client.AbsError> {
-            expect calls(AbsCatalog.itemsAsService) == 1
-            return Ok(
-                [catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "B. Author")],
-            )
+            );
         }
     }
 
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    expect showMyListening(annId) is Ok(first)
-    expect showMyListening(annId) is Ok(second)
-    expect second == first
+    fake AbsCatalog {
+        gateway itemsAsService(
+            abs: client.AbsTarget,
+            itemIds: List<string>,
+        ) -> Result<List<catalog.Book>, client.AbsError> {
+            expect calls(AbsCatalog.itemsAsService) == 1;
+            return Ok(
+                [
+                    catalog.Book(
+                        itemId: "b",
+                        libraryId: "lib-1",
+                        title: "Beta",
+                        authors: "B. Author",
+                    ),
+                ],
+            );
+        }
+    }
+
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    expect showMyListening(annId) is Ok(first);
+    expect showMyListening(annId) is Ok(second);
+    expect second == first;
 }
 
 test myListeningSaysWhenAbsIsDown {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake AbsProgress {
-        gateway progressAsService(abs: client.AbsTarget, userId: string) -> Result<List<progress.Progress>, client.AbsError> {
-            return Err(client.AbsError.Unauthorized)
+        gateway progressAsService(
+            abs: client.AbsTarget,
+            userId: string,
+        ) -> Result<List<progress.Progress>, client.AbsError> {
+            return Err(client.AbsError.Unauthorized);
         }
     }
 
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    expect showMyListening(annId) is Err(ListeningError.Unavailable(why))
-    expect why == "this server's Audiobookshelf token was refused; tell the server's admin"
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    expect showMyListening(annId) is Err(ListeningError.Unavailable(why));
+    expect why == "this server's Audiobookshelf token was refused; tell the server's admin";
 }
 
 test myListeningSaysWhenAbsHasNoAccountForMe {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake AbsProgress {
-        gateway progressAsService(abs: client.AbsTarget, userId: string) -> Result<List<progress.Progress>, client.AbsError> {
-            return Err(client.AbsError.NotFound)
+        gateway progressAsService(
+            abs: client.AbsTarget,
+            userId: string,
+        ) -> Result<List<progress.Progress>, client.AbsError> {
+            return Err(client.AbsError.NotFound);
         }
     }
 
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    expect showMyListening(annId) is Err(ListeningError.AccountNotFound)
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    expect showMyListening(annId) is Err(ListeningError.AccountNotFound);
 }

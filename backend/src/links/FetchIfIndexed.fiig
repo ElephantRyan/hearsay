@@ -3,20 +3,23 @@ use hearsay.matching
 // Fetches one linked server when the library index has been built; how many
 // of its recommendations came, or 0.
 activity fetchIfIndexed(id: string) -> int {
-    if matching.indexSize() == 0 {
-        return 0
+    if (matching.indexSize() == 0) {
+        return 0;
     }
-    match peerKeyOf(id) {
+
+    return match (peerKeyOf(id)) {
         None -> {
-            return 0
+            return 0;
         }
+
         peer -> {
-            match fetchLink(peer) {
+            return match (fetchLink(peer)) {
                 Err(_) -> {
-                    return 0
+                    return 0;
                 }
+
                 Ok(link) -> {
-                    return link.ratings or 0
+                    return link.ratings ?? 0;
                 }
             }
         }

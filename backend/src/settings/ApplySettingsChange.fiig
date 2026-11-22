@@ -1,47 +1,53 @@
 // Saves every setting a checked change gives; `by` is the admin's user id.
 activity applySettingsChange(change: SettingsChange, by: string) -> int {
-    saved: int = 0
-    saved = saved + saveGiven("abs.url", change.absUrl, by)
-    saved = saved + saveGiven("abs.serviceToken", change.serviceToken, by)
-    match change.mirrorEnabled {
+    saved: int = 0;
+    saved = saved + saveGiven("abs.url", change.absUrl, by);
+    saved = saved + saveGiven("abs.serviceToken", change.serviceToken, by);
+    match (change.mirrorEnabled) {
         None -> {
         }
+
         on -> {
-            saved = saved + rememberSetting("sync.mirrorEnabled", textOf(on), by)
+            saved = saved + rememberSetting("sync.mirrorEnabled", textOf(on), by);
         }
     }
-    match change.authMode {
+
+    match (change.authMode) {
         None -> {
         }
+
         mode -> {
-            saved = saved + rememberSetting("signin.authMode", authModeText(mode), by)
+            saved = saved + rememberSetting("signin.authMode", authModeText(mode), by);
         }
     }
-    saved = saved + saveGiven("signin.frontendUrl", change.frontendUrl, by)
-    saved = saved + saveGiven("oidc.issuer", change.oidcIssuer, by)
-    saved = saved + saveGiven("oidc.clientId", change.oidcClientId, by)
-    saved = saved + saveGiven("oidc.clientSecret", change.oidcClientSecret, by)
-    saved = saved + saveGiven("oidc.redirectUri", change.oidcRedirectUri, by)
-    saved = saved + saveGiven("server.name", change.serverName, by)
-    return saved
+
+    saved = saved + saveGiven("signin.frontendUrl", change.frontendUrl, by);
+    saved = saved + saveGiven("oidc.issuer", change.oidcIssuer, by);
+    saved = saved + saveGiven("oidc.clientId", change.oidcClientId, by);
+    saved = saved + saveGiven("oidc.clientSecret", change.oidcClientSecret, by);
+    saved = saved + saveGiven("oidc.redirectUri", change.oidcRedirectUri, by);
+    saved = saved + saveGiven("server.name", change.serverName, by);
+    return saved;
 }
 
 private {
     saveGiven(name: string, value: string | None, by: string) -> int {
-        match value {
+        return match (value) {
             None -> {
-                return 0
+                return 0;
             }
+
             given -> {
-                return rememberSetting(name, given, by)
+                return rememberSetting(name, given, by);
             }
         }
     }
 
     textOf(on: bool) -> string {
-        if on {
-            return "true"
+        if (on) {
+            return "true";
         }
-        return "false"
+
+        return "false";
     }
 }

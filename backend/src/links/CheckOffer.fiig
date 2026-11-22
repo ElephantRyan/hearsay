@@ -1,17 +1,20 @@
 // Tidies and checks the calling server's offer: a name, an http(s) address
 // with no trailing slash, and a key of full length.
 rule checkOffer(offer: LinkOffer) -> Result<LinkOffer, FederationError> {
-    address = offer.address.trim().removeSuffix("/")
-    if offer.name.isBlank() {
-        return Err(FederationError.Invalid("name", "is blank"))
+    address = offer.address.trim().removeSuffix("/");
+    if (offer.name.isBlank()) {
+        return Err(FederationError.Invalid("name", "is blank"));
     }
-    if not address.startsWith("https://") and not address.startsWith("http://") {
-        return Err(FederationError.Invalid("address", "must start with https:// or http://"))
+
+    if (!address.startsWith("https://") && !address.startsWith("http://")) {
+        return Err(FederationError.Invalid("address", "must start with https:// or http://"));
     }
-    if offer.key.length() < 43 {
-        return Err(FederationError.Invalid("key", "is too short"))
+
+    if (offer.key.length() < 43) {
+        return Err(FederationError.Invalid("key", "is too short"));
     }
+
     return Ok(
         LinkOffer(secret: offer.secret, name: offer.name.trim(), address: address, key: offer.key),
-    )
+    );
 }

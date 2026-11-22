@@ -3,16 +3,19 @@
 // with this server's own token, so anything else ("../users", "a/b", "a?x=1")
 // must never reach ABS.
 rule validId(id: string) -> bool {
-    n = id.length()
-    if n == 0 or n > 64 {
-        return false
+    n = id.length();
+    if (n == 0 || n > 64) {
+        return false;
     }
-    i: int = 0
-    while i < n {
-        if not "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_".contains(id.slice(i, i + 1)) {
-            return false
+
+    i: int = 0;
+    while (i < n) {
+        if (!"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_".contains(id.slice(i, i + 1))) {
+            return false;
         }
-        i = i + 1
+
+        i = i + 1;
     }
-    return true
+
+    return true;
 }

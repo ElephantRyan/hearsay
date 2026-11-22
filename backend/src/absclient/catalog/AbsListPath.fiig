@@ -3,5 +3,5 @@ use fiig.http
 // GET /api/libraries/{id}/items for one page, titles A to Z. The caller has
 // made the id one path segment with absPathId; the rest are integers.
 conversion absListPath(libraryId: string, page: int, size: int) -> string {
-    return "/api/libraries/${libraryId}/items?sort=media.metadata.title&minified=1&page=${page}&limit=${size}"
+    return "/api/libraries/${libraryId}/items?sort=media.metadata.title&minified=1&page=${page}&limit=${size}";
 }

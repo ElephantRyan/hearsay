@@ -4,42 +4,60 @@ use hearsay.ratings.rated
 
 // What I have listened to, most recent first, each with my score if I gave one.
 // A book with progress but no metadata (gone from ABS) is left out.
-rule listenedBooks(started: List<progress.Progress>, books: List<catalog.Book>, mine: List<rated.RatingRow>) -> List<ListenedBook> {
-    byId: Map<string, catalog.Book> = [:]
-    for book in books {
-        byId = byId.put(book.itemId, book)
+rule listenedBooks(
+    started: List<progress.Progress>,
+    books: List<catalog.Book>,
+    mine: List<rated.RatingRow>,
+) -> List<ListenedBook> {
+    byId: Map<string, catalog.Book> = [:];
+    for (book in books) {
+        byId = byId.put(book.itemId, book);
     }
-    scores: Map<string, rated.RatingRow> = [:]
-    for row in mine {
-        scores = scores.put(row.itemId, row)
+
+    scores: Map<string, rated.RatingRow> = [:];
+    for (row in mine) {
+        scores = scores.put(row.itemId, row);
     }
-    listened: List<ListenedBook> = []
-    for entry in sorted(p in started): p.lastListenedAt descending {
-        match byId.atOrNone(entry.itemId) {
+
+    listened: List<ListenedBook> = [];
+    for (entry in sorted(p in started): p.lastListenedAt descending) {
+        match (byId.atOrNone(entry.itemId)) {
             None -> {
             }
+
             book -> {
-                rating = scores.atOrNone(entry.itemId)
+                rating = scores.atOrNone(entry.itemId);
                 listened = append(
                     listened,
-                    ListenedBook(itemId: book.itemId, libraryId: book.libraryId, title: book.title, authors: book.authors, finished: entry.finished, percent: entry.percent, lastListenedAt: entry.lastListenedAt, myScore: scoreOf(rating), recommended: recommendedOf(rating)),
-                )
+                    ListenedBook(
+                        itemId: book.itemId,
+                        libraryId: book.libraryId,
+                        title: book.title,
+                        authors: book.authors,
+                        finished: entry.finished,
+                        percent: entry.percent,
+                        lastListenedAt: entry.lastListenedAt,
+                        myScore: scoreOf(rating),
+                        recommended: recommendedOf(rating),
+                    ),
+                );
             }
         }
     }
-    return listened
+
+    return listened;
 }
 
 private {
     scoreOf(rating: rated.RatingRow | None) -> int | None {
-        match rating {
+        return match (rating) {
             None -> None
             row -> row.score
         }
     }
 
     recommendedOf(rating: rated.RatingRow | None) -> bool {
-        match rating {
+        return match (rating) {
             None -> false
             row -> row.recommended
         }

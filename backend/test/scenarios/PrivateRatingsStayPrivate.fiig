@@ -14,40 +14,51 @@ test privateRatingsStayPrivate {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake AbsCatalog {
-        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(
+            abs: client.AbsTarget,
+            itemId: string,
+        ) -> Result<catalog.Book, client.AbsError> {
             return Ok(
-                catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert"),
-            )
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                ),
+            );
         }
     }
 
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    bobId = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User)
-    bob = sessions.startSession(bobId).token
-    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_)
-    expect ratings.putRating(bobId, "dune", ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_)
-    expect library.showItem(bobId, "dune") is Ok(bobSees)
-    expect bobSees.ratings.length() == 1
-    expect bobSees.count == 1
-    expect bobSees.average == 6.00
-    expect library.showItem(annId, "dune") is Ok(annSees)
-    expect annSees.ratings.length() == 2
-    expect annSees.count == 1
-    expect annSees.average == 6.00
-    listed = recommendations.listRecommendations(bobId, None, None, None)
-    expect listed.length() == 1
-    expect listed.at(0).average == 6.00
-    people = recommendations.listRecommenderUsers(bobId)
-    expect people.length() == 1
-    expect people.at(0).username == "bob"
-    annsPicks = recommendations.listPicksOf(bobId, "u1")
-    expect annsPicks.length() == 0
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    bobId = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    bob = sessions.startSession(bobId).token;
+    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 10, note: "secret love", recommended: false)) is Ok(_);
+    expect ratings.putRating(bobId, "dune", ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_);
+    expect library.showItem(bobId, "dune") is Ok(bobSees);
+    expect bobSees.ratings.length() == 1;
+    expect bobSees.count == 1;
+    expect bobSees.average == 6.00;
+    expect library.showItem(annId, "dune") is Ok(annSees);
+    expect annSees.ratings.length() == 2;
+    expect annSees.count == 1;
+    expect annSees.average == 6.00;
+    listed = recommendations.listRecommendations(bobId, None, None, None);
+    expect listed.length() == 1;
+    expect listed.at(0).average == 6.00;
+    people = recommendations.listRecommenderUsers(bobId);
+    expect people.length() == 1;
+    expect people.at(0).username == "bob";
+    annsPicks = recommendations.listPicksOf(bobId, "u1");
+    expect annsPicks.length() == 0;
 }

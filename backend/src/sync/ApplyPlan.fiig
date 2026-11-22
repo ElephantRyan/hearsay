@@ -5,15 +5,17 @@ use hearsay.absclient as client
 use hearsay.absclient.collections.AbsCollections
 
 activity applyPlan(abs: client.AbsTarget, plan: SyncPlan, now: int) -> SyncResult {
-    match plan.collectionId {
+    return match (plan.collectionId) {
         None -> {
-            return createFor(abs, plan, now)
+            return createFor(abs, plan, now);
         }
+
         existing -> {
-            if plan.action == SyncAction.Remove {
-                return removeFor(abs, plan, existing)
+            if (plan.action == SyncAction.Remove) {
+                return removeFor(abs, plan, existing);
             }
-            return updateFor(abs, plan, existing, now)
+
+            return updateFor(abs, plan, existing, now);
         }
     }
 }
@@ -21,57 +23,68 @@ activity applyPlan(abs: client.AbsTarget, plan: SyncPlan, now: int) -> SyncResul
 private {
     remember(plan: SyncPlan, collectionId: string, now: int) -> int {
         return saveSyncState(
-            SyncState(userId: plan.userId, libraryId: plan.libraryId, collectionId: collectionId, lastSyncedAt: now, lastError: None),
-        )
+            SyncState(
+                userId: plan.userId,
+                libraryId: plan.libraryId,
+                collectionId: collectionId,
+                lastSyncedAt: now,
+                lastError: None,
+            ),
+        );
     }
 
     createFor(abs: client.AbsTarget, plan: SyncPlan, now: int) -> SyncResult {
-        match AbsCollections.createCollectionAsService(abs, plan.libraryId, plan.name, plan.description, plan.bookIds) {
+        return match (AbsCollections.createCollectionAsService(abs, plan.libraryId, plan.name, plan.description, plan.bookIds)) {
             Ok(id) -> {
-                remember(plan, id, now)
-                return syncResultOf(plan, SyncOutcome.Created, None)
+                remember(plan, id, now);
+                return syncResultOf(plan, SyncOutcome.Created, None);
             }
+
             Err(error) -> {
-                return syncResultOf(plan, SyncOutcome.Failed, failedText(error))
+                return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
             }
         }
     }
 
     updateFor(abs: client.AbsTarget, plan: SyncPlan, existing: string, now: int) -> SyncResult {
-        match AbsCollections.updateCollectionAsService(abs, existing, plan.name, plan.description, plan.bookIds) {
+        return match (AbsCollections.updateCollectionAsService(abs, existing, plan.name, plan.description, plan.bookIds)) {
             Ok(_) -> {
-                remember(plan, existing, now)
-                return syncResultOf(plan, SyncOutcome.Updated, None)
+                remember(plan, existing, now);
+                return syncResultOf(plan, SyncOutcome.Updated, None);
             }
+
             Err(error) -> {
-                if error == client.AbsError.NotFound {
-                    deleteSyncState(plan.userId, plan.libraryId)
-                    return createFor(abs, plan, now)
+                if (error == client.AbsError.NotFound) {
+                    deleteSyncState(plan.userId, plan.libraryId);
+                    return createFor(abs, plan, now);
                 }
-                return syncResultOf(plan, SyncOutcome.Failed, failedText(error))
+
+                return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
             }
         }
     }
 
     removeFor(abs: client.AbsTarget, plan: SyncPlan, existing: string) -> SyncResult {
-        match AbsCollections.deleteCollectionAsService(abs, existing) {
+        return match (AbsCollections.deleteCollectionAsService(abs, existing)) {
             Ok(_) -> {
-                deleteSyncState(plan.userId, plan.libraryId)
-                return syncResultOf(plan, SyncOutcome.Removed, None)
+                deleteSyncState(plan.userId, plan.libraryId);
+                return syncResultOf(plan, SyncOutcome.Removed, None);
             }
+
             Err(error) -> {
-                if error == client.AbsError.NotFound {
-                    deleteSyncState(plan.userId, plan.libraryId)
-                    return syncResultOf(plan, SyncOutcome.Removed, None)
+                if (error == client.AbsError.NotFound) {
+                    deleteSyncState(plan.userId, plan.libraryId);
+                    return syncResultOf(plan, SyncOutcome.Removed, None);
                 }
-                return syncResultOf(plan, SyncOutcome.Failed, failedText(error))
+
+                return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
             }
         }
     }
 
     // Short, safe text for a failed collection write. Never a token or a body.
     failedText(error: client.AbsError) -> string {
-        match client.faultOfAbs(error) {
+        return match (client.faultOfAbs(error)) {
             client.AbsFault.Missing -> "Audiobookshelf has no such collection or library"
             client.AbsFault.Denied -> "Audiobookshelf refused the server's token"
             client.AbsFault.Down(detail) -> detail
@@ -85,6 +98,6 @@ private {
             action: action,
             books: plan.bookIds.length(),
             error: error,
-        )
+        );
     }
 }

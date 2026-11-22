@@ -3,5 +3,5 @@ use hearsay.settings
 
 // GET /admin/settings.
 workflow showSettings(admin: accounts.Admin) -> settings.SettingsView {
-    return settings.describeSettings()
+    return settings.describeSettings();
 }

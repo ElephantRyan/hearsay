@@ -12,53 +12,100 @@ test browseListsSearchesAndMarksMyScores {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake SessionConfig {
         sessionMaxAge: 3600
     }
+
     fake AbsCatalog {
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            if libraryId == "gone" {
-                return Err(client.AbsError.NotFound)
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            if (libraryId == "gone") {
+                return Err(client.AbsError.NotFound);
             }
-            expect libraryId == "lib-1"
-            expect page == 2
-            expect size == 24
+
+            expect libraryId == "lib-1";
+            expect page == 2;
+            expect size == 24;
             return Ok(
-                catalog.BookPage(total: 1117, page: page, limit: size, books: [catalog.Book(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author"), catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "")]),
-            )
+                catalog.BookPage(
+                    total: 1117,
+                    page: page,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "a",
+                            libraryId: "lib-1",
+                            title: "Alpha",
+                            authors: "A. Author",
+                        ),
+                        catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: ""),
+                    ],
+                ),
+            );
         }
 
-        gateway searchAsService(abs: client.AbsTarget, libraryId: string, query: string, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            expect query == "alp"
+        gateway searchAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            query: string,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            expect query == "alp";
             return Ok(
-                catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "a", libraryId: "lib-1", title: "Alpha", authors: "A. Author")]),
-            )
+                catalog.BookPage(
+                    total: 1,
+                    page: 0,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "a",
+                            libraryId: "lib-1",
+                            title: "Alpha",
+                            authors: "A. Author",
+                        ),
+                    ],
+                ),
+            );
         }
 
-        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(
+            abs: client.AbsTarget,
+            itemId: string,
+        ) -> Result<catalog.Book, client.AbsError> {
             return Ok(
-                catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Alpha", authors: "A. Author"),
-            )
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Alpha",
+                    authors: "A. Author",
+                ),
+            );
         }
     }
 
-    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    ann = sessions.startSession(annId).token
-    expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_)
-    expect showLibraryItems(annId, "lib-1", 2, None, None) is Ok(listed)
-    expect listed.total == 1117
-    expect listed.page == 2
-    expect listed.items.length() == 2
-    expect listed.items.at(0).myScore == 8
-    expect listed.items.at(1).myScore == None
-    expect showLibraryItems(annId, "lib-1", None, None, "  alp ") is Ok(found)
-    expect found.items.length() == 1
-    expect found.items.at(0).title == "Alpha"
-    expect found.items.at(0).myScore == 8
-    expect showLibraryItems(annId, "gone", 2, None, None) is Err(LibraryError.LibraryNotFound)
-    expect showLibraryItems(annId, "lib-1", -1, None, None) is Err(LibraryError.Invalid(field, reason))
-    expect field == "page"
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    ann = sessions.startSession(annId).token;
+    expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_);
+    expect showLibraryItems(annId, "lib-1", 2, None, None) is Ok(listed);
+    expect listed.total == 1117;
+    expect listed.page == 2;
+    expect listed.items.length() == 2;
+    expect listed.items.at(0).myScore == 8;
+    expect listed.items.at(1).myScore == None;
+    expect showLibraryItems(annId, "lib-1", None, None, "  alp ") is Ok(found);
+    expect found.items.length() == 1;
+    expect found.items.at(0).title == "Alpha";
+    expect found.items.at(0).myScore == 8;
+    expect showLibraryItems(annId, "gone", 2, None, None) is Err(LibraryError.LibraryNotFound);
+    expect showLibraryItems(annId, "lib-1", -1, None, None) is Err(LibraryError.Invalid(field, reason));
+    expect field == "page";
 }

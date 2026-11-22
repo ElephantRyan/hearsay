@@ -1,6 +1,4 @@
-gateway saveIndexEntry(entry: IndexEntry, now: int) -> int
-    requires Database
-{
+gateway saveIndexEntry(entry: IndexEntry, now: int) -> int requires Database {
     return Database.execute(
         "INSERT INTO library_index (item_id, library_id, asin, isbn, title_key, indexed_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (item_id) DO UPDATE SET library_id = excluded.library_id, asin = excluded.asin, isbn = excluded.isbn, title_key = excluded.title_key, indexed_at = excluded.indexed_at",
         entry.itemId,
@@ -9,5 +7,5 @@ gateway saveIndexEntry(entry: IndexEntry, now: int) -> int
         entry.isbn,
         entry.titleKey,
         now,
-    )
+    );
 }

@@ -2,10 +2,22 @@
 // these statuses back on the calling side, so the two change together. 502 to
 // 504 are left to a proxy in front of a server that is down.
 conversion federationErrorResponse(error: FederationError) -> HttpResponse<string> {
-    match error {
-        FederationError.BadInvite -> HttpResponse(status: 403, body: "this link code is used, expired, or wrong")
-        FederationError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
-        FederationError.AlreadyLinked -> HttpResponse(status: 409, body: "already linked to that address")
-        FederationError.NoServerName -> HttpResponse(status: 412, body: "this server has no name yet")
+    return match (error) {
+        FederationError.BadInvite -> HttpResponse(
+            status: 403,
+            body: "this link code is used, expired, or wrong",
+        )
+        FederationError.Invalid(field, reason) -> HttpResponse(
+            status: 400,
+            body: "${field} ${reason}",
+        )
+        FederationError.AlreadyLinked -> HttpResponse(
+            status: 409,
+            body: "already linked to that address",
+        )
+        FederationError.NoServerName -> HttpResponse(
+            status: 412,
+            body: "this server has no name yet",
+        )
     }
 }

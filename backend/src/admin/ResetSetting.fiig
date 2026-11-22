@@ -2,7 +2,10 @@ use hearsay.accounts
 use hearsay.settings
 
 // DELETE /admin/settings/{name}: back to the environment's value.
-workflow resetSetting(admin: accounts.Admin, name: string) -> Result<settings.SettingsView, AdminError> {
-    mapErr(e in settings.forgetSetting(name)): adminErrorOfChange(e)?
-    return Ok(settings.describeSettings())
+workflow resetSetting(
+    admin: accounts.Admin,
+    name: string,
+) -> Result<settings.SettingsView, AdminError> {
+    mapErr(e in settings.forgetSetting(name)): adminErrorOfChange(e)?;
+    return Ok(settings.describeSettings());
 }

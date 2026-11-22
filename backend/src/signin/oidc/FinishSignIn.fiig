@@ -8,16 +8,23 @@ use hearsay.sessions
 use hearsay.signin
 use hearsay.settings
 
-activity finishSignIn(code: string | None, state: string | None, error: string | None, pending: string | None) -> Landing {
-    if not signin.loadSignInModes().oidc {
-        return failedLanding("disabled")
+activity finishSignIn(
+    code: string | None,
+    state: string | None,
+    error: string | None,
+    pending: string | None,
+) -> Landing {
+    if (!signin.loadSignInModes().oidc) {
+        return failedLanding("disabled");
     }
-    match error {
+
+    return match (error) {
         None -> {
-            return landAfterExchange(code, state, pending)
+            return landAfterExchange(code, state, pending);
         }
+
         denied -> {
-            return failedLanding("denied")
+            return failedLanding("denied");
         }
     }
 }
@@ -27,24 +34,31 @@ private {
         return Landing(
             location: "${settings.frontendUrl()}/sign-in?error=${reason}",
             session: None,
-        )
+        );
     }
 
-    landAfterExchange(code: string | None, state: string | None, pending: string | None) -> Landing {
-        match code {
+    landAfterExchange(
+        code: string | None,
+        state: string | None,
+        pending: string | None,
+    ) -> Landing {
+        return match (code) {
             None -> {
-                return failedLanding("missing")
+                return failedLanding("missing");
             }
+
             given -> {
-                match readPendingParts(pending) {
+                return match (readPendingParts(pending)) {
                     None -> {
-                        return failedLanding("state")
+                        return failedLanding("state");
                     }
+
                     parts -> {
-                        if state != parts.state {
-                            return failedLanding("state")
+                        if (state != parts.state) {
+                            return failedLanding("state");
                         }
-                        return exchange(given, parts.verifier)
+
+                        return exchange(given, parts.verifier);
                     }
                 }
             }
@@ -52,37 +66,39 @@ private {
     }
 
     exchange(code: string, verifier: string) -> Landing {
-        proven = signin.signIn(accounts.SignInAttempt.AuthorizationCode(code, verifier))
-        match proven {
+        proven = signin.signIn(accounts.SignInAttempt.AuthorizationCode(code, verifier));
+        return match (proven) {
             Err(failure) -> {
-                return failedLanding(refusalCode(failure))
+                return failedLanding(refusalCode(failure));
             }
+
             Ok(identity) -> {
-                session = sessions.startSession(identity)
-                return Landing(location: settings.frontendUrl(), session: session)
+                session = sessions.startSession(identity);
+                return Landing(location: settings.frontendUrl(), session: session);
             }
         }
     }
 
     // Splits the "state.verifier" cookie; anything else is None.
     readPendingParts(pending: string | None) -> PendingParts | None {
-        match pending {
+        return match (pending) {
             None -> None
             text -> partsOf(text.split("."))
         }
     }
 
     partsOf(pieces: List<string>) -> PendingParts | None {
-        if pieces.length() != 2 {
-            return None
+        if (pieces.length() != 2) {
+            return None;
         }
-        return PendingParts(state: pieces.at(0), verifier: pieces.at(1))
+
+        return PendingParts(state: pieces.at(0), verifier: pieces.at(1));
     }
 
     // A short code for the frontend to show a message for; never the provider's
     // own words.
     refusalCode(error: accounts.SignInError) -> string {
-        match error {
+        return match (error) {
             accounts.SignInError.WrongMethod -> "method"
             accounts.SignInError.NoAccount -> "no-account"
             accounts.SignInError.Refused(reason) -> "refused"

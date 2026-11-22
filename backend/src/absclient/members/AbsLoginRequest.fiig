@@ -6,10 +6,14 @@ rule absLoginRequest(base: string, username: string, password: string) -> http.R
     return http.Request(
         method: http.Method.Post,
         url: "${base}/login",
-        headers: [http.Header(name: "Content-Type", value: "application/json"), http.Header(name: "Accept", value: "application/json"), http.Header(name: "x-return-tokens", value: "true")],
+        headers: [
+            http.Header(name: "Content-Type", value: "application/json"),
+            http.Header(name: "Accept", value: "application/json"),
+            http.Header(name: "x-return-tokens", value: "true"),
+        ],
         body: json.encode(AbsLoginBody(username: username, password: password)),
         timeoutMillis: 10000,
-    )
+    );
 }
 
 private {

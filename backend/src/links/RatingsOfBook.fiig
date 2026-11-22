@@ -4,6 +4,6 @@ use hearsay.ratings.rated.RatedBooks
 // What a viewer may see of one book: everyone's recommended ratings here, the
 // viewer's own whether recommended or not, and linked servers' ratings of it.
 activity ratingsOfBook(itemId: string, viewerId: string) -> List<rated.RatingRow> {
-    rows = RatedBooks.visibleFor(itemId, viewerId).concat(LinkedRatings.forItem(itemId))
-    return withServerNames(rows, RatedBooks.recommended().concat(LinkedRatings.matched()))
+    rows = RatedBooks.visibleFor(itemId, viewerId).concat(LinkedRatings.forItem(itemId));
+    return withServerNames(rows, RatedBooks.recommended().concat(LinkedRatings.matched()));
 }

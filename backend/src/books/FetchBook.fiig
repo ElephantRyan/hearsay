@@ -5,7 +5,6 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 
 gateway fetchBook(abs: absclient.AbsTarget, itemId: string) -> Result<catalog.Book, BookError>
-    requires AbsCatalog
-{
-    return mapErr(e in AbsCatalog.itemAsService(abs, itemId)): bookErrorOfAbs(e)
+        requires AbsCatalog {
+    return mapErr(e in AbsCatalog.itemAsService(abs, itemId)): bookErrorOfAbs(e);
 }

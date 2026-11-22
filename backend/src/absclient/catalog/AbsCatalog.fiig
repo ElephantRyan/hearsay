@@ -5,54 +5,93 @@ use fiig.http.HttpClient
 // What is in ABS: one book or many, the libraries, a page of one, and search.
 // The *AsService gateways use this server's own token.
 capability AbsCatalog {
-    gateway item(url: string, accessToken: string, itemId: string) -> Result<Book, absclient.AbsError>
-        requires HttpClient
-    {
-        itemIdSegment = absclient.absPathId(itemId)?
-        reply = absclient.absReply(HttpClient.send(absclient.absGet(url, "/api/items/${itemIdSegment}", accessToken)))?
-        return bookOfItemReply(reply.body)
+    gateway item(
+        url: string,
+        accessToken: string,
+        itemId: string,
+    ) -> Result<Book, absclient.AbsError> requires HttpClient {
+        itemIdSegment = absclient.absPathId(itemId)?;
+        reply = absclient.absReply(
+            HttpClient.send(absclient.absGet(url, "/api/items/${itemIdSegment}", accessToken)),
+        )?;
+        return bookOfItemReply(reply.body);
     }
 
-    gateway itemAsService(abs: absclient.AbsTarget, itemId: string) -> Result<Book, absclient.AbsError>
-        requires HttpClient
-    {
-        itemIdSegment = absclient.absPathId(itemId)?
-        reply = absclient.absReply(HttpClient.send(absclient.absGet(abs.url, "/api/items/${itemIdSegment}", abs.token.reveal())))?
-        return bookOfItemReply(reply.body)
+    gateway itemAsService(
+        abs: absclient.AbsTarget,
+        itemId: string,
+    ) -> Result<Book, absclient.AbsError> requires HttpClient {
+        itemIdSegment = absclient.absPathId(itemId)?;
+        reply = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(abs.url, "/api/items/${itemIdSegment}", abs.token.reveal()),
+            ),
+        )?;
+        return bookOfItemReply(reply.body);
     }
 
     // Many books in one call. Every id is checked first; ABS leaves out the ones it doesn't have.
-    gateway itemsAsService(abs: absclient.AbsTarget, itemIds: List<string>) -> Result<List<Book>, absclient.AbsError>
-        requires HttpClient
-    {
-        if not all(id in itemIds): absclient.validId(id) {
-            return Err(absclient.AbsError.NotFound)
+    gateway itemsAsService(
+        abs: absclient.AbsTarget,
+        itemIds: List<string>,
+    ) -> Result<List<Book>, absclient.AbsError> requires HttpClient {
+        if (!all(id in itemIds): absclient.validId(id)) {
+            return Err(absclient.AbsError.NotFound);
         }
-        reply = absclient.absReply(HttpClient.send(absBatchGet(abs.url, itemIds, abs.token.reveal())))?
-        return booksOfBatchReply(reply.body)
+
+        reply = absclient.absReply(
+            HttpClient.send(absBatchGet(abs.url, itemIds, abs.token.reveal())),
+        )?;
+        return booksOfBatchReply(reply.body);
     }
 
-    gateway librariesAsService(abs: absclient.AbsTarget) -> Result<List<AbsLibrary>, absclient.AbsError>
-        requires HttpClient
-    {
-        reply = absclient.absReply(HttpClient.send(absclient.absGet(abs.url, "/api/libraries", abs.token.reveal())))?
-        found: AbsLibrariesReply = mapErr(e in json.decode(reply.body)): absclient.AbsError.Unreadable(failure: e)?
-        return Ok(found.libraries)
+    gateway librariesAsService(
+        abs: absclient.AbsTarget,
+    ) -> Result<List<AbsLibrary>, absclient.AbsError> requires HttpClient {
+        reply = absclient.absReply(
+            HttpClient.send(absclient.absGet(abs.url, "/api/libraries", abs.token.reveal())),
+        )?;
+        found: AbsLibrariesReply = mapErr(e in json.decode(reply.body)): absclient.AbsError.Unreadable(
+            failure: e,
+        )?;
+        return Ok(found.libraries);
     }
 
-    gateway pageAsService(abs: absclient.AbsTarget, libraryId: string, page: int, size: int) -> Result<BookPage, absclient.AbsError>
-        requires HttpClient
-    {
-        libraryIdSegment = absclient.absPathId(libraryId)?
-        reply = absclient.absReply(HttpClient.send(absclient.absGet(abs.url, absListPath(libraryIdSegment, page, size), abs.token.reveal())))?
-        return bookPageOfListing(reply.body)
+    gateway pageAsService(
+        abs: absclient.AbsTarget,
+        libraryId: string,
+        page: int,
+        size: int,
+    ) -> Result<BookPage, absclient.AbsError> requires HttpClient {
+        libraryIdSegment = absclient.absPathId(libraryId)?;
+        reply = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(
+                    abs.url,
+                    absListPath(libraryIdSegment, page, size),
+                    abs.token.reveal(),
+                ),
+            ),
+        )?;
+        return bookPageOfListing(reply.body);
     }
 
-    gateway searchAsService(abs: absclient.AbsTarget, libraryId: string, query: string, size: int) -> Result<BookPage, absclient.AbsError>
-        requires HttpClient
-    {
-        libraryIdSegment = absclient.absPathId(libraryId)?
-        reply = absclient.absReply(HttpClient.send(absclient.absGet(abs.url, absSearchPath(libraryIdSegment, query, size), abs.token.reveal())))?
-        return bookPageOfSearch(reply.body, size)
+    gateway searchAsService(
+        abs: absclient.AbsTarget,
+        libraryId: string,
+        query: string,
+        size: int,
+    ) -> Result<BookPage, absclient.AbsError> requires HttpClient {
+        libraryIdSegment = absclient.absPathId(libraryId)?;
+        reply = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(
+                    abs.url,
+                    absSearchPath(libraryIdSegment, query, size),
+                    abs.token.reveal(),
+                ),
+            ),
+        )?;
+        return bookPageOfSearch(reply.body, size);
     }
 }

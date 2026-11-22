@@ -1,13 +1,12 @@
 // Keeps a new invite, and forgets ones that have expired.
 gateway saveInvite(secretHash: string, expiresAt: int, now: int, by: string) -> int
-    requires Database
-{
-    Database.execute("DELETE FROM link_invite WHERE expires_at <= ?", now)
+        requires Database {
+    Database.execute("DELETE FROM link_invite WHERE expires_at <= ?", now);
     return Database.execute(
         "INSERT INTO link_invite (secret_hash, expires_at, created_at, created_by) VALUES (?, ?, ?, ?)",
         secretHash,
         expiresAt,
         now,
         by,
-    )
+    );
 }

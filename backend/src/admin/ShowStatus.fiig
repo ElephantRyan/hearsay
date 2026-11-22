@@ -2,5 +2,5 @@ use hearsay.accounts
 
 // GET /admin/status.
 workflow showStatus(admin: accounts.Admin) -> AdminStatus {
-    return loadStatus()
+    return loadStatus();
 }

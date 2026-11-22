@@ -4,7 +4,11 @@ use hearsay.absclient.members.AbsMembers
 use hearsay.accounts
 use hearsay.signin.password as passwordSignIn
 
-activity loginToAbs(url: string, username: string, password: string) -> Result<accounts.Identity, client.AbsFault> {
-    session = mapErr(e in AbsMembers.login(url, username, password)): client.faultOfAbs(e)?
-    return Ok(passwordSignIn.identityOfSession(session))
+activity loginToAbs(
+    url: string,
+    username: string,
+    password: string,
+) -> Result<accounts.Identity, client.AbsFault> {
+    session = mapErr(e in AbsMembers.login(url, username, password)): client.faultOfAbs(e)?;
+    return Ok(passwordSignIn.identityOfSession(session));
 }

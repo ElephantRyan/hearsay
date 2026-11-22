@@ -4,45 +4,85 @@ use hearsay.matching
 // library index. A fetch that works replaces everything held from that server
 // in one transaction; one that doesn't keeps it and records why.
 activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
-    now = Clock.now()
-    match PeerServer.recommendations(peer.address, peer.keyOut) {
+    now = Clock.now();
+    match (PeerServer.recommendations(peer.address, peer.keyOut)) {
         Err(error) -> {
-            markFailing(peer.id, now, problemOfPeer(error))
+            markFailing(peer.id, now, problemOfPeer(error));
         }
+
         Ok(ratings) -> {
-            matched: List<LinkedRating> = []
-            for rating in ratings {
-                local = matching.matchBook(matching.keysOf(rating.asin, rating.isbn, rating.title, rating.authors))
-                matched = append(matched, withMatch(peer.id, rating, local))
+            matched: List<LinkedRating> = [];
+            for (rating in ratings) {
+                local = matching.matchBook(
+                    matching.keysOf(rating.asin, rating.isbn, rating.title, rating.authors),
+                );
+                matched = append(matched, withMatch(peer.id, rating, local));
             }
-            found = filter(rating in matched): rating.itemId != None
+
+            found = filter(rating in matched): rating.itemId != None;
             transaction Database {
-                clearLinkedRatings(peer.id)
-                for rating in matched {
-                    saveLinkedRating(rating)
+                clearLinkedRatings(peer.id);
+                for (rating in matched) {
+                    saveLinkedRating(rating);
                 }
-                markFetched(peer.id, now, matched.length(), found.length())
+
+                markFetched(peer.id, now, matched.length(), found.length());
             }
         }
     }
-    match linkById(peer.id) {
+
+    return match (linkById(peer.id)) {
         None -> {
-            return Err(LinkError.UnknownLink)
+            return Err(LinkError.UnknownLink);
         }
+
         link -> {
-            return Ok(link)
+            return Ok(link);
         }
     }
 }
 
 private {
-    withMatch(linkId: string, rating: SharedRating, local: matching.LocalMatch | None) -> LinkedRating {
-        match local {
+    withMatch(
+        linkId: string,
+        rating: SharedRating,
+        local: matching.LocalMatch | None,
+    ) -> LinkedRating {
+        return match (local) {
             None -> {
-                return LinkedRating(linkId: linkId, personId: rating.personId, username: rating.username, asin: rating.asin, isbn: rating.isbn, title: rating.title, authors: rating.authors, score: rating.score, note: rating.note, updatedAt: rating.updatedAt, itemId: None, libraryId: None, matchedBy: None)
+                return LinkedRating(
+                    linkId: linkId,
+                    personId: rating.personId,
+                    username: rating.username,
+                    asin: rating.asin,
+                    isbn: rating.isbn,
+                    title: rating.title,
+                    authors: rating.authors,
+                    score: rating.score,
+                    note: rating.note,
+                    updatedAt: rating.updatedAt,
+                    itemId: None,
+                    libraryId: None,
+                    matchedBy: None,
+                );
             }
+
             found -> {
-                return LinkedRating(linkId: linkId, personId: rating.personId, username: rating.username, asin: rating.asin, isbn: rating.isbn, title: rating.title, authors: rating.authors, score: rating.score, note: rating.note, updatedAt: rating.updatedAt, itemId: found.itemId, libraryId: found.libraryId, matchedBy: found.how)
+                return LinkedRating(
+                    linkId: linkId,
+                    personId: rating.personId,
+                    username: rating.username,
+                    asin: rating.asin,
+                    isbn: rating.isbn,
+                    title: rating.title,
+                    authors: rating.authors,
+                    score: rating.score,
+                    note: rating.note,
+                    updatedAt: rating.updatedAt,
+                    itemId: found.itemId,
+                    libraryId: found.libraryId,
+                    matchedBy: found.how,
+                );
             }
         }
     }

@@ -2,9 +2,13 @@ use hearsay.accounts
 
 // What a provider's failure means to the person signing in.
 conversion loginErrorOfSignIn(error: accounts.SignInError) -> LoginError {
-    match error {
-        accounts.SignInError.WrongMethod -> LoginError.Refused("this server does not sign people in that way")
-        accounts.SignInError.NoAccount -> LoginError.Refused("no Audiobookshelf account has your email; sign in to Audiobookshelf once first")
+    return match (error) {
+        accounts.SignInError.WrongMethod -> LoginError.Refused(
+            "this server does not sign people in that way",
+        )
+        accounts.SignInError.NoAccount -> LoginError.Refused(
+            "no Audiobookshelf account has your email; sign in to Audiobookshelf once first",
+        )
         accounts.SignInError.Refused(reason) -> LoginError.Refused(reason)
         accounts.SignInError.Unavailable(detail) -> LoginError.Unavailable(detail)
     }

@@ -2,5 +2,5 @@ use hearsay.accounts
 
 // GET /admin/links.
 workflow listLinks(admin: accounts.Admin) -> List<LinkedServer> {
-    return linkedServers()
+    return linkedServers();
 }

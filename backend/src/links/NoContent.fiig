@@ -1,4 +1,4 @@
 // A federation route that has nothing to answer but that it worked.
 conversion noContent() -> HttpResponse<None> {
-    return HttpResponse(status: 204)
+    return HttpResponse(status: 204);
 }

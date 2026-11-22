@@ -2,6 +2,6 @@
 // listening progress, writing collections, and (when AUTH_MODE allows Authentik)
 // finding a person's account by email. Optional: an admin may save it in the
 // app instead (loadAbsTarget).
-config AbsService {
+wire AbsService {
     token: Secret | None from env "ABS_SERVICE_TOKEN"
 }

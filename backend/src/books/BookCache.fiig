@@ -4,9 +4,7 @@ use hearsay.absclient.catalog
 // transaction in another domain can include the write (ADR 0043 §5).
 capability BookCache {
     // Adds the book or refreshes its copy.
-    gateway save(book: catalog.Book, now: int) -> int
-        requires Database
-    {
+    gateway save(book: catalog.Book, now: int) -> int requires Database {
         return Database.execute(
             "INSERT INTO book (item_id, library_id, title, authors, asin, isbn, fetched_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (item_id) DO UPDATE SET library_id = excluded.library_id, title = excluded.title, authors = excluded.authors, asin = excluded.asin, isbn = excluded.isbn, fetched_at = excluded.fetched_at",
             book.itemId,
@@ -16,6 +14,6 @@ capability BookCache {
             book.asin,
             book.isbn,
             now,
-        )
+        );
     }
 }

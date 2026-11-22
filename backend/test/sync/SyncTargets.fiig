@@ -4,22 +4,52 @@ use hearsay.ratings.rated
 
 test syncTargetsAreSelfUnlessAdmin {
     rows = [
-        rated.RatingRow(userId: "u1", username: "Ann", itemId: "a", libraryId: "l", title: "A", authors: "x", score: 7, note: "", recommended: true, createdAt: 1, updatedAt: 1),
-        rated.RatingRow(userId: "u2", username: "Bob", itemId: "b", libraryId: "l", title: "B", authors: "x", score: 7, note: "", recommended: false, createdAt: 1, updatedAt: 1),
-    ]
+        rated.RatingRow(
+            userId: "u1",
+            username: "Ann",
+            itemId: "a",
+            libraryId: "l",
+            title: "A",
+            authors: "x",
+            score: 7,
+            note: "",
+            recommended: true,
+            createdAt: 1,
+            updatedAt: 1,
+        ),
+        rated.RatingRow(
+            userId: "u2",
+            username: "Bob",
+            itemId: "b",
+            libraryId: "l",
+            title: "B",
+            authors: "x",
+            score: 7,
+            note: "",
+            recommended: false,
+            createdAt: 1,
+            updatedAt: 1,
+        ),
+    ];
     states = [
-        SyncState(userId: "u3", libraryId: "l", collectionId: "c", lastSyncedAt: 1, lastError: None),
-    ]
-    ann = accounts.Identity(userId: "u1", username: "Ann", userType: client.AbsUserType.User)
-    boss = accounts.Identity(userId: "u0", username: "Boss", userType: client.AbsUserType.Admin)
-    expect syncTargets(ann, None, everyoneToSync(rows, states)) is Ok(own)
-    expect own == ["u1"]
-    expect syncTargets(ann, "u1", everyoneToSync(rows, states)) is Ok(self)
-    expect self == ["u1"]
-    expect syncTargets(ann, "u2", everyoneToSync(rows, states)) is Err(SyncError.NotAllowed)
-    expect boss.userType == client.AbsUserType.Admin
-    expect syncTargets(boss, "u2", everyoneToSync(rows, states)) is Ok(named)
-    expect named == ["u2"]
-    expect syncTargets(boss, None, everyoneToSync(rows, states)) is Ok(all)
-    expect all == ["u1", "u3"]
+        SyncState(
+            userId: "u3",
+            libraryId: "l",
+            collectionId: "c",
+            lastSyncedAt: 1,
+            lastError: None,
+        ),
+    ];
+    ann = accounts.Identity(userId: "u1", username: "Ann", userType: client.AbsUserType.User);
+    boss = accounts.Identity(userId: "u0", username: "Boss", userType: client.AbsUserType.Admin);
+    expect syncTargets(ann, None, everyoneToSync(rows, states)) is Ok(own);
+    expect own == ["u1"];
+    expect syncTargets(ann, "u1", everyoneToSync(rows, states)) is Ok(self);
+    expect self == ["u1"];
+    expect syncTargets(ann, "u2", everyoneToSync(rows, states)) is Err(SyncError.NotAllowed);
+    expect boss.userType == client.AbsUserType.Admin;
+    expect syncTargets(boss, "u2", everyoneToSync(rows, states)) is Ok(named);
+    expect named == ["u2"];
+    expect syncTargets(boss, None, everyoneToSync(rows, states)) is Ok(all);
+    expect all == ["u1", "u3"];
 }

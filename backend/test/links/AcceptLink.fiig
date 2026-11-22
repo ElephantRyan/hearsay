@@ -18,87 +18,138 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake ServerConfig {
         name: "Ryan's library"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Abs
         frontendUrl: "https://ryan.test"
     }
+
     fake AbsCatalog {
-        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
-            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")])
+        gateway librariesAsService(
+            abs: client.AbsTarget,
+        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            return Ok(catalog.BookPage(total: 1, page: 0, limit: size, books: [catalog.Book(itemId: "dune-here", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert", asin: "B0DUNE", isbn: None)]))
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(
+                catalog.BookPage(
+                    total: 1,
+                    page: 0,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "dune-here",
+                            libraryId: "lib-1",
+                            title: "Dune",
+                            authors: "Frank Herbert",
+                            asin: "B0DUNE",
+                            isbn: None,
+                        ),
+                    ],
+                ),
+            );
         }
     }
+
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
-            expect request.url == "https://alex.test/api/federation/recommendations"
-            return Ok(http.Reply(status: 200, headers: [], body: json.encode([SharedRating(personId: "p1", username: "alex", asin: "B0DUNE", isbn: None, title: "Dune", authors: "Frank Herbert", score: 8, note: "", updatedAt: 1)])))
+            expect request.url == "https://alex.test/api/federation/recommendations";
+            return Ok(
+                http.Reply(
+                    status: 200,
+                    headers: [],
+                    body: json.encode(
+                        [
+                            SharedRating(
+                                personId: "p1",
+                                username: "alex",
+                                asin: "B0DUNE",
+                                isbn: None,
+                                title: "Dune",
+                                authors: "Frank Herbert",
+                                score: 8,
+                                note: "",
+                                updatedAt: 1,
+                            ),
+                        ],
+                    ),
+                ),
+            );
         }
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin))
-    expect inviteServer(admin) is Ok(invite)
-    expect calls(AbsCatalog.pageAsService) == 1
-    expect invite.code.startsWith("https://ryan.test#")
-    expect inviteCodeOf(invite.code) is Ok(code)
-    expect code.address == "https://ryan.test"
-    alexKey = newKey()
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "ryan",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect inviteServer(admin) is Ok(invite);
+    expect calls(AbsCatalog.pageAsService) == 1;
+    expect invite.code.startsWith("https://ryan.test#");
+    expect inviteCodeOf(invite.code) is Ok(code);
+    expect code.address == "https://ryan.test";
+    alexKey = newKey();
     offer = LinkOffer(
         secret: code.secret,
         name: " Alex's library ",
         address: "https://alex.test/",
         key: alexKey,
-    )
-    expect acceptLink(LinkOffer(secret: "not-the-secret", name: "x", address: "https://x.test", key: alexKey)) is Err(FederationError.BadInvite)
-    expect acceptLink(offer) is Ok(accepted)
-    expect accepted.name == "Ryan's library"
-    expect acceptLink(offer) is Err(FederationError.BadInvite)
-    links = listLinks(admin)
-    expect links.length() == 1
-    expect links.first().name == "Alex's library"
-    expect links.first().address == "https://alex.test"
-    expect links.first().linkedBy == "invite"
-    expect callingServer("Bearer ${accepted.key}") is Ok(caller)
-    expect caller.name == "Alex's library"
-    expect callingServer(None) is Err(PeerRefusal.NoKey)
-    expect callingServer(accepted.key) is Err(PeerRefusal.NoKey)
-    expect callingServer("Bearer ${alexKey}") is Err(PeerRefusal.UnknownKey)
-
+    );
+    expect acceptLink(LinkOffer(secret: "not-the-secret", name: "x", address: "https://x.test", key: alexKey)) is Err(FederationError.BadInvite);
+    expect acceptLink(offer) is Ok(accepted);
+    expect accepted.name == "Ryan's library";
+    expect acceptLink(offer) is Err(FederationError.BadInvite);
+    links = listLinks(admin);
+    expect links.length() == 1;
+    expect links.first().name == "Alex's library";
+    expect links.first().address == "https://alex.test";
+    expect links.first().linkedBy == "invite";
+    expect callingServer("Bearer ${accepted.key}") is Ok(caller);
+    expect caller.name == "Alex's library";
+    expect callingServer(None) is Err(PeerRefusal.NoKey);
+    expect callingServer(accepted.key) is Err(PeerRefusal.NoKey);
+    expect callingServer("Bearer ${alexKey}") is Err(PeerRefusal.UnknownKey);
     // Asked to fetch by the server that just linked: it is fetched at once.
-    expect fetchForCaller(caller) == 1
-    held = linkedRatingsOf(caller.id)
-    expect held.length() == 1
-    expect held.first().itemId == "dune-here"
-
+    expect fetchForCaller(caller) == 1;
+    held = linkedRatingsOf(caller.id);
+    expect held.length() == 1;
+    expect held.first().itemId == "dune-here";
     // A second invite taken up from an address already linked is refused, and
     // spent. The index is already built, so it isn't built again.
-    expect inviteServer(admin) is Ok(again)
-    expect calls(AbsCatalog.pageAsService) == 1
-    expect inviteCodeOf(again.code) is Ok(againCode)
-    expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.AlreadyLinked)
-    expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
-
+    expect inviteServer(admin) is Ok(again);
+    expect calls(AbsCatalog.pageAsService) == 1;
+    expect inviteCodeOf(again.code) is Ok(againCode);
+    expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.AlreadyLinked);
+    expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite);
     // Unlinked from the other side: the key stops working.
-    expect dropLink(caller) == 1
-    expect callingServer("Bearer ${accepted.key}") is Err(PeerRefusal.UnknownKey)
-    none = listLinks(admin)
-    expect none.length() == 0
+    expect dropLink(caller) == 1;
+    expect callingServer("Bearer ${accepted.key}") is Err(PeerRefusal.UnknownKey);
+    none = listLinks(admin);
+    expect none.length() == 0;
 }
 
 // An invite saved already at its expiry, as one a day old is.
 test anExpiredInviteIsRefused {
-    secret = newKey()
-    now = Clock.now()
-    saveInvite(keyHash(secret), now, now - 24 * 60 * 60 * 1000, "a1")
-    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+    secret = newKey();
+    now = Clock.now();
+    saveInvite(keyHash(secret), now, now - 24 * 60 * 60 * 1000, "a1");
+    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite);
 }
 
 test aBadOfferStillSpendsTheInvite {
@@ -106,12 +157,12 @@ test aBadOfferStillSpendsTheInvite {
         name: "Ryan's library"
     }
 
-    secret = newKey()
-    now = Clock.now()
-    saveInvite(keyHash(secret), now + 60 * 1000, now, "a1")
-    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "ftp://alex.test", key: newKey())) is Err(FederationError.Invalid(field, _))
-    expect field == "address"
-    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite)
+    secret = newKey();
+    now = Clock.now();
+    saveInvite(keyHash(secret), now + 60 * 1000, now, "a1");
+    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "ftp://alex.test", key: newKey())) is Err(FederationError.Invalid(field, _));
+    expect field == "address";
+    expect acceptLink(LinkOffer(secret: secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite);
 }
 
 // No invite is made when the library can't be indexed: the link it leads to
@@ -120,26 +171,42 @@ test anInviteWaitsForTheLibraryIndex {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake ServerConfig {
         name: "Ryan's library"
     }
+
     fake AbsCatalog {
-        gateway librariesAsService(abs: client.AbsTarget) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
-            return Err(client.AbsError.Unauthorized)
+        gateway librariesAsService(
+            abs: client.AbsTarget,
+        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Err(client.AbsError.Unauthorized);
         }
 
-        gateway pageAsService(abs: client.AbsTarget, libraryId: string, page: int, size: int) -> Result<catalog.BookPage, client.AbsError> {
-            expect false
-            return Err(client.AbsError.Unauthorized)
+        gateway pageAsService(
+            abs: client.AbsTarget,
+            libraryId: string,
+            page: int,
+            size: int,
+        ) -> Result<catalog.BookPage, client.AbsError> {
+            expect false;
+            return Err(client.AbsError.Unauthorized);
         }
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin))
-    expect inviteServer(admin) is Err(LinkError.IndexUnavailable(detail))
-    expect detail == "Audiobookshelf refused this server's token"
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "ryan",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect inviteServer(admin) is Err(LinkError.IndexUnavailable(detail));
+    expect detail == "Audiobookshelf refused this server's token";
 }
 
 test linkingWaitsForAServerName {
@@ -147,7 +214,13 @@ test linkingWaitsForAServerName {
         name: None
     }
 
-    admin = accounts.Admin(identity: accounts.Identity(userId: "a1", username: "ryan", userType: client.AbsUserType.Admin))
-    expect inviteServer(admin) is Err(LinkError.NoServerName)
-    expect linkServer(admin, LinkRequest(code: "https://alex.test#x")) is Err(LinkError.NoServerName)
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "ryan",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect inviteServer(admin) is Err(LinkError.NoServerName);
+    expect linkServer(admin, LinkRequest(code: "https://alex.test#x")) is Err(LinkError.NoServerName);
 }

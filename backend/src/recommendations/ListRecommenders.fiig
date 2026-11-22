@@ -1,5 +1,5 @@
 use hearsay.links
 
 activity listRecommenders() -> List<Recommender> {
-    return recommendersOf(links.everyRecommendation())
+    return recommendersOf(links.everyRecommendation());
 }

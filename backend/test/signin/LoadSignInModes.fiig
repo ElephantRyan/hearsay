@@ -9,10 +9,11 @@ test signInModesFollowAuthMode {
         clientSecret: "csec"
         redirectUri: "https://app.test/api/auth/callback"
     }
+
     fake SignInConfig {
         authMode: settings.AuthMode.Oidc
         frontendUrl: "x"
     }
 
-    expect loadSignInModes() == SignInModes(password: false, oidc: true)
+    expect loadSignInModes() == SignInModes(password: false, oidc: true);
 }

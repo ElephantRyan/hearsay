@@ -6,15 +6,13 @@ adapter http ratingsApi {
     wire sessions.me
 
     PUT "/ratings/{itemId}" -> putRating(me, itemId: string, input: RatingInput)
-        consumes "application/json"
-        produces "application/json"
-    {
+            consumes "application/json"
+            produces "application/json" {
         Ok(rating) -> 200 rating
         Err(error) -> ratingErrorResponse(error)
     }
-    DELETE "/ratings/{itemId}" -> deleteMyRating(me, itemId: string)
-        produces "application/json"
-    {
+
+    DELETE "/ratings/{itemId}" -> deleteMyRating(me, itemId: string) produces "application/json" {
         Ok(_) -> 204
         Err(error) -> ratingErrorResponse(error)
     }

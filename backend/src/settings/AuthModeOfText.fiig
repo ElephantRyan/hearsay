@@ -1,13 +1,16 @@
 // The mode a saved setting spells, or None if it spells none.
 conversion authModeOfText(text: string) -> AuthMode | None {
-    if text == "abs" {
-        return AuthMode.Abs
+    if (text == "abs") {
+        return AuthMode.Abs;
     }
-    if text == "oidc" {
-        return AuthMode.Oidc
+
+    if (text == "oidc") {
+        return AuthMode.Oidc;
     }
-    if text == "both" {
-        return AuthMode.Both
+
+    if (text == "both") {
+        return AuthMode.Both;
     }
-    return None
+
+    return None;
 }

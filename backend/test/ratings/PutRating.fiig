@@ -13,35 +13,46 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake AbsCatalog {
-        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
-            if itemId == "gone" {
-                return Err(client.AbsError.NotFound)
+        gateway itemAsService(
+            abs: client.AbsTarget,
+            itemId: string,
+        ) -> Result<catalog.Book, client.AbsError> {
+            if (itemId == "gone") {
+                return Err(client.AbsError.NotFound);
             }
+
             return Ok(
-                catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert"),
-            )
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                ),
+            );
         }
     }
 
-    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    expect putRating(ann, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first)
-    expect putRating(ann, "dune", RatingInput(score: 4, note: None, recommended: false)) is Ok(second)
-    expect second.createdAt == first.createdAt
-    expect second.score == 4
-    expect second.note == ""
-    expect putRating(ann, "dune", RatingInput(score: 12, note: None, recommended: true)) is Err(RatingError.Invalid(field, reason))
-    expect field == "score"
-    expect putRating(ann, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(RatingError.BookNotFound)
-    mine = rated.listMyRatings(ann, None)
-    expect mine.length() == 1
-    expect mine.at(0).title == "Dune"
-    expect deleteMyRating(ann, "dune") is Ok(removed)
-    expect removed == 1
-    expect deleteMyRating(ann, "dune") is Err(RatingError.NoRating)
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect putRating(ann, "dune", RatingInput(score: 9, note: "great", recommended: true)) is Ok(first);
+    expect putRating(ann, "dune", RatingInput(score: 4, note: None, recommended: false)) is Ok(second);
+    expect second.createdAt == first.createdAt;
+    expect second.score == 4;
+    expect second.note == "";
+    expect putRating(ann, "dune", RatingInput(score: 12, note: None, recommended: true)) is Err(RatingError.Invalid(field, reason));
+    expect field == "score";
+    expect putRating(ann, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(RatingError.BookNotFound);
+    mine = rated.listMyRatings(ann, None);
+    expect mine.length() == 1;
+    expect mine.at(0).title == "Dune";
+    expect deleteMyRating(ann, "dune") is Ok(removed);
+    expect removed == 1;
+    expect deleteMyRating(ann, "dune") is Err(RatingError.NoRating);
 }
 
 // A rating that is wrong is refused before Audiobookshelf is asked anything:
@@ -50,16 +61,28 @@ test aBadRatingCostsNoAbsCall {
     fake AbsService {
         token: "svc"
     }
+
     fake Abs {
         url: "https://abs.test"
     }
+
     fake AbsCatalog {
-        gateway itemAsService(abs: client.AbsTarget, itemId: string) -> Result<catalog.Book, client.AbsError> {
-            return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "Dune", authors: "Frank Herbert"))
+        gateway itemAsService(
+            abs: client.AbsTarget,
+            itemId: string,
+        ) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                ),
+            );
         }
     }
 
-    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User)
-    expect putRating(ann, "dune", RatingInput(score: 0, note: None, recommended: true)) is Err(RatingError.Invalid(_, _))
-    expect calls(AbsCatalog.itemAsService) == 0
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect putRating(ann, "dune", RatingInput(score: 0, note: None, recommended: true)) is Err(RatingError.Invalid(_, _));
+    expect calls(AbsCatalog.itemAsService) == 0;
 }

@@ -1,18 +1,24 @@
 // Reads a link code: the address, then "#", then the secret (inviteServer).
 rule inviteCodeOf(code: string) -> Result<InviteCode, LinkError> {
-    parts = code.trim().split("#")
-    if parts.length() != 2 {
-        return Err(LinkError.Invalid("code", "isn't a link code: paste all of it"))
+    parts = code.trim().split("#");
+    if (parts.length() != 2) {
+        return Err(LinkError.Invalid("code", "isn't a link code: paste all of it"));
     }
-    address = parts.first().removeSuffix("/")
-    secret = parts.last()
-    if not address.startsWith("https://") and not address.startsWith("http://") {
+
+    address = parts.first().removeSuffix("/");
+    secret = parts.last();
+    if (!address.startsWith("https://") && !address.startsWith("http://")) {
         return Err(
-            LinkError.Invalid("code", "isn't a link code: it should start with the other server's address"),
-        )
+            LinkError.Invalid(
+                "code",
+                "isn't a link code: it should start with the other server's address",
+            ),
+        );
     }
-    if secret.length() < 43 {
-        return Err(LinkError.Invalid("code", "is cut short: paste all of it"))
+
+    if (secret.length() < 43) {
+        return Err(LinkError.Invalid("code", "is cut short: paste all of it"));
     }
-    return Ok(InviteCode(address: address, secret: secret))
+
+    return Ok(InviteCode(address: address, secret: secret));
 }

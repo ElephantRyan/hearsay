@@ -3,7 +3,7 @@ use hearsay.books
 // Rating a book ABS doesn't have is "no such book"; any other trouble with
 // ABS is ours to report as unavailable.
 conversion ratingErrorOfBook(error: books.BookError) -> RatingError {
-    match error {
+    return match (error) {
         books.BookError.Missing -> RatingError.BookNotFound
         books.BookError.Unavailable(detail) -> RatingError.Unavailable(detail)
     }

@@ -2,5 +2,5 @@ use hearsay.accounts
 
 // DELETE /admin/links/{id}.
 workflow unlinkServer(admin: accounts.Admin, id: string) -> Result<Unlinked, LinkError> {
-    return removeLink(id)
+    return removeLink(id);
 }

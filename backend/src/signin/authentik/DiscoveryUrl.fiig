@@ -1,3 +1,3 @@
 rule discoveryUrl(issuer: string) -> string {
-    return "${issuer.removeSuffix("/")}/.well-known/openid-configuration"
+    return "${issuer.removeSuffix("/")}/.well-known/openid-configuration";
 }

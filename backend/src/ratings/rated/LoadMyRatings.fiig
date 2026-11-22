@@ -1,4 +1,4 @@
 // A person's ratings, newest first (the order the database gives).
 activity loadMyRatings(userId: string) -> List<RatingRow> {
-    return RatedBooks.byUser(userId)
+    return RatedBooks.byUser(userId);
 }

@@ -3,8 +3,9 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 
 // Many books from ABS in one call, with the server's token.
-gateway fetchBooks(abs: absclient.AbsTarget, itemIds: List<string>) -> Result<List<catalog.Book>, BookError>
-    requires AbsCatalog
-{
-    return mapErr(e in AbsCatalog.itemsAsService(abs, itemIds)): bookErrorOfAbs(e)
+gateway fetchBooks(
+    abs: absclient.AbsTarget,
+    itemIds: List<string>,
+) -> Result<List<catalog.Book>, BookError> requires AbsCatalog {
+    return mapErr(e in AbsCatalog.itemsAsService(abs, itemIds)): bookErrorOfAbs(e);
 }

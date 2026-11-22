@@ -2,10 +2,18 @@ use hearsay.absclient
 
 // POST /login's body as the session it gives us.
 conversion sessionOfLoginReply(body: bytes) -> Result<AbsSession, absclient.AbsError> {
-    reply: AbsLoginReply = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(failure: e)?
+    reply: AbsLoginReply = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(
+        failure: e,
+    )?;
     return Ok(
-        AbsSession(userId: reply.user.id, username: reply.user.username, userType: reply.user.type, accessToken: reply.user.accessToken, refreshToken: reply.user.refreshToken),
-    )
+        AbsSession(
+            userId: reply.user.id,
+            username: reply.user.username,
+            userType: reply.user.type,
+            accessToken: reply.user.accessToken,
+            refreshToken: reply.user.refreshToken,
+        ),
+    );
 }
 
 private {
