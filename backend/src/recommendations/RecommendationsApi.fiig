@@ -1,10 +1,9 @@
-use hearsay.accounts
 use hearsay.sessions
 
 // The recommendations routes of the HTTP surface; src/Hearsay.fiig serves every
 // domain's adapter together. All of them need a signed-in person.
 adapter http recommendationsApi {
-    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+    wire sessions.me
 
     GET "/recommendations?userId={userId}&libraryId={libraryId}&minScore={minScore}" -> listRecommendations(
         me,

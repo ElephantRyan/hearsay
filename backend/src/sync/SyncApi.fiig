@@ -1,10 +1,9 @@
-use hearsay.accounts
 use hearsay.sessions
 
 // The sync routes of the HTTP surface; src/Hearsay.fiig serves every domain's
 // adapter together.
 adapter http syncApi {
-    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+    wire sessions.me
 
     POST "/sync?userId={userId}&dryRun={dryRun}" -> syncCollections(
         me,

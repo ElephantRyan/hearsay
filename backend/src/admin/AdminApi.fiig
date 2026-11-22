@@ -1,12 +1,10 @@
-use hearsay.accounts
 use hearsay.sessions
 use hearsay.settings
 
 // The admin routes of the HTTP surface: settings and a status check, for
 // Audiobookshelf admins only. src/Hearsay.fiig serves every domain's adapter together.
 adapter http adminApi {
-    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
-    principal admin: accounts.Admin from me by accounts.signedInAdmin else accounts.notAnAdmin
+    wire sessions.admin
 
     GET "/admin/settings" -> showSettings(admin)
         produces "application/json"

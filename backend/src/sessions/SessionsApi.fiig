@@ -1,9 +1,7 @@
-use hearsay.accounts
-
 // The sessions routes of the HTTP surface; src/Hearsay.fiig serves every
 // domain's adapter together.
 adapter http sessionsApi {
-    principal me: accounts.Identity from cookie "sid" by signedIn else identityErrorResponse
+    wire me
 
     // Logging out with no session is fine, so this route settles no principal.
     DELETE "/session" public -> endSession(session: string | None from cookie "sid")

@@ -1,9 +1,8 @@
-use hearsay.accounts
 use hearsay.sessions
 
 // What the signed-in person has rated.
 adapter http ratedApi {
-    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+    wire sessions.me
 
     GET "/ratings/mine?sort={sort}" -> listMyRatings(me, sort: RatingOrder | None)
         produces "application/json"

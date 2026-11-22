@@ -1,10 +1,9 @@
-use hearsay.accounts
 use hearsay.sessions
 
 // The listening routes of the HTTP surface; src/Hearsay.fiig serves every domain's
 // adapter together.
 adapter http listeningApi {
-    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+    wire sessions.me
 
     GET "/me/listening" -> showMyListening(me)
         produces "application/json"

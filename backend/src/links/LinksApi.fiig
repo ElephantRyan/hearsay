@@ -1,12 +1,10 @@
-use hearsay.accounts
 use hearsay.sessions
 
 // The admin routes for linked servers (LINKED.md section 4): invite one, link
 // to one with its code, list them, fetch one's recommendations now, unlink.
 // src/Hearsay.fiig serves every domain's adapter together. Admins only.
 adapter http linksApi {
-    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
-    principal admin: accounts.Admin from me by accounts.signedInAdmin else accounts.notAnAdmin
+    wire sessions.admin
 
     GET "/admin/links" -> listLinks(admin)
         produces "application/json"

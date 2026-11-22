@@ -1,10 +1,9 @@
-use hearsay.accounts
 use hearsay.sessions
 
 // The ratings routes of the HTTP surface; src/Hearsay.fiig serves every
 // domain's adapter together. Both need a signed-in person.
 adapter http ratingsApi {
-    principal me: accounts.Identity from cookie "sid" by sessions.signedIn else sessions.identityErrorResponse
+    wire sessions.me
 
     PUT "/ratings/{itemId}" -> putRating(me, itemId: string, input: RatingInput)
         consumes "application/json"

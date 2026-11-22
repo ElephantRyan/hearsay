@@ -1,0 +1,5 @@
+use hearsay.accounts
+
+// Who is signed in, from the session cookie. Every adapter with signed-in
+// routes names this one (ADR 0141), so none can drift to another cookie.
+wire me: accounts.Identity from cookie "sid" by signedIn else identityErrorResponse
