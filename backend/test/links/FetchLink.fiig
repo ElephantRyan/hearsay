@@ -6,7 +6,6 @@ use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
 use hearsay.settings.Abs
-use hearsay.settings.AbsService
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
@@ -15,14 +14,6 @@ use hearsay.settings.SignInConfig
 // it is linked); its second
 // only one; then it refuses the key, as after it unlinked this server.
 test aFetchMatchesEachBookAndReplacesWhatWasHeld {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Alex's library"
     }
@@ -33,14 +24,11 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -231,14 +219,6 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
 // that can't be rebuilt is logged, but the fetch still runs on the old index:
 // ABS answers the listing once, when linking builds the index, then fails.
 test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Alex's library"
     }
@@ -249,9 +229,7 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             if (calls(AbsCatalog.librariesAsService) == 1) {
                 return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
             }
@@ -260,7 +238,6 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,

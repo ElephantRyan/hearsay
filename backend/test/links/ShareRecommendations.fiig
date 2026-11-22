@@ -8,7 +8,6 @@ use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
 use hearsay.settings.Abs
-use hearsay.settings.AbsService
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
@@ -16,14 +15,6 @@ use hearsay.settings.SignInConfig
 // what recognises each book. A book cached before ASINs were (migration 0005)
 // takes its ASIN from the library index.
 test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake SessionConfig {
         sessionMaxAge: 3600
     }
@@ -38,10 +29,7 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
     }
 
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             if (itemId == "dune") {
                 return Ok(
                     catalog.Book(
@@ -67,14 +55,11 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
             );
         }
 
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -99,8 +84,7 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect matching.indexLibrary(abs) is Ok(_);
+    expect matching.indexLibrary() is Ok(_);
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
     ann = sessions.startSession(annId).token;
     expect ratings.putRating(annId, "dune", ratings.RatingInput(score: 9, note: "great", recommended: true)) is Ok(_);

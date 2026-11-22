@@ -17,8 +17,8 @@ workflow syncCollections(
         return Ok(preview(plans));
     }
 
-    abs = mapErr(e in settings.loadAbsTarget()): syncErrorOfSettings(e)?;
-    return Ok(applyPlans(abs, plans));
+    mapErr(e in settings.checkAbsSetUp()): syncErrorOfSettings(e)?;
+    return Ok(applyPlans(plans));
 }
 
 private {

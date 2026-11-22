@@ -1,4 +1,6 @@
 use hearsay.absclient
+use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use fiig.http
 use fiig.http.HttpClient
 
@@ -6,12 +8,12 @@ use fiig.http.HttpClient
 // recommendations (PLAN.md M6). Every id is checked before a path is built.
 capability AbsCollections {
     gateway createCollectionAsService(
-        abs: absclient.AbsTarget,
         libraryId: string,
         name: string,
         description: string,
         bookIds: List<string>,
     ) -> Result<string, absclient.AbsError> requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         if (!absclient.validId(libraryId) || !all(id in bookIds): absclient.validId(id)) {
             return Err(absclient.AbsError.NotFound);
         }
@@ -36,12 +38,12 @@ capability AbsCollections {
     }
 
     gateway updateCollectionAsService(
-        abs: absclient.AbsTarget,
         collectionId: string,
         name: string,
         description: string,
         bookIds: List<string>,
     ) -> Result<int, absclient.AbsError> requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         collectionIdSegment = absclient.absPathId(collectionId)?;
         if (!all(id in bookIds): absclient.validId(id)) {
             return Err(absclient.AbsError.NotFound);
@@ -63,10 +65,9 @@ capability AbsCollections {
         return Ok(reply.status);
     }
 
-    gateway deleteCollectionAsService(
-        abs: absclient.AbsTarget,
-        collectionId: string,
-    ) -> Result<int, absclient.AbsError> requires HttpClient {
+    gateway deleteCollectionAsService(collectionId: string) -> Result<int, absclient.AbsError>
+            requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         collectionIdSegment = absclient.absPathId(collectionId)?;
         reply = absclient.absReply(
             HttpClient.send(

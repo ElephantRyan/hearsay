@@ -1,0 +1,13 @@
+// The server and token a *AsService gateway calls with, from the settings it
+// read; NotSetUp names the first one missing.
+conversion targetOf(url: string | None, token: Secret | None) -> Result<AbsTarget, AbsError> {
+    return match (url) {
+        None -> Err(AbsError.NotSetUp("the Audiobookshelf address"))
+        given -> {
+            return match (token) {
+                None -> Err(AbsError.NotSetUp("its Audiobookshelf token"))
+                secret -> Ok(AbsTarget(url: given, token: secret))
+            }
+        }
+    }
+}

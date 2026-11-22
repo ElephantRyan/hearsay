@@ -11,21 +11,12 @@ use hearsay.settings.Abs
 use hearsay.settings.AbsService
 
 test myListeningIsMostRecentFirstWithMyScores {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake SessionConfig {
         sessionMaxAge: 3600
     }
 
     fake AbsProgress {
         gateway progressAsService(
-            abs: client.AbsTarget,
             userId: string,
         ) -> Result<List<progress.Progress>, client.AbsError> {
             expect userId == "u1";
@@ -55,10 +46,7 @@ test myListeningIsMostRecentFirstWithMyScores {
     }
 
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(
                     itemId: itemId,
@@ -70,7 +58,6 @@ test myListeningIsMostRecentFirstWithMyScores {
         }
 
         gateway itemsAsService(
-            abs: client.AbsTarget,
             itemIds: List<string>,
         ) -> Result<List<catalog.Book>, client.AbsError> {
             expect itemIds == ["b", "gone"];
@@ -95,21 +82,12 @@ test myListeningIsMostRecentFirstWithMyScores {
 }
 
 test myListeningCachesWhatItLooksUp {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake SessionConfig {
         sessionMaxAge: 3600
     }
 
     fake AbsProgress {
         gateway progressAsService(
-            abs: client.AbsTarget,
             userId: string,
         ) -> Result<List<progress.Progress>, client.AbsError> {
             return Ok(
@@ -120,7 +98,6 @@ test myListeningCachesWhatItLooksUp {
 
     fake AbsCatalog {
         gateway itemsAsService(
-            abs: client.AbsTarget,
             itemIds: List<string>,
         ) -> Result<List<catalog.Book>, client.AbsError> {
             expect calls(AbsCatalog.itemsAsService) == 1;
@@ -159,7 +136,6 @@ test myListeningSaysWhenAbsIsDown {
 
     fake AbsProgress {
         gateway progressAsService(
-            abs: client.AbsTarget,
             userId: string,
         ) -> Result<List<progress.Progress>, client.AbsError> {
             return Err(client.AbsError.Unauthorized);
@@ -187,7 +163,6 @@ test myListeningSaysWhenAbsHasNoAccountForMe {
 
     fake AbsProgress {
         gateway progressAsService(
-            abs: client.AbsTarget,
             userId: string,
         ) -> Result<List<progress.Progress>, client.AbsError> {
             return Err(client.AbsError.NotFound);

@@ -14,8 +14,8 @@ workflow syncOnSchedule() -> Result<int, SyncError> {
         return Ok(0);
     }
 
-    abs = mapErr(e in settings.loadAbsTarget()): syncErrorOfSettings(e)?;
-    results = applyPlans(abs, plans);
+    mapErr(e in settings.checkAbsSetUp()): syncErrorOfSettings(e)?;
+    results = applyPlans(plans);
     failed = filter(r in results): r.action == SyncOutcome.Failed;
     if (failed.length() > 0) {
         return Err(SyncError.SomeWritesFailed(failed.length(), results.length()));

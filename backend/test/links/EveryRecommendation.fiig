@@ -8,9 +8,7 @@ use hearsay.recommendations
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
 use hearsay.settings
-use hearsay.settings.Abs
 use hearsay.absclient.collections.AbsCollections
-use hearsay.settings.AbsService
 use hearsay.sync
 
 // Linked servers' ratings blend in (LINKED.md section 6): they count in
@@ -19,23 +17,12 @@ use hearsay.sync
 // Dune on this server. Alex's library also has an ann, and a sam who rates
 // Dune and a book this library hasn't. Sam's place has another sam.
 test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake SessionConfig {
         sessionMaxAge: 3600
     }
 
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(
                     itemId: itemId,
@@ -162,8 +149,7 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
     expect missing == [MissingBook(title: "Not Here", authors: "Nobody", score: 9, note: "find it", updatedAt: 7, via: "Alex's library")];
     expect missingOf("u1").length() == 0;
     expect missingOf("linked-l2-p9").length() == 0;
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect AbsCatalog.itemAsService(abs, "dune") is Ok(dune);
+    expect AbsCatalog.itemAsService("dune") is Ok(dune);
     page = library.loadItemDetail("u1", dune);
     expect page.count == 3;
     expect page.average == books.first().average;
@@ -183,17 +169,8 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
 // description says where the recommendations came from. Unlinked, the
 // collection goes at the next sync.
 test linkedPeopleGetCollectionsThatGoWhenUnlinked {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake AbsCollections {
         gateway createCollectionAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             name: string,
             description: string,
@@ -207,7 +184,6 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
         }
 
         gateway updateCollectionAsService(
-            abs: client.AbsTarget,
             collectionId: string,
             name: string,
             description: string,
@@ -217,10 +193,7 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
             return Ok(1);
         }
 
-        gateway deleteCollectionAsService(
-            abs: client.AbsTarget,
-            collectionId: string,
-        ) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
             expect collectionId == "col-sam";
             return Ok(1);
         }
@@ -292,8 +265,7 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
     expect plans.length() == 1;
     expect plans.first().userId == "linked-l1-p2";
     expect plans.first().action == sync.SyncAction.Create;
-    expect settings.loadAbsTarget() is Ok(abs);
-    results = sync.applyPlans(abs, plans);
+    results = sync.applyPlans(plans);
     expect results.first().action == sync.SyncOutcome.Created;
     expect results.first().books == 2;
     deleteLink("l1");
@@ -301,6 +273,6 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
     expect gone.length() == 1;
     expect gone.first().action == sync.SyncAction.Remove;
     expect gone.first().collectionId == "col-sam";
-    expect sync.applyPlans(abs, gone).first().action == sync.SyncOutcome.Removed;
+    expect sync.applyPlans(gone).first().action == sync.SyncOutcome.Removed;
     expect sync.loadAllSyncPlans().length() == 0;
 }

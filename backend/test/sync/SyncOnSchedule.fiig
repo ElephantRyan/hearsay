@@ -17,7 +17,6 @@ test theScheduledSyncDoesNothingWhileMirroringIsOff {
 
     fake AbsCollections {
         gateway createCollectionAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             name: string,
             description: string,
@@ -28,7 +27,6 @@ test theScheduledSyncDoesNothingWhileMirroringIsOff {
         }
 
         gateway updateCollectionAsService(
-            abs: client.AbsTarget,
             collectionId: string,
             name: string,
             description: string,
@@ -38,10 +36,7 @@ test theScheduledSyncDoesNothingWhileMirroringIsOff {
             return Ok(200);
         }
 
-        gateway deleteCollectionAsService(
-            abs: client.AbsTarget,
-            collectionId: string,
-        ) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
             expect false;
             return Ok(200);
         }
@@ -70,17 +65,13 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
     }
 
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"));
         }
     }
 
     fake AbsCollections {
         gateway createCollectionAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             name: string,
             description: string,
@@ -94,7 +85,6 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
         }
 
         gateway updateCollectionAsService(
-            abs: client.AbsTarget,
             collectionId: string,
             name: string,
             description: string,
@@ -104,10 +94,7 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
             return Ok(200);
         }
 
-        gateway deleteCollectionAsService(
-            abs: client.AbsTarget,
-            collectionId: string,
-        ) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
             expect false;
             return Ok(200);
         }

@@ -36,18 +36,24 @@ test statusSaysWhoTheTokenBelongsTo {
     }
 
     fake AbsMembers {
-        gateway meAsService(abs: client.AbsTarget) -> Result<members.AbsUser, client.AbsError> {
-            if (abs.token.matches("good")) {
-                return Ok(
-                    members.AbsUser(
-                        id: "bot",
-                        username: "recommendation-bot",
-                        type: client.AbsUserType.Admin,
-                    ),
-                );
-            }
+        // The token the real gateway would send: the one saved in the app.
+        gateway meAsService() -> Result<members.AbsUser, client.AbsError> {
+            return match (AbsService.token) {
+                None -> Err(client.AbsError.Unauthorized)
+                token -> {
+                    if (!token.matches("good")) {
+                        return Err(client.AbsError.Unauthorized);
+                    }
 
-            return Err(client.AbsError.Unauthorized);
+                    return Ok(
+                        members.AbsUser(
+                            id: "bot",
+                            username: "recommendation-bot",
+                            type: client.AbsUserType.Admin,
+                        ),
+                    );
+                }
+            }
         }
     }
 

@@ -6,7 +6,6 @@ use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
 use hearsay.settings.Abs
-use hearsay.settings.AbsService
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
@@ -15,14 +14,6 @@ use hearsay.settings.SignInConfig
 // library index, so the fetch the other side asks for straight after linking
 // can match books.
 test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Ryan's library"
     }
@@ -33,14 +24,11 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -168,27 +156,16 @@ test aBadOfferStillSpendsTheInvite {
 // No invite is made when the library can't be indexed: the link it leads to
 // couldn't match any book.
 test anInviteWaitsForTheLibraryIndex {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Ryan's library"
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Err(client.AbsError.Unauthorized);
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,

@@ -1,11 +1,11 @@
 use hearsay.absclient
 
 // Carries out every planned change, one by one, and records each outcome.
-activity applyPlans(abs: absclient.AbsTarget, plans: List<SyncPlan>) -> List<SyncResult> {
+activity applyPlans(plans: List<SyncPlan>) -> List<SyncResult> {
     now = Clock.now();
     results: List<SyncResult> = [];
     for (plan in plans) {
-        results = append(results, applyPlan(abs, plan, now));
+        results = append(results, applyPlan(plan, now));
     }
 
     return results;

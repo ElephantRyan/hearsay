@@ -1,4 +1,6 @@
 use hearsay.absclient
+use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use fiig.http
 use fiig.http.HttpClient
 
@@ -23,8 +25,8 @@ capability AbsMembers {
     }
 
     // Who this server's own token belongs to: the admin screen's check that the token works.
-    gateway meAsService(abs: absclient.AbsTarget) -> Result<AbsUser, absclient.AbsError>
-            requires HttpClient {
+    gateway meAsService() -> Result<AbsUser, absclient.AbsError> requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         reply = absclient.absReply(
             HttpClient.send(absclient.absGet(abs.url, "/api/me", abs.token.reveal())),
         )?;

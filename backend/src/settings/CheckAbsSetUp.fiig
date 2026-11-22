@@ -1,0 +1,12 @@
+// Whether this server has an Audiobookshelf address and token, for a caller
+// that must know before it starts (sync writes nothing on a server not set up).
+activity checkAbsSetUp() -> Result<None, SettingsError> {
+    if (Abs.url == None) {
+        return Err(SettingsError.NoAbsUrl);
+    }
+
+    return match (AbsService.token) {
+        None -> Err(SettingsError.NoServiceToken)
+        given -> Ok(None)
+    }
+}

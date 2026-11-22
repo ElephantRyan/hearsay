@@ -4,6 +4,5 @@ use hearsay.settings
 // What ABS says about a book right now, for a step that must not act on a
 // stale or missing copy (rating it).
 activity latestBook(itemId: string) -> Result<catalog.Book, BookError> {
-    abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?;
-    return fetchBook(abs, itemId);
+    return fetchBook(itemId);
 }

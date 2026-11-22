@@ -5,8 +5,7 @@ use hearsay.settings
 activity cachedBook(itemId: string) -> Result<catalog.Book, BookError> {
     return match (findBook(itemId)) {
         None -> {
-            abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?;
-            return fetchBook(abs, itemId);
+            return fetchBook(itemId);
         }
 
         cached -> {

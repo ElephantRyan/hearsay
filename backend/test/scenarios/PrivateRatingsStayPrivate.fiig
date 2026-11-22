@@ -7,27 +7,14 @@ use hearsay.ratings
 use hearsay.recommendations
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
 
 test privateRatingsStayPrivate {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake SessionConfig {
         sessionMaxAge: 3600
     }
 
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(
                     itemId: itemId,

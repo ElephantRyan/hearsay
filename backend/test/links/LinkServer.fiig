@@ -6,7 +6,6 @@ use fiig.http
 use fiig.http.HttpClient
 use hearsay.settings
 use hearsay.settings.Abs
-use hearsay.settings.AbsService
 use hearsay.settings.ServerConfig
 use hearsay.settings.SignInConfig
 
@@ -14,14 +13,6 @@ use hearsay.settings.SignInConfig
 // federationApi's answers. Linking fetches the other server's recommendations
 // at once and asks it to fetch this one's.
 test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Alex's library"
     }
@@ -32,14 +23,11 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -154,14 +142,6 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
 }
 
 test aLoginPageOrARefusalKeepsNothing {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Alex's library"
     }
@@ -172,14 +152,11 @@ test aLoginPageOrARefusalKeepsNothing {
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -266,27 +243,16 @@ test aLoginPageOrARefusalKeepsNothing {
 
 // No other server is contacted when this library can't be indexed.
 test linkingWaitsForTheLibraryIndex {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Alex's library"
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Err(client.AbsError.Rejected(status: 502));
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -317,14 +283,6 @@ test linkingWaitsForTheLibraryIndex {
 // A link stands even when the first fetch, and telling the other server to
 // fetch, both fail; and unlinking still forgets it when the other can't be told.
 test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake ServerConfig {
         name: "Alex's library"
     }
@@ -335,14 +293,11 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
     }
 
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,

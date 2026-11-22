@@ -2,22 +2,10 @@ use hearsay.absclient as client
 use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.settings
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
 
 test theIndexMatchesByAsinThenIsbnThenTitle {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake AbsCatalog {
-        gateway librariesAsService(
-            abs: client.AbsTarget,
-        ) -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok(
                 [
                     catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book"),
@@ -28,7 +16,6 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
 
         // 251 books: a full page of 250 numbered ones, then three named ones on page 1.
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -96,8 +83,7 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect indexLibrary(abs) is Ok(summary);
+    expect indexLibrary() is Ok(summary);
     expect summary == IndexSummary(books: 253, withAsin: 251, withIsbn: 1, titleOnly: 1);
     expect calls(AbsCatalog.pageAsService) == 2;
     expect matchBook(keysOf("B0DUNE", None, "Dune (Unabridged)", "Someone Else")) == LocalMatch(itemId: "dune", libraryId: "lib-1", how: "asin");
@@ -105,6 +91,6 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
     expect matchBook(keysOf("B-ELSEWHERE", None, "Hobbit", "J.R.R. Tolkien, Narrator")) == LocalMatch(itemId: "hobbit", libraryId: "lib-1", how: "title");
     expect matchBook(keysOf(None, None, "Not Here", "Anyone")) == None;
     // A rebuild that fails part-way keeps the old index.
-    expect indexLibrary(abs) is Err(client.AbsFault.Down(_));
+    expect indexLibrary() is Err(client.AbsFault.Down(_));
     expect matchBook(keysOf("b0dune", None, "", "")) == LocalMatch(itemId: "dune", libraryId: "lib-1", how: "asin");
 }

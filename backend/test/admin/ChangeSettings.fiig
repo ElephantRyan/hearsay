@@ -19,7 +19,7 @@ test anAdminSavesSettingsAndCanForgetThem {
     expect before.serviceToken == settings.SettingValue(value: None, source: "unset");
     expect before.mirrorEnabled == settings.SettingValue(value: "false", source: "environment");
     expect before.serverName == settings.SettingValue(value: None, source: "unset");
-    expect settings.loadAbsTarget() is Err(settings.SettingsError.NoAbsUrl);
+    expect settings.checkAbsSetUp() is Err(settings.SettingsError.NoAbsUrl);
     change = settings.SettingsChange(
         absUrl: "  https://abs.home.test/ ",
         serviceToken: "new-token",
@@ -32,9 +32,8 @@ test anAdminSavesSettingsAndCanForgetThem {
     expect after.mirrorEnabled == settings.SettingValue(value: "true", source: "saved");
     expect after.serverName == settings.SettingValue(value: "Ryan's library", source: "saved");
     expect settings.serverName() == "Ryan's library";
-    expect settings.loadAbsTarget() is Ok(target);
-    expect target.url == "https://abs.home.test";
-    expect target.token.matches("new-token");
+    expect settings.absUrl() == "https://abs.home.test";
+    expect tokenIs("new-token");
     expect settings.mirrorEnabled();
     expect resetSetting(root, "absUrl") is Ok(reset);
     expect reset.absUrl == settings.SettingValue(value: None, source: "unset");
@@ -56,8 +55,7 @@ test aBadChangeSavesNothing {
     expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid("serviceToken", _));
     view = showSettings(admin);
     expect view.absUrl == settings.SettingValue(value: "https://abs.test", source: "saved");
-    expect settings.loadAbsTarget() is Ok(target);
-    expect target.token.matches("old-token");
+    expect tokenIs("old-token");
 }
 
 test switchingToAuthentikTurnsPasswordSignInOff {
@@ -142,4 +140,13 @@ test authentikOnlyWaitsForTheClientSecret {
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc, oidcClientSecret: "csec")) is Ok(view);
     expect view.oidcClientSecret == settings.SettingValue(value: None, source: "saved");
     expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true);
+}
+
+private {
+    tokenIs(expected: string) -> bool {
+        return match (settings.serviceToken()) {
+            None -> false
+            token -> token.matches(expected)
+        }
+    }
 }

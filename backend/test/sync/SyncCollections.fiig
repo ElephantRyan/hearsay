@@ -28,17 +28,13 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     }
 
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"));
         }
     }
 
     fake AbsCollections {
         gateway createCollectionAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             name: string,
             description: string,
@@ -55,7 +51,6 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
         }
 
         gateway updateCollectionAsService(
-            abs: client.AbsTarget,
             collectionId: string,
             name: string,
             description: string,
@@ -68,10 +63,7 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
             return Ok(200);
         }
 
-        gateway deleteCollectionAsService(
-            abs: client.AbsTarget,
-            collectionId: string,
-        ) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
             return Ok(200);
         }
     }
@@ -117,7 +109,6 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
 
     fake AbsCollections {
         gateway createCollectionAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             name: string,
             description: string,
@@ -128,7 +119,6 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
         }
 
         gateway updateCollectionAsService(
-            abs: client.AbsTarget,
             collectionId: string,
             name: string,
             description: string,
@@ -138,10 +128,7 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
             return Err(client.AbsError.NotFound);
         }
 
-        gateway deleteCollectionAsService(
-            abs: client.AbsTarget,
-            collectionId: string,
-        ) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
             expect false;
             return Err(client.AbsError.NotFound);
         }
@@ -164,7 +151,6 @@ test aPersonCannotSyncSomeoneElsesList {
 
     fake AbsCollections {
         gateway createCollectionAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             name: string,
             description: string,
@@ -175,7 +161,6 @@ test aPersonCannotSyncSomeoneElsesList {
         }
 
         gateway updateCollectionAsService(
-            abs: client.AbsTarget,
             collectionId: string,
             name: string,
             description: string,
@@ -184,10 +169,7 @@ test aPersonCannotSyncSomeoneElsesList {
             return Ok(200);
         }
 
-        gateway deleteCollectionAsService(
-            abs: client.AbsTarget,
-            collectionId: string,
-        ) -> Result<int, client.AbsError> {
+        gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
             return Ok(200);
         }
     }

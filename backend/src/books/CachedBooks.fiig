@@ -19,9 +19,8 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookEr
     }
 
     if (missing.length() > 0) {
-        abs = mapErr(e in settings.loadAbsTarget()): bookErrorOfSettings(e)?;
         now = Clock.now();
-        for (book in fetchBooks(abs, missing)?) {
+        for (book in fetchBooks(missing)?) {
             BookCache.save(book, now);
             found = found.put(book.itemId, book);
         }

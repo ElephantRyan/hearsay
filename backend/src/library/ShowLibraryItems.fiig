@@ -14,8 +14,7 @@ workflow showLibraryItems(
     pageNumber = checkPage(page)?;
     pageSize = checkSize(size)?;
     typed = searchText(q)?;
-    abs = mapErr(e in settings.loadAbsTarget()): libraryErrorOfSettings(e)?;
-    return mapErr(e in loadBrowseResult(me.userId, abs, libraryId, pageNumber, pageSize, typed)): libraryErrorOfFault(
+    return mapErr(e in loadBrowseResult(me.userId, libraryId, pageNumber, pageSize, typed)): libraryErrorOfFault(
         e,
     );
 }

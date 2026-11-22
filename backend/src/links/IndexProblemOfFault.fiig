@@ -1,6 +1,6 @@
 use hearsay.absclient as client
 
-// Why ABS couldn't give the library index, in words (indexProblemOfSettings).
+// Why ABS couldn't give the library index, in words.
 conversion indexProblemOfFault(fault: client.AbsFault) -> string {
     return match (fault) {
         client.AbsFault.Missing -> "a library Audiobookshelf listed has gone"

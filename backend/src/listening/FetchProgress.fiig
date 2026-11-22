@@ -3,9 +3,7 @@ use hearsay.absclient.progress
 use hearsay.absclient.progress.AbsProgress
 
 // What ABS says I have started. A 404 is an account ABS no longer has.
-gateway fetchProgress(
-    abs: absclient.AbsTarget,
-    userId: string,
-) -> Result<List<progress.Progress>, absclient.AbsFault> requires AbsProgress {
-    return mapErr(e in AbsProgress.progressAsService(abs, userId)): absclient.faultOfAbs(e);
+gateway fetchProgress(userId: string) -> Result<List<progress.Progress>, absclient.AbsFault>
+        requires AbsProgress {
+    return mapErr(e in AbsProgress.progressAsService(userId)): absclient.faultOfAbs(e);
 }

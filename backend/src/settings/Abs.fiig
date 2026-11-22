@@ -1,5 +1,5 @@
 // Where the Audiobookshelf server is (PLAN.md section 8): saved in the app, or
-// else ABS_URL. None until one of them is set (loadAbsUrl).
+// else ABS_URL. None until one of them is set.
 wire Abs {
     url: string | None from setting "abs.url" ?? env "ABS_URL"
 }

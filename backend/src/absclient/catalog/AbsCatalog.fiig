@@ -1,4 +1,6 @@
 use hearsay.absclient
+use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use fiig.http
 use fiig.http.HttpClient
 
@@ -17,10 +19,8 @@ capability AbsCatalog {
         return bookOfItemReply(reply.body);
     }
 
-    gateway itemAsService(
-        abs: absclient.AbsTarget,
-        itemId: string,
-    ) -> Result<Book, absclient.AbsError> requires HttpClient {
+    gateway itemAsService(itemId: string) -> Result<Book, absclient.AbsError> requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         itemIdSegment = absclient.absPathId(itemId)?;
         reply = absclient.absReply(
             HttpClient.send(
@@ -31,10 +31,9 @@ capability AbsCatalog {
     }
 
     // Many books in one call. Every id is checked first; ABS leaves out the ones it doesn't have.
-    gateway itemsAsService(
-        abs: absclient.AbsTarget,
-        itemIds: List<string>,
-    ) -> Result<List<Book>, absclient.AbsError> requires HttpClient {
+    gateway itemsAsService(itemIds: List<string>) -> Result<List<Book>, absclient.AbsError>
+            requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         if (!all(id in itemIds): absclient.validId(id)) {
             return Err(absclient.AbsError.NotFound);
         }
@@ -45,9 +44,9 @@ capability AbsCatalog {
         return booksOfBatchReply(reply.body);
     }
 
-    gateway librariesAsService(
-        abs: absclient.AbsTarget,
-    ) -> Result<List<AbsLibrary>, absclient.AbsError> requires HttpClient {
+    gateway librariesAsService() -> Result<List<AbsLibrary>, absclient.AbsError>
+            requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         reply = absclient.absReply(
             HttpClient.send(absclient.absGet(abs.url, "/api/libraries", abs.token.reveal())),
         )?;
@@ -58,11 +57,11 @@ capability AbsCatalog {
     }
 
     gateway pageAsService(
-        abs: absclient.AbsTarget,
         libraryId: string,
         page: int,
         size: int,
     ) -> Result<BookPage, absclient.AbsError> requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         libraryIdSegment = absclient.absPathId(libraryId)?;
         reply = absclient.absReply(
             HttpClient.send(
@@ -77,11 +76,11 @@ capability AbsCatalog {
     }
 
     gateway searchAsService(
-        abs: absclient.AbsTarget,
         libraryId: string,
         query: string,
         size: int,
     ) -> Result<BookPage, absclient.AbsError> requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         libraryIdSegment = absclient.absPathId(libraryId)?;
         reply = absclient.absReply(
             HttpClient.send(

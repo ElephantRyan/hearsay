@@ -3,9 +3,7 @@
 use hearsay.absclient
 use hearsay.absclient.catalog
 
-activity listLibraries(
-    abs: absclient.AbsTarget,
-) -> Result<List<catalog.AbsLibrary>, absclient.AbsFault> {
-    all = fetchLibraries(abs)?;
+activity listLibraries() -> Result<List<catalog.AbsLibrary>, absclient.AbsFault> {
+    all = fetchLibraries()?;
     return Ok(filter(library in all): library.mediaType == "book");
 }

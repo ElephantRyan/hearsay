@@ -1,4 +1,4 @@
-// The one place that sorts the five AbsError cases into an AbsFault and
+// The one place that sorts the AbsError cases into an AbsFault and
 // words the unavailable ones.
 conversion faultOfAbs(error: AbsError) -> AbsFault {
     return match (error) {
@@ -7,5 +7,8 @@ conversion faultOfAbs(error: AbsError) -> AbsFault {
         AbsError.Rejected(status) -> AbsFault.Down("Audiobookshelf answered ${status}")
         AbsError.Unreachable(failure) -> AbsFault.Down("Audiobookshelf is unreachable")
         AbsError.Unreadable(failure) -> AbsFault.Down("Audiobookshelf's reply was unreadable")
+        AbsError.NotSetUp(missing) -> AbsFault.Down(
+            "this server isn't set up yet: an admin needs to enter ${missing}",
+        )
     }
 }

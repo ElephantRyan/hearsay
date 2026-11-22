@@ -5,25 +5,14 @@ use hearsay.accounts
 use hearsay.ratings
 use hearsay.sessions
 use hearsay.sessions.SessionConfig
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
 
 test browseListsSearchesAndMarksMyScores {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake SessionConfig {
         sessionMaxAge: 3600
     }
 
     fake AbsCatalog {
         gateway pageAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             page: int,
             size: int,
@@ -54,7 +43,6 @@ test browseListsSearchesAndMarksMyScores {
         }
 
         gateway searchAsService(
-            abs: client.AbsTarget,
             libraryId: string,
             query: string,
             size: int,
@@ -77,10 +65,7 @@ test browseListsSearchesAndMarksMyScores {
             );
         }
 
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(
                     itemId: itemId,

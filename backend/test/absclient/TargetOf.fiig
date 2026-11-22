@@ -1,0 +1,21 @@
+use hearsay.settings.Abs
+use hearsay.settings.AbsService
+
+// A server with no address or no token calls nothing, and says which is missing
+// in the words every feature shows (faultOfAbs).
+test aGatewayNeedsTheAddressAndTheToken {
+    fake Abs {
+        url: "https://abs.test"
+    }
+
+    fake AbsService {
+        token: "svc"
+    }
+
+    expect targetOf(Abs.url, AbsService.token) is Ok(target);
+    expect target.url == "https://abs.test";
+    expect target.token.matches("svc");
+    expect targetOf(None, AbsService.token) is Err(AbsError.NotSetUp("the Audiobookshelf address"));
+    expect targetOf(Abs.url, None) is Err(AbsError.NotSetUp(missing));
+    expect faultOfAbs(AbsError.NotSetUp(missing)) == AbsFault.Down("this server isn't set up yet: an admin needs to enter its Audiobookshelf token");
+}

@@ -4,6 +4,5 @@ use hearsay.settings
 // Rebuilds the library index from Audiobookshelf, so new books can be matched.
 // On failure the old index stays, and this says why in words.
 activity rebuildIndex() -> Result<matching.IndexSummary, string> {
-    abs = mapErr(e in settings.loadAbsTarget()): indexProblemOfSettings(e)?;
-    return mapErr(e in matching.indexLibrary(abs)): indexProblemOfFault(e);
+    return mapErr(e in matching.indexLibrary()): indexProblemOfFault(e);
 }

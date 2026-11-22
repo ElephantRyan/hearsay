@@ -3,26 +3,13 @@ use hearsay.absclient.catalog
 use hearsay.absclient.catalog.AbsCatalog
 use hearsay.accounts
 use hearsay.ratings.rated
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
 
 // Rates through the real workflows with ABS faked, as a person the adapter has
 // already settled. The book is fetched on every write, so a changed title is
 // cached.
 test ratingFlowCachesTheBookAndKeepsCreatedAt {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             if (itemId == "gone") {
                 return Err(client.AbsError.NotFound);
             }
@@ -58,19 +45,8 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
 // A rating that is wrong is refused before Audiobookshelf is asked anything:
 // the check needs no I/O, so it comes first.
 test aBadRatingCostsNoAbsCall {
-    fake AbsService {
-        token: "svc"
-    }
-
-    fake Abs {
-        url: "https://abs.test"
-    }
-
     fake AbsCatalog {
-        gateway itemAsService(
-            abs: client.AbsTarget,
-            itemId: string,
-        ) -> Result<catalog.Book, client.AbsError> {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(
                     itemId: itemId,

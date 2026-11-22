@@ -43,7 +43,7 @@ private {
             }
 
             token -> {
-                return match (AbsMembers.meAsService(client.AbsTarget(url: url, token: token))) {
+                return match (AbsMembers.meAsService()) {
                     Ok(user) -> {
                         return status("reachable", user.username, user.type, None);
                     }
@@ -109,6 +109,7 @@ private {
             client.AbsError.Rejected(status) -> "Audiobookshelf answered ${status} to the token."
             client.AbsError.Unreachable(failure) -> "Audiobookshelf stopped answering."
             client.AbsError.Unreadable(failure) -> "Audiobookshelf's answer couldn't be read."
+            client.AbsError.NotSetUp(missing) -> "No Audiobookshelf token is set."
         }
     }
 }

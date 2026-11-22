@@ -31,8 +31,7 @@ test absProgressListsStartedBooks {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect AbsProgress.progressAsService(abs, "u-1") is Ok(started);
+    expect AbsProgress.progressAsService("u-1") is Ok(started);
     expect started.length() == 2;
     expect started.at(0) == Progress(itemId: "b-1", finished: true, percent: 100, lastListenedAt: 1795000000000);
     expect started.at(1) == Progress(itemId: "b-2", finished: false, percent: 67, lastListenedAt: 1795128758043);
@@ -54,6 +53,5 @@ test absProgressRefusesAHostileIdWithoutCallingAbs {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect AbsProgress.progressAsService(abs, "../../api/libraries") is Err(absclient.AbsError.NotFound);
+    expect AbsProgress.progressAsService("../../api/libraries") is Err(absclient.AbsError.NotFound);
 }

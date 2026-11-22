@@ -9,13 +9,12 @@ use hearsay.settings
 
 activity loadBrowseResult(
     userId: string,
-    abs: absclient.AbsTarget,
     libraryId: string,
     page: int,
     size: int,
     typed: string | None,
 ) -> Result<BrowseResult, absclient.AbsFault> {
-    found = fetchBooks(abs, libraryId, page, size, typed)?;
+    found = fetchBooks(libraryId, page, size, typed)?;
     mine = RatedBooks.byUser(userId);
     return Ok(
         BrowseResult(
@@ -29,7 +28,6 @@ activity loadBrowseResult(
 
 private {
     fetchBooks(
-        abs: absclient.AbsTarget,
         libraryId: string,
         page: int,
         size: int,
@@ -37,11 +35,11 @@ private {
     ) -> Result<catalog.BookPage, absclient.AbsFault> {
         return match (typed) {
             None -> {
-                return fetchPage(abs, libraryId, page, size);
+                return fetchPage(libraryId, page, size);
             }
 
             text -> {
-                return fetchHits(abs, libraryId, text, size);
+                return fetchHits(libraryId, text, size);
             }
         }
     }

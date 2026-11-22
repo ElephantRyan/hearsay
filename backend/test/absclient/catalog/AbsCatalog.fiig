@@ -56,17 +56,16 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect AbsCatalog.librariesAsService(abs) is Ok(libraries);
+    expect AbsCatalog.librariesAsService() is Ok(libraries);
     expect libraries.length() == 2;
     expect libraries.at(0) == AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book");
-    expect AbsCatalog.pageAsService(abs, "lib-1", 2, 2) is Ok(page);
+    expect AbsCatalog.pageAsService("lib-1", 2, 2) is Ok(page);
     expect page.total == 1117;
     expect page.page == 2;
     expect page.books.length() == 2;
     expect page.books.at(0) == Book(itemId: "it-1", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert");
     expect page.books.at(1).authors == "";
-    expect AbsCatalog.searchAsService(abs, "lib-1", "war & peace", 5) is Ok(found);
+    expect AbsCatalog.searchAsService("lib-1", "war & peace", 5) is Ok(found);
     expect found.books.length() == 1;
     expect found.books.at(0).title == "War and Peace";
     expect calls(HttpClient.send) == 3;
@@ -90,13 +89,12 @@ test absRefusesHostileIdsWithoutCallingAbs {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect AbsCatalog.itemAsService(abs, "../../api/users") is Err(absclient.AbsError.NotFound);
-    expect AbsCatalog.itemAsService(abs, "a/b") is Err(absclient.AbsError.NotFound);
-    expect AbsCatalog.itemAsService(abs, "") is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.itemAsService("../../api/users") is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.itemAsService("a/b") is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.itemAsService("") is Err(absclient.AbsError.NotFound);
     expect AbsCatalog.item("https://abs.test", "tok", "x?y=1") is Err(absclient.AbsError.NotFound);
-    expect AbsCatalog.pageAsService(abs, "../users", 0, 10) is Err(absclient.AbsError.NotFound);
-    expect AbsCatalog.searchAsService(abs, "lib/../x", "q", 10) is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.pageAsService("../users", 0, 10) is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.searchAsService("lib/../x", "q", 10) is Err(absclient.AbsError.NotFound);
     expect calls(HttpClient.send) == 0;
 }
 
@@ -181,8 +179,7 @@ test absBatchLooksUpManyBooksInOneCall {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect AbsCatalog.itemsAsService(abs, ["b-1", "gone", "b-2"]) is Ok(found);
+    expect AbsCatalog.itemsAsService(["b-1", "gone", "b-2"]) is Ok(found);
     expect found == [Book(itemId: "b-1", libraryId: "lib-1", title: "Alpha", authors: "A. Author, B. Author"), Book(itemId: "b-2", libraryId: "lib-1", title: "Beta", authors: "")];
 }
 
@@ -202,6 +199,5 @@ test absBatchRefusesAHostileIdWithoutCallingAbs {
         }
     }
 
-    expect settings.loadAbsTarget() is Ok(abs);
-    expect AbsCatalog.itemsAsService(abs, ["b-1", "../users"]) is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.itemsAsService(["b-1", "../users"]) is Err(absclient.AbsError.NotFound);
 }

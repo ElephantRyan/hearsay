@@ -1,4 +1,6 @@
 use hearsay.absclient
+use hearsay.settings.Abs
+use hearsay.settings.AbsService
 use fiig.http
 use fiig.http.HttpClient
 
@@ -6,10 +8,9 @@ use fiig.http.HttpClient
 // GET /api/users/{id} is admin-only, and it is the one place ABS lists another
 // account's progress.
 capability AbsProgress {
-    gateway progressAsService(
-        abs: absclient.AbsTarget,
-        userId: string,
-    ) -> Result<List<Progress>, absclient.AbsError> requires HttpClient {
+    gateway progressAsService(userId: string) -> Result<List<Progress>, absclient.AbsError>
+            requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
         userIdSegment = absclient.absPathId(userId)?;
         reply = absclient.absReply(
             HttpClient.send(
