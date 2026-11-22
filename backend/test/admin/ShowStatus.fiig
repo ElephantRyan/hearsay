@@ -14,6 +14,10 @@ test statusSaysWhoTheTokenBelongsTo {
         url: "https://abs.test";
     }
 
+    fake AbsService {
+        token: "good";
+    }
+
     fake Oidc {
         issuer: "https://idp.test/application/o/abs/";
         clientId: "cid";
@@ -36,7 +40,7 @@ test statusSaysWhoTheTokenBelongsTo {
     }
 
     fake AbsMembers {
-        // The token the real gateway would send: the one saved in the app.
+        // The token the real gateway would send: saved in the app, or else the variable.
         gateway meAsService() -> Result<members.AbsUser, client.AbsError> {
             return match (AbsService.token) {
                 None -> Err(client.AbsError.Unauthorized),
@@ -64,10 +68,9 @@ test statusSaysWhoTheTokenBelongsTo {
             userType: client.AbsUserType.Admin,
         ),
     );
-    expect settings.applySettingsChange(settings.SettingsChange(serviceToken: "good"), "a1") is Ok(_);
     good = showStatus(admin);
     expect good == AdminStatus(abs: "reachable", authentik: "answering", serviceAccount: "recommendation-bot", serviceAccountType: client.AbsUserType.Admin, problem: None);
-    // A newly saved token is used from the next request.
+    // A token saved in the app wins over ABS_SERVICE_TOKEN.
     expect settings.applySettingsChange(settings.SettingsChange(serviceToken: "stale"), "a1") is Ok(_);
     refused = showStatus(admin);
     expect refused.problem == "Audiobookshelf refused the token.";

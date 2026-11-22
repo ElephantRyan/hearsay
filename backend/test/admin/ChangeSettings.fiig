@@ -1,11 +1,61 @@
 use hearsay.absclient as client;
 use hearsay.accounts;
 use hearsay.settings;
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
+use hearsay.settings.ServerConfig;
 use hearsay.settings.SignInConfig;
 use hearsay.signin;
 
-// A fake pins a setting's value, so these tests fake nothing an admin saves:
-// with no environment, each starts unset (or at its default) and is saved.
+// A fake stands in for the deployment's variable: a save wins over it, and a
+// reset goes back to it.
+test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
+    fake Abs {
+        url: "https://env.test";
+    }
+
+    fake AbsService {
+        token: "old-token";
+    }
+
+    fake ServerConfig {
+        name: None;
+    }
+
+    root = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "r1",
+            username: "owner",
+            userType: client.AbsUserType.Root,
+        ),
+    );
+    before = showSettings(root);
+    expect before.absUrl == settings.SettingValue(value: "https://env.test", source: "environment");
+    expect before.serviceToken == settings.SettingValue(value: None, source: "environment");
+    expect before.serverName == settings.SettingValue(value: None, source: "unset");
+    expect settings.absUrl() == "https://env.test";
+    expect tokenIs("old-token");
+    change = settings.SettingsChange(
+        absUrl: "https://abs.home.test/",
+        serviceToken: "new-token",
+        serverName: "Ryan's library",
+    );
+    expect changeSettings(root, change) is Ok(after);
+    expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved");
+    expect after.serviceToken == settings.SettingValue(value: None, source: "saved");
+    expect after.serverName == settings.SettingValue(value: "Ryan's library", source: "saved");
+    expect settings.absUrl() == "https://abs.home.test";
+    expect tokenIs("new-token");
+    expect resetSetting(root, "absUrl") is Ok(reset);
+    expect reset.absUrl == settings.SettingValue(value: "https://env.test", source: "environment");
+    expect settings.absUrl() == "https://env.test";
+    expect resetSetting(root, "serviceToken") is Ok(_);
+    expect tokenIs("old-token");
+    expect resetSetting(root, "serverName") is Ok(gone);
+    expect gone.serverName == settings.SettingValue(value: None, source: "unset");
+}
+
+// With no environment, each setting starts unset (or at its default).
 test anAdminSavesSettingsAndCanForgetThem {
     root = accounts.Admin(
         identity: accounts.Identity(
@@ -43,6 +93,14 @@ test anAdminSavesSettingsAndCanForgetThem {
 }
 
 test aBadChangeSavesNothing {
+    fake Abs {
+        url: "https://env.test";
+    }
+
+    fake AbsService {
+        token: "old-token";
+    }
+
     admin = accounts.Admin(
         identity: accounts.Identity(
             userId: "a1",
@@ -50,11 +108,10 @@ test aBadChangeSavesNothing {
             userType: client.AbsUserType.Admin,
         ),
     );
-    expect changeSettings(admin, settings.SettingsChange(absUrl: "https://abs.test", serviceToken: "old-token")) is Ok(_);
     expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid("absUrl", _));
     expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid("serviceToken", _));
     view = showSettings(admin);
-    expect view.absUrl == settings.SettingValue(value: "https://abs.test", source: "saved");
+    expect view.absUrl == settings.SettingValue(value: "https://env.test", source: "environment");
     expect tokenIs("old-token");
 }
 
