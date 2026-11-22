@@ -1,5 +1,5 @@
 // A recommended rating as linked servers are shown it, from the shared_rating
-// view (migrations/0007_linked_ratings.sql). userId stays on this server: the
+// view (migrations/0001_initial_schema.sql). userId stays on this server: the
 // links package sends an opaque id instead.
 model SharedRow {
     userId: string;

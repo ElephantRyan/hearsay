@@ -1,5 +1,5 @@
 // A rating joined with who made it and the book it is about, as the
-// rating_row view returns it (migrations/0008_linked_rating_rows.sql). via and
+// rating_row view returns it (migrations/0001_initial_schema.sql). via and
 // matchedBy are None for this server's own ratings; for one fetched from a
 // linked server, they are its name and how the book was recognised.
 model RatingRow {
