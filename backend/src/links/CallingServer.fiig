@@ -1,18 +1,15 @@
-// Which linked server is calling, from its "Authorization: Bearer <key>"
-// header: settled once per request, by the adapter, before the request is read.
-// A header that is missing or isn't a bearer key is refused before any lookup.
-workflow callingServer(authorization: string | None) -> Result<LinkedServer, PeerRefusal> {
-    return match (authorization) {
+// Which linked server is calling, from the key in its "Authorization: Bearer
+// <key>" header: settled once per request, by the adapter, before the request
+// is read. The runtime strips the scheme (ADR 0144), so a header that is
+// missing or isn't a bearer key arrives as None and is refused before any lookup.
+workflow callingServer(key: string | None) -> Result<LinkedServer, PeerRefusal> {
+    return match (key) {
         None -> {
             return Err(PeerRefusal.NoKey);
         },
 
         given -> {
-            if (!given.startsWith("Bearer ")) {
-                return Err(PeerRefusal.NoKey);
-            }
-
-            return match (linkWithKey(given.removePrefix("Bearer ").trim())) {
+            return match (linkWithKey(given)) {
                 None -> {
                     return Err(PeerRefusal.UnknownKey);
                 },

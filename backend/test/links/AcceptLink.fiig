@@ -108,11 +108,10 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     expect links.first().name == "Alex's library";
     expect links.first().address == "https://alex.test";
     expect links.first().linkedBy == "invite";
-    expect callingServer("Bearer ${accepted.key}") is Ok(caller);
+    expect callingServer(accepted.key) is Ok(caller);
     expect caller.name == "Alex's library";
     expect callingServer(None) is Err(PeerRefusal.NoKey);
-    expect callingServer(accepted.key) is Err(PeerRefusal.NoKey);
-    expect callingServer("Bearer ${alexKey}") is Err(PeerRefusal.UnknownKey);
+    expect callingServer(alexKey) is Err(PeerRefusal.UnknownKey);
     // Asked to fetch by the server that just linked: it is fetched at once.
     expect fetchForCaller(caller) == 1;
     held = linkedRatingsOf(caller.id);
@@ -127,7 +126,7 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     expect acceptLink(LinkOffer(secret: againCode.secret, name: "Alex", address: "https://alex.test", key: newKey())) is Err(FederationError.BadInvite);
     // Unlinked from the other side: the key stops working.
     expect dropLink(caller) == 1;
-    expect callingServer("Bearer ${accepted.key}") is Err(PeerRefusal.UnknownKey);
+    expect callingServer(accepted.key) is Err(PeerRefusal.UnknownKey);
     none = listLinks(admin);
     expect none.length() == 0;
 }

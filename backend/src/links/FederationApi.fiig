@@ -4,7 +4,8 @@
 // Taking up an invite is public (the invite is its own proof, checked in the
 // workflow); every other route settles which linked server is calling first.
 adapter http federationApi {
-    wire peer: LinkedServer from header "Authorization" by callingServer else peerRefused;
+    wire peer: LinkedServer from header "Authorization" scheme "Bearer"
+        by callingServer else peerRefused;
 
     POST "/federation/link" public -> acceptLink(offer: LinkOffer)
             consumes "application/json"

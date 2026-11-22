@@ -2,14 +2,8 @@
   "components": {
     "securitySchemes": {
       "Authorization": {
-        "in": "header",
-        "name": "Authorization",
-        "type": "apiKey"
-      },
-      "me": {
-        "in": "cookie",
-        "name": "sid",
-        "type": "apiKey"
+        "scheme": "bearer",
+        "type": "http"
       },
       "oidc": {
         "in": "cookie",
@@ -2375,7 +2369,7 @@
         },
         "security": [
           {
-            "me": []
+            "sessionsMe": []
           }
         ]
       }

@@ -101,8 +101,8 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
     expect inviteCodeOf(invite.code) is Ok(code);
     expect acceptLink(LinkOffer(secret: code.secret, name: "Alex's library", address: "https://alex.test", key: newKey())) is Ok(accepted);
     expect callingServer(None) is Err(PeerRefusal.NoKey);
-    expect callingServer("Bearer ${newKey()}") is Err(PeerRefusal.UnknownKey);
-    expect callingServer("Bearer ${accepted.key}") is Ok(caller);
+    expect callingServer(newKey()) is Err(PeerRefusal.UnknownKey);
+    expect callingServer(accepted.key) is Ok(caller);
     shared = shareRecommendations(caller);
     expect shared.length() == 2;
     dune = filter(rating in shared): rating.title == "Dune";
