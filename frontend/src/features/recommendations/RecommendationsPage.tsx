@@ -7,6 +7,7 @@ import { RatingBadge } from "../../components/domain/RatingBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
 import { RateButton } from "../rating/RateButton";
+import { UpNextButton } from "../upnext/UpNextButton";
 
 /** The combined ranking. Filters live in the URL, so a filtered view can be shared. */
 export function RecommendationsPage() {
@@ -101,7 +102,12 @@ export function RecommendationsPage() {
                   {index + 1}
                 </span>
               }
-              action={<RateButton itemId={book.itemId} title={book.title} />}
+              action={
+                <>
+                  <UpNextButton itemId={book.itemId} title={book.title} />
+                  <RateButton itemId={book.itemId} title={book.title} />
+                </>
+              }
               meta={<RatingBadge score={book.average} count={book.count} />}
             />
           ))}

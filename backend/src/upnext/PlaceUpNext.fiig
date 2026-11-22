@@ -1,0 +1,12 @@
+// Gives a person's books the positions of a checked order, all at once.
+activity placeUpNext(userId: string, itemIds: List<string>) -> List<UpNextBook> {
+    transaction Database {
+        position: int = 0;
+        for (itemId in itemIds) {
+            UpNextRows.place(userId, itemId, position);
+            position = position + 1;
+        }
+    }
+
+    return UpNextRows.listOf(userId);
+}

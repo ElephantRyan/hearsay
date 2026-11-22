@@ -1,0 +1,6 @@
+use hearsay.accounts;
+
+// GET /me/up-next.
+workflow showUpNext(me: accounts.Identity) -> List<UpNextBook> {
+    return loadUpNext(me.userId);
+}

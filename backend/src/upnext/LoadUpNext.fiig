@@ -1,0 +1,4 @@
+// A person's Up next list, in their order.
+activity loadUpNext(userId: string) -> List<UpNextBook> {
+    return UpNextRows.listOf(userId);
+}

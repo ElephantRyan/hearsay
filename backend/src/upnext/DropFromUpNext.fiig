@@ -1,0 +1,4 @@
+// Takes a book off a person's list; how many rows went (0 or 1).
+activity dropFromUpNext(userId: string, itemId: string) -> int {
+    return UpNextRows.remove(userId, itemId);
+}

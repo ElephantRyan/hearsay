@@ -1,0 +1,13 @@
+use hearsay.books;
+
+// The status and message a client sees for a refused Up next change.
+conversion upNextErrorResponse(error: UpNextError) -> HttpResponse<string> {
+    return match (error) {
+        UpNextError.Book(cause) -> books.bookErrorResponse(cause),
+        UpNextError.NotOnList -> HttpResponse(
+            status: 404,
+            body: "that book isn't on your Up next list",
+        ),
+        UpNextError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}"),
+    }
+}

@@ -138,6 +138,12 @@ const adminRoute = createRoute({
   component: lazyRouteComponent(() => import("../features/admin/AdminPage"), "AdminPage"),
 });
 
+const upNextRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/me/up-next",
+  component: lazyRouteComponent(() => import("../features/upnext/UpNextPage"), "UpNextPage"),
+});
+
 const accountRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "/me/account",
@@ -163,6 +169,7 @@ const routeTree = rootRoute.addChildren([
     myRatingsRoute,
     myBooksRoute,
     accountRoute,
+    upNextRoute,
     rateRoute,
     adminRoute,
   ]),

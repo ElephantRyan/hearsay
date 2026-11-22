@@ -18,6 +18,7 @@ import type {
   RecommendationFilters,
   SettingName,
   SettingsChange,
+  UpNextBook,
 } from "./types";
 
 /** Who is signed in. A 401 is an answer ("nobody"), not an error to retry. */
@@ -432,5 +433,52 @@ export function useSaveAccount() {
         predicate: (query) => query.queryKey[0] !== "me" && query.queryKey[0] !== "account",
       });
     },
+  });
+}
+
+/** My Up next list, in my order. */
+export const useUpNext = () =>
+  useQuery({
+    queryKey: keys.upNext,
+    queryFn: async () => unwrap(await api.GET("/me/up-next")),
+  });
+
+/** Put a book at the end of my Up next list. */
+export function useAddToUpNext() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (itemId: string) =>
+      unwrap(await api.PUT("/me/up-next/{itemId}", { params: { path: { itemId } } })),
+    onSuccess: (books) => queryClient.setQueryData(keys.upNext, books),
+  });
+}
+
+/** Take a book off my Up next list, removed or read. */
+export function useRemoveFromUpNext() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (itemId: string) =>
+      unwrap(await api.DELETE("/me/up-next/{itemId}", { params: { path: { itemId } } })),
+    onSuccess: (books) => queryClient.setQueryData(keys.upNext, books),
+  });
+}
+
+/**
+ * Put my Up next list in a new order. It moves at once and goes back if the server refuses, so
+ * dragging and the arrows feel immediate.
+ */
+export function useReorderUpNext() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (books: UpNextBook[]) =>
+      unwrap(await api.PUT("/me/up-next", { body: { itemIds: books.map((book) => book.itemId) } })),
+    onMutate: async (books) => {
+      await queryClient.cancelQueries({ queryKey: keys.upNext });
+      const before = queryClient.getQueryData<UpNextBook[]>(keys.upNext);
+      queryClient.setQueryData(keys.upNext, books);
+      return { before };
+    },
+    onError: (_error, _books, context) => queryClient.setQueryData(keys.upNext, context?.before),
+    onSuccess: (books) => queryClient.setQueryData(keys.upNext, books),
   });
 }

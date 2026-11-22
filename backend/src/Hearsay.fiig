@@ -12,6 +12,7 @@ use hearsay.setup;
 use hearsay.signin;
 use hearsay.signin.oidc;
 use hearsay.sync;
+use hearsay.upnext;
 
 // What Hearsay runs (fiig ADR 0132): the HTTP surface, linked servers' routes
 // included, and the hourly collections sync and linked-server fetch.
@@ -27,6 +28,7 @@ application Hearsay {
         recommendations.recommendationsApi;
         sync.syncApi;
         listening.listeningApi;
+        upnext.upNextApi;
         admin.adminApi;
         links.linksApi;
         links.federationApi;

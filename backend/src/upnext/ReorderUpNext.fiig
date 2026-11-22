@@ -1,0 +1,9 @@
+use hearsay.accounts;
+
+// PUT /me/up-next: the list in a new order, which must name every book on it once.
+workflow reorderUpNext(me: accounts.Identity, order: UpNextOrder)
+        -> Result<List<UpNextBook>, UpNextError> {
+    onList = map(b in loadUpNext(me.userId)): b.itemId;
+    wanted = checkOrder(onList, order.itemIds)?;
+    return Ok(placeUpNext(me.userId, wanted));
+}

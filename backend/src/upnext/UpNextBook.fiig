@@ -1,0 +1,9 @@
+// One book on a person's Up next list, in their order (position, lowest first).
+model UpNextBook {
+    itemId: string;
+    libraryId: string;
+    title: string;
+    authors: string;
+    position: int;
+    addedAt: int;
+}

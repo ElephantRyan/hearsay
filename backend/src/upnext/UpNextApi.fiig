@@ -1,0 +1,29 @@
+use hearsay.sessions;
+
+// The Up next routes of the HTTP surface; src/Hearsay.fiig serves every
+// domain's adapter together. Each is the signed-in person's own list.
+adapter http upNextApi {
+    wire sessions.me;
+
+    GET "/me/up-next" -> showUpNext(me) produces "application/json" {
+        books -> 200 books,
+    }
+
+    PUT "/me/up-next" -> reorderUpNext(me, order: UpNextOrder)
+            consumes "application/json"
+            produces "application/json" {
+        Ok(books) -> 200 books,
+        Err(error) -> upNextErrorResponse(error),
+    }
+
+    PUT "/me/up-next/{itemId}" -> addToUpNext(me, itemId: string) produces "application/json" {
+        Ok(books) -> 200 books,
+        Err(error) -> upNextErrorResponse(error),
+    }
+
+    DELETE "/me/up-next/{itemId}" -> removeFromUpNext(me, itemId: string)
+            produces "application/json" {
+        Ok(books) -> 200 books,
+        Err(error) -> upNextErrorResponse(error),
+    }
+}

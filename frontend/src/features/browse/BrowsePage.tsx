@@ -16,6 +16,7 @@ import {
 import { Button } from "../../components/ui/Button";
 import { useDebounced } from "../../lib/useDebounced";
 import { RateButton } from "../rating/RateButton";
+import { UpNextButton } from "../upnext/UpNextButton";
 
 const sorts: { value: BrowseSort; label: string }[] = [
   { value: "title", label: "Title, A to Z" },
@@ -152,7 +153,12 @@ export function BrowsePage() {
                   itemId={book.itemId}
                   title={book.title}
                   authors={book.authors}
-                  action={<RateButton itemId={book.itemId} title={book.title} />}
+                  action={
+                    <>
+                      <UpNextButton itemId={book.itemId} title={book.title} />
+                      <RateButton itemId={book.itemId} title={book.title} />
+                    </>
+                  }
                   meta={
                     book.myScore != null || book.myRecommended ? (
                       <RatingBadge score={book.myScore} />

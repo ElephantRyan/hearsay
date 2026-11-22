@@ -22,4 +22,5 @@ export const keys = {
   setup: ["setup"] as const,
   abs: ["abs"] as const,
   account: ["account"] as const,
+  upNext: ["upNext"] as const,
 };

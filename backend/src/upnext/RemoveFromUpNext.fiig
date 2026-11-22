@@ -1,0 +1,12 @@
+use hearsay.accounts;
+
+// DELETE /me/up-next/{itemId}: off the list, whether removed or marked read
+// (the rating, if any, is the ratings routes' to save).
+workflow removeFromUpNext(me: accounts.Identity, itemId: string)
+        -> Result<List<UpNextBook>, UpNextError> {
+    if (dropFromUpNext(me.userId, itemId) == 0) {
+        return Err(UpNextError.NotOnList);
+    }
+
+    return Ok(loadUpNext(me.userId));
+}

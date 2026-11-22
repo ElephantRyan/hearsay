@@ -1,0 +1,4 @@
+// The body of PUT /me/up-next: every book on the list, in the order wanted.
+model UpNextOrder {
+    itemIds: List<string>;
+}

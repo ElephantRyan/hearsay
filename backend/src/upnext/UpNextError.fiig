@@ -1,0 +1,8 @@
+use hearsay.books;
+
+// Why a change to an Up next list was refused.
+enum UpNextError {
+    Book(cause: books.BookError),
+    NotOnList,
+    Invalid(field: string, reason: string),
+}

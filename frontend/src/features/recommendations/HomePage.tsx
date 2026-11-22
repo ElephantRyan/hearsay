@@ -7,6 +7,7 @@ import { RatingBadge } from "../../components/domain/RatingBadge";
 import { RecommenderChip } from "../../components/domain/RecommenderChip";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { RateButton } from "../rating/RateButton";
+import { UpNextButton } from "../upnext/UpNextButton";
 
 /** What I'm in the middle of, what I've finished and not scored, and what everyone recommends. */
 export function HomePage() {
@@ -108,7 +109,12 @@ export function HomePage() {
                     {index + 1}
                   </span>
                 }
-                action={<RateButton itemId={book.itemId} title={book.title} />}
+                action={
+                  <>
+                    <UpNextButton itemId={book.itemId} title={book.title} />
+                    <RateButton itemId={book.itemId} title={book.title} />
+                  </>
+                }
                 meta={<RatingBadge score={book.average} count={book.count} />}
               />
             ))}

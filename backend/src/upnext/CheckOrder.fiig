@@ -1,0 +1,18 @@
+// A new order must name every book on the list exactly once, and nothing else,
+// so a reorder can never add, drop or duplicate a book.
+rule checkOrder(onList: List<string>, wanted: List<string>) -> Result<List<string>, UpNextError> {
+    if (wanted.length() != onList.length()) {
+        return Err(UpNextError.Invalid("itemIds", "must name every book on the list once"));
+    }
+
+    seen: List<string> = [];
+    for (itemId in wanted) {
+        if (!onList.contains(itemId) || seen.contains(itemId)) {
+            return Err(UpNextError.Invalid("itemIds", "must name every book on the list once"));
+        }
+
+        seen = append(seen, itemId);
+    }
+
+    return Ok(wanted);
+}

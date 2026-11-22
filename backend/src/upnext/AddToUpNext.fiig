@@ -1,0 +1,9 @@
+use hearsay.accounts;
+use hearsay.books;
+
+// PUT /me/up-next/{itemId}: a book ABS has goes at the end of the list.
+workflow addToUpNext(me: accounts.Identity, itemId: string)
+        -> Result<List<UpNextBook>, UpNextError> {
+    book = mapErr(e in books.latestBook(itemId)): UpNextError.Book(e)?;
+    return Ok(storeUpNext(me.userId, book));
+}

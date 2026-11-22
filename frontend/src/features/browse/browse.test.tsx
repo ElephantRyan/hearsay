@@ -115,7 +115,7 @@ describe("the browse screen", () => {
     mount("/browse");
 
     await screen.findByText("Book number 1");
-    expect(screen.queryByRole("button", { name: /previous|next/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^(previous|next)$/i })).not.toBeInTheDocument();
     expect(asked).toHaveLength(1);
 
     scrollToEnd();

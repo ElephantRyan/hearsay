@@ -1,0 +1,56 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+
+// A list is built at the end, put in any order that names every book once,
+// and is each person's own.
+test aListKeepsTheOrderItIsGiven {
+    fake AbsCatalog {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            if (itemId == "gone") {
+                return Err(client.AbsError.NotFound);
+            }
+
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Title of ${itemId}",
+                    authors: "An Author",
+                ),
+            );
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    bob = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    expect showUpNext(ann).length() == 0;
+    expect addToUpNext(ann, "dune") is Ok(_);
+    expect addToUpNext(ann, "emma") is Ok(_);
+    expect addToUpNext(ann, "ubik") is Ok(three);
+    threeOrder = map(b in three): b.itemId;
+    expect threeOrder == ["dune", "emma", "ubik"];
+    expect three.at(0).title == "Title of dune";
+    // adding one already there leaves it where it is
+    expect addToUpNext(ann, "dune") is Ok(again);
+    expect again.length() == 3;
+    expect again.at(0).itemId == "dune";
+    expect addToUpNext(ann, "gone") is Err(UpNextError.Book(_));
+    expect reorderUpNext(ann, UpNextOrder(itemIds: ["ubik", "dune", "emma"])) is Ok(reordered);
+    reorderedOrder = map(b in reordered): b.itemId;
+    expect reorderedOrder == ["ubik", "dune", "emma"];
+    expect reorderUpNext(ann, UpNextOrder(itemIds: ["ubik", "dune"])) is Err(UpNextError.Invalid("itemIds", _));
+    expect reorderUpNext(ann, UpNextOrder(itemIds: ["ubik", "dune", "dune"])) is Err(UpNextError.Invalid("itemIds", _));
+    expect reorderUpNext(ann, UpNextOrder(itemIds: ["ubik", "dune", "kim"])) is Err(UpNextError.Invalid("itemIds", _));
+    // a new book goes after the reordered ones
+    expect addToUpNext(ann, "kim") is Ok(four);
+    expect four.at(3).itemId == "kim";
+    expect removeFromUpNext(ann, "dune") is Ok(left);
+    leftOrder = map(b in left): b.itemId;
+    expect leftOrder == ["ubik", "emma", "kim"];
+    expect removeFromUpNext(ann, "dune") is Err(UpNextError.NotOnList);
+    // bob's list is his own
+    expect showUpNext(bob).length() == 0;
+    expect removeFromUpNext(bob, "ubik") is Err(UpNextError.NotOnList);
+}

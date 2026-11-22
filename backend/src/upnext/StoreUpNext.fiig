@@ -1,0 +1,14 @@
+use hearsay.absclient.catalog;
+use hearsay.books.BookCache;
+
+// Puts a book at the end of a person's list, caching the book so the list needs
+// no ABS call to show it. A book already there stays where it is.
+activity storeUpNext(userId: string, book: catalog.Book) -> List<UpNextBook> {
+    now = Clock.now();
+    transaction Database {
+        BookCache.save(book, now);
+        UpNextRows.add(userId, book.itemId, now);
+    }
+
+    return UpNextRows.listOf(userId);
+}

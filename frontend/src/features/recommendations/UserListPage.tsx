@@ -7,6 +7,7 @@ import { RatingBadge } from "../../components/domain/RatingBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { listTitle } from "../../lib/format";
 import { RateButton } from "../rating/RateButton";
+import { UpNextButton } from "../upnext/UpNextButton";
 
 /**
  * One person's list: "Ryan recommends", best first, with their notes. For someone on a linked
@@ -40,7 +41,12 @@ export function UserListPage() {
                   {index + 1}
                 </span>
               }
-              action={<RateButton itemId={pick.itemId} title={pick.title} />}
+              action={
+                <>
+                  <UpNextButton itemId={pick.itemId} title={pick.title} />
+                  <RateButton itemId={pick.itemId} title={pick.title} />
+                </>
+              }
               meta={
                 <div className="space-y-1">
                   <RatingBadge score={pick.score} />
