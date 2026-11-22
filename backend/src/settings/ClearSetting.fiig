@@ -5,6 +5,7 @@ gateway clearSetting(name: SettingName, by: string) -> Result<None, SettingError
         SettingName.AbsUrl -> Settings.clear("abs.url", by: by),
         SettingName.ServiceToken -> Settings.clear("abs.serviceToken", by: by),
         SettingName.MirrorEnabled -> Settings.clear("sync.mirrorEnabled", by: by),
+        SettingName.TopCollections -> Settings.clear("sync.topCollections", by: by),
         SettingName.AuthMode -> Settings.clear("signin.authMode", by: by),
         SettingName.FrontendUrl -> Settings.clear("signin.frontendUrl", by: by),
         SettingName.OidcIssuer -> Settings.clear("oidc.issuer", by: by),

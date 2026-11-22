@@ -1,0 +1,46 @@
+use hearsay.sync.topList;
+
+// Puts the server-wide collections first in ABS, which lists a library's
+// collections oldest first. The top plans run before everyone's own, so a
+// collection made this run lands in that order. When a top collection is made
+// in a library, each of our collections that should come after it and already
+// exists is made again (Recreate), so it comes after it too.
+rule withTopFirst(top: List<SyncPlan>, people: List<SyncPlan>) -> List<SyncPlan> {
+    made = filter(p in top): p.action == SyncAction.Create;
+    ordered: List<SyncPlan> = [];
+    for (plan in top) {
+        ordered = append(ordered, afterAny(plan, made, true));
+    }
+
+    for (plan in people) {
+        ordered = append(ordered, afterAny(plan, made, false));
+    }
+
+    return ordered;
+}
+
+private {
+    // A plan that keeps an existing collection is a Recreate when a top
+    // collection that should come before it is being made in its library.
+    afterAny(plan: SyncPlan, made: List<SyncPlan>, isTop: bool) -> SyncPlan {
+        if (plan.action != SyncAction.Update) {
+            return plan;
+        }
+
+        before = filter(m in made): m.libraryId == plan.libraryId && comesBefore(m.userId, plan.userId, isTop);
+        if (before.length() == 0) {
+            return plan;
+        }
+
+        return copy(plan, action: SyncAction.Recreate);
+    }
+
+    // Top 25 Recommended comes before Top 25 Rated, and both before everyone's own.
+    comesBefore(made: string, other: string, otherIsTop: bool) -> bool {
+        if (!otherIsTop) {
+            return true;
+        }
+
+        return made == topList.recommendedId() && other == topList.ratedId();
+    }
+}

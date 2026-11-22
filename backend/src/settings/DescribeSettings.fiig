@@ -4,6 +4,7 @@ activity describeSettings() -> SettingsView {
         absUrl: shown(Abs.url, SettingName.AbsUrl),
         serviceToken: hidden(SettingName.ServiceToken),
         mirrorEnabled: shown(boolText(SyncConfig.mirrorEnabled), SettingName.MirrorEnabled),
+        topCollections: shown(boolText(SyncConfig.topCollections), SettingName.TopCollections),
         authMode: shown(authModeText(SignInConfig.authMode), SettingName.AuthMode),
         frontendUrl: shown(SignInConfig.frontendUrl, SettingName.FrontendUrl),
         oidcIssuer: shown(Oidc.issuer, SettingName.OidcIssuer),

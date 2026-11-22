@@ -54,6 +54,7 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
   const [texts, setTexts] = useState(() => textsOf(settings));
   const [secrets, setSecrets] = useState(noSecrets);
   const [mirror, setMirror] = useState(settings.mirrorEnabled.value === "true");
+  const [top, setTop] = useState(settings.topCollections.value === "true");
   const [mode, setMode] = useState(settings.authMode.value ?? "both");
   const [notice, setNotice] = useState<string | null>(null);
   // Authentik starts folded on a server that doesn't use it.
@@ -74,6 +75,7 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
       if (secrets[name].trim() !== "") change[name] = secrets[name];
     }
     if (mirror !== (settings.mirrorEnabled.value === "true")) change.mirrorEnabled = mirror;
+    if (top !== (settings.topCollections.value === "true")) change.topCollections = top;
     if (mode !== settings.authMode.value) change.authMode = mode as AuthMode;
     return change;
   }
@@ -128,6 +130,12 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
               }
             />
             <MirrorField checked={mirror} onChange={setMirror} setting={settings.mirrorEnabled} />
+            <TopField
+              checked={top}
+              onChange={setTop}
+              setting={settings.topCollections}
+              mirroring={mirror}
+            />
           </fieldset>
         </Section>
 
@@ -358,6 +366,44 @@ function MirrorField({
         </label>
       </div>
       <Source name="mirrorEnabled" setting={setting} variable="MIRROR_ENABLED" />
+    </div>
+  );
+}
+
+/** The server-wide Top 25 collections, written only while collections are written at all. */
+function TopField({
+  checked,
+  onChange,
+  setting,
+  mirroring,
+}: {
+  checked: boolean;
+  onChange: (on: boolean) => void;
+  setting: SettingValue;
+  mirroring: boolean;
+}) {
+  const id = useId();
+  return (
+    <div>
+      <div className="flex items-start gap-3">
+        <input
+          id={id}
+          type="checkbox"
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+          className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]"
+        />
+        <label htmlFor={id} className="text-sm">
+          <span className="font-medium">Add "Top 25 Recommended" and "Top 25 Rated"</span>
+          <span className="block text-muted">
+            Two collections in every library, listed before everyone's own: the books the most
+            people recommend, and the highest average scores (books with at least two). Linked
+            servers' recommendations count too.
+            {!mirroring && " Written only while recommendation collections are."}
+          </span>
+        </label>
+      </div>
+      <Source name="topCollections" setting={setting} variable="TOP_COLLECTIONS" />
     </div>
   );
 }

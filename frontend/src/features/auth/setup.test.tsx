@@ -13,6 +13,7 @@ const settings = {
   absUrl: { value: "https://abs.home.test", source: "saved" },
   serviceToken: { value: null, source: "unset" },
   mirrorEnabled: { value: "false", source: "environment" },
+  topCollections: { value: "false", source: "environment" },
   authMode: { value: "both", source: "environment" },
   frontendUrl: { value: "http://localhost:5173", source: "environment" },
   oidcIssuer: { value: null, source: "unset" },

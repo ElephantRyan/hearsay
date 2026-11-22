@@ -15,6 +15,10 @@ activity applyPlan(plan: SyncPlan, now: int) -> SyncResult {
                 return removeFor(plan, existing);
             }
 
+            if (plan.action == SyncAction.Recreate) {
+                return recreateFor(plan, existing, now);
+            }
+
             return updateFor(plan, existing, now);
         },
     }
@@ -62,6 +66,30 @@ private {
                 return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
             },
         }
+    }
+
+    // Deletes the collection and makes it again, so it is newer than a top
+    // collection made before it (ABS lists the oldest first).
+    recreateFor(plan: SyncPlan, existing: string, now: int) -> SyncResult {
+        match (AbsCollections.deleteCollectionAsService(existing)) {
+            Ok(_) -> {
+            },
+
+            Err(error) -> {
+                // Already gone is fine: it is made again either way.
+                if (error != client.AbsError.NotFound) {
+                    return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
+                }
+            },
+        }
+
+        deleteSyncState(plan.userId, plan.libraryId);
+        made = createFor(plan, now);
+        if (made.action == SyncOutcome.Created) {
+            return copy(made, action: SyncOutcome.Recreated);
+        }
+
+        return made;
     }
 
     removeFor(plan: SyncPlan, existing: string) -> SyncResult {

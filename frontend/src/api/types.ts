@@ -32,6 +32,7 @@ export interface SettingsChange {
   absUrl?: string;
   serviceToken?: string;
   mirrorEnabled?: boolean;
+  topCollections?: boolean;
   authMode?: AuthMode;
   frontendUrl?: string;
   oidcIssuer?: string;

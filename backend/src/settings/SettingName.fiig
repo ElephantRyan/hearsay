@@ -3,6 +3,7 @@ enum SettingName {
     AbsUrl,
     ServiceToken,
     MirrorEnabled,
+    TopCollections,
     AuthMode,
     FrontendUrl,
     OidcIssuer,

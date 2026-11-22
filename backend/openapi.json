@@ -921,6 +921,21 @@
                         "source"
                       ],
                       "type": "object"
+                    },
+                    "topCollections": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
                     }
                   },
                   "required": [
@@ -933,7 +948,8 @@
                     "oidcIssuer",
                     "oidcRedirectUri",
                     "serverName",
-                    "serviceToken"
+                    "serviceToken",
+                    "topCollections"
                   ],
                   "type": "object"
                 }
@@ -1019,6 +1035,10 @@
                   "serviceToken": {
                     "nullable": true,
                     "type": "string"
+                  },
+                  "topCollections": {
+                    "nullable": true,
+                    "type": "boolean"
                   }
                 },
                 "type": "object"
@@ -1182,6 +1202,21 @@
                         "source"
                       ],
                       "type": "object"
+                    },
+                    "topCollections": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
                     }
                   },
                   "required": [
@@ -1194,7 +1229,8 @@
                     "oidcIssuer",
                     "oidcRedirectUri",
                     "serverName",
-                    "serviceToken"
+                    "serviceToken",
+                    "topCollections"
                   ],
                   "type": "object"
                 }
@@ -1428,6 +1464,21 @@
                         "source"
                       ],
                       "type": "object"
+                    },
+                    "topCollections": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
                     }
                   },
                   "required": [
@@ -1440,7 +1491,8 @@
                     "oidcIssuer",
                     "oidcRedirectUri",
                     "serverName",
-                    "serviceToken"
+                    "serviceToken",
+                    "topCollections"
                   ],
                   "type": "object"
                 }
@@ -3510,9 +3562,11 @@
                         "enum": [
                           "would-create",
                           "would-update",
+                          "would-recreate",
                           "would-remove",
                           "created",
                           "updated",
+                          "recreated",
                           "removed",
                           "failed"
                         ],

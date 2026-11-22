@@ -18,6 +18,7 @@ function settingsOf(mirror: "true" | "false", source = "environment"): AdminSett
     absUrl: { value: "https://abs.home.test", source },
     serviceToken: { value: null, source: "saved" },
     mirrorEnabled: { value: mirror, source: "environment" },
+    topCollections: { value: "false", source: "environment" },
     authMode: { value: "abs", source: "environment" },
     frontendUrl: { value: "http://localhost:3000", source: "environment" },
     oidcIssuer: { value: null, source: "unset" },
@@ -215,6 +216,39 @@ describe("the admin screen", () => {
       { method: "POST", path: "/sync?dryRun=true" },
       { method: "POST", path: "/sync?dryRun=false" },
     ]);
+  });
+
+  it("turns the top collections on, and the preview names them first", async () => {
+    const sent = serve(settingsOf("true"));
+    server.use(
+      http.post("/api/sync", () =>
+        HttpResponse.json([
+          { userId: "top-recommended", libraryId: "lib-1", action: "would-create", books: 25 },
+          { userId: "top-rated", libraryId: "lib-1", action: "would-create", books: 12 },
+          { userId: "u-1", libraryId: "lib-1", action: "would-recreate", books: 3 },
+        ]),
+      ),
+    );
+    mount("/admin");
+
+    await userEvent.click(
+      await screen.findByLabelText(/Add "Top 25 Recommended" and "Top 25 Rated"/),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Save settings" }));
+    expect(await screen.findByText("Saved.")).toBeInTheDocument();
+    expect(sent).toContainEqual({
+      method: "PUT",
+      path: "/admin/settings",
+      body: { topCollections: true },
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: "Preview" }));
+    const preview = await screen.findByRole("list", { name: "What would change" });
+    expect(await within(preview).findByText("Top 25 Recommended · Audiobooks")).toBeInTheDocument();
+    expect(within(preview).getByText("Top 25 Rated · Audiobooks")).toBeInTheDocument();
+    expect(
+      within(preview).getByText("Would remake (to list after the top collections), 3 books"),
+    ).toBeInTheDocument();
   });
 
   it("says when writing collections is off", async () => {

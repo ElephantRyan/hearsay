@@ -1,7 +1,9 @@
+use hearsay.sync.topList;
 use hearsay.ratings.rated;
 
 // Everyone whose collections a full sync touches: whoever has a recommendation,
-// and whoever still has a collection of ours to clear out.
+// and whoever still has a collection of ours to clear out. The server-wide top
+// collections are planned on their own (planTopSync).
 rule everyoneToSync(rows: List<rated.RatingRow>, states: List<SyncState>) -> List<string> {
     ids: List<string> = [];
     for (row in rows) {
@@ -11,7 +13,7 @@ rule everyoneToSync(rows: List<rated.RatingRow>, states: List<SyncState>) -> Lis
     }
 
     for (state in states) {
-        if (!ids.contains(state.userId)) {
+        if (!ids.contains(state.userId) && !topList.isTop(state.userId)) {
             ids = append(ids, state.userId);
         }
     }

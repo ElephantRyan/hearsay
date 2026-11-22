@@ -5,6 +5,7 @@ model SettingsChange {
     absUrl: string | None;
     serviceToken: string | None;
     mirrorEnabled: bool | None;
+    topCollections: bool | None;
     authMode: AuthMode | None;
     frontendUrl: string | None;
     oidcIssuer: string | None;

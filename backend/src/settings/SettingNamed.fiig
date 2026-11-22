@@ -4,6 +4,7 @@ conversion settingNamed(name: string) -> SettingName | None {
         "absUrl" -> SettingName.AbsUrl,
         "serviceToken" -> SettingName.ServiceToken,
         "mirrorEnabled" -> SettingName.MirrorEnabled,
+        "topCollections" -> SettingName.TopCollections,
         "authMode" -> SettingName.AuthMode,
         "frontendUrl" -> SettingName.FrontendUrl,
         "oidcIssuer" -> SettingName.OidcIssuer,

@@ -6,6 +6,7 @@ rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, Setti
             absUrl: checkUrl("absUrl", change.absUrl)?,
             serviceToken: checkText("serviceToken", change.serviceToken)?,
             mirrorEnabled: change.mirrorEnabled,
+            topCollections: change.topCollections,
             authMode: change.authMode,
             frontendUrl: checkUrl("frontendUrl", change.frontendUrl)?,
             oidcIssuer: checkUrl("oidcIssuer", change.oidcIssuer)?,

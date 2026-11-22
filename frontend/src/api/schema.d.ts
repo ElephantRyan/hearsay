@@ -1044,6 +1044,10 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
+                        topCollections: {
+                            source: string;
+                            value?: string | null;
+                        };
                     };
                 };
             };
@@ -1086,6 +1090,7 @@ export interface operations {
                     oidcRedirectUri?: string | null;
                     serverName?: string | null;
                     serviceToken?: string | null;
+                    topCollections?: boolean | null;
                 };
             };
         };
@@ -1133,6 +1138,10 @@ export interface operations {
                             value?: string | null;
                         };
                         serviceToken: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        topCollections: {
                             source: string;
                             value?: string | null;
                         };
@@ -1235,6 +1244,10 @@ export interface operations {
                             value?: string | null;
                         };
                         serviceToken: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        topCollections: {
                             source: string;
                             value?: string | null;
                         };
@@ -2424,7 +2437,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        action: "would-create" | "would-update" | "would-remove" | "created" | "updated" | "removed" | "failed";
+                        action: "would-create" | "would-update" | "would-recreate" | "would-remove" | "created" | "updated" | "recreated" | "removed" | "failed";
                         books: number;
                         error?: string | null;
                         libraryId: string;

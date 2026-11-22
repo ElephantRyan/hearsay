@@ -1,0 +1,90 @@
+use hearsay.sync.topList;
+use hearsay.recommendations;
+
+// What the server-wide collections should become in each library: "Top 25
+// Recommended" (most recommended first) and "Top 25 Rated" (highest average
+// first), from the two rankings, already in order. A library with nothing to
+// list gets no collection, and one of ours with nothing left, or with the
+// setting off, is a remove.
+rule planTopSync(
+    byRecommendations: List<recommendations.RecommendedBook>,
+    byRating: List<recommendations.RecommendedBook>,
+    states: List<SyncState>,
+    on: bool)
+        -> List<SyncPlan> {
+    return plansFor(topList.recommendedId(), byRecommendations, states, on).concat(
+        plansFor(topList.ratedId(), byRating, states, on),
+    );
+}
+
+private {
+    plansFor(
+        top: string,
+        ranked: List<recommendations.RecommendedBook>,
+        states: List<SyncState>,
+        on: bool)
+            -> List<SyncPlan> {
+        byLibrary = groupBy(b in ranked): b.libraryId;
+        theirs = filter(s in states): s.userId == top;
+        plans: List<SyncPlan> = [];
+        if (on) {
+            for (libraryId, books in byLibrary) {
+                existing = collectionIn(theirs, libraryId);
+                plans = append(
+                    plans,
+                    SyncPlan(
+                        userId: top,
+                        libraryId: libraryId,
+                        name: nameOf(top),
+                        description: "Maintained by Hearsay. Edits here are overwritten on the next sync.",
+                        bookIds: map(b in books.take(topList.size())): b.itemId,
+                        collectionId: existing,
+                        action: createOrUpdate(existing),
+                    ),
+                );
+            }
+        }
+
+        for (state in theirs) {
+            if (!on || !byLibrary.containsKey(state.libraryId)) {
+                plans = append(
+                    plans,
+                    SyncPlan(
+                        userId: top,
+                        libraryId: state.libraryId,
+                        name: "",
+                        description: "",
+                        bookIds: [],
+                        collectionId: state.collectionId,
+                        action: SyncAction.Remove,
+                    ),
+                );
+            }
+        }
+
+        return plans;
+    }
+
+    nameOf(top: string) -> string {
+        if (top == topList.recommendedId()) {
+            return "Top ${topList.size()} Recommended";
+        }
+
+        return "Top ${topList.size()} Rated";
+    }
+
+    collectionIn(theirs: List<SyncState>, libraryId: string) -> string | None {
+        found = filter(s in theirs): s.libraryId == libraryId;
+        return match (found.firstOrNone()) {
+            None -> None,
+            state -> state.collectionId,
+        }
+    }
+
+    createOrUpdate(existing: string | None) -> SyncAction {
+        return match (existing) {
+            None -> SyncAction.Create,
+            id -> SyncAction.Update,
+        }
+    }
+}

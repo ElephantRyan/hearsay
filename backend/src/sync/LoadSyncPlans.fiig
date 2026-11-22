@@ -3,16 +3,17 @@ use hearsay.accounts;
 use hearsay.links;
 
 // What sync would do for whoever the caller may sync, linked servers' people
-// included: reads tables and plans, and touches nothing.
+// included: reads tables and plans, and touches nothing. An admin's sync of
+// everyone is the full one, top collections included.
 activity loadSyncPlans(me: accounts.Identity, userId: string | None)
         -> Result<List<SyncPlan>, SyncError> {
+    admin = client.canAdminister(me.userType);
+    if (admin && userId == None) {
+        return Ok(loadAllSyncPlans());
+    }
+
     rows = links.everyRecommendation();
     states = allSyncStates();
-    targets = syncTargets(
-        me,
-        client.canAdminister(me.userType),
-        userId,
-        everyoneToSync(rows, states),
-    )?;
+    targets = syncTargets(me, admin, userId, everyoneToSync(rows, states))?;
     return Ok(planSync(rows, states, targets));
 }

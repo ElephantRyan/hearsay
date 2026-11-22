@@ -1,10 +1,19 @@
 use hearsay.links;
+use hearsay.recommendations;
+use hearsay.settings;
 
 // What a full sync would do, for everyone, linked servers' people included
-// (LINKED.md section 6): the scheduled run's plan. Reads our tables and
-// touches nothing.
+// (LINKED.md section 6), and the server-wide top collections first: the
+// scheduled run's plan. Reads our tables and touches nothing.
 activity loadAllSyncPlans() -> List<SyncPlan> {
     rows = links.everyRecommendation();
     states = allSyncStates();
-    return planSync(rows, states, everyoneToSync(rows, states));
+    people = planSync(rows, states, everyoneToSync(rows, states));
+    top = planTopSync(
+        recommendations.rankRecommendations(rows),
+        recommendations.rankTopRated(rows),
+        states,
+        settings.topCollections(),
+    );
+    return withTopFirst(top, people);
 }

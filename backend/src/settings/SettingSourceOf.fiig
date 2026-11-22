@@ -5,6 +5,7 @@ gateway settingSourceOf(name: SettingName) -> SettingSource requires Settings id
         SettingName.AbsUrl -> Settings.source("abs.url"),
         SettingName.ServiceToken -> Settings.source("abs.serviceToken"),
         SettingName.MirrorEnabled -> Settings.source("sync.mirrorEnabled"),
+        SettingName.TopCollections -> Settings.source("sync.topCollections"),
         SettingName.AuthMode -> Settings.source("signin.authMode"),
         SettingName.FrontendUrl -> Settings.source("signin.frontendUrl"),
         SettingName.OidcIssuer -> Settings.source("oidc.issuer"),

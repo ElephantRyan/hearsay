@@ -3,9 +3,11 @@
 enum SyncOutcome {
     WouldCreate from json "would-create",
     WouldUpdate from json "would-update",
+    WouldRecreate from json "would-recreate",
     WouldRemove from json "would-remove",
     Created from json "created",
     Updated from json "updated",
+    Recreated from json "recreated",
     Removed from json "removed",
     Failed from json "failed",
 }

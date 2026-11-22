@@ -237,18 +237,26 @@ function CollectionsCard() {
 const actionWords: Record<string, string> = {
   "would-create": "Would create",
   "would-update": "Would update",
+  "would-recreate": "Would remake (to list after the top collections)",
   "would-remove": "Would remove",
   created: "Created",
   updated: "Updated",
+  recreated: "Remade (to list after the top collections)",
   removed: "Removed",
   failed: "Failed",
+};
+
+/** The server-wide collections, as the sync names them (backend/src/sync/TopList.fiig). */
+const topNames: Record<string, string> = {
+  "top-recommended": "Top 25 Recommended",
+  "top-rated": "Top 25 Rated",
 };
 
 function SyncResults({ results, applied }: { results: SyncResult[]; applied: boolean }) {
   const people = useRecommenders();
   const libraries = useLibraries();
   const nameOf = (userId: string) =>
-    people.data?.find((person) => person.userId === userId)?.username ?? userId;
+    topNames[userId] ?? people.data?.find((person) => person.userId === userId)?.username ?? userId;
   const libraryOf = (libraryId: string) =>
     libraries.data?.find((library) => library.id === libraryId)?.name ?? libraryId;
 
