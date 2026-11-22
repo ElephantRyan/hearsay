@@ -80,8 +80,8 @@ private {
         abs: string,
         account: string | None,
         accountType: client.AbsUserType | None,
-        problem: string | None,
-    ) -> AdminStatus {
+        problem: string | None)
+            -> AdminStatus {
         return AdminStatus(
             abs: abs,
             authentik: "not set up",

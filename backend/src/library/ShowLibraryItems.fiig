@@ -9,12 +9,11 @@ workflow showLibraryItems(
     libraryId: string,
     page: int | None,
     size: int | None,
-    q: string | None,
-) -> Result<BrowseResult, LibraryError> {
+    q: string | None)
+        -> Result<BrowseResult, LibraryError> {
     pageNumber = checkPage(page)?;
     pageSize = checkSize(size)?;
     typed = searchText(q)?;
-    return mapErr(e in loadBrowseResult(me.userId, libraryId, pageNumber, pageSize, typed)): libraryErrorOfFault(
-        e,
-    );
+    return mapErr(e in loadBrowseResult(me.userId, libraryId, pageNumber, pageSize, typed)):
+            libraryErrorOfFault(e);
 }

@@ -38,28 +38,21 @@ test oidcCallbackChecksStateBeforeExchanging {
     }
 
     fake AbsPasswordSignIn {
-        gateway authenticate(
-            attempt: accounts.SignInAttempt,
-            server: accounts.SignInServer,
-        ) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+                -> Result<accounts.Identity, accounts.SignInError> {
             expect false;
             return Err(accounts.SignInError.WrongMethod);
         }
     }
 
     fake AuthentikSignIn {
-        gateway beginUrl(
-            oidc: accounts.OidcSettings,
-            state: string,
-            codeVerifier: string,
-        ) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string)
+                -> Result<string, accounts.SignInError> {
             return Ok("https://idp.test/authorize?state=${state}");
         }
 
-        gateway authenticate(
-            attempt: accounts.SignInAttempt,
-            server: accounts.SignInServer,
-        ) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+                -> Result<accounts.Identity, accounts.SignInError> {
             return match (attempt) {
                 accounts.SignInAttempt.AuthorizationCode(code, verifier) -> {
                     expect verifier == "ver-1";
@@ -119,29 +112,22 @@ test finishSignInIsOffInPasswordOnlyMode {
     }
 
     fake AbsPasswordSignIn {
-        gateway authenticate(
-            attempt: accounts.SignInAttempt,
-            server: accounts.SignInServer,
-        ) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+                -> Result<accounts.Identity, accounts.SignInError> {
             expect false;
             return Err(accounts.SignInError.WrongMethod);
         }
     }
 
     fake AuthentikSignIn {
-        gateway beginUrl(
-            oidc: accounts.OidcSettings,
-            state: string,
-            codeVerifier: string,
-        ) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string)
+                -> Result<string, accounts.SignInError> {
             expect false;
             return Err(accounts.SignInError.WrongMethod);
         }
 
-        gateway authenticate(
-            attempt: accounts.SignInAttempt,
-            server: accounts.SignInServer,
-        ) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+                -> Result<accounts.Identity, accounts.SignInError> {
             expect false;
             return Err(accounts.SignInError.WrongMethod);
         }

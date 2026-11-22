@@ -4,10 +4,8 @@ use hearsay.ratings.rated;
 // `everyone` has it too, here or on another linked server: then their server's
 // name goes after it, "ryan · Alex's library" (LINKED.md section 6). This
 // server's own people are never marked.
-rule withServerNames(
-    rows: List<rated.RatingRow>,
-    everyone: List<rated.RatingRow>,
-) -> List<rated.RatingRow> {
+rule withServerNames(rows: List<rated.RatingRow>, everyone: List<rated.RatingRow>)
+        -> List<rated.RatingRow> {
     byName = groupBy(r in everyone): r.username.lowercase();
     return map(row in rows): named(row, byName.atOrNone(row.username.lowercase()));
 }

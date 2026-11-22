@@ -6,9 +6,8 @@ use hearsay.settings;
 // is checked like the admin screen's, the login must be an ABS admin's, and
 // that admin is signed in, ready to finish on the admin screen.
 workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
-    checked = mapErr(e in settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl))): setupErrorOfChange(
-        e,
-    )?;
+    checked = mapErr(e in settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl))):
+            setupErrorOfChange(e)?;
     return match (checked.absUrl) {
         None -> {
             return Err(SetupError.Invalid("absUrl", "is missing"));
@@ -19,16 +18,14 @@ workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
                 return Err(SetupError.AlreadySetUp);
             }
 
-            identity = mapErr(e in loginToAbs(url, input.username, input.password)): setupErrorOfFault(
-                e,
-            )?;
+            identity = mapErr(e in loginToAbs(url, input.username, input.password)):
+                    setupErrorOfFault(e)?;
             if (!client.canAdminister(identity.userType)) {
                 return Err(SetupError.NotAdmin);
             }
 
-            mapErr(e in settings.applySettingsChange(settings.SettingsChange(absUrl: url), identity.userId)): setupErrorOfChange(
-                e,
-            )?;
+            mapErr(e in settings.applySettingsChange(settings.SettingsChange(absUrl: url), identity.userId)):
+                    setupErrorOfChange(e)?;
             return Ok(sessions.startSession(identity));
         },
     }

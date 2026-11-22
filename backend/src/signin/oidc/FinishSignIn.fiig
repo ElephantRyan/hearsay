@@ -12,8 +12,8 @@ activity finishSignIn(
     code: string | None,
     state: string | None,
     error: string | None,
-    pending: string | None,
-) -> Landing {
+    pending: string | None)
+        -> Landing {
     if (!signin.loadSignInModes().oidc) {
         return failedLanding("disabled");
     }
@@ -37,11 +37,8 @@ private {
         );
     }
 
-    landAfterExchange(
-        code: string | None,
-        state: string | None,
-        pending: string | None,
-    ) -> Landing {
+    landAfterExchange(code: string | None, state: string | None, pending: string | None)
+            -> Landing {
         return match (code) {
             None -> {
                 return failedLanding("missing");

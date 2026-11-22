@@ -3,11 +3,8 @@ use hearsay.settings;
 
 // POST /sync. Off unless the server enabled it, a preview unless the caller
 // said `dryRun=false`, and only then does anything write to ABS.
-workflow syncCollections(
-    me: accounts.Identity,
-    userId: string | None,
-    dryRun: bool | None,
-) -> Result<List<SyncResult>, SyncError> {
+workflow syncCollections(me: accounts.Identity, userId: string | None, dryRun: bool | None)
+        -> Result<List<SyncResult>, SyncError> {
     if (!settings.mirrorEnabled()) {
         return Err(SyncError.MirroringOff);
     }

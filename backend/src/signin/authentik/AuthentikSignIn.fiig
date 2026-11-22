@@ -13,15 +13,12 @@ use fiig.http;
 use fiig.http.HttpClient;
 
 capability AuthentikSignIn provides accounts.SignIn {
-    gateway beginUrl(
-        oidc: accounts.OidcSettings,
-        state: string,
-        codeVerifier: string,
-    ) -> Result<string, accounts.SignInError> requires HttpClient {
+    gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string)
+            -> Result<string, accounts.SignInError>
+            requires HttpClient {
         found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(oidc.issuer), "")))?;
-        endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable(
-            "discovery document",
-        )?;
+        endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)):
+                unreadable("discovery document")?;
         return Ok(
             authorizeUrl(
                 endpoints.authorizationEndpoint,
@@ -33,10 +30,9 @@ capability AuthentikSignIn provides accounts.SignIn {
         );
     }
 
-    gateway authenticate(
-        attempt: accounts.SignInAttempt,
-        server: accounts.SignInServer,
-    ) -> Result<accounts.Identity, accounts.SignInError> requires HttpClient {
+    gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+            -> Result<accounts.Identity, accounts.SignInError>
+            requires HttpClient {
         return match (attempt) {
             accounts.SignInAttempt.Password(username, password) -> Err(
                 accounts.SignInError.WrongMethod,
@@ -44,9 +40,8 @@ capability AuthentikSignIn provides accounts.SignIn {
             accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> {
                 oidc = oidcOf(server)?;
                 found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(oidc.issuer), "")))?;
-                endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable(
-                    "discovery document",
-                )?;
+                endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)):
+                        unreadable("discovery document")?;
                 exchanged = oidcReply(
                     HttpClient.send(
                         tokenRequest(
@@ -59,15 +54,13 @@ capability AuthentikSignIn provides accounts.SignIn {
                         ),
                     ),
                 )?;
-                token: OidcTokenReply = mapErr(e in json.decode(exchanged.body)): unreadable(
-                    "token reply",
-                )?;
+                token: OidcTokenReply = mapErr(e in json.decode(exchanged.body)):
+                        unreadable("token reply")?;
                 profile = oidcReply(
                     HttpClient.send(oidcGet(endpoints.userinfoEndpoint, token.accessToken)),
                 )?;
-                info: OidcUserInfo = mapErr(e in json.decode(profile.body)): unreadable(
-                    "user info",
-                )?;
+                info: OidcUserInfo = mapErr(e in json.decode(profile.body)):
+                        unreadable("user info")?;
                 email = emailOf(info)?;
                 serviceToken = tokenOf(server)?;
                 listed = serviceReply(
@@ -77,9 +70,8 @@ capability AuthentikSignIn provides accounts.SignIn {
                         ),
                     ),
                 )?;
-                everyone: members.AbsUsersReply = mapErr(e in json.decode(listed.body)): unreadable(
-                    "list of Audiobookshelf users",
-                )?;
+                everyone: members.AbsUsersReply = mapErr(e in json.decode(listed.body)):
+                        unreadable("list of Audiobookshelf users")?;
                 return identityOfMatches(members.usersMatchingEmail(everyone.users, email));
             },
         }
@@ -90,9 +82,8 @@ capability AuthentikSignIn provides accounts.SignIn {
     gateway discover(oidc: accounts.OidcSettings) -> Result<int, accounts.SignInError>
             requires HttpClient {
         found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(oidc.issuer), "")))?;
-        endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)): unreadable(
-            "discovery document",
-        )?;
+        endpoints: OidcDiscovery = mapErr(e in json.decode(found.body)):
+                unreadable("discovery document")?;
         return Ok(found.status);
     }
 }

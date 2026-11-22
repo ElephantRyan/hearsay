@@ -38,8 +38,8 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
             libraryId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<string, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<string, client.AbsError> {
             expect name == "ann Recommends";
             if (calls(AbsCollections.createCollectionAsService) == 1) {
                 expect bookIds == ["b", "a"];
@@ -54,8 +54,8 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
             collectionId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<int, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<int, client.AbsError> {
             if (collectionId == "col-1" && bookIds.length() == 1) {
                 return Err(client.AbsError.NotFound);
             }
@@ -112,8 +112,8 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
             libraryId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<string, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<string, client.AbsError> {
             expect false;
             return Err(client.AbsError.NotFound);
         }
@@ -122,8 +122,8 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
             collectionId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<int, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<int, client.AbsError> {
             expect false;
             return Err(client.AbsError.NotFound);
         }
@@ -154,8 +154,8 @@ test aPersonCannotSyncSomeoneElsesList {
             libraryId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<string, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<string, client.AbsError> {
             expect false;
             return Err(client.AbsError.NotFound);
         }
@@ -164,8 +164,8 @@ test aPersonCannotSyncSomeoneElsesList {
             collectionId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<int, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<int, client.AbsError> {
             return Ok(200);
         }
 

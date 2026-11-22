@@ -20,8 +20,8 @@ test theScheduledSyncDoesNothingWhileMirroringIsOff {
             libraryId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<string, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<string, client.AbsError> {
             expect false;
             return Ok("never");
         }
@@ -30,8 +30,8 @@ test theScheduledSyncDoesNothingWhileMirroringIsOff {
             collectionId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<int, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<int, client.AbsError> {
             expect false;
             return Ok(200);
         }
@@ -75,8 +75,8 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
             libraryId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<string, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<string, client.AbsError> {
             if (name == "bob Recommends") {
                 return Err(client.AbsError.Unauthorized);
             }
@@ -88,8 +88,8 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
             collectionId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<int, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<int, client.AbsError> {
             expect false;
             return Ok(200);
         }

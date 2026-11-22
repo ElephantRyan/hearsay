@@ -6,8 +6,8 @@ conversion tokenRequest(
     verifier: string,
     redirectUri: string,
     clientId: string,
-    clientSecret: string,
-) -> http.Request {
+    clientSecret: string)
+        -> http.Request {
     return http.Request(
         method: http.Method.Post,
         url: endpoint,

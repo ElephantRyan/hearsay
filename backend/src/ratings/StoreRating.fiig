@@ -7,11 +7,8 @@ use hearsay.books.BookCache;
 // The book is cached on every write so lists need no ABS call per card.
 // The user, the book and the rating are written in one transaction, so a
 // fault midway leaves none of them.
-activity storeRating(
-    user: accounts.Identity,
-    book: catalog.Book,
-    checked: CheckedRating,
-) -> Rating {
+activity storeRating(user: accounts.Identity, book: catalog.Book, checked: CheckedRating)
+        -> Rating {
     now = Clock.now();
     rating = Rating(
         userId: user.userId,

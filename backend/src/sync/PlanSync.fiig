@@ -6,11 +6,8 @@ use hearsay.ratings.rated;
 // one too, of the books matched here, and its description says where from. A library where they have
 // recommendations and we have no collection is a create; both is an update;
 // a collection of ours with nothing left to hold is a remove.
-rule planSync(
-    rows: List<rated.RatingRow>,
-    states: List<SyncState>,
-    userIds: List<string>,
-) -> List<SyncPlan> {
+rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: List<string>)
+        -> List<SyncPlan> {
     plans: List<SyncPlan> = [];
     for (userId in userIds) {
         mine = filter(r in rows): r.userId == userId && r.recommended;

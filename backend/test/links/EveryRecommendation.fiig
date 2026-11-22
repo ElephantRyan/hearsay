@@ -174,8 +174,8 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
             libraryId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<string, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<string, client.AbsError> {
             expect libraryId == "lib-1";
             expect name == "sam Recommends";
             expect description.startsWith("Recommended on Alex's library.");
@@ -187,8 +187,8 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
             collectionId: string,
             name: string,
             description: string,
-            bookIds: List<string>,
-        ) -> Result<int, client.AbsError> {
+            bookIds: List<string>)
+                -> Result<int, client.AbsError> {
             expect false;
             return Ok(1);
         }

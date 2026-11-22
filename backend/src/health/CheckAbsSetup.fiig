@@ -1,10 +1,6 @@
 use hearsay.absclient as client;
 
-workflow checkAbsSetup(
-    url: string,
-    username: string,
-    password: string,
-    itemId: string,
-) -> Result<AbsCheck, client.AbsError> {
+workflow checkAbsSetup(url: string, username: string, password: string, itemId: string)
+        -> Result<AbsCheck, client.AbsError> {
     return checkAbs(url, username, password, itemId);
 }

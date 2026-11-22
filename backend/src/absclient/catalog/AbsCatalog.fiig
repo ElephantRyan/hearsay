@@ -7,11 +7,9 @@ use fiig.http.HttpClient;
 // What is in ABS: one book or many, the libraries, a page of one, and search.
 // The *AsService gateways use this server's own token.
 capability AbsCatalog {
-    gateway item(
-        url: string,
-        accessToken: string,
-        itemId: string,
-    ) -> Result<Book, absclient.AbsError> requires HttpClient {
+    gateway item(url: string, accessToken: string, itemId: string)
+            -> Result<Book, absclient.AbsError>
+            requires HttpClient {
         itemIdSegment = absclient.absPathId(itemId)?;
         reply = absclient.absReply(
             HttpClient.send(absclient.absGet(url, "/api/items/${itemIdSegment}", accessToken)),
@@ -50,17 +48,14 @@ capability AbsCatalog {
         reply = absclient.absReply(
             HttpClient.send(absclient.absGet(abs.url, "/api/libraries", abs.token.reveal())),
         )?;
-        found: AbsLibrariesReply = mapErr(e in json.decode(reply.body)): absclient.AbsError.Unreadable(
-            failure: e,
-        )?;
+        found: AbsLibrariesReply = mapErr(e in json.decode(reply.body)):
+                absclient.AbsError.Unreadable(failure: e)?;
         return Ok(found.libraries);
     }
 
-    gateway pageAsService(
-        libraryId: string,
-        page: int,
-        size: int,
-    ) -> Result<BookPage, absclient.AbsError> requires HttpClient {
+    gateway pageAsService(libraryId: string, page: int, size: int)
+            -> Result<BookPage, absclient.AbsError>
+            requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         libraryIdSegment = absclient.absPathId(libraryId)?;
         reply = absclient.absReply(
@@ -75,11 +70,9 @@ capability AbsCatalog {
         return bookPageOfListing(reply.body);
     }
 
-    gateway searchAsService(
-        libraryId: string,
-        query: string,
-        size: int,
-    ) -> Result<BookPage, absclient.AbsError> requires HttpClient {
+    gateway searchAsService(libraryId: string, query: string, size: int)
+            -> Result<BookPage, absclient.AbsError>
+            requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         libraryIdSegment = absclient.absPathId(libraryId)?;
         reply = absclient.absReply(

@@ -8,8 +8,8 @@ rule syncTargets(
     me: accounts.Identity,
     admin: bool,
     requested: string | None,
-    everyone: List<string>,
-) -> Result<List<string>, SyncError> {
+    everyone: List<string>)
+        -> Result<List<string>, SyncError> {
     return match (requested) {
         None -> {
             if (!admin) {

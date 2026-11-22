@@ -4,9 +4,8 @@ use fiig.http;
 // A sent request as the identity provider answers it. 400, 401 and 403 mean
 // the provider rejected what the person or browser presented (a used or
 // expired code, a wrong state); anything else is the provider being down.
-conversion oidcReply(
-    sent: Result<http.Reply, http.HttpError>,
-) -> Result<http.Reply, accounts.SignInError> {
+conversion oidcReply(sent: Result<http.Reply, http.HttpError>)
+        -> Result<http.Reply, accounts.SignInError> {
     return match (sent) {
         Err(failure) -> Err(
             accounts.SignInError.Unavailable("the identity provider is unreachable"),

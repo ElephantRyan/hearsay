@@ -10,19 +10,14 @@ test startOidcIsOffInPasswordOnlyMode {
     }
 
     fake AuthentikSignIn {
-        gateway beginUrl(
-            oidc: accounts.OidcSettings,
-            state: string,
-            codeVerifier: string,
-        ) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string)
+                -> Result<string, accounts.SignInError> {
             expect false;
             return Err(accounts.SignInError.WrongMethod);
         }
 
-        gateway authenticate(
-            attempt: accounts.SignInAttempt,
-            server: accounts.SignInServer,
-        ) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+                -> Result<accounts.Identity, accounts.SignInError> {
             expect false;
             return Err(accounts.SignInError.WrongMethod);
         }

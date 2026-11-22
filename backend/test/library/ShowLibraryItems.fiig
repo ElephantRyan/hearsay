@@ -12,11 +12,8 @@ test browseListsSearchesAndMarksMyScores {
     }
 
     fake AbsCatalog {
-        gateway pageAsService(
-            libraryId: string,
-            page: int,
-            size: int,
-        ) -> Result<catalog.BookPage, client.AbsError> {
+        gateway pageAsService(libraryId: string, page: int, size: int)
+                -> Result<catalog.BookPage, client.AbsError> {
             if (libraryId == "gone") {
                 return Err(client.AbsError.NotFound);
             }
@@ -42,11 +39,8 @@ test browseListsSearchesAndMarksMyScores {
             );
         }
 
-        gateway searchAsService(
-            libraryId: string,
-            query: string,
-            size: int,
-        ) -> Result<catalog.BookPage, client.AbsError> {
+        gateway searchAsService(libraryId: string, query: string, size: int)
+                -> Result<catalog.BookPage, client.AbsError> {
             expect query == "alp";
             return Ok(
                 catalog.BookPage(

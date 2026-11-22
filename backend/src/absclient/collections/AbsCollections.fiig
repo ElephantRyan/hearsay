@@ -11,8 +11,9 @@ capability AbsCollections {
         libraryId: string,
         name: string,
         description: string,
-        bookIds: List<string>,
-    ) -> Result<string, absclient.AbsError> requires HttpClient {
+        bookIds: List<string>)
+            -> Result<string, absclient.AbsError>
+            requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         if (!absclient.validId(libraryId) || !all(id in bookIds): absclient.validId(id)) {
             return Err(absclient.AbsError.NotFound);
@@ -31,9 +32,8 @@ capability AbsCollections {
                 absWrite(http.Method.Post, "${abs.url}/api/collections", abs.token.reveal(), body),
             ),
         )?;
-        created: AbsCollection = mapErr(e in json.decode(reply.body)): absclient.AbsError.Unreadable(
-            failure: e,
-        )?;
+        created: AbsCollection = mapErr(e in json.decode(reply.body)):
+                absclient.AbsError.Unreadable(failure: e)?;
         return Ok(created.id);
     }
 
@@ -41,8 +41,9 @@ capability AbsCollections {
         collectionId: string,
         name: string,
         description: string,
-        bookIds: List<string>,
-    ) -> Result<int, absclient.AbsError> requires HttpClient {
+        bookIds: List<string>)
+            -> Result<int, absclient.AbsError>
+            requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         collectionIdSegment = absclient.absPathId(collectionId)?;
         if (!all(id in bookIds): absclient.validId(id)) {

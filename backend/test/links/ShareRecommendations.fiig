@@ -59,11 +59,8 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(
-            libraryId: string,
-            page: int,
-            size: int,
-        ) -> Result<catalog.BookPage, client.AbsError> {
+        gateway pageAsService(libraryId: string, page: int, size: int)
+                -> Result<catalog.BookPage, client.AbsError> {
             return Ok(
                 catalog.BookPage(
                     total: 1,

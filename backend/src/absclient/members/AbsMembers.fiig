@@ -6,11 +6,9 @@ use fiig.http.HttpClient;
 
 // ABS accounts: signing in with a password, and who a token belongs to.
 capability AbsMembers {
-    gateway login(
-        url: string,
-        username: string,
-        password: string,
-    ) -> Result<AbsSession, absclient.AbsError> requires HttpClient {
+    gateway login(url: string, username: string, password: string)
+            -> Result<AbsSession, absclient.AbsError>
+            requires HttpClient {
         reply = absclient.absReply(HttpClient.send(absLoginRequest(url, username, password)))?;
         return sessionOfLoginReply(reply.body);
     }
@@ -18,9 +16,8 @@ capability AbsMembers {
     gateway me(url: string, accessToken: string) -> Result<AbsUser, absclient.AbsError>
             requires HttpClient {
         reply = absclient.absReply(HttpClient.send(absclient.absGet(url, "/api/me", accessToken)))?;
-        user: AbsUser = mapErr(e in json.decode(reply.body)): absclient.AbsError.Unreadable(
-            failure: e,
-        )?;
+        user: AbsUser = mapErr(e in json.decode(reply.body)):
+                absclient.AbsError.Unreadable(failure: e)?;
         return Ok(user);
     }
 
@@ -30,9 +27,8 @@ capability AbsMembers {
         reply = absclient.absReply(
             HttpClient.send(absclient.absGet(abs.url, "/api/me", abs.token.reveal())),
         )?;
-        user: AbsUser = mapErr(e in json.decode(reply.body)): absclient.AbsError.Unreadable(
-            failure: e,
-        )?;
+        user: AbsUser = mapErr(e in json.decode(reply.body)):
+                absclient.AbsError.Unreadable(failure: e)?;
         return Ok(user);
     }
 }

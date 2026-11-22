@@ -2,7 +2,7 @@ workflow finishOidc(
     code: string | None,
     state: string | None,
     error: string | None,
-    pending: string | None,
-) -> Landing {
+    pending: string | None)
+        -> Landing {
     return finishSignIn(code, state, error, pending);
 }

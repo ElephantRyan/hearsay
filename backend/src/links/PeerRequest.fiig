@@ -1,12 +1,8 @@
 use fiig.http;
 
 // A request to another server, with the key it accepts when there is one.
-rule peerRequest(
-    method: http.Method,
-    url: string,
-    key: string | None,
-    body: bytes | None,
-) -> http.Request {
+rule peerRequest(method: http.Method, url: string, key: string | None, body: bytes | None)
+        -> http.Request {
     return http.Request(
         method: method,
         url: url,

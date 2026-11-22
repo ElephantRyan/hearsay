@@ -7,8 +7,8 @@ conversion authorizeUrl(
     clientId: string,
     redirectUri: string,
     state: string,
-    challenge: string,
-) -> string {
+    challenge: string)
+        -> string {
     query = queryOf(
         [
             http.Header(name: "response_type", value: "code"),

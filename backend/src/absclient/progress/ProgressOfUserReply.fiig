@@ -3,17 +3,17 @@ use hearsay.absclient;
 // GET /api/users/{id}'s body as the books that person has started. Podcast
 // episodes are left out: this app rates books.
 conversion progressOfUserReply(body: bytes) -> Result<List<Progress>, absclient.AbsError> {
-    user: AbsUserWithProgress = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(
-        failure: e,
-    )?;
+    user: AbsUserWithProgress = mapErr(e in json.decode(body)):
+            absclient.AbsError.Unreadable(failure: e)?;
     books = filter(p in user.mediaProgress): p.mediaItemType == "book";
     return Ok(
-        map(p in books): Progress(
-            itemId: p.libraryItemId,
-            finished: p.isFinished,
-            percent: math.roundToInt(p.progress * 100.0),
-            lastListenedAt: p.lastUpdate,
-        ),
+        map(p in books):
+                Progress(
+                    itemId: p.libraryItemId,
+                    finished: p.isFinished,
+                    percent: math.roundToInt(p.progress * 100.0),
+                    lastListenedAt: p.lastUpdate,
+                ),
     );
 }
 

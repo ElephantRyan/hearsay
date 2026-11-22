@@ -16,11 +16,8 @@ test aNewServerIsClaimedByAnAbsAdmin {
     }
 
     fake AbsMembers {
-        gateway login(
-            url: string,
-            username: string,
-            password: string,
-        ) -> Result<members.AbsSession, client.AbsError> {
+        gateway login(url: string, username: string, password: string)
+                -> Result<members.AbsSession, client.AbsError> {
             expect url == "https://abs.home.test";
             if (password != "right") {
                 return Err(client.AbsError.Unauthorized);

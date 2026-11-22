@@ -25,10 +25,8 @@ test signInUsesTheChosenProvider {
     }
 
     fake AbsPasswordSignIn {
-        gateway authenticate(
-            attempt: accounts.SignInAttempt,
-            server: accounts.SignInServer,
-        ) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+                -> Result<accounts.Identity, accounts.SignInError> {
             return Ok(
                 accounts.Identity(
                     userId: "u-pw",
@@ -40,18 +38,13 @@ test signInUsesTheChosenProvider {
     }
 
     fake AuthentikSignIn {
-        gateway beginUrl(
-            oidc: accounts.OidcSettings,
-            state: string,
-            codeVerifier: string,
-        ) -> Result<string, accounts.SignInError> {
+        gateway beginUrl(oidc: accounts.OidcSettings, state: string, codeVerifier: string)
+                -> Result<string, accounts.SignInError> {
             return Ok("https://idp.test/");
         }
 
-        gateway authenticate(
-            attempt: accounts.SignInAttempt,
-            server: accounts.SignInServer,
-        ) -> Result<accounts.Identity, accounts.SignInError> {
+        gateway authenticate(attempt: accounts.SignInAttempt, server: accounts.SignInServer)
+                -> Result<accounts.Identity, accounts.SignInError> {
             return Ok(
                 accounts.Identity(
                     userId: "u-oidc",

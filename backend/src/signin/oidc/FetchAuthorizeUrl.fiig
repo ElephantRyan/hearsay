@@ -3,10 +3,8 @@ use hearsay.signin.authentik.AuthentikSignIn;
 
 // Where to send the browser to sign in with Authentik. The provider's failures
 // stay the provider's: signing in's own.
-gateway fetchAuthorizeUrl(
-    oidc: accounts.OidcSettings,
-    state: string,
-    verifier: string,
-) -> Result<string, accounts.SignInError> requires AuthentikSignIn {
+gateway fetchAuthorizeUrl(oidc: accounts.OidcSettings, state: string, verifier: string)
+        -> Result<string, accounts.SignInError>
+        requires AuthentikSignIn {
     return AuthentikSignIn.beginUrl(oidc, state, verifier);
 }

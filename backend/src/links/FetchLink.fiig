@@ -43,11 +43,8 @@ activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
 }
 
 private {
-    withMatch(
-        linkId: string,
-        rating: SharedRating,
-        local: matching.LocalMatch | None,
-    ) -> LinkedRating {
+    withMatch(linkId: string, rating: SharedRating, local: matching.LocalMatch | None)
+            -> LinkedRating {
         return match (local) {
             None -> {
                 return LinkedRating(

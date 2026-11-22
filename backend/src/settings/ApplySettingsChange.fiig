@@ -1,48 +1,26 @@
 // Saves every setting a checked change gives; `by` is the admin's user id.
-activity applySettingsChange(
-    change: SettingsChange,
-    by: string,
-) -> Result<None, SettingsChangeError> {
-    mapErr(e in saveGiven(SettingName.AbsUrl, change.absUrl, by)): settingsChangeErrorOf(
-        "absUrl",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.ServiceToken, change.serviceToken, by)): settingsChangeErrorOf(
-        "serviceToken",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.MirrorEnabled, boolText(change.mirrorEnabled), by)): settingsChangeErrorOf(
-        "mirrorEnabled",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.AuthMode, modeText(change.authMode), by)): settingsChangeErrorOf(
-        "authMode",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.FrontendUrl, change.frontendUrl, by)): settingsChangeErrorOf(
-        "frontendUrl",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.OidcIssuer, change.oidcIssuer, by)): settingsChangeErrorOf(
-        "oidcIssuer",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.OidcClientId, change.oidcClientId, by)): settingsChangeErrorOf(
-        "oidcClientId",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.OidcClientSecret, change.oidcClientSecret, by)): settingsChangeErrorOf(
-        "oidcClientSecret",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.OidcRedirectUri, change.oidcRedirectUri, by)): settingsChangeErrorOf(
-        "oidcRedirectUri",
-        e,
-    )?;
-    mapErr(e in saveGiven(SettingName.ServerName, change.serverName, by)): settingsChangeErrorOf(
-        "serverName",
-        e,
-    )?;
+activity applySettingsChange(change: SettingsChange, by: string)
+        -> Result<None, SettingsChangeError> {
+    mapErr(e in saveGiven(SettingName.AbsUrl, change.absUrl, by)):
+            settingsChangeErrorOf("absUrl", e)?;
+    mapErr(e in saveGiven(SettingName.ServiceToken, change.serviceToken, by)):
+            settingsChangeErrorOf("serviceToken", e)?;
+    mapErr(e in saveGiven(SettingName.MirrorEnabled, boolText(change.mirrorEnabled), by)):
+            settingsChangeErrorOf("mirrorEnabled", e)?;
+    mapErr(e in saveGiven(SettingName.AuthMode, modeText(change.authMode), by)):
+            settingsChangeErrorOf("authMode", e)?;
+    mapErr(e in saveGiven(SettingName.FrontendUrl, change.frontendUrl, by)):
+            settingsChangeErrorOf("frontendUrl", e)?;
+    mapErr(e in saveGiven(SettingName.OidcIssuer, change.oidcIssuer, by)):
+            settingsChangeErrorOf("oidcIssuer", e)?;
+    mapErr(e in saveGiven(SettingName.OidcClientId, change.oidcClientId, by)):
+            settingsChangeErrorOf("oidcClientId", e)?;
+    mapErr(e in saveGiven(SettingName.OidcClientSecret, change.oidcClientSecret, by)):
+            settingsChangeErrorOf("oidcClientSecret", e)?;
+    mapErr(e in saveGiven(SettingName.OidcRedirectUri, change.oidcRedirectUri, by)):
+            settingsChangeErrorOf("oidcRedirectUri", e)?;
+    mapErr(e in saveGiven(SettingName.ServerName, change.serverName, by)):
+            settingsChangeErrorOf("serverName", e)?;
     return Ok(None);
 }
 

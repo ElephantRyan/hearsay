@@ -3,14 +3,11 @@ use hearsay.settings;
 
 // PUT /admin/settings: checks the whole change, then saves it, then answers
 // with the settings as they now stand.
-workflow changeSettings(
-    admin: accounts.Admin,
-    change: settings.SettingsChange,
-) -> Result<settings.SettingsView, AdminError> {
+workflow changeSettings(admin: accounts.Admin, change: settings.SettingsChange)
+        -> Result<settings.SettingsView, AdminError> {
     checked = mapErr(e in settings.checkSettingsChange(change)): adminErrorOfChange(e)?;
     mapErr(e in settings.checkSignInStaysPossible(checked)): adminErrorOfChange(e)?;
-    mapErr(e in settings.applySettingsChange(checked, admin.identity.userId)): adminErrorOfChange(
-        e,
-    )?;
+    mapErr(e in settings.applySettingsChange(checked, admin.identity.userId)):
+            adminErrorOfChange(e)?;
     return Ok(settings.describeSettings());
 }

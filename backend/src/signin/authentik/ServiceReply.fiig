@@ -5,9 +5,8 @@ use fiig.http;
 // A reply to a call made with this server's own ABS token, not the person's.
 // A refusal here is a misconfigured server, not a wrong password, so it
 // must never read "wrong username or password".
-conversion serviceReply(
-    answer: Result<http.Reply, client.AbsError>,
-) -> Result<http.Reply, accounts.SignInError> {
+conversion serviceReply(answer: Result<http.Reply, client.AbsError>)
+        -> Result<http.Reply, accounts.SignInError> {
     return match (answer) {
         Ok(reply) -> Ok(reply),
         Err(error) -> Err(serviceFailure(error)),

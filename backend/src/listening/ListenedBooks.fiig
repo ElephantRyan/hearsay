@@ -7,8 +7,8 @@ use hearsay.ratings.rated;
 rule listenedBooks(
     started: List<progress.Progress>,
     books: List<catalog.Book>,
-    mine: List<rated.RatingRow>,
-) -> List<ListenedBook> {
+    mine: List<rated.RatingRow>)
+        -> List<ListenedBook> {
     byId: Map<string, catalog.Book> = [:];
     for (book in books) {
         byId = byId.put(book.itemId, book);

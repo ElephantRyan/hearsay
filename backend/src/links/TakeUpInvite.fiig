@@ -2,11 +2,8 @@ use hearsay.settings;
 
 // Sends the inviting server this one's name, address and the key it will call
 // with, and keeps the key it answers with. Nothing is kept unless it agreed.
-activity takeUpInvite(
-    invite: InviteCode,
-    name: string,
-    by: string,
-) -> Result<LinkedServer, LinkError> {
+activity takeUpInvite(invite: InviteCode, name: string, by: string)
+        -> Result<LinkedServer, LinkError> {
     ownAddress = settings.frontendUrl();
     if (invite.address == ownAddress) {
         return Err(LinkError.Invalid("code", "is this server's own"));
@@ -22,9 +19,8 @@ activity takeUpInvite(
     }
 
     keyIn = newKey();
-    accepted = mapErr(e in PeerServer.link(invite.address, LinkOffer(secret: invite.secret, name: name, address: ownAddress, key: keyIn))): linkErrorOfPeer(
-        e,
-    )?;
+    accepted = mapErr(e in PeerServer.link(invite.address, LinkOffer(secret: invite.secret, name: name, address: ownAddress, key: keyIn))):
+            linkErrorOfPeer(e)?;
     if (accepted.name.isBlank() || accepted.key.length() < 43) {
         return Err(LinkError.PeerRefused("its answer had no name or key"));
     }

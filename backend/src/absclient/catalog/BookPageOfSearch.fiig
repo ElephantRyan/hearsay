@@ -3,9 +3,8 @@ use hearsay.absclient;
 // GET /api/libraries/{id}/search as a BookPage of at most `size` books: only
 // the `book` hits are read; authors, series and tags are ignored.
 conversion bookPageOfSearch(body: bytes, size: int) -> Result<BookPage, absclient.AbsError> {
-    found: AbsSearchReply = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(
-        failure: e,
-    )?;
+    found: AbsSearchReply = mapErr(e in json.decode(body)):
+            absclient.AbsError.Unreadable(failure: e)?;
     return Ok(
         BookPage(
             total: found.book.length(),

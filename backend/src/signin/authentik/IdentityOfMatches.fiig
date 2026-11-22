@@ -4,9 +4,8 @@ use hearsay.accounts;
 // Exactly one ABS account must carry the email. None means the person has
 // never been through ABS's own OpenID login (ABS creates the account then),
 // and more than one means we can't tell whose ratings these are.
-conversion identityOfMatches(
-    matches: List<members.AbsUserEntry>,
-) -> Result<accounts.Identity, accounts.SignInError> {
+conversion identityOfMatches(matches: List<members.AbsUserEntry>)
+        -> Result<accounts.Identity, accounts.SignInError> {
     if (matches.length() == 0) {
         return Err(accounts.SignInError.NoAccount);
     }

@@ -4,11 +4,8 @@ use hearsay.books;
 // Rate a book: check what was sent, find out what the book is, then store the
 // rating. The check comes first, so a bad rating costs no Audiobookshelf call.
 // A book ABS doesn't have is "no such book" here.
-workflow putRating(
-    me: accounts.Identity,
-    itemId: string,
-    input: RatingInput,
-) -> Result<Rating, RatingError> {
+workflow putRating(me: accounts.Identity, itemId: string, input: RatingInput)
+        -> Result<Rating, RatingError> {
     checked = checkRating(itemId, input)?;
     book = mapErr(e in books.latestBook(itemId)): RatingError.Book(e)?;
     return Ok(storeRating(me, book, checked));

@@ -3,9 +3,8 @@ use hearsay.absclient;
 // POST /api/items/batch/get's body as books. ABS leaves out ids it doesn't
 // have, so the list can be shorter than what was asked for.
 conversion booksOfBatchReply(body: bytes) -> Result<List<Book>, absclient.AbsError> {
-    found: AbsBatchReply = mapErr(e in json.decode(body)): absclient.AbsError.Unreadable(
-        failure: e,
-    )?;
+    found: AbsBatchReply = mapErr(e in json.decode(body)):
+            absclient.AbsError.Unreadable(failure: e)?;
     return Ok(map(item in found.libraryItems): bookOfListed(item));
 }
 

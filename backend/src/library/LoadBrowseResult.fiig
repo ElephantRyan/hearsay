@@ -12,8 +12,8 @@ activity loadBrowseResult(
     libraryId: string,
     page: int,
     size: int,
-    typed: string | None,
-) -> Result<BrowseResult, absclient.AbsFault> {
+    typed: string | None)
+        -> Result<BrowseResult, absclient.AbsFault> {
     found = fetchBooks(libraryId, page, size, typed)?;
     mine = RatedBooks.byUser(userId);
     return Ok(
@@ -27,12 +27,8 @@ activity loadBrowseResult(
 }
 
 private {
-    fetchBooks(
-        libraryId: string,
-        page: int,
-        size: int,
-        typed: string | None,
-    ) -> Result<catalog.BookPage, absclient.AbsFault> {
+    fetchBooks(libraryId: string, page: int, size: int, typed: string | None)
+            -> Result<catalog.BookPage, absclient.AbsFault> {
         return match (typed) {
             None -> {
                 return fetchPage(libraryId, page, size);

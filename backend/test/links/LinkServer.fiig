@@ -27,11 +27,8 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(
-            libraryId: string,
-            page: int,
-            size: int,
-        ) -> Result<catalog.BookPage, client.AbsError> {
+        gateway pageAsService(libraryId: string, page: int, size: int)
+                -> Result<catalog.BookPage, client.AbsError> {
             return Ok(
                 catalog.BookPage(
                     total: 1,
@@ -156,11 +153,8 @@ test aLoginPageOrARefusalKeepsNothing {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(
-            libraryId: string,
-            page: int,
-            size: int,
-        ) -> Result<catalog.BookPage, client.AbsError> {
+        gateway pageAsService(libraryId: string, page: int, size: int)
+                -> Result<catalog.BookPage, client.AbsError> {
             return Ok(
                 catalog.BookPage(
                     total: 1,
@@ -252,11 +246,8 @@ test linkingWaitsForTheLibraryIndex {
             return Err(client.AbsError.Rejected(status: 502));
         }
 
-        gateway pageAsService(
-            libraryId: string,
-            page: int,
-            size: int,
-        ) -> Result<catalog.BookPage, client.AbsError> {
+        gateway pageAsService(libraryId: string, page: int, size: int)
+                -> Result<catalog.BookPage, client.AbsError> {
             expect false;
             return Err(client.AbsError.Rejected(status: 502));
         }
@@ -297,11 +288,8 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(
-            libraryId: string,
-            page: int,
-            size: int,
-        ) -> Result<catalog.BookPage, client.AbsError> {
+        gateway pageAsService(libraryId: string, page: int, size: int)
+                -> Result<catalog.BookPage, client.AbsError> {
             return Ok(catalog.BookPage(total: 0, page: 0, limit: size, books: []));
         }
     }
