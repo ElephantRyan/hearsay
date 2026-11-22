@@ -34,7 +34,7 @@ export function StarRating({ value, onPick, disabled }: Props) {
             onFocus={() => setHover(score)}
             onBlur={() => setHover(undefined)}
             onClick={() => onPick(score)}
-            className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-md px-px text-accent focus-visible:outline-2 focus-visible:outline-[var(--focus)] disabled:opacity-60 sm:min-w-11 sm:flex-none"
+            className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-md px-px text-accent focus-visible:outline-2 focus-visible:outline-[var(--focus)] disabled:opacity-60"
           >
             <Star
               aria-hidden="true"
