@@ -1,15 +1,15 @@
-use hearsay.absclient.roles
 use hearsay.accounts
 
 // Whose lists a sync touches: "admin or self" (PLAN.md section 4). A person
 // syncs their own; an admin may name anyone, or leave it out for everyone who
 // has recommendations or a collection of ours (everyoneToSync, from the caller).
+// Whether the caller is an admin is canAdminister's answer, passed in.
 rule syncTargets(
     me: accounts.Identity,
+    admin: bool,
     requested: string | None,
     everyone: List<string>,
 ) -> Result<List<string>, SyncError> {
-    admin = roles.canAdminister(me.userType);
     return match (requested) {
         None -> {
             if (!admin) {

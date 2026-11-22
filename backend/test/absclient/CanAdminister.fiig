@@ -1,0 +1,6 @@
+test theOwnerAndAdminsAdministerAndNobodyElse {
+    expect canAdminister(AbsUserType.Root);
+    expect canAdminister(AbsUserType.Admin);
+    expect !canAdminister(AbsUserType.User);
+    expect !canAdminister(AbsUserType.Guest);
+}

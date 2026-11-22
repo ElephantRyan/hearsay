@@ -1,0 +1,10 @@
+// Whether an account may administer: the owner (root) and admins. The one
+// place that says so. A rule that needs it takes its answer (ADR 0139).
+rule canAdminister(type: AbsUserType) -> bool {
+    return match (type) {
+        AbsUserType.Root -> true
+        AbsUserType.Admin -> true
+        AbsUserType.User -> false
+        AbsUserType.Guest -> false
+    }
+}
