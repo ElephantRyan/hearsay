@@ -22,13 +22,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
         name: None;
     }
 
-    root = accounts.Admin(
-        identity: accounts.Identity(
-            userId: "r1",
-            username: "owner",
-            userType: client.AbsUserType.Root,
-        ),
-    );
+    root = adminOf("r1", "owner", client.AbsUserType.Root);
     before = showSettings(root);
     expect before.absUrl == settings.SettingValue(value: "https://env.test", source: "environment");
     expect before.serviceToken == settings.SettingValue(value: None, source: "environment");
@@ -57,13 +51,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
 
 // With no environment, each setting starts unset (or at its default).
 test anAdminSavesSettingsAndCanForgetThem {
-    root = accounts.Admin(
-        identity: accounts.Identity(
-            userId: "r1",
-            username: "owner",
-            userType: client.AbsUserType.Root,
-        ),
-    );
+    root = adminOf("r1", "owner", client.AbsUserType.Root);
     before = showSettings(root);
     expect before.absUrl == settings.SettingValue(value: None, source: "unset");
     expect before.serviceToken == settings.SettingValue(value: None, source: "unset");
@@ -101,13 +89,7 @@ test aBadChangeSavesNothing {
         token: "old-token";
     }
 
-    admin = accounts.Admin(
-        identity: accounts.Identity(
-            userId: "a1",
-            username: "boss",
-            userType: client.AbsUserType.Admin,
-        ),
-    );
+    admin = adminOf("a1", "boss", client.AbsUserType.Admin);
     expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid("absUrl", _));
     expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid("serviceToken", _));
     view = showSettings(admin);
@@ -116,13 +98,7 @@ test aBadChangeSavesNothing {
 }
 
 test switchingToAuthentikTurnsPasswordSignInOff {
-    admin = accounts.Admin(
-        identity: accounts.Identity(
-            userId: "a1",
-            username: "boss",
-            userType: client.AbsUserType.Admin,
-        ),
-    );
+    admin = adminOf("a1", "boss", client.AbsUserType.Admin);
     authentik = settings.SettingsChange(
         oidcIssuer: "https://idp.test/application/o/abs/",
         oidcClientId: "cid",
@@ -150,13 +126,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
         frontendUrl: "https://app.test";
     }
 
-    admin = accounts.Admin(
-        identity: accounts.Identity(
-            userId: "a1",
-            username: "boss",
-            userType: client.AbsUserType.Admin,
-        ),
-    );
+    admin = adminOf("a1", "boss", client.AbsUserType.Admin);
     // AUTH_MODE=oidc with nothing for Authentik: password sign-in stays on rather than lock everyone out.
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false);
     allButIssuer = settings.SettingsChange(
@@ -179,13 +149,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
 // Every Authentik setting but the client secret: Authentik-only is refused, so
 // nobody is locked out, until a change brings the secret too.
 test authentikOnlyWaitsForTheClientSecret {
-    admin = accounts.Admin(
-        identity: accounts.Identity(
-            userId: "a1",
-            username: "boss",
-            userType: client.AbsUserType.Admin,
-        ),
-    );
+    admin = adminOf("a1", "boss", client.AbsUserType.Admin);
     allButSecret = settings.SettingsChange(
         oidcIssuer: "https://idp.test/application/o/abs/",
         oidcClientId: "cid",
@@ -200,6 +164,12 @@ test authentikOnlyWaitsForTheClientSecret {
 }
 
 private {
+    adminOf(userId: string, username: string, type: client.AbsUserType) -> accounts.Admin {
+        return accounts.Admin(
+            identity: accounts.Identity(userId: userId, username: username, userType: type),
+        );
+    }
+
     tokenIs(expected: string) -> bool {
         return match (settings.serviceToken()) {
             None -> false,
