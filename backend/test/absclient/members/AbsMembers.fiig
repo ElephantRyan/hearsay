@@ -71,6 +71,5 @@ test absMemberRefusalsAreValues {
     }
 
     expect AbsMembers.login("https://abs.test", "ryan", "wrong") is Err(absclient.AbsError.Unauthorized);
-    expect AbsMembers.me("https://abs.test", "tok") is Err(absclient.AbsError.Rejected(status));
-    expect status == 500;
+    expect AbsMembers.me("https://abs.test", "tok") is Err(absclient.AbsError.Rejected(500));
 }
