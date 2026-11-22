@@ -47,18 +47,24 @@ function serve(settings: AdminSettings) {
     http.put("/api/admin/settings", async ({ request }) => {
       const body = (await request.json()) as Record<string, unknown>;
       sent.push({ method: "PUT", path: "/admin/settings", body });
+      // As the real server answers: the request that saves reads the settings from before it.
+      const before = current;
       current = {
         ...current,
         ...(typeof body.absUrl === "string"
           ? { absUrl: { value: body.absUrl, source: "saved" } }
           : {}),
+        ...(typeof body.serverName === "string"
+          ? { serverName: { value: body.serverName, source: "saved" } }
+          : {}),
       };
-      return HttpResponse.json(current);
+      return HttpResponse.json(before);
     }),
     http.delete("/api/admin/settings/:name", ({ params }) => {
       sent.push({ method: "DELETE", path: `/admin/settings/${params.name}` });
+      const before = current;
       current = { ...current, absUrl: { value: "https://from-env.test", source: "environment" } };
-      return HttpResponse.json(current);
+      return HttpResponse.json(before);
     }),
     http.post("/api/sync", ({ request }) => {
       const dryRun = new URL(request.url).searchParams.get("dryRun");
@@ -327,6 +333,18 @@ describe("the admin screen", () => {
     expect(await screen.findByText(/Give this server a name/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Make a link code" })).toBeDisabled();
     expect(screen.getByLabelText("This server's name")).toHaveValue("");
+
+    // Naming it makes linking possible at once, without a reload, and the name stays in the box.
+    await userEvent.type(screen.getByLabelText("This server's name"), "Ryan's library");
+    await userEvent.click(screen.getByRole("button", { name: "Save settings" }));
+    expect(await screen.findByText("Saved.")).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Make a link code" })).toBeEnabled();
+    expect(screen.getByLabelText("This server's name")).toHaveValue("Ryan's library");
+    expect(sent).toContainEqual({
+      method: "PUT",
+      path: "/admin/settings",
+      body: { serverName: "Ryan's library" },
+    });
   });
 
   it("fetches a linked server now, and says how many books matched or why it failed", async () => {

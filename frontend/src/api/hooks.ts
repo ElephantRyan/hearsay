@@ -267,7 +267,7 @@ export const useAdminStatus = () =>
 
 /**
  * After a settings change everything may read differently: another server, another token.
- * The new settings come back from the server; the rest is refetched.
+ * The new settings are fetched with the change; the rest is refetched.
  */
 function refreshAfterSettingsChange(queryClient: ReturnType<typeof useQueryClient>) {
   return queryClient.invalidateQueries({
@@ -275,11 +275,22 @@ function refreshAfterSettingsChange(queryClient: ReturnType<typeof useQueryClien
   });
 }
 
+/**
+ * The settings as they stand after a change. Asked for in a request of its own: the request that
+ * saves reads the settings as they were when it began (fiig ADR 0140 §3), so its answer shows the
+ * values from before the change.
+ */
+async function settingsAfterChange() {
+  return unwrap(await api.GET("/admin/settings"));
+}
+
 export function useSaveSettings() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (change: SettingsChange) =>
-      unwrap(await api.PUT("/admin/settings", { body: change })),
+    mutationFn: async (change: SettingsChange) => {
+      unwrap(await api.PUT("/admin/settings", { body: change }));
+      return settingsAfterChange();
+    },
     onSuccess: async (settings) => {
       queryClient.setQueryData(keys.adminSettings, settings);
       await refreshAfterSettingsChange(queryClient);
@@ -291,8 +302,10 @@ export function useSaveSettings() {
 export function useResetSetting() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (name: SettingName) =>
-      unwrap(await api.DELETE("/admin/settings/{name}", { params: { path: { name } } })),
+    mutationFn: async (name: SettingName) => {
+      unwrap(await api.DELETE("/admin/settings/{name}", { params: { path: { name } } }));
+      return settingsAfterChange();
+    },
     onSuccess: async (settings) => {
       queryClient.setQueryData(keys.adminSettings, settings);
       await refreshAfterSettingsChange(queryClient);
