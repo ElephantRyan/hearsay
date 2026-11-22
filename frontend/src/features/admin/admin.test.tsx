@@ -239,8 +239,9 @@ describe("the admin screen", () => {
     );
     await userEvent.type(screen.getByLabelText("Client ID"), "cid");
     await userEvent.type(screen.getByLabelText("Client secret"), "csec");
-    await userEvent.click(
-      screen.getByRole("button", { name: `Use ${window.location.origin}/api/auth/callback` }),
+    await userEvent.type(
+      screen.getByLabelText("Redirect URI"),
+      "https://hearsay.example.com/api/auth/callback",
     );
     await userEvent.click(screen.getByRole("radio", { name: "Authentik only" }));
     await userEvent.click(screen.getByRole("button", { name: "Save settings" }));
@@ -253,7 +254,7 @@ describe("the admin screen", () => {
         body: {
           oidcIssuer: "https://auth.test/application/o/recommends/",
           oidcClientId: "cid",
-          oidcRedirectUri: `${window.location.origin}/api/auth/callback`,
+          oidcRedirectUri: "https://hearsay.example.com/api/auth/callback",
           oidcClientSecret: "csec",
           authMode: "oidc",
         },

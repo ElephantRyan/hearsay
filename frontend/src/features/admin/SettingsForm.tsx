@@ -51,7 +51,6 @@ const noSecrets: Record<SecretName, string> = { serviceToken: "", oidcClientSecr
  */
 export function SettingsForm({ settings }: { settings: AdminSettings }) {
   const save = useSaveSettings();
-  const origin = window.location.origin;
   const [texts, setTexts] = useState(() => textsOf(settings));
   const [secrets, setSecrets] = useState(noSecrets);
   const [mirror, setMirror] = useState(settings.mirrorEnabled.value === "true");
@@ -138,11 +137,10 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
             <TextField
               label="This app's address"
               type="url"
-              placeholder={origin}
+              placeholder="https://hearsay.example.com"
               value={texts.frontendUrl}
               onChange={setText("frontendUrl")}
               hint="Where people open this app. Authentik sends them back here after they sign in."
-              suggestion={texts.frontendUrl === origin ? undefined : origin}
               footer={
                 <Source name="frontendUrl" setting={settings.frontendUrl} variable="FRONTEND_URL" />
               }
@@ -216,15 +214,10 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
             <TextField
               label="Redirect URI"
               type="url"
-              placeholder={`${origin}/api/auth/callback`}
+              placeholder="https://hearsay.example.com/api/auth/callback"
               value={texts.oidcRedirectUri}
               onChange={setText("oidcRedirectUri")}
-              hint="Enter the same address in Authentik as the provider's redirect URI."
-              suggestion={
-                texts.oidcRedirectUri === `${origin}/api/auth/callback`
-                  ? undefined
-                  : `${origin}/api/auth/callback`
-              }
+              hint="This app's address followed by /api/auth/callback. Enter the same address in Authentik as the provider's redirect URI."
               footer={
                 <Source
                   name="oidcRedirectUri"
@@ -262,7 +255,6 @@ function TextField({
   secret,
   placeholder,
   hint,
-  suggestion,
   footer,
 }: {
   label: string;
@@ -272,8 +264,6 @@ function TextField({
   secret?: boolean;
   placeholder?: string | undefined;
   hint?: string;
-  /** A value to fill in with one tap, such as this page's own address. */
-  suggestion?: string | undefined;
   footer?: ReactNode;
 }) {
   const id = useId();
@@ -295,15 +285,6 @@ function TextField({
         className="min-h-11 w-full rounded-lg border border-border bg-surface px-3"
       />
       {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
-      {suggestion && (
-        <button
-          type="button"
-          onClick={() => onChange(suggestion)}
-          className="mt-1 min-h-11 text-left text-xs break-all text-accent underline sm:min-h-0"
-        >
-          Use {suggestion}
-        </button>
-      )}
       {footer}
     </div>
   );
