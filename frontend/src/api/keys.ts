@@ -21,4 +21,5 @@ export const keys = {
   adminLinks: ["admin", "links"] as const,
   setup: ["setup"] as const,
   abs: ["abs"] as const,
+  account: ["account"] as const,
 };

@@ -14,6 +14,7 @@ export const handlers = [
   http.get("/api/auth/modes", () => HttpResponse.json({ password: true, oidc: true })),
   http.get("/api/setup", () => HttpResponse.json({ needed: false })),
   http.get("/api/abs", () => HttpResponse.json({ url: "https://abs.test" })),
+  http.get("/api/me/account", () => HttpResponse.json({ username: "ryan", displayName: "ryan" })),
   http.get("/api/libraries", () => HttpResponse.json([library])),
   http.get("/api/recommendations/users", () =>
     HttpResponse.json([{ userId: "u-1", username: "ryan", count: 2 }]),

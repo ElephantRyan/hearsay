@@ -1,0 +1,4 @@
+// The body of PUT /me/account: the name to show everyone else.
+model AccountChange {
+    displayName: string;
+}

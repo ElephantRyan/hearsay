@@ -1,0 +1,53 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.ratings;
+use hearsay.recommendations;
+
+// A person shows everyone the name they choose; their username stays as ABS has
+// it, and rating again doesn't put it back.
+test aChosenNameIsWhatEveryoneSees {
+    fake AbsCatalog {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                ),
+            );
+        }
+    }
+
+    me = accounts.Identity(
+        userId: "u1",
+        username: "ElephantRyan",
+        userType: client.AbsUserType.User,
+    );
+    expect showAccount(me) == Account(username: "ElephantRyan", displayName: "ElephantRyan");
+    expect changeAccount(me, AccountChange(displayName: "  Ryan  ")) is Ok(changed);
+    expect changed == Account(username: "ElephantRyan", displayName: "Ryan");
+    expect showAccount(me).displayName == "Ryan";
+    expect ratings.putRating(me, "dune", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_);
+    expect ratings.putRating(me, "ubik", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_);
+    people = recommendations.listRecommenderUsers(me);
+    expect people.length() == 1;
+    expect people.at(0).username == "Ryan";
+    picks = recommendations.listPicksOf(me, "u1");
+    expect picks.at(0).username == "Ryan";
+    expect showAccount(me).username == "ElephantRyan";
+}
+
+test aBlankOrLongNameIsRefused {
+    me = accounts.Identity(
+        userId: "u1",
+        username: "ElephantRyan",
+        userType: client.AbsUserType.User,
+    );
+    expect changeAccount(me, AccountChange(displayName: "   ")) is Err(AccountError.Invalid("displayName", _));
+    expect changeAccount(me, AccountChange(displayName: "x".repeat(41))) is Err(AccountError.Invalid("displayName", _));
+    expect changeAccount(me, AccountChange(displayName: "x".repeat(40))) is Ok(_);
+    expect showAccount(me).displayName == "x".repeat(40);
+}

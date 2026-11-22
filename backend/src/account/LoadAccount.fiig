@@ -1,0 +1,6 @@
+use hearsay.accounts;
+
+// A person's account: their username, and the name they chose or else that.
+activity loadAccount(me: accounts.Identity) -> Account {
+    return Account(username: me.username, displayName: findDisplayName(me.userId) ?? me.username);
+}

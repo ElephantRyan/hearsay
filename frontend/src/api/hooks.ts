@@ -412,3 +412,25 @@ export function useAbsUrl(): string | undefined {
   });
   return builtInAbsUrl ?? server.data?.url?.replace(/\/$/, "") ?? undefined;
 }
+
+/** My account: the username I sign in with, and the name everyone else sees. */
+export const useAccount = () =>
+  useQuery({
+    queryKey: keys.account,
+    queryFn: async () => unwrap(await api.GET("/me/account")),
+  });
+
+/** Change the name everyone else sees. Every list showing names is refetched with it. */
+export function useSaveAccount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (displayName: string) =>
+      unwrap(await api.PUT("/me/account", { body: { displayName } })),
+    onSuccess: async (account) => {
+      queryClient.setQueryData(keys.account, account);
+      await queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] !== "me" && query.queryKey[0] !== "account",
+      });
+    },
+  });
+}

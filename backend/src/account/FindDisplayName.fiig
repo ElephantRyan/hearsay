@@ -1,0 +1,18 @@
+// The name a person chose, or None if they have no row yet (nothing rated or
+// named so far), when their username is what everyone sees.
+gateway findDisplayName(userId: string) -> string | None requires Database idempotent {
+    row: DisplayNameRow | None = Database.queryOne(
+        "SELECT display_name FROM app_user WHERE user_id = ?",
+        userId,
+    );
+    return match (row) {
+        None -> None,
+        found -> found.displayName,
+    }
+}
+
+private {
+    model DisplayNameRow {
+        displayName: string;
+    }
+}

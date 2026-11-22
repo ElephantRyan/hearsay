@@ -1,0 +1,14 @@
+// A display name is trimmed, and from 1 to 40 characters: it names a person's
+// list, their ABS collection ("<name> Recommends") and their ratings.
+rule checkDisplayName(given: string) -> Result<string, AccountError> {
+    name = given.trim();
+    if (name.isBlank()) {
+        return Err(AccountError.Invalid("displayName", "must not be blank"));
+    }
+
+    if (name.length() > 40) {
+        return Err(AccountError.Invalid("displayName", "must be at most 40 characters"));
+    }
+
+    return Ok(name);
+}

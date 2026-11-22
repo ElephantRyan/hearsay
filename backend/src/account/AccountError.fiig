@@ -1,0 +1,4 @@
+// Why a change to an account was refused.
+enum AccountError {
+    Invalid(field: string, reason: string),
+}

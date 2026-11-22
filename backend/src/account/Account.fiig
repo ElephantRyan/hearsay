@@ -1,0 +1,6 @@
+// The signed-in person's account as the account page shows it: the ABS username
+// they sign in with, and the name everyone else sees, which they choose.
+model Account {
+    username: string;
+    displayName: string;
+}

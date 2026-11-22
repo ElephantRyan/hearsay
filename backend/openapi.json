@@ -23,7 +23,7 @@
     }
   },
   "info": {
-    "title": "hearsay.sessions.sessionsApi, hearsay.signin.signinApi, hearsay.signin.oidc.oidcApi, hearsay.ratings.ratingsApi, hearsay.ratings.rated.ratedApi, hearsay.library.libraryApi, hearsay.recommendations.recommendationsApi, hearsay.sync.syncApi, hearsay.listening.listeningApi, hearsay.admin.adminApi, hearsay.links.linksApi, hearsay.links.federationApi, hearsay.setup.setupApi, hearsay.health.healthApi",
+    "title": "hearsay.sessions.sessionsApi, hearsay.account.accountApi, hearsay.signin.signinApi, hearsay.signin.oidc.oidcApi, hearsay.ratings.ratingsApi, hearsay.ratings.rated.ratedApi, hearsay.library.libraryApi, hearsay.recommendations.recommendationsApi, hearsay.sync.syncApi, hearsay.listening.listeningApi, hearsay.admin.adminApi, hearsay.links.linksApi, hearsay.links.federationApi, hearsay.setup.setupApi, hearsay.health.healthApi",
     "version": "0.0.0"
   },
   "openapi": "3.0.3",
@@ -2407,6 +2407,120 @@
                     "username"
                   ],
                   "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sessionsMe": []
+          }
+        ]
+      }
+    },
+    "/me/account": {
+      "get": {
+        "operationId": "showAccount",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "displayName",
+                    "username"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sessionsMe": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "changeAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "displayName": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "displayName"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "displayName",
+                    "username"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
                 }
               }
             },

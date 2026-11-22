@@ -1,7 +1,7 @@
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { Home, Library, LogOut, Search, Settings, Star, Users } from "lucide-react";
+import { Home, Library, LogOut, Search, Settings, Star, UserRound, Users } from "lucide-react";
 import type { ReactNode } from "react";
-import { isAdmin, useMe, useSignOut } from "../api/hooks";
+import { isAdmin, useAccount, useMe, useSignOut } from "../api/hooks";
 
 interface Tab {
   key: string;
@@ -69,6 +69,7 @@ const tabs: Tab[] = [
 /** Top nav on wide screens, a bottom tab bar on phones (FRONTEND.md section 5). */
 export function AppShell() {
   const me = useMe();
+  const account = useAccount();
   const signOut = useSignOut();
   const navigate = useNavigate();
 
@@ -100,7 +101,16 @@ export function AppShell() {
           ))}
         </nav>
         <div className="flex items-center gap-2 text-sm">
-          <span className="hidden text-muted sm:inline">{me.data?.username}</span>
+          <Link
+            to="/me/account"
+            aria-label="Account"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2 text-muted no-underline hover:bg-surface-2 [&.active]:text-accent"
+          >
+            <UserRound aria-hidden="true" className="h-5 w-5" />
+            <span className="hidden sm:inline">
+              {account.data?.displayName ?? me.data?.username}
+            </span>
+          </Link>
           {isAdmin(me.data?.userType) && (
             <Link
               to="/admin"

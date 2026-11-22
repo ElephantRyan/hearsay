@@ -1,0 +1,18 @@
+use hearsay.sessions;
+
+// The account routes of the HTTP surface; src/Hearsay.fiig serves every
+// domain's adapter together. Both are the signed-in person's own.
+adapter http accountApi {
+    wire sessions.me;
+
+    GET "/me/account" -> showAccount(me) produces "application/json" {
+        account -> 200 account,
+    }
+
+    PUT "/me/account" -> changeAccount(me, change: AccountChange)
+            consumes "application/json"
+            produces "application/json" {
+        Ok(account) -> 200 account,
+        Err(error) -> accountErrorResponse(error),
+    }
+}

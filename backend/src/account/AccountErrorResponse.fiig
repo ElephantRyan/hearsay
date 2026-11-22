@@ -1,0 +1,9 @@
+// The status and message a client sees for a refused account change.
+conversion accountErrorResponse(error: AccountError) -> HttpResponse<string> {
+    return match (error) {
+        AccountError.Invalid(field, reason) -> HttpResponse(
+            status: 400,
+            body: "${field} ${reason}",
+        ),
+    }
+}

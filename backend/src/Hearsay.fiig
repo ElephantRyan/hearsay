@@ -1,3 +1,4 @@
+use hearsay.account;
 use hearsay.admin;
 use hearsay.health;
 use hearsay.library;
@@ -17,6 +18,7 @@ use hearsay.sync;
 application Hearsay {
     serve web {
         sessions.sessionsApi;
+        account.accountApi;
         signin.signinApi;
         oidc.oidcApi;
         ratings.ratingsApi;

@@ -1,0 +1,9 @@
+use hearsay.accounts;
+
+// PUT /me/account: the name is checked before anything is saved. Lists show it
+// at once; an ABS collection takes it on the next sync.
+workflow changeAccount(me: accounts.Identity, change: AccountChange)
+        -> Result<Account, AccountError> {
+    name = checkDisplayName(change.displayName)?;
+    return Ok(storeDisplayName(me, name));
+}

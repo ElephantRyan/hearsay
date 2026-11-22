@@ -1,0 +1,6 @@
+use hearsay.accounts;
+
+// GET /me/account.
+workflow showAccount(me: accounts.Identity) -> Account {
+    return loadAccount(me);
+}
