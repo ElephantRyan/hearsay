@@ -1,8 +1,8 @@
 // What a person sent to rate a book, once it has been checked: the item is
 // named, the score is in range and the note is short (and never absent).
 model CheckedRating {
-    itemId: string
-    score: int
-    note: string
-    recommended: bool
+    itemId: string;
+    score: int;
+    note: string;
+    recommended: bool;
 }

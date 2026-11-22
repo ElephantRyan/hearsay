@@ -4,14 +4,14 @@
 // first): when it worked, how many recommendations came and how many are books
 // here; and while it doesn't answer, since when and why.
 model LinkedServer {
-    id: string
-    name: string
-    address: string
-    linkedAt: int
-    linkedBy: string
-    lastFetchedAt: int | None
-    ratings: int | None
-    matched: int | None
-    notAnsweringSince: int | None
-    problem: string | None
+    id: string;
+    name: string;
+    address: string;
+    linkedAt: int;
+    linkedBy: string;
+    lastFetchedAt: int | None;
+    ratings: int | None;
+    matched: int | None;
+    notAnsweringSince: int | None;
+    problem: string | None;
 }

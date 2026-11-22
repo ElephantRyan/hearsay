@@ -1,6 +1,6 @@
 // A link code to give another server's admin: this server's address and a
 // one-time secret, good until expiresAt (milliseconds).
 model LinkInvite {
-    code: string
-    expiresAt: int
+    code: string;
+    expiresAt: int;
 }

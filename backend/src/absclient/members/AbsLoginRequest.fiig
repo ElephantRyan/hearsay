@@ -1,6 +1,6 @@
 // POST /login. The x-return-tokens header makes ABS 2.37 put the access and
 // refresh tokens in the body.
-use fiig.http
+use fiig.http;
 
 rule absLoginRequest(base: string, username: string, password: string) -> http.Request {
     return http.Request(
@@ -18,7 +18,7 @@ rule absLoginRequest(base: string, username: string, password: string) -> http.R
 
 private {
     model AbsLoginBody {
-        username: string
-        password: string
+        username: string;
+        password: string;
     }
 }

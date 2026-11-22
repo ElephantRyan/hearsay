@@ -1,5 +1,5 @@
-use fiig.http
-use fiig.http.HttpClient
+use fiig.http;
+use fiig.http.HttpClient;
 
 // Whether ABS answers at all: its public /status, no token.
 capability AbsServer {

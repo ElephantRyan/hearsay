@@ -1,10 +1,10 @@
 // What the admin screen says about a fetch that didn't work.
 conversion problemOfPeer(error: PeerError) -> string {
     return match (error) {
-        PeerError.Unreachable(failure) -> "it didn't answer"
-        PeerError.LoginPage -> "it answered with a login page: its login must let /api/federation/ through"
-        PeerError.Unreadable -> "its answer couldn't be read"
-        PeerError.Rejected(status) -> rejection(status)
+        PeerError.Unreachable(failure) -> "it didn't answer",
+        PeerError.LoginPage -> "it answered with a login page: its login must let /api/federation/ through",
+        PeerError.Unreadable -> "its answer couldn't be read",
+        PeerError.Rejected(status) -> rejection(status),
     }
 }
 

@@ -1,6 +1,6 @@
 // Why a scheduled fetch is logged as failed. Either way the rest of it ran:
 // the old index was used, or the other servers were fetched.
 enum FetchError {
-    IndexNotRebuilt(problem: string)
-    SomeServersSilent(failed: int, of: int)
+    IndexNotRebuilt(problem: string),
+    SomeServersSilent(failed: int, of: int),
 }

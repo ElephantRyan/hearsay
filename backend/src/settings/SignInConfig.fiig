@@ -2,6 +2,6 @@
 // environment. authMode is which sign-in routes answer. frontendUrl is where a
 // finished Authentik sign-in lands.
 wire SignInConfig {
-    authMode: AuthMode from setting "signin.authMode" ?? env "AUTH_MODE" = AuthMode.Both
-    frontendUrl: string from setting "signin.frontendUrl" ?? env "FRONTEND_URL" = "http://localhost:5173"
+    authMode: AuthMode from setting "signin.authMode" ?? env "AUTH_MODE" = AuthMode.Both;
+    frontendUrl: string from setting "signin.frontendUrl" ?? env "FRONTEND_URL" = "http://localhost:5173";
 }

@@ -1,6 +1,6 @@
 // A GET to ABS carrying the user's access token. This client sends nothing
 // else but login (see abs_login_request.fiig), so it can't write to ABS.
-use fiig.http
+use fiig.http;
 
 rule absGet(base: string, path: string, accessToken: string) -> http.Request {
     return http.Request(

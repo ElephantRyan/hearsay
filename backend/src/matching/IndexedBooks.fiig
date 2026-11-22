@@ -4,16 +4,16 @@ gateway indexedBooks() -> int requires Database idempotent {
     return match (found) {
         None -> {
             return 0;
-        }
+        },
 
         counted -> {
             return counted.books;
-        }
+        },
     }
 }
 
 private {
     model IndexCount {
-        books: int
+        books: int;
     }
 }

@@ -1,7 +1,7 @@
 // Every way first-run setup can be refused, as values the caller must handle.
 enum SetupError {
-    Invalid(field: string, reason: string)
-    AlreadySetUp
-    WrongLogin
-    NotAdmin
+    Invalid(field: string, reason: string),
+    AlreadySetUp,
+    WrongLogin,
+    NotAdmin,
 }

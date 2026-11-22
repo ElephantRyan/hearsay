@@ -1,12 +1,12 @@
-use hearsay.settings
+use hearsay.settings;
 
 // The address is checked like the admin screen's, and says the same.
 conversion setupErrorOfChange(error: settings.SettingsChangeError) -> SetupError {
     return match (error) {
-        settings.SettingsChangeError.Invalid(field, reason) -> SetupError.Invalid(field, reason)
+        settings.SettingsChangeError.Invalid(field, reason) -> SetupError.Invalid(field, reason),
         settings.SettingsChangeError.UnknownSetting(name) -> SetupError.Invalid(
             name,
             "is not a setting",
-        )
+        ),
     }
 }

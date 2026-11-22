@@ -1,8 +1,8 @@
-use hearsay.absclient as client
-use hearsay.admin
-use hearsay.library
-use hearsay.listening
-use hearsay.setup
+use hearsay.absclient as client;
+use hearsay.admin;
+use hearsay.library;
+use hearsay.listening;
+use hearsay.setup;
 
 // A step reports what happened; each feature says what that means for it.
 // The same two ABS answers read differently in four features, and every

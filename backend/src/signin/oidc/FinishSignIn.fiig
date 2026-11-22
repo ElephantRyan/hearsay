@@ -3,10 +3,10 @@
 // callback wasn't started by this browser (CSRF), and nothing is exchanged.
 // Every outcome is a place to send the browser, so a failure never leaves
 // someone staring at JSON.
-use hearsay.accounts
-use hearsay.sessions
-use hearsay.signin
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.sessions;
+use hearsay.signin;
+use hearsay.settings;
 
 activity finishSignIn(
     code: string | None,
@@ -21,11 +21,11 @@ activity finishSignIn(
     return match (error) {
         None -> {
             return landAfterExchange(code, state, pending);
-        }
+        },
 
         denied -> {
             return failedLanding("denied");
-        }
+        },
     }
 }
 
@@ -45,13 +45,13 @@ private {
         return match (code) {
             None -> {
                 return failedLanding("missing");
-            }
+            },
 
             given -> {
                 return match (readPendingParts(pending)) {
                     None -> {
                         return failedLanding("state");
-                    }
+                    },
 
                     parts -> {
                         if (state != parts.state) {
@@ -59,9 +59,9 @@ private {
                         }
 
                         return exchange(given, parts.verifier);
-                    }
+                    },
                 }
-            }
+            },
         }
     }
 
@@ -70,20 +70,20 @@ private {
         return match (proven) {
             Err(failure) -> {
                 return failedLanding(refusalCode(failure));
-            }
+            },
 
             Ok(identity) -> {
                 session = sessions.startSession(identity);
                 return Landing(location: settings.frontendUrl(), session: session);
-            }
+            },
         }
     }
 
     // Splits the "state.verifier" cookie; anything else is None.
     readPendingParts(pending: string | None) -> PendingParts | None {
         return match (pending) {
-            None -> None
-            text -> partsOf(text.split("."))
+            None -> None,
+            text -> partsOf(text.split(".")),
         }
     }
 
@@ -99,10 +99,10 @@ private {
     // own words.
     refusalCode(error: accounts.SignInError) -> string {
         return match (error) {
-            accounts.SignInError.WrongMethod -> "method"
-            accounts.SignInError.NoAccount -> "no-account"
-            accounts.SignInError.Refused(reason) -> "refused"
-            accounts.SignInError.Unavailable(detail) -> "unavailable"
+            accounts.SignInError.WrongMethod -> "method",
+            accounts.SignInError.NoAccount -> "no-account",
+            accounts.SignInError.Refused(reason) -> "refused",
+            accounts.SignInError.Unavailable(detail) -> "unavailable",
         }
     }
 }

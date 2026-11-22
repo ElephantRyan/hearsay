@@ -1,16 +1,16 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.accounts
-use hearsay.library
-use hearsay.ratings
-use hearsay.recommendations
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.library;
+use hearsay.ratings;
+use hearsay.recommendations;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
 
 test privateRatingsStayPrivate {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake AbsCatalog {

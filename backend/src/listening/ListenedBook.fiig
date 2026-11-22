@@ -1,13 +1,13 @@
 // A book I have started or finished in ABS, with my rating of it if I have one.
 // `percent` is 0 to 100; `lastListenedAt` is milliseconds since the epoch.
 model ListenedBook {
-    itemId: string
-    libraryId: string
-    title: string
-    authors: string
-    finished: bool
-    percent: int
-    lastListenedAt: int
-    myScore: int | None
-    recommended: bool
+    itemId: string;
+    libraryId: string;
+    title: string;
+    authors: string;
+    finished: bool;
+    percent: int;
+    lastListenedAt: int;
+    myScore: int | None;
+    recommended: bool;
 }

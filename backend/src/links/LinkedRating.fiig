@@ -2,17 +2,17 @@
 // matched to: itemId, libraryId and matchedBy ("asin", "isbn" or "title") are
 // None when this library doesn't have the book.
 model LinkedRating {
-    linkId: string
-    personId: string
-    username: string
-    asin: string | None
-    isbn: string | None
-    title: string
-    authors: string
-    score: int
-    note: string
-    updatedAt: int
-    itemId: string | None
-    libraryId: string | None
-    matchedBy: string | None
+    linkId: string;
+    personId: string;
+    username: string;
+    asin: string | None;
+    isbn: string | None;
+    title: string;
+    authors: string;
+    score: int;
+    note: string;
+    updatedAt: int;
+    itemId: string | None;
+    libraryId: string | None;
+    matchedBy: string | None;
 }

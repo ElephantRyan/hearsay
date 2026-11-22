@@ -1,4 +1,4 @@
 model Health {
-    ok: bool
-    abs: string
+    ok: bool;
+    abs: string;
 }

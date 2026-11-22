@@ -1,19 +1,19 @@
-use hearsay.sessions
+use hearsay.sessions;
 
 // The ratings routes of the HTTP surface; src/Hearsay.fiig serves every
 // domain's adapter together. Both need a signed-in person.
 adapter http ratingsApi {
-    wire sessions.me
+    wire sessions.me;
 
     PUT "/ratings/{itemId}" -> putRating(me, itemId: string, input: RatingInput)
             consumes "application/json"
             produces "application/json" {
-        Ok(rating) -> 200 rating
-        Err(error) -> ratingErrorResponse(error)
+        Ok(rating) -> 200 rating,
+        Err(error) -> ratingErrorResponse(error),
     }
 
     DELETE "/ratings/{itemId}" -> deleteMyRating(me, itemId: string) produces "application/json" {
-        Ok(_) -> 204
-        Err(error) -> ratingErrorResponse(error)
+        Ok(_) -> 204,
+        Err(error) -> ratingErrorResponse(error),
     }
 }

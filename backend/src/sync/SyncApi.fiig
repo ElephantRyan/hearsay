@@ -1,9 +1,9 @@
-use hearsay.sessions
+use hearsay.sessions;
 
 // The sync routes of the HTTP surface; src/Hearsay.fiig serves every domain's
 // adapter together.
 adapter http syncApi {
-    wire sessions.me
+    wire sessions.me;
 
     POST "/sync?userId={userId}&dryRun={dryRun}" -> syncCollections(
         me,
@@ -11,7 +11,7 @@ adapter http syncApi {
         dryRun: bool | None,
     )
             produces "application/json" {
-        Ok(results) -> 200 results
-        Err(error) -> syncErrorResponse(error)
+        Ok(results) -> 200 results,
+        Err(error) -> syncErrorResponse(error),
     }
 }

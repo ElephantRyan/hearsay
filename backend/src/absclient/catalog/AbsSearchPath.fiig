@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 // GET /api/libraries/{id}/search. `q` is whatever a person typed, so it is
 // percent-encoded; the id is made one path segment by the caller with absPathId.
@@ -9,8 +9,8 @@ conversion absSearchPath(libraryId: string, query: string, size: int) -> string 
 private {
     queryString(encoded: bytes) -> string {
         return match (encoded.utf8()) {
-            None -> ""
-            text -> text
+            None -> "",
+            text -> text,
         }
     }
 }

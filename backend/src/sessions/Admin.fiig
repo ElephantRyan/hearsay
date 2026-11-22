@@ -1,5 +1,5 @@
-use hearsay.accounts
+use hearsay.accounts;
 
 // A signed-in admin or root, settled from me. It sits here rather than in
 // accounts because accounts can't import sessions.
-wire admin: accounts.Admin from me by accounts.signedInAdmin else accounts.notAnAdmin
+wire admin: accounts.Admin from me by accounts.signedInAdmin else accounts.notAnAdmin;

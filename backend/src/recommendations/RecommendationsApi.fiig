@@ -1,9 +1,9 @@
-use hearsay.sessions
+use hearsay.sessions;
 
 // The recommendations routes of the HTTP surface; src/Hearsay.fiig serves every
 // domain's adapter together. All of them need a signed-in person.
 adapter http recommendationsApi {
-    wire sessions.me
+    wire sessions.me;
 
     GET "/recommendations?userId={userId}&libraryId={libraryId}&minScore={minScore}" -> listRecommendations(
         me,
@@ -12,20 +12,20 @@ adapter http recommendationsApi {
         minScore: int | None,
     )
             produces "application/json" {
-        books -> 200 books
+        books -> 200 books,
     }
 
     GET "/recommendations/users" -> listRecommenderUsers(me) produces "application/json" {
-        people -> 200 people
+        people -> 200 people,
     }
 
     GET "/recommendations/users/{userId}" -> listPicksOf(me, userId: string)
             produces "application/json" {
-        rows -> 200 rows
+        rows -> 200 rows,
     }
 
     GET "/recommendations/users/{userId}/missing" -> listMissingOf(me, userId: string)
             produces "application/json" {
-        books -> 200 books
+        books -> 200 books,
     }
 }

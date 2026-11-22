@@ -22,7 +22,7 @@ private {
         return match (given) {
             None -> {
                 return Ok(None);
-            }
+            },
 
             text -> {
                 url = text.trim().removeSuffix("/");
@@ -37,7 +37,7 @@ private {
                 }
 
                 return Ok(url);
-            }
+            },
         }
     }
 
@@ -45,7 +45,7 @@ private {
         return match (given) {
             None -> {
                 return Ok(None);
-            }
+            },
 
             text -> {
                 if (text.isBlank()) {
@@ -53,7 +53,7 @@ private {
                 }
 
                 return Ok(text.trim());
-            }
+            },
         }
     }
 }

@@ -1,4 +1,4 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // POST /api/items/batch/get's body as books. ABS leaves out ids it doesn't
 // have, so the list can be shorter than what was asked for.
@@ -11,6 +11,6 @@ conversion booksOfBatchReply(body: bytes) -> Result<List<Book>, absclient.AbsErr
 
 private {
     model AbsBatchReply {
-        libraryItems: List<AbsListedItem>
+        libraryItems: List<AbsListedItem>;
     }
 }

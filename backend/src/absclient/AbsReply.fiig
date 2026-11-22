@@ -1,17 +1,17 @@
-use fiig.http
+use fiig.http;
 
 // A sent request as ABS answers it: unreachable, a refusal by status, or a
 // 200 reply to decode.
 conversion absReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Reply, AbsError> {
     return match (sent) {
-        Err(failure) -> Err(AbsError.Unreachable(failure: failure))
+        Err(failure) -> Err(AbsError.Unreachable(failure: failure)),
         Ok(reply) -> {
             if (reply.status != 200) {
                 return Err(absFailure(reply.status));
             }
 
             return Ok(reply);
-        }
+        },
     }
 }
 

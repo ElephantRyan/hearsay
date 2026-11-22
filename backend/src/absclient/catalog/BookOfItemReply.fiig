@@ -1,4 +1,4 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // GET /api/items/{id}'s body as a Book. ABS's nesting is private to this
 // file: nothing else needs it.
@@ -28,25 +28,25 @@ conversion bookOfItemReply(body: bytes) -> Result<Book, absclient.AbsError> {
 private {
     // The reply, trimmed to what the app shows.
     model AbsItem {
-        id: string
-        libraryId: string
-        media: AbsMedia
+        id: string;
+        libraryId: string;
+        media: AbsMedia;
     }
 
     model AbsMedia {
-        metadata: AbsMetadata
+        metadata: AbsMetadata;
     }
 
     model AbsMetadata {
-        title: string
-        subtitle: string | None
-        authors: List<AbsAuthor>
-        asin: string | None
-        isbn: string | None
+        title: string;
+        subtitle: string | None;
+        authors: List<AbsAuthor>;
+        asin: string | None;
+        isbn: string | None;
     }
 
     model AbsAuthor {
-        id: string
-        name: string
+        id: string;
+        name: string;
     }
 }

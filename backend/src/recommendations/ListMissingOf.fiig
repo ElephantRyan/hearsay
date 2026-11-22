@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.links
+use hearsay.accounts;
+use hearsay.links;
 
 // GET /recommendations/users/{userId}/missing: what a linked server's person
 // recommends that this library doesn't have.

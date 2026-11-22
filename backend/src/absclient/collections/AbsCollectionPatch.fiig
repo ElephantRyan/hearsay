@@ -1,7 +1,7 @@
 // PATCH /api/collections/{id}: replaces the name, description and the whole
 // ordered list of books, so one call makes the collection match.
 model AbsCollectionPatch {
-    name: string
-    description: string
-    books: List<string>
+    name: string;
+    description: string;
+    books: List<string>;
 }

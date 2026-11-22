@@ -1,5 +1,5 @@
-use hearsay.absclient as client
-use fiig.http
+use hearsay.absclient as client;
+use fiig.http;
 
 // absReply's answer, with its error turned into a SignInError, so a gateway
 // can write `reply = signInAbs(absReply(HttpClient.send(...)))?`.
@@ -7,7 +7,7 @@ conversion signInAbs(
     answer: Result<http.Reply, client.AbsError>,
 ) -> Result<http.Reply, SignInError> {
     return match (answer) {
-        Err(error) -> Err(signInErrorOfAbs(error))
-        Ok(reply) -> Ok(reply)
+        Err(error) -> Err(signInErrorOfAbs(error)),
+        Ok(reply) -> Ok(reply),
     }
 }

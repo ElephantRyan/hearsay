@@ -1,6 +1,6 @@
-use hearsay.accounts
-use hearsay.absclient.catalog
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.absclient.catalog;
+use hearsay.settings;
 
 workflow showLibraries(me: accounts.Identity) -> Result<List<catalog.AbsLibrary>, LibraryError> {
     return mapErr(e in listLibraries()): libraryErrorOfFault(e);

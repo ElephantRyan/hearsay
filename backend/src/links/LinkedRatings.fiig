@@ -1,4 +1,4 @@
-use hearsay.ratings.rated
+use hearsay.ratings.rated;
 
 // What was fetched from linked servers, for the rest of the app to read
 // (ADR 0079 §6a): ratings of books matched to this library, in rating_row's

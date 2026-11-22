@@ -1,15 +1,15 @@
 // The sessions routes of the HTTP surface; src/Hearsay.fiig serves every
 // domain's adapter together.
 adapter http sessionsApi {
-    wire me
+    wire me;
 
     // Logging out with no session is fine, so this route settles no principal.
     DELETE "/session" public -> endSession(session: string | None from cookie "sid")
             produces "application/json" {
-        _ -> signedOut()
+        _ -> signedOut(),
     }
 
     GET "/me" -> whoAmI(me) produces "application/json" {
-        identity -> 200 identity
+        identity -> 200 identity,
     }
 }

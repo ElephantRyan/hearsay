@@ -1,40 +1,40 @@
-use hearsay.absclient as client
-use hearsay.accounts
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
-use hearsay.settings.AbsService
-use hearsay.settings.SignInConfig
-use hearsay.signin.authentik.AuthentikSignIn
-use hearsay.signin.password.AbsPasswordSignIn
-use hearsay.settings
-use hearsay.settings.Abs
-use hearsay.settings.Oidc
+use hearsay.absclient as client;
+use hearsay.accounts;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
+use hearsay.settings.AbsService;
+use hearsay.settings.SignInConfig;
+use hearsay.signin.authentik.AuthentikSignIn;
+use hearsay.signin.password.AbsPasswordSignIn;
+use hearsay.settings;
+use hearsay.settings.Abs;
+use hearsay.settings.Oidc;
 
 // The callback only exchanges the code when the state matches the cookie.
 // Authentik is faked; a call to it from a mismatched callback fails the test.
 test oidcCallbackChecksStateBeforeExchanging {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "https://app.test/api/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "https://app.test/api/auth/callback";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Both
-        frontendUrl: "https://app.test"
+        authMode: settings.AuthMode.Both;
+        frontendUrl: "https://app.test";
     }
 
     fake AbsPasswordSignIn {
@@ -74,11 +74,11 @@ test oidcCallbackChecksStateBeforeExchanging {
                             userType: client.AbsUserType.User,
                         ),
                     );
-                }
+                },
 
                 accounts.SignInAttempt.Password(username, password) -> {
                     return Err(accounts.SignInError.WrongMethod);
-                }
+                },
             }
         }
     }
@@ -88,12 +88,12 @@ test oidcCallbackChecksStateBeforeExchanging {
     match (good.session) {
         None -> {
             expect false;
-        }
+        },
 
         opened -> {
             expect sessions.signedIn(opened.token) is Ok(me);
             expect me.userId == "u1";
-        }
+        },
     }
 
     expect finishSignIn("code-1", "WRONG", None, "st-1.ver-1").location == "https://app.test/sign-in?error=state";
@@ -110,12 +110,12 @@ test oidcCallbackChecksStateBeforeExchanging {
 
 test finishSignInIsOffInPasswordOnlyMode {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://app.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://app.test";
     }
 
     fake AbsPasswordSignIn {

@@ -1,13 +1,13 @@
 // Every setting an admin can change in the app, as they stand.
 model SettingsView {
-    absUrl: SettingValue
-    serviceToken: SettingValue
-    mirrorEnabled: SettingValue
-    authMode: SettingValue
-    frontendUrl: SettingValue
-    oidcIssuer: SettingValue
-    oidcClientId: SettingValue
-    oidcClientSecret: SettingValue
-    oidcRedirectUri: SettingValue
-    serverName: SettingValue
+    absUrl: SettingValue;
+    serviceToken: SettingValue;
+    mirrorEnabled: SettingValue;
+    authMode: SettingValue;
+    frontendUrl: SettingValue;
+    oidcIssuer: SettingValue;
+    oidcClientId: SettingValue;
+    oidcClientSecret: SettingValue;
+    oidcRedirectUri: SettingValue;
+    serverName: SettingValue;
 }

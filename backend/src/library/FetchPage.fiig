@@ -1,6 +1,6 @@
-use hearsay.absclient
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
+use hearsay.absclient;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
 
 // A page of a library, A to Z. A 404 here means the library, not a book.
 gateway fetchPage(

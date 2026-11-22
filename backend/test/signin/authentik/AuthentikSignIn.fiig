@@ -1,24 +1,24 @@
-use hearsay.absclient as client
-use hearsay.accounts
-use fiig.http
-use fiig.http.HttpClient
-use hearsay.settings
-use hearsay.settings.AbsService
-use hearsay.settings.Oidc
+use hearsay.absclient as client;
+use hearsay.accounts;
+use fiig.http;
+use fiig.http.HttpClient;
+use hearsay.settings;
+use hearsay.settings.AbsService;
+use hearsay.settings.Oidc;
 
 // One fake plays Authentik and ABS, answering by URL. Replies are shaped like
 // the live servers': the OIDC discovery and userinfo shapes are the standard
 // ones; /api/users is the real ABS 2.37.2 shape, extra `token` member included.
 test authenticateFindsTheAbsUserByEmail {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -38,13 +38,13 @@ test authenticateFindsTheAbsUserByEmail {
                 match (request.body) {
                     None -> {
                         expect false;
-                    }
+                    },
 
                     sent -> {
                         match (sent.utf8()) {
                             None -> {
                                 expect false;
-                            }
+                            },
 
                             form -> {
                                 expect form.contains("grant_type=authorization_code");
@@ -52,9 +52,9 @@ test authenticateFindsTheAbsUserByEmail {
                                 expect form.contains("code_verifier=verifier-1");
                                 expect form.contains("client_id=cid");
                                 expect form.contains("client_secret=csec");
-                            }
+                            },
                         }
-                    }
+                    },
                 }
 
                 return Ok(
@@ -106,14 +106,14 @@ test authenticateFindsTheAbsUserByEmail {
 
 test absRefusingTheServiceTokenIsOurProblemNotThePersons {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -165,14 +165,14 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
 
 test twoAbsAccountsWithOneEmailIsRefused {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -229,14 +229,14 @@ test twoAbsAccountsWithOneEmailIsRefused {
 
 test noAbsAccountMeansSignInToAbsFirst {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -292,14 +292,14 @@ test noAbsAccountMeansSignInToAbsFirst {
 
 test noEmailFromTheProviderIsRefused {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -350,14 +350,14 @@ test noEmailFromTheProviderIsRefused {
 
 test passwordAttemptIsTheWrongMethod {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -379,14 +379,14 @@ test passwordAttemptIsTheWrongMethod {
 
 test providerOutageIsUnavailable {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -443,14 +443,14 @@ test providerOutageIsUnavailable {
 
 test rejectedCodeIsRefused {
     fake AbsService {
-        token: "svc-token"
+        token: "svc-token";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -507,10 +507,10 @@ test rejectedCodeIsRefused {
 
 test beginUrlCarriesStateAndTheS256Challenge {
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "http://localhost:8080/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "http://localhost:8080/auth/callback";
     }
 
     fake HttpClient {
@@ -529,7 +529,7 @@ test beginUrlCarriesStateAndTheS256Challenge {
     match (settings.oidcSettingsOf()) {
         None -> {
             expect false;
-        }
+        },
 
         oidc -> {
             expect AuthentikSignIn.beginUrl(oidc, "st-1", "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk") is Ok(url);
@@ -541,6 +541,6 @@ test beginUrlCarriesStateAndTheS256Challenge {
             expect url.contains("state=st-1");
             expect url.contains("code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM");
             expect url.contains("code_challenge_method=S256");
-        }
+        },
     }
 }

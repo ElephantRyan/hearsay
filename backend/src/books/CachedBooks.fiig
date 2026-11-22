@@ -1,5 +1,5 @@
-use hearsay.absclient.catalog
-use hearsay.settings
+use hearsay.absclient.catalog;
+use hearsay.settings;
 
 // Many books, in the order asked: our cached copies, and the rest from ABS in
 // one call, which are then cached too. A book ABS no longer has is left out.
@@ -10,11 +10,11 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookEr
         match (findBook(itemId)) {
             None -> {
                 missing = append(missing, itemId);
-            }
+            },
 
             cached -> {
                 found = found.put(itemId, cached);
-            }
+            },
         }
     }
 
@@ -30,11 +30,11 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookEr
     for (itemId in itemIds) {
         match (found.atOrNone(itemId)) {
             None -> {
-            }
+            },
 
             book -> {
                 books = append(books, book);
-            }
+            },
         }
     }
 

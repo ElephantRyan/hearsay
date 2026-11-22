@@ -2,7 +2,7 @@
 // person doesn't pull a 4.0 average over a bar of 7.
 rule atLeast(books: List<RecommendedBook>, minScore: int | None) -> List<RecommendedBook> {
     return match (minScore) {
-        None -> books
-        bar -> filter(b in books): b.average >= math.toDecimal(bar)
+        None -> books,
+        bar -> filter(b in books): b.average >= math.toDecimal(bar),
     }
 }

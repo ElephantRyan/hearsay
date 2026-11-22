@@ -2,7 +2,7 @@
 // Spelled `abs`, `oidc` and `both` in the environment, the API, and the
 // saved setting.
 enum AuthMode {
-    Abs from json "abs"
-    Oidc from json "oidc"
-    Both from json "both"
+    Abs from json "abs",
+    Oidc from json "oidc",
+    Both from json "both",
 }

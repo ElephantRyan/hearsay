@@ -1,4 +1,4 @@
-use hearsay.settings
+use hearsay.settings;
 
 // Sends the inviting server this one's name, address and the key it will call
 // with, and keeps the key it answers with. Nothing is kept unless it agreed.
@@ -14,11 +14,11 @@ activity takeUpInvite(
 
     match (linkAt(invite.address)) {
         None -> {
-        }
+        },
 
         existing -> {
             return Err(LinkError.AlreadyLinked(existing.name));
-        }
+        },
     }
 
     keyIn = newKey();

@@ -1,6 +1,6 @@
-use hearsay.absclient.catalog
-use hearsay.accounts
-use hearsay.books.BookCache
+use hearsay.absclient.catalog;
+use hearsay.accounts;
+use hearsay.books.BookCache;
 
 // Stores a checked rating and returns what is now stored (an update keeps the
 // original created_at, so the stored row can differ from the one made here).
@@ -30,11 +30,11 @@ activity storeRating(
         match (stored) {
             None -> {
                 return rating;
-            }
+            },
 
             saved -> {
                 return saved;
-            }
+            },
         }
     }
 }

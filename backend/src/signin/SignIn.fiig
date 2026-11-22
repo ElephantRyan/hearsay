@@ -1,8 +1,8 @@
 // Proves who a person is with whichever provider the rule picks, then
 // returns only the Identity. Nobody can sign in before Audiobookshelf's
 // address is set.
-use hearsay.accounts
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.settings;
 
 activity signIn(
     attempt: accounts.SignInAttempt,
@@ -10,7 +10,7 @@ activity signIn(
     return match (settings.absUrl()) {
         None -> {
             return Err(accounts.SignInError.Unavailable("this server isn't set up yet"));
-        }
+        },
 
         url -> {
             Provider = signInProvider(attempt);
@@ -22,6 +22,6 @@ activity signIn(
                     oidc: settings.oidcSettingsOf(),
                 ),
             );
-        }
+        },
     }
 }

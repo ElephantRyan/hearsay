@@ -1,8 +1,8 @@
-use hearsay.absclient
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
-use fiig.http
-use fiig.http.HttpClient
+use hearsay.absclient;
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
+use fiig.http;
+use fiig.http.HttpClient;
 
 // What is in ABS: one book or many, the libraries, a page of one, and search.
 // The *AsService gateways use this server's own token.

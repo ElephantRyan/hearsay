@@ -3,7 +3,7 @@
 // sets one; only the Authentik path needs it, to find an account by email), and
 // the Authentik application (None until all of it is set).
 model SignInServer {
-    absUrl: string
-    serviceToken: Secret | None
-    oidc: OidcSettings | None
+    absUrl: string;
+    serviceToken: Secret | None;
+    oidc: OidcSettings | None;
 }

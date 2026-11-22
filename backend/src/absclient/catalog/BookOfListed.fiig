@@ -14,8 +14,8 @@ conversion bookOfListed(item: AbsListedItem) -> Book {
 private {
     authorLine(name: string | None) -> string {
         return match (name) {
-            None -> ""
-            given -> given
+            None -> "",
+            given -> given,
         }
     }
 }

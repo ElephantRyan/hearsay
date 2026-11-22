@@ -1,15 +1,15 @@
-use hearsay.absclient.catalog
-use hearsay.settings
+use hearsay.absclient.catalog;
+use hearsay.settings;
 
 // A book from our cached copy, or from ABS when nobody has rated it yet.
 activity cachedBook(itemId: string) -> Result<catalog.Book, BookError> {
     return match (findBook(itemId)) {
         None -> {
             return fetchBook(itemId);
-        }
+        },
 
         cached -> {
             return Ok(cached);
-        }
+        },
     }
 }

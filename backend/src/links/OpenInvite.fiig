@@ -1,4 +1,4 @@
-use hearsay.settings
+use hearsay.settings;
 
 // A new invite from admin `by`: this server's address and a fresh secret, of
 // which only the hash is kept.

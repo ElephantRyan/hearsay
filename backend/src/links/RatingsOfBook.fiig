@@ -1,5 +1,5 @@
-use hearsay.ratings.rated
-use hearsay.ratings.rated.RatedBooks
+use hearsay.ratings.rated;
+use hearsay.ratings.rated.RatedBooks;
 
 // What a viewer may see of one book: everyone's recommended ratings here, the
 // viewer's own whether recommended or not, and linked servers' ratings of it.

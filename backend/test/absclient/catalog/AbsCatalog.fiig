@@ -1,20 +1,20 @@
-use hearsay.absclient
-use hearsay.settings.Abs
-use fiig.http
-use fiig.http.HttpClient
-use hearsay.settings
-use hearsay.settings.AbsService
+use hearsay.absclient;
+use hearsay.settings.Abs;
+use fiig.http;
+use fiig.http.HttpClient;
+use hearsay.settings;
+use hearsay.settings.AbsService;
 
 // Replies are shaped like the live ABS 2.37.2's (checked 2026-11-19): a minified
 // listing carries one `authorName`, which may be null; a search nests the same
 // item under `book[].libraryItem` beside other result kinds this app ignores.
 test absBrowseReadsLibrariesPagesAndSearchHits {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake HttpClient {
@@ -75,11 +75,11 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
 // token. A hostile one must be refused before any request is made.
 test absRefusesHostileIdsWithoutCallingAbs {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake HttpClient {
@@ -156,11 +156,11 @@ test absCatalogRefusalsAreValues {
 // doesn't have.
 test absBatchLooksUpManyBooksInOneCall {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake HttpClient {
@@ -185,11 +185,11 @@ test absBatchLooksUpManyBooksInOneCall {
 
 test absBatchRefusesAHostileIdWithoutCallingAbs {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake HttpClient {

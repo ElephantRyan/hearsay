@@ -1,34 +1,34 @@
-use hearsay.sessions
+use hearsay.sessions;
 
 // The admin routes for linked servers (LINKED.md section 4): invite one, link
 // to one with its code, list them, fetch one's recommendations now, unlink.
 // src/Hearsay.fiig serves every domain's adapter together. Admins only.
 adapter http linksApi {
-    wire sessions.admin
+    wire sessions.admin;
 
     GET "/admin/links" -> listLinks(admin) produces "application/json" {
-        links -> 200 links
+        links -> 200 links,
     }
 
     POST "/admin/links/invite" -> inviteServer(admin) produces "application/json" {
-        Ok(invite) -> 200 invite
-        Err(error) -> linkErrorResponse(error)
+        Ok(invite) -> 200 invite,
+        Err(error) -> linkErrorResponse(error),
     }
 
     POST "/admin/links" -> linkServer(admin, request: LinkRequest)
             consumes "application/json"
             produces "application/json" {
-        Ok(link) -> 200 link
-        Err(error) -> linkErrorResponse(error)
+        Ok(link) -> 200 link,
+        Err(error) -> linkErrorResponse(error),
     }
 
     POST "/admin/links/{id}/refresh" -> refreshLink(admin, id: string) produces "application/json" {
-        Ok(link) -> 200 link
-        Err(error) -> linkErrorResponse(error)
+        Ok(link) -> 200 link,
+        Err(error) -> linkErrorResponse(error),
     }
 
     DELETE "/admin/links/{id}" -> unlinkServer(admin, id: string) produces "application/json" {
-        Ok(unlinked) -> 200 unlinked
-        Err(error) -> linkErrorResponse(error)
+        Ok(unlinked) -> 200 unlinked,
+        Err(error) -> linkErrorResponse(error),
     }
 }

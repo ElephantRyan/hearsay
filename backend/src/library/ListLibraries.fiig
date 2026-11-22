@@ -1,7 +1,7 @@
 // The libraries a person can browse. Only book libraries: podcasts have no
 // place in a book-recommendation list.
-use hearsay.absclient
-use hearsay.absclient.catalog
+use hearsay.absclient;
+use hearsay.absclient.catalog;
 
 activity listLibraries() -> Result<List<catalog.AbsLibrary>, absclient.AbsFault> {
     all = fetchLibraries()?;

@@ -1,10 +1,10 @@
-use hearsay.absclient as client
-use hearsay.accounts
+use hearsay.absclient as client;
+use hearsay.accounts;
 
 // The binder every signed-in route goes through: what a cookie means.
 test aCookieIsASessionOnlyWhileItIsLive {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     identity = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);

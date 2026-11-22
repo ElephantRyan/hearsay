@@ -1,6 +1,6 @@
-use hearsay.accounts
-use hearsay.books
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.books;
+use hearsay.settings;
 
 // GET /me/listening: what I am listening to and finished, for
 // "My books" screen and Rate tab.

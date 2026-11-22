@@ -2,7 +2,7 @@
 // collections sync is. An Err is logged by the runtime.
 adapter schedule linksSchedule {
     every "1h" -> fetchOnSchedule() {
-        Ok(_) -> done
-        Err(_) -> done
+        Ok(_) -> done,
+        Err(_) -> done,
     }
 }

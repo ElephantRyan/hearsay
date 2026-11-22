@@ -3,5 +3,5 @@
 // finding a person's account by email. Saved in the app, or else
 // ABS_SERVICE_TOKEN. The *AsService gateways read it (absclient.targetOf).
 wire AbsService {
-    token: Secret | None from setting "abs.serviceToken" ?? env "ABS_SERVICE_TOKEN"
+    token: Secret | None from setting "abs.serviceToken" ?? env "ABS_SERVICE_TOKEN";
 }

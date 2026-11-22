@@ -1,4 +1,4 @@
-use hearsay.matching
+use hearsay.matching;
 
 // The library index, built first if it never has been: matching against an
 // empty one would find nothing.

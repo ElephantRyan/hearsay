@@ -1,6 +1,6 @@
 // Why a request that says it comes from a linked server was not believed. Neither
 // says more than it must to a caller that may not be a linked server at all.
 enum PeerRefusal {
-    NoKey
-    UnknownKey
+    NoKey,
+    UnknownKey,
 }

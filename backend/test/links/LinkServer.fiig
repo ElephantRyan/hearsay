@@ -1,25 +1,25 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.accounts
-use fiig.http
-use fiig.http.HttpClient
-use hearsay.settings
-use hearsay.settings.Abs
-use hearsay.settings.ServerConfig
-use hearsay.settings.SignInConfig
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use fiig.http;
+use fiig.http.HttpClient;
+use hearsay.settings;
+use hearsay.settings.Abs;
+use hearsay.settings.ServerConfig;
+use hearsay.settings.SignInConfig;
 
 // The linking side, against a fake of the other server shaped like
 // federationApi's answers. Linking fetches the other server's recommendations
 // at once and asks it to fetch this one's.
 test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     fake ServerConfig {
-        name: "Alex's library"
+        name: "Alex's library";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://alex.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://alex.test";
     }
 
     fake AbsCatalog {
@@ -60,14 +60,14 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
                 match (request.body) {
                     None -> {
                         expect false;
-                    }
+                    },
 
                     sent -> {
                         decoded: Result<LinkOffer, JsonError> = json.decode(sent);
                         expect decoded is Ok(offer);
                         expect offer == LinkOffer(secret: "s".padRight(43, "s"), name: "Alex's library", address: "https://alex.test", key: offer.key);
                         expect offer.key.length() == 43;
-                    }
+                    },
                 }
 
                 return Ok(
@@ -143,12 +143,12 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
 
 test aLoginPageOrARefusalKeepsNothing {
     fake ServerConfig {
-        name: "Alex's library"
+        name: "Alex's library";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://alex.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://alex.test";
     }
 
     fake AbsCatalog {
@@ -244,7 +244,7 @@ test aLoginPageOrARefusalKeepsNothing {
 // No other server is contacted when this library can't be indexed.
 test linkingWaitsForTheLibraryIndex {
     fake ServerConfig {
-        name: "Alex's library"
+        name: "Alex's library";
     }
 
     fake AbsCatalog {
@@ -284,12 +284,12 @@ test linkingWaitsForTheLibraryIndex {
 // fetch, both fail; and unlinking still forgets it when the other can't be told.
 test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
     fake ServerConfig {
-        name: "Alex's library"
+        name: "Alex's library";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://alex.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://alex.test";
     }
 
     fake AbsCatalog {

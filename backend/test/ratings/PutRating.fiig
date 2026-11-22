@@ -1,8 +1,8 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.accounts
-use hearsay.ratings.rated
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.ratings.rated;
 
 // Rates through the real workflows with ABS faked, as a person the adapter has
 // already settled. The book is fetched on every write, so a changed title is

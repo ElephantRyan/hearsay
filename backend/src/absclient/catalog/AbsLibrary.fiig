@@ -1,6 +1,6 @@
 // The part of a library in GET /api/libraries this app shows.
 model AbsLibrary {
-    id: string
-    name: string
-    mediaType: string
+    id: string;
+    name: string;
+    mediaType: string;
 }

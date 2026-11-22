@@ -1,7 +1,7 @@
 // What kind of account ABS says a person has. Spelled as ABS spells it.
 enum AbsUserType {
-    Root from json "root"
-    Admin from json "admin"
-    User from json "user"
-    Guest from json "guest"
+    Root from json "root",
+    Admin from json "admin",
+    User from json "user",
+    Guest from json "guest",
 }

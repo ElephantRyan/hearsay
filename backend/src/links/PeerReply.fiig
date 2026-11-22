@@ -1,11 +1,11 @@
-use fiig.http
+use fiig.http;
 
 // A sent request as another server answers it. A login in front of it either
 // redirects or answers with its page, never Hearsay's JSON, so either is a
 // LoginPage rather than a refusal by the server itself.
 conversion peerReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Reply, PeerError> {
     return match (sent) {
-        Err(failure) -> Err(PeerError.Unreachable(failure: failure))
+        Err(failure) -> Err(PeerError.Unreachable(failure: failure)),
         Ok(reply) -> {
             if (reply.status >= 300 && reply.status < 400) {
                 return Err(PeerError.LoginPage);
@@ -20,15 +20,15 @@ conversion peerReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Re
             }
 
             return Ok(reply);
-        }
+        },
     }
 }
 
 private {
     isPage(contentType: string | None) -> bool {
         return match (contentType) {
-            None -> false
-            given -> given.lowercase().contains("text/html")
+            None -> false,
+            given -> given.lowercase().contains("text/html"),
         }
     }
 }

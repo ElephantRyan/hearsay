@@ -1,15 +1,15 @@
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
 
 // A server with no address or no token calls nothing, and says which is missing
 // in the words every feature shows (faultOfAbs).
 test aGatewayNeedsTheAddressAndTheToken {
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     expect targetOf(Abs.url, AbsService.token) is Ok(target);

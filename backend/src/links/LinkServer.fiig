@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.settings;
 
 // POST /admin/links: takes up another server's invite with its link code, then
 // fetches its recommendations and asks it to fetch this server's, so both
@@ -12,13 +12,13 @@ workflow linkServer(
     return match (settings.serverName()) {
         None -> {
             return Err(LinkError.NoServerName);
-        }
+        },
 
         name -> {
             invite = inviteCodeOf(request.code)?;
             readyIndex()?;
             link = takeUpInvite(invite, name, admin.identity.userId)?;
             return fetchNewLink(link.id);
-        }
+        },
     }
 }

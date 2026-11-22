@@ -1,5 +1,5 @@
-use fiig.http
-use fiig.http.HttpClient
+use fiig.http;
+use fiig.http.HttpClient;
 
 // Calls to another Hearsay server's federation routes, at its address (the
 // app's own, with the API under /api as the frontend reaches it).

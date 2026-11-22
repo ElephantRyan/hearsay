@@ -1,4 +1,4 @@
-use hearsay.absclient.catalog
+use hearsay.absclient.catalog;
 
 // Writes to our cached copy of what ABS says about a book. A group, so a
 // transaction in another domain can include the write (ADR 0043 §5).

@@ -1,15 +1,15 @@
 // The status and message a client sees for each way an admin request can fail.
 conversion adminErrorResponse(error: AdminError) -> HttpResponse<string> {
     return match (error) {
-        AdminError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
+        AdminError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}"),
         AdminError.UnknownSetting(name) -> HttpResponse(
             status: 404,
             body: "no setting called ${name}",
-        )
+        ),
         AdminError.LibraryNotFound -> HttpResponse(
             status: 404,
             body: "no library in Audiobookshelf that it listed",
-        )
-        AdminError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+        ),
+        AdminError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
     }
 }

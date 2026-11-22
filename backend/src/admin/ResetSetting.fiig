@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.settings;
 
 // DELETE /admin/settings/{name}: back to the environment's value.
 workflow resetSetting(

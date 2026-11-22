@@ -2,13 +2,13 @@
 // words the unavailable ones.
 conversion faultOfAbs(error: AbsError) -> AbsFault {
     return match (error) {
-        AbsError.NotFound -> AbsFault.Missing
-        AbsError.Unauthorized -> AbsFault.Denied
-        AbsError.Rejected(status) -> AbsFault.Down("Audiobookshelf answered ${status}")
-        AbsError.Unreachable(failure) -> AbsFault.Down("Audiobookshelf is unreachable")
-        AbsError.Unreadable(failure) -> AbsFault.Down("Audiobookshelf's reply was unreadable")
+        AbsError.NotFound -> AbsFault.Missing,
+        AbsError.Unauthorized -> AbsFault.Denied,
+        AbsError.Rejected(status) -> AbsFault.Down("Audiobookshelf answered ${status}"),
+        AbsError.Unreachable(failure) -> AbsFault.Down("Audiobookshelf is unreachable"),
+        AbsError.Unreadable(failure) -> AbsFault.Down("Audiobookshelf's reply was unreadable"),
         AbsError.NotSetUp(missing) -> AbsFault.Down(
             "this server isn't set up yet: an admin needs to enter ${missing}",
-        )
+        ),
     }
 }

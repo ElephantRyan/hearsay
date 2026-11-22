@@ -2,13 +2,13 @@
 // rule may return a provider but never call one. A password attempt goes to
 // ABS's own login, a code from the redirect flow goes to Authentik. Which
 // routes exist at all is AUTH_MODE's business (M4), not this rule's.
-use hearsay.accounts
-use hearsay.signin.authentik.AuthentikSignIn
-use hearsay.signin.password.AbsPasswordSignIn
+use hearsay.accounts;
+use hearsay.signin.authentik.AuthentikSignIn;
+use hearsay.signin.password.AbsPasswordSignIn;
 
 rule signInProvider(attempt: accounts.SignInAttempt) -> accounts.SignIn {
     return match (attempt) {
-        accounts.SignInAttempt.Password(username, password) -> AbsPasswordSignIn
-        accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> AuthentikSignIn
+        accounts.SignInAttempt.Password(username, password) -> AbsPasswordSignIn,
+        accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> AuthentikSignIn,
     }
 }

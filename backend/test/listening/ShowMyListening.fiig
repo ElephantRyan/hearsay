@@ -1,18 +1,18 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.absclient.progress
-use hearsay.absclient.progress.AbsProgress
-use hearsay.accounts
-use hearsay.ratings
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.absclient.progress;
+use hearsay.absclient.progress.AbsProgress;
+use hearsay.accounts;
+use hearsay.ratings;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
 
 test myListeningIsMostRecentFirstWithMyScores {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake AbsProgress {
@@ -83,7 +83,7 @@ test myListeningIsMostRecentFirstWithMyScores {
 
 test myListeningCachesWhatItLooksUp {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake AbsProgress {
@@ -123,15 +123,15 @@ test myListeningCachesWhatItLooksUp {
 
 test myListeningSaysWhenAbsIsDown {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake AbsProgress {
@@ -150,15 +150,15 @@ test myListeningSaysWhenAbsIsDown {
 
 test myListeningSaysWhenAbsHasNoAccountForMe {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake AbsProgress {

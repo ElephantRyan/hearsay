@@ -1,5 +1,5 @@
-use hearsay.matching
-use hearsay.settings
+use hearsay.matching;
+use hearsay.settings;
 
 // Rebuilds the library index from Audiobookshelf, so new books can be matched.
 // On failure the old index stays, and this says why in words.

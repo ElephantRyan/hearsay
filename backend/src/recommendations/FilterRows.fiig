@@ -1,4 +1,4 @@
-use hearsay.ratings.rated
+use hearsay.ratings.rated;
 
 // The GET /recommendations filters that apply to ratings before ranking:
 // one recommender, one library. A filter left out matches everything.
@@ -13,8 +13,8 @@ rule filterRows(
 private {
     matches(value: string, wanted: string | None) -> bool {
         return match (wanted) {
-            None -> true
-            given -> value == given
+            None -> true,
+            given -> value == given,
         }
     }
 }

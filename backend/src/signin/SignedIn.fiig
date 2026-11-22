@@ -1,8 +1,8 @@
 // Answers with who the person is and sets the session cookie. Leaving out
 // every attribute but maxAge gives the secure ones: HttpOnly, Secure,
 // SameSite=Lax, Path=/, no Domain (ADR 0069 §4).
-use hearsay.accounts
-use hearsay.sessions
+use hearsay.accounts;
+use hearsay.sessions;
 
 conversion signedIn(session: sessions.Session) -> HttpResponse<accounts.Identity> {
     return HttpResponse(

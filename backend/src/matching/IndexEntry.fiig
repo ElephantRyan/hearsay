@@ -1,8 +1,8 @@
 // One local book in the library index: where it is, and its keys.
 model IndexEntry {
-    itemId: string
-    libraryId: string
-    asin: string | None
-    isbn: string | None
-    titleKey: string
+    itemId: string;
+    libraryId: string;
+    asin: string | None;
+    isbn: string | None;
+    titleKey: string;
 }

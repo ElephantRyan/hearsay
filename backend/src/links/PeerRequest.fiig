@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 // A request to another server, with the key it accepts when there is one.
 rule peerRequest(
@@ -21,14 +21,14 @@ private {
         headers: List<http.Header> = [http.Header(name: "Accept", value: "application/json")];
         match (key) {
             None -> {
-            }
+            },
 
             given -> {
                 headers = append(
                     headers,
                     http.Header(name: "Authorization", value: "Bearer ${given}"),
                 );
-            }
+            },
         }
 
         if (hasBody) {

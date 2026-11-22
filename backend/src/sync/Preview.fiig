@@ -11,9 +11,9 @@ rule preview(plans: List<SyncPlan>) -> List<SyncResult> {
 private {
     wouldDo(action: SyncAction) -> SyncOutcome {
         return match (action) {
-            SyncAction.Create -> SyncOutcome.WouldCreate
-            SyncAction.Update -> SyncOutcome.WouldUpdate
-            SyncAction.Remove -> SyncOutcome.WouldRemove
+            SyncAction.Create -> SyncOutcome.WouldCreate,
+            SyncAction.Update -> SyncOutcome.WouldUpdate,
+            SyncAction.Remove -> SyncOutcome.WouldRemove,
         }
     }
 }

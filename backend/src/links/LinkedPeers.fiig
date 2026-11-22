@@ -21,9 +21,9 @@ gateway linkedPeers() -> List<PeerKey> requires Database idempotent {
 
 private {
     model PeerKeyRow {
-        id: string
-        name: string
-        address: string
-        keyOut: string
+        id: string;
+        name: string;
+        address: string;
+        keyOut: string;
     }
 }

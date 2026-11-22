@@ -2,6 +2,6 @@
 // identity. 401 names no scheme: the browser holds a cookie, not a challenge.
 conversion identityErrorResponse(error: IdentityError) -> HttpResponse<string> {
     return match (error) {
-        IdentityError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first")
+        IdentityError.NotSignedIn -> HttpResponse(status: 401, body: "sign in first"),
     }
 }

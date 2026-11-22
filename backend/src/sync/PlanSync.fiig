@@ -1,4 +1,4 @@
-use hearsay.ratings.rated
+use hearsay.ratings.rated;
 
 // Works out, without touching anything, what each named person's collections
 // should become. One collection per person per library, "<name> Recommends",
@@ -58,22 +58,22 @@ private {
     collectionIn(theirs: List<SyncState>, libraryId: string) -> string | None {
         found = filter(s in theirs): s.libraryId == libraryId;
         return match (found.firstOrNone()) {
-            None -> None
-            state -> state.collectionId
+            None -> None,
+            state -> state.collectionId,
         }
     }
 
     descriptionFor(via: string | None) -> string {
         return match (via) {
-            None -> "Maintained by Hearsay. Edits here are overwritten on the next sync."
-            server -> "Recommended on ${server}. Maintained by Hearsay. Edits here are overwritten on the next sync."
+            None -> "Maintained by Hearsay. Edits here are overwritten on the next sync.",
+            server -> "Recommended on ${server}. Maintained by Hearsay. Edits here are overwritten on the next sync.",
         }
     }
 
     createOrUpdate(existing: string | None) -> SyncAction {
         return match (existing) {
-            None -> SyncAction.Create
-            id -> SyncAction.Update
+            None -> SyncAction.Create,
+            id -> SyncAction.Update,
         }
     }
 }

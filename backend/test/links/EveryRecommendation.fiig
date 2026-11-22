@@ -1,15 +1,15 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.accounts
-use hearsay.library
-use hearsay.ratings
-use hearsay.recommendations
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
-use hearsay.settings
-use hearsay.absclient.collections.AbsCollections
-use hearsay.sync
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.library;
+use hearsay.ratings;
+use hearsay.recommendations;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
+use hearsay.settings;
+use hearsay.absclient.collections.AbsCollections;
+use hearsay.sync;
 
 // Linked servers' ratings blend in (LINKED.md section 6): they count in
 // averages, the ranked list, recommenders, picks and the book page, and a
@@ -18,7 +18,7 @@ use hearsay.sync
 // Dune and a book this library hasn't. Sam's place has another sam.
 test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake AbsCatalog {

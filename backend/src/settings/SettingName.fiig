@@ -1,13 +1,13 @@
 // Each setting an admin can save in the app, as the admin screen names it.
 enum SettingName {
-    AbsUrl
-    ServiceToken
-    MirrorEnabled
-    AuthMode
-    FrontendUrl
-    OidcIssuer
-    OidcClientId
-    OidcClientSecret
-    OidcRedirectUri
-    ServerName
+    AbsUrl,
+    ServiceToken,
+    MirrorEnabled,
+    AuthMode,
+    FrontendUrl,
+    OidcIssuer,
+    OidcClientId,
+    OidcClientSecret,
+    OidcRedirectUri,
+    ServerName,
 }

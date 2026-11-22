@@ -1,4 +1,4 @@
 model PendingParts {
-    state: string
-    verifier: string
+    state: string;
+    verifier: string;
 }

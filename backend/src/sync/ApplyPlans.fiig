@@ -1,4 +1,4 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // Carries out every planned change, one by one, and records each outcome.
 activity applyPlans(plans: List<SyncPlan>) -> List<SyncResult> {

@@ -1,13 +1,13 @@
-use hearsay.sessions
+use hearsay.sessions;
 
 // The library routes of the HTTP surface; src/Hearsay.fiig serves every
 // domain's adapter together. All of them need a signed-in person.
 adapter http libraryApi {
-    wire sessions.me
+    wire sessions.me;
 
     GET "/libraries" -> showLibraries(me) produces "application/json" {
-        Ok(libraries) -> 200 libraries
-        Err(error) -> libraryErrorResponse(error)
+        Ok(libraries) -> 200 libraries,
+        Err(error) -> libraryErrorResponse(error),
     }
 
     GET "/libraries/{libraryId}/items?page={page}&size={size}&q={q}" -> showLibraryItems(
@@ -18,12 +18,12 @@ adapter http libraryApi {
         q: string | None,
     )
             produces "application/json" {
-        Ok(result) -> 200 result
-        Err(error) -> libraryErrorResponse(error)
+        Ok(result) -> 200 result,
+        Err(error) -> libraryErrorResponse(error),
     }
 
     GET "/items/{itemId}" -> showItem(me, itemId: string) produces "application/json" {
-        Ok(detail) -> 200 detail
-        Err(error) -> libraryErrorResponse(error)
+        Ok(detail) -> 200 detail,
+        Err(error) -> libraryErrorResponse(error),
     }
 }

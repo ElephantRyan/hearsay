@@ -1,8 +1,8 @@
-use hearsay.absclient
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
-use fiig.http
-use fiig.http.HttpClient
+use hearsay.absclient;
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
+use fiig.http;
+use fiig.http.HttpClient;
 
 // ABS accounts: signing in with a password, and who a token belongs to.
 capability AbsMembers {

@@ -4,7 +4,7 @@
 // is logged by the runtime.
 adapter schedule syncSchedule {
     every "1h" -> syncOnSchedule() {
-        Ok(_) -> done
-        Err(_) -> done
+        Ok(_) -> done,
+        Err(_) -> done,
     }
 }

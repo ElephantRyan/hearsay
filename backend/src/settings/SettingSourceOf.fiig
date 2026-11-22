@@ -2,15 +2,15 @@
 // its default, or nowhere.
 gateway settingSourceOf(name: SettingName) -> SettingSource requires Settings idempotent {
     return match (name) {
-        SettingName.AbsUrl -> Settings.source("abs.url")
-        SettingName.ServiceToken -> Settings.source("abs.serviceToken")
-        SettingName.MirrorEnabled -> Settings.source("sync.mirrorEnabled")
-        SettingName.AuthMode -> Settings.source("signin.authMode")
-        SettingName.FrontendUrl -> Settings.source("signin.frontendUrl")
-        SettingName.OidcIssuer -> Settings.source("oidc.issuer")
-        SettingName.OidcClientId -> Settings.source("oidc.clientId")
-        SettingName.OidcClientSecret -> Settings.source("oidc.clientSecret")
-        SettingName.OidcRedirectUri -> Settings.source("oidc.redirectUri")
-        SettingName.ServerName -> Settings.source("server.name")
+        SettingName.AbsUrl -> Settings.source("abs.url"),
+        SettingName.ServiceToken -> Settings.source("abs.serviceToken"),
+        SettingName.MirrorEnabled -> Settings.source("sync.mirrorEnabled"),
+        SettingName.AuthMode -> Settings.source("signin.authMode"),
+        SettingName.FrontendUrl -> Settings.source("signin.frontendUrl"),
+        SettingName.OidcIssuer -> Settings.source("oidc.issuer"),
+        SettingName.OidcClientId -> Settings.source("oidc.clientId"),
+        SettingName.OidcClientSecret -> Settings.source("oidc.clientSecret"),
+        SettingName.OidcRedirectUri -> Settings.source("oidc.redirectUri"),
+        SettingName.ServerName -> Settings.source("server.name"),
     }
 }

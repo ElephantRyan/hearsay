@@ -1,4 +1,4 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // GET /api/users/{id}'s body as the books that person has started. Podcast
 // episodes are left out: this app rates books.
@@ -20,14 +20,14 @@ conversion progressOfUserReply(body: bytes) -> Result<List<Progress>, absclient.
 private {
     // The reply, trimmed to the progress list.
     model AbsUserWithProgress {
-        mediaProgress: List<AbsMediaProgress>
+        mediaProgress: List<AbsMediaProgress>;
     }
 
     model AbsMediaProgress {
-        libraryItemId: string
-        mediaItemType: string
-        isFinished: bool
-        progress: float
-        lastUpdate: int
+        libraryItemId: string;
+        mediaItemType: string;
+        isFinished: bool;
+        progress: float;
+        lastUpdate: int;
     }
 }

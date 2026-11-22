@@ -1,12 +1,12 @@
-use hearsay.settings
-use hearsay.accounts
-use hearsay.settings.SignInConfig
-use hearsay.signin.authentik.AuthentikSignIn
+use hearsay.settings;
+use hearsay.accounts;
+use hearsay.settings.SignInConfig;
+use hearsay.signin.authentik.AuthentikSignIn;
 
 test startOidcIsOffInPasswordOnlyMode {
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://app.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://app.test";
     }
 
     fake AuthentikSignIn {

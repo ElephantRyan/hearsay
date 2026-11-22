@@ -1,4 +1,4 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // POST /login's body as the session it gives us.
 conversion sessionOfLoginReply(body: bytes) -> Result<AbsSession, absclient.AbsError> {
@@ -18,17 +18,17 @@ conversion sessionOfLoginReply(body: bytes) -> Result<AbsSession, absclient.AbsE
 
 private {
     model AbsLoginReply {
-        user: AbsLoginUser
+        user: AbsLoginUser;
     }
 
     // The part of `user` this app reads (ABS 2.37.2). Members it doesn't
     // declare, such as the legacy never-expiring `token`, are ignored on
     // decode.
     model AbsLoginUser {
-        id: string
-        username: string
-        type: absclient.AbsUserType
-        accessToken: string
-        refreshToken: string
+        id: string;
+        username: string;
+        type: absclient.AbsUserType;
+        accessToken: string;
+        refreshToken: string;
     }
 }

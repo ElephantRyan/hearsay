@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.books
+use hearsay.accounts;
+use hearsay.books;
 
 // Rate a book: check what was sent, find out what the book is, then store the
 // rating. The check comes first, so a bad rating costs no Audiobookshelf call.

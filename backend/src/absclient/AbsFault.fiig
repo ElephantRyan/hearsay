@@ -3,7 +3,7 @@
 // (Missing), and ABS refused our token (Denied). Every other failure is
 // ABS being unavailable, and reads the same everywhere (Down).
 enum AbsFault {
-    Missing
-    Denied
-    Down(detail: string)
+    Missing,
+    Denied,
+    Down(detail: string),
 }

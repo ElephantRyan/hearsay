@@ -2,6 +2,6 @@
 // value of the short-lived cookie that ties the callback to this browser
 // ("state.verifier": both are base64url, so neither contains a dot).
 model OidcStart {
-    url: string
-    pending: string
+    url: string;
+    pending: string;
 }

@@ -2,10 +2,10 @@ activity logOut(token: string | None) -> int {
     return match (token) {
         None -> {
             return 0;
-        }
+        },
 
         found -> {
             return deleteSession(tokenHash(found));
-        }
+        },
     }
 }

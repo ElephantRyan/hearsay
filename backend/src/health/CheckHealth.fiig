@@ -1,5 +1,5 @@
-use hearsay.absclient.AbsServer
-use hearsay.settings
+use hearsay.absclient.AbsServer;
+use hearsay.settings;
 
 // Liveness plus ABS reachability. The service is up if it answers; `abs`
 // says whether ABS's public /status does, or that no address is set yet.
@@ -7,18 +7,18 @@ activity checkHealth() -> Health {
     return match (settings.absUrl()) {
         None -> {
             return Health(ok: true, abs: "not set up");
-        }
+        },
 
         url -> {
             return match (AbsServer.status(url)) {
                 Ok(_) -> {
                     return Health(ok: true, abs: "reachable");
-                }
+                },
 
                 Err(_) -> {
                     return Health(ok: true, abs: "unreachable");
-                }
+                },
             }
-        }
+        },
     }
 }

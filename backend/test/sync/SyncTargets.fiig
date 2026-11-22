@@ -1,6 +1,6 @@
-use hearsay.absclient as client
-use hearsay.accounts
-use hearsay.ratings.rated
+use hearsay.absclient as client;
+use hearsay.accounts;
+use hearsay.ratings.rated;
 
 test syncTargetsAreSelfUnlessAdmin {
     rows = [

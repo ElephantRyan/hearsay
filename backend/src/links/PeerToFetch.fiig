@@ -3,10 +3,10 @@ activity peerToFetch(id: string) -> Result<PeerKey, LinkError> {
     return match (peerKeyOf(id)) {
         None -> {
             return Err(LinkError.UnknownLink);
-        }
+        },
 
         peer -> {
             return Ok(peer);
-        }
+        },
     }
 }

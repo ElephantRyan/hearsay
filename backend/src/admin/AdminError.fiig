@@ -1,8 +1,8 @@
 // Every way an admin request can be refused, as values the caller must handle.
 // Who is asking, and whether they may administer, are the adapter's to settle.
 enum AdminError {
-    Invalid(field: string, reason: string)
-    UnknownSetting(name: string)
-    LibraryNotFound
-    Unavailable(detail: string)
+    Invalid(field: string, reason: string),
+    UnknownSetting(name: string),
+    LibraryNotFound,
+    Unavailable(detail: string),
 }

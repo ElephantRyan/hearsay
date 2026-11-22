@@ -1,39 +1,39 @@
-use hearsay.admin
-use hearsay.health
-use hearsay.library
-use hearsay.links
-use hearsay.listening
-use hearsay.ratings
-use hearsay.ratings.rated
-use hearsay.recommendations
-use hearsay.sessions
-use hearsay.setup
-use hearsay.signin
-use hearsay.signin.oidc
-use hearsay.sync
+use hearsay.admin;
+use hearsay.health;
+use hearsay.library;
+use hearsay.links;
+use hearsay.listening;
+use hearsay.ratings;
+use hearsay.ratings.rated;
+use hearsay.recommendations;
+use hearsay.sessions;
+use hearsay.setup;
+use hearsay.signin;
+use hearsay.signin.oidc;
+use hearsay.sync;
 
 // What Hearsay runs (fiig ADR 0132): the HTTP surface, linked servers' routes
 // included, and the hourly collections sync and linked-server fetch.
 application Hearsay {
     serve web {
-        sessions.sessionsApi
-        signin.signinApi
-        oidc.oidcApi
-        ratings.ratingsApi
-        rated.ratedApi
-        library.libraryApi
-        recommendations.recommendationsApi
-        sync.syncApi
-        listening.listeningApi
-        admin.adminApi
-        links.linksApi
-        links.federationApi
-        setup.setupApi
-        health.healthApi
+        sessions.sessionsApi;
+        signin.signinApi;
+        oidc.oidcApi;
+        ratings.ratingsApi;
+        rated.ratedApi;
+        library.libraryApi;
+        recommendations.recommendationsApi;
+        sync.syncApi;
+        listening.listeningApi;
+        admin.adminApi;
+        links.linksApi;
+        links.federationApi;
+        setup.setupApi;
+        health.healthApi;
     }
 
     serve worker {
-        sync.syncSchedule
-        links.linksSchedule
+        sync.syncSchedule;
+        links.linksSchedule;
     }
 }

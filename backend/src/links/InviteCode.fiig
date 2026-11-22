@@ -1,5 +1,5 @@
 // What a link code holds: where the inviting server is, and its secret.
 model InviteCode {
-    address: string
-    secret: string
+    address: string;
+    secret: string;
 }

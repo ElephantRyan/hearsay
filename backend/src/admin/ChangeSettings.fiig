@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.settings;
 
 // PUT /admin/settings: checks the whole change, then saves it, then answers
 // with the settings as they now stand.

@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.settings;
 
 // GET /admin/settings.
 workflow showSettings(admin: accounts.Admin) -> settings.SettingsView {

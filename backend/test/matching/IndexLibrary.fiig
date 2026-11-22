@@ -1,7 +1,7 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.settings
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.settings;
 
 test theIndexMatchesByAsinThenIsbnThenTitle {
     fake AbsCatalog {

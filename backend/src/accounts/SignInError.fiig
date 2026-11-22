@@ -1,8 +1,8 @@
 // Why a sign-in didn't produce an identity. NoAccount is a person the identity
 // provider knows but Audiobookshelf has no account for yet.
 enum SignInError {
-    WrongMethod
-    NoAccount
-    Refused(reason: string)
-    Unavailable(detail: string)
+    WrongMethod,
+    NoAccount,
+    Refused(reason: string),
+    Unavailable(detail: string),
 }

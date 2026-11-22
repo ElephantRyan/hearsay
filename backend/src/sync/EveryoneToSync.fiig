@@ -1,4 +1,4 @@
-use hearsay.ratings.rated
+use hearsay.ratings.rated;
 
 // Everyone whose collections a full sync touches: whoever has a recommendation,
 // and whoever still has a collection of ours to clear out.

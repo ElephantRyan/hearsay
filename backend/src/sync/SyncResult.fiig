@@ -1,8 +1,8 @@
 // What a sync did (or, in a dry run, would do) for one person in one library.
 model SyncResult {
-    userId: string
-    libraryId: string
-    action: SyncOutcome
-    books: int
-    error: string | None
+    userId: string;
+    libraryId: string;
+    action: SyncOutcome;
+    books: int;
+    error: string | None;
 }

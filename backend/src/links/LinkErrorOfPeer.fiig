@@ -1,10 +1,10 @@
 // What the other server's answer to a link means for the admin linking.
 conversion linkErrorOfPeer(error: PeerError) -> LinkError {
     return match (error) {
-        PeerError.Unreachable(failure) -> LinkError.PeerUnreachable
-        PeerError.LoginPage -> LinkError.PeerLoginPage
-        PeerError.Unreadable -> LinkError.PeerLoginPage
-        PeerError.Rejected(status) -> LinkError.PeerRefused(refusalOf(status))
+        PeerError.Unreachable(failure) -> LinkError.PeerUnreachable,
+        PeerError.LoginPage -> LinkError.PeerLoginPage,
+        PeerError.Unreadable -> LinkError.PeerLoginPage,
+        PeerError.Rejected(status) -> LinkError.PeerRefused(refusalOf(status)),
     }
 }
 

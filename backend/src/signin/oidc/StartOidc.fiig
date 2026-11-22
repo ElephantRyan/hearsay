@@ -1,4 +1,4 @@
-use hearsay.signin
+use hearsay.signin;
 
 // Authentik sign-in exists unless the server is password-only.
 workflow startOidc() -> Result<OidcStart, signin.LoginError> {

@@ -1,6 +1,6 @@
-use hearsay.absclient as client
-use hearsay.accounts
-use hearsay.links
+use hearsay.absclient as client;
+use hearsay.accounts;
+use hearsay.links;
 
 // What sync would do for whoever the caller may sync, linked servers' people
 // included: reads tables and plans, and touches nothing.

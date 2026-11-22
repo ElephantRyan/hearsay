@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 conversion tokenRequest(
     endpoint: string,

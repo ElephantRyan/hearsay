@@ -1,9 +1,9 @@
 // One book with the ratings the viewer may see, linked servers' included. A
 // book nobody has rated yet is fetched from ABS, so the page can offer the
 // first rating.
-use hearsay.absclient.catalog
-use hearsay.ratings.rated
-use hearsay.links
+use hearsay.absclient.catalog;
+use hearsay.ratings.rated;
+use hearsay.links;
 
 activity loadItemDetail(userId: string, book: catalog.Book) -> ItemDetail {
     rows = links.ratingsOfBook(book.itemId, userId);

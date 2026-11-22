@@ -3,7 +3,7 @@
 // the title and first author lower case without punctuation or a leading
 // article. A missing or empty ASIN or ISBN is None.
 model BookKeys {
-    asin: string | None
-    isbn: string | None
-    titleKey: string
+    asin: string | None;
+    isbn: string | None;
+    titleKey: string;
 }

@@ -1,13 +1,13 @@
-use hearsay.absclient as client
-use hearsay.absclient.members
-use hearsay.absclient.members.AbsMembers
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
-use hearsay.settings
+use hearsay.absclient as client;
+use hearsay.absclient.members;
+use hearsay.absclient.members.AbsMembers;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
+use hearsay.settings;
 
 test aNewServerIsClaimedByAnAbsAdmin {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake AbsMembers {

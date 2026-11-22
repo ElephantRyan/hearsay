@@ -1,5 +1,5 @@
-use hearsay.ratings.rated
-use hearsay.links
+use hearsay.ratings.rated;
+use hearsay.links;
 
 activity picksOf(userId: string) -> List<rated.RatingRow> {
     return bestFirst(links.everyRecommendation(), userId);

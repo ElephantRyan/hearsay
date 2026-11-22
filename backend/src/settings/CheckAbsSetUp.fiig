@@ -6,7 +6,7 @@ activity checkAbsSetUp() -> Result<None, SettingsError> {
     }
 
     return match (AbsService.token) {
-        None -> Err(SettingsError.NoServiceToken)
-        given -> Ok(None)
+        None -> Err(SettingsError.NoServiceToken),
+        given -> Ok(None),
     }
 }

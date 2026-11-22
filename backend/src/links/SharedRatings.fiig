@@ -1,4 +1,4 @@
-use hearsay.ratings.rated.RatedBooks
+use hearsay.ratings.rated.RatedBooks;
 
 // Every recommendation on this server, as a linked server is shown it.
 activity sharedRatings() -> List<SharedRating> {

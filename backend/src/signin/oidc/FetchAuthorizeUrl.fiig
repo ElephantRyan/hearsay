@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.signin.authentik.AuthentikSignIn
+use hearsay.accounts;
+use hearsay.signin.authentik.AuthentikSignIn;
 
 // Where to send the browser to sign in with Authentik. The provider's failures
 // stay the provider's: signing in's own.

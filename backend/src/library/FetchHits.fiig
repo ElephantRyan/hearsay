@@ -1,6 +1,6 @@
-use hearsay.absclient
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
+use hearsay.absclient;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
 
 gateway fetchHits(
     libraryId: string,

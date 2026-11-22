@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.books
+use hearsay.accounts;
+use hearsay.books;
 
 // One book's page. A book ABS does not have, and nobody has rated, is "no such book".
 workflow showItem(me: accounts.Identity, itemId: string) -> Result<ItemDetail, LibraryError> {

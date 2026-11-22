@@ -8,7 +8,7 @@ gateway peerKeyOf(id: string) -> PeerKey | None requires Database idempotent {
     return match (found) {
         None -> {
             return None;
-        }
+        },
 
         row -> {
             return PeerKey(
@@ -17,15 +17,15 @@ gateway peerKeyOf(id: string) -> PeerKey | None requires Database idempotent {
                 address: row.address,
                 keyOut: row.keyOut.toSecret("linked server key"),
             );
-        }
+        },
     }
 }
 
 private {
     model PeerKeyRow {
-        id: string
-        name: string
-        address: string
-        keyOut: string
+        id: string;
+        name: string;
+        address: string;
+        keyOut: string;
     }
 }

@@ -1,4 +1,4 @@
-use hearsay.books
+use hearsay.books;
 
 // The status and message a client sees for each way listening can fail.
 conversion listeningErrorResponse(error: ListeningError) -> HttpResponse<string> {
@@ -6,8 +6,8 @@ conversion listeningErrorResponse(error: ListeningError) -> HttpResponse<string>
         ListeningError.AccountNotFound -> HttpResponse(
             status: 404,
             body: "no Audiobookshelf account for you",
-        )
-        ListeningError.Book(cause) -> books.bookErrorResponse(cause)
-        ListeningError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+        ),
+        ListeningError.Book(cause) -> books.bookErrorResponse(cause),
+        ListeningError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
     }
 }

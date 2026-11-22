@@ -1,11 +1,11 @@
-use hearsay.absclient.catalog
-use hearsay.ratings.rated
+use hearsay.absclient.catalog;
+use hearsay.ratings.rated;
 
 // One book with the ratings the viewer may see: everyone's recommended ones,
 // linked servers' included, and the viewer's own, private or not.
 model ItemDetail {
-    book: catalog.Book
-    average: decimal
-    count: int
-    ratings: List<rated.RatingRow>
+    book: catalog.Book;
+    average: decimal;
+    count: int;
+    ratings: List<rated.RatingRow>;
 }

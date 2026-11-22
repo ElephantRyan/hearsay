@@ -1,8 +1,8 @@
 // Every way syncing collections can be refused or can fail, as values the
 // caller must handle. Who is asking is the adapter's to settle.
 enum SyncError {
-    MirroringOff
-    NotAllowed
-    Unavailable(detail: string)
-    SomeWritesFailed(failed: int, total: int)
+    MirroringOff,
+    NotAllowed,
+    Unavailable(detail: string),
+    SomeWritesFailed(failed: int, total: int),
 }

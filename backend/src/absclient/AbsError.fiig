@@ -1,12 +1,12 @@
 // Why a call to Audiobookshelf didn't give an answer: no reply, a reply that
 // said no, a reply this client can't read, or no server or token to call with.
-use fiig.http
+use fiig.http;
 
 enum AbsError {
-    Unreachable(failure: http.HttpError)
-    Unauthorized
-    NotFound
-    Rejected(status: int)
-    Unreadable(failure: JsonError)
-    NotSetUp(missing: string)
+    Unreachable(failure: http.HttpError),
+    Unauthorized,
+    NotFound,
+    Rejected(status: int),
+    Unreadable(failure: JsonError),
+    NotSetUp(missing: string),
 }

@@ -49,23 +49,23 @@ activity applySettingsChange(
 private {
     saveGiven(name: SettingName, text: string | None, by: string) -> Result<None, SettingError> {
         return match (text) {
-            None -> Ok(None)
-            given -> saveSetting(name, given, by)
+            None -> Ok(None),
+            given -> saveSetting(name, given, by),
         }
     }
 
     boolText(on: bool | None) -> string | None {
         return match (on) {
-            None -> None
-            true -> "true"
-            false -> "false"
+            None -> None,
+            true -> "true",
+            false -> "false",
         }
     }
 
     modeText(mode: AuthMode | None) -> string | None {
         return match (mode) {
-            None -> None
-            given -> authModeText(given)
+            None -> None,
+            given -> authModeText(given),
         }
     }
 }

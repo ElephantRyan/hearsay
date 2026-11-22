@@ -1,4 +1,4 @@
-use hearsay.settings
+use hearsay.settings;
 
 // Which ways in the server offers. Authentik needs its whole application set;
 // until it is, password sign-in stays on even in `oidc` mode, so a half-finished
@@ -12,10 +12,10 @@ activity loadSignInModes() -> SignInModes {
     return match (settings.oidcSettingsOf()) {
         None -> {
             return SignInModes(password: true, oidc: false);
-        }
+        },
 
         ready -> {
             return SignInModes(password: mode != settings.AuthMode.Oidc, oidc: true);
-        }
+        },
     }
 }

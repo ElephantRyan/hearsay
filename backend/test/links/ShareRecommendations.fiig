@@ -1,31 +1,31 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.accounts
-use hearsay.matching
-use hearsay.ratings
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
-use hearsay.settings
-use hearsay.settings.Abs
-use hearsay.settings.ServerConfig
-use hearsay.settings.SignInConfig
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.matching;
+use hearsay.ratings;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
+use hearsay.settings;
+use hearsay.settings.Abs;
+use hearsay.settings.ServerConfig;
+use hearsay.settings.SignInConfig;
 
 // The sharing side: only recommendations cross, to a linked server's key, with
 // what recognises each book. A book cached before ASINs were (migration 0005)
 // takes its ASIN from the library index.
 test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake ServerConfig {
-        name: "Ryan's library"
+        name: "Ryan's library";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://ryan.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://ryan.test";
     }
 
     fake AbsCatalog {

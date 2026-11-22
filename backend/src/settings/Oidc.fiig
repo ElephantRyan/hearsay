@@ -4,8 +4,8 @@
 // document. Authentik sign-in is offered only once all four are set
 // (oidcSettingsOf).
 wire Oidc {
-    issuer: string | None from setting "oidc.issuer" ?? env "OIDC_ISSUER"
-    clientId: string | None from setting "oidc.clientId" ?? env "OIDC_CLIENT_ID"
-    clientSecret: Secret | None from setting "oidc.clientSecret" ?? env "OIDC_CLIENT_SECRET"
-    redirectUri: string | None from setting "oidc.redirectUri" ?? env "OIDC_REDIRECT_URI"
+    issuer: string | None from setting "oidc.issuer" ?? env "OIDC_ISSUER";
+    clientId: string | None from setting "oidc.clientId" ?? env "OIDC_CLIENT_ID";
+    clientSecret: Secret | None from setting "oidc.clientSecret" ?? env "OIDC_CLIENT_SECRET";
+    redirectUri: string | None from setting "oidc.redirectUri" ?? env "OIDC_REDIRECT_URI";
 }

@@ -6,10 +6,10 @@ activity fetchNewLink(id: string) -> Result<LinkedServer, LinkError> {
     fetched = fetchLink(peer)?;
     match (PeerServer.fetchNow(peer.address, peer.keyOut)) {
         Ok(_) -> {
-        }
+        },
 
         Err(_) -> {
-        }
+        },
     }
 
     // Its hourly fetch catches up.

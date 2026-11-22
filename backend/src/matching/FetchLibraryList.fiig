@@ -1,6 +1,6 @@
-use hearsay.absclient
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
+use hearsay.absclient;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
 
 // The book libraries on ABS, for an index rebuild.
 gateway fetchLibraryList() -> Result<List<catalog.AbsLibrary>, absclient.AbsFault>

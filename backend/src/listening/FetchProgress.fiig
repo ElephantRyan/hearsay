@@ -1,6 +1,6 @@
-use hearsay.absclient
-use hearsay.absclient.progress
-use hearsay.absclient.progress.AbsProgress
+use hearsay.absclient;
+use hearsay.absclient.progress;
+use hearsay.absclient.progress.AbsProgress;
 
 // What ABS says I have started. A 404 is an account ABS no longer has.
 gateway fetchProgress(userId: string) -> Result<List<progress.Progress>, absclient.AbsFault>

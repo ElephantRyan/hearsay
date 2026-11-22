@@ -1,30 +1,30 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.absclient.collections.AbsCollections
-use hearsay.accounts
-use hearsay.ratings
-use hearsay.sessions
-use hearsay.sessions.SessionConfig
-use hearsay.settings.AbsService
-use hearsay.settings.SyncConfig
-use hearsay.settings.Abs
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.absclient.collections.AbsCollections;
+use hearsay.accounts;
+use hearsay.ratings;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
+use hearsay.settings.AbsService;
+use hearsay.settings.SyncConfig;
+use hearsay.settings.Abs;
 
 test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake SyncConfig {
-        mirrorEnabled: true
+        mirrorEnabled: true;
     }
 
     fake AbsCatalog {
@@ -100,11 +100,11 @@ test syncDryRunsByDefaultAndOnlyWritesWhenAskedTo {
 
 test syncIsOffByDefaultAndPrivateToTheirOwner {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake SyncConfig {
-        mirrorEnabled: false
+        mirrorEnabled: false;
     }
 
     fake AbsCollections {
@@ -142,11 +142,11 @@ test syncIsOffByDefaultAndPrivateToTheirOwner {
 // disabled means disabled for everyone: a stranger learns nothing about sessions
 test aPersonCannotSyncSomeoneElsesList {
     fake SessionConfig {
-        sessionMaxAge: 3600
+        sessionMaxAge: 3600;
     }
 
     fake SyncConfig {
-        mirrorEnabled: true
+        mirrorEnabled: true;
     }
 
     fake AbsCollections {

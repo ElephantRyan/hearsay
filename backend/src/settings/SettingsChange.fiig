@@ -2,14 +2,14 @@
 // null) is left as it is; a saved one goes back to the environment's value
 // only through DELETE /admin/settings/{name}.
 model SettingsChange {
-    absUrl: string | None
-    serviceToken: string | None
-    mirrorEnabled: bool | None
-    authMode: AuthMode | None
-    frontendUrl: string | None
-    oidcIssuer: string | None
-    oidcClientId: string | None
-    oidcClientSecret: string | None
-    oidcRedirectUri: string | None
-    serverName: string | None
+    absUrl: string | None;
+    serviceToken: string | None;
+    mirrorEnabled: bool | None;
+    authMode: AuthMode | None;
+    frontendUrl: string | None;
+    oidcIssuer: string | None;
+    oidcClientId: string | None;
+    oidcClientSecret: string | None;
+    oidcRedirectUri: string | None;
+    serverName: string | None;
 }

@@ -1,5 +1,5 @@
-use hearsay.accounts
-use fiig.http
+use hearsay.accounts;
+use fiig.http;
 
 // A sent request as the identity provider answers it. 400, 401 and 403 mean
 // the provider rejected what the person or browser presented (a used or
@@ -10,7 +10,7 @@ conversion oidcReply(
     return match (sent) {
         Err(failure) -> Err(
             accounts.SignInError.Unavailable("the identity provider is unreachable"),
-        )
+        ),
         Ok(reply) -> {
             if (reply.status == 200) {
                 return Ok(reply);
@@ -27,6 +27,6 @@ conversion oidcReply(
             return Err(
                 accounts.SignInError.Unavailable("the identity provider answered ${reply.status}"),
             );
-        }
+        },
     }
 }

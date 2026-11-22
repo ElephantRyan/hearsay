@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 // ABS's batch lookup: many books in one call. It is a POST that reads; the
 // path is fixed here, so nothing else can be sent this way.
@@ -18,6 +18,6 @@ rule absBatchGet(base: string, itemIds: List<string>, token: string) -> http.Req
 
 private {
     model AbsBatchBody {
-        libraryItemIds: List<string>
+        libraryItemIds: List<string>;
     }
 }

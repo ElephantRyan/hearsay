@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 // The only requests this client sends that change something in ABS, and only
 // for collections: callers pass a method and a JSON body, never a free path

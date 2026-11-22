@@ -5,7 +5,7 @@ workflow callingServer(authorization: string | None) -> Result<LinkedServer, Pee
     return match (authorization) {
         None -> {
             return Err(PeerRefusal.NoKey);
-        }
+        },
 
         given -> {
             if (!given.startsWith("Bearer ")) {
@@ -15,12 +15,12 @@ workflow callingServer(authorization: string | None) -> Result<LinkedServer, Pee
             return match (linkWithKey(given.removePrefix("Bearer ").trim())) {
                 None -> {
                     return Err(PeerRefusal.UnknownKey);
-                }
+                },
 
                 link -> {
                     return Ok(link);
-                }
+                },
             }
-        }
+        },
     }
 }

@@ -1,8 +1,8 @@
-use hearsay.absclient
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
-use fiig.http
-use fiig.http.HttpClient
+use hearsay.absclient;
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
+use fiig.http;
+use fiig.http.HttpClient;
 
 // The only writes this client makes to ABS: the collections that mirror
 // recommendations (PLAN.md M6). Every id is checked before a path is built.

@@ -1,6 +1,6 @@
-use hearsay.accounts
-use hearsay.matching
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.matching;
+use hearsay.settings;
 
 // POST /admin/library-index: rebuild the index linked servers' books are
 // matched against, and say how many books can be recognised and how.

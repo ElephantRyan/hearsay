@@ -2,5 +2,5 @@
 // RS256 signatures yet, so identity comes from the userinfo endpoint, which
 // is fetched over TLS straight from the issuer.
 model OidcTokenReply {
-    accessToken: string from json "access_token"
+    accessToken: string from json "access_token";
 }

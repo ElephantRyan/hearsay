@@ -1,8 +1,8 @@
-use hearsay.absclient as client
-use hearsay.absclient.AbsServer
-use hearsay.absclient.members.AbsMembers
-use hearsay.settings
-use hearsay.signin.authentik.AuthentikSignIn
+use hearsay.absclient as client;
+use hearsay.absclient.AbsServer;
+use hearsay.absclient.members.AbsMembers;
+use hearsay.settings;
+use hearsay.signin.authentik.AuthentikSignIn;
 
 // Is Audiobookshelf there, does this server's token work, and does Authentik
 // answer? Asks each of them every time.
@@ -15,7 +15,7 @@ private {
         return match (settings.absUrl()) {
             None -> {
                 return status("not set up", None, None, "No Audiobookshelf address is set.");
-            }
+            },
 
             url -> {
                 return match (AbsServer.status(url)) {
@@ -26,13 +26,13 @@ private {
                             None,
                             "Audiobookshelf didn't answer at that address.",
                         );
-                    }
+                    },
 
                     Ok(_) -> {
                         return withAccount(url);
-                    }
+                    },
                 }
-            }
+            },
         }
     }
 
@@ -40,19 +40,19 @@ private {
         return match (settings.serviceToken()) {
             None -> {
                 return status("reachable", None, None, "No Audiobookshelf token is set.");
-            }
+            },
 
             token -> {
                 return match (AbsMembers.meAsService()) {
                     Ok(user) -> {
                         return status("reachable", user.username, user.type, None);
-                    }
+                    },
 
                     Err(error) -> {
                         return status("reachable", None, None, tokenProblem(error));
-                    }
+                    },
                 }
-            }
+            },
         }
     }
 
@@ -60,19 +60,19 @@ private {
         return match (settings.oidcSettingsOf()) {
             None -> {
                 return "not set up";
-            }
+            },
 
             oidc -> {
                 return match (AuthentikSignIn.discover(oidc)) {
                     Ok(_) -> {
                         return "answering";
-                    }
+                    },
 
                     Err(_) -> {
                         return "not answering";
-                    }
+                    },
                 }
-            }
+            },
         }
     }
 
@@ -104,12 +104,12 @@ private {
     // Short, safe words for a failed token check. Never the token or a body.
     tokenProblem(error: client.AbsError) -> string {
         return match (error) {
-            client.AbsError.NotFound -> "Audiobookshelf answered 404 to /api/me."
-            client.AbsError.Unauthorized -> "Audiobookshelf refused the token."
-            client.AbsError.Rejected(status) -> "Audiobookshelf answered ${status} to the token."
-            client.AbsError.Unreachable(failure) -> "Audiobookshelf stopped answering."
-            client.AbsError.Unreadable(failure) -> "Audiobookshelf's answer couldn't be read."
-            client.AbsError.NotSetUp(missing) -> "No Audiobookshelf token is set."
+            client.AbsError.NotFound -> "Audiobookshelf answered 404 to /api/me.",
+            client.AbsError.Unauthorized -> "Audiobookshelf refused the token.",
+            client.AbsError.Rejected(status) -> "Audiobookshelf answered ${status} to the token.",
+            client.AbsError.Unreachable(failure) -> "Audiobookshelf stopped answering.",
+            client.AbsError.Unreadable(failure) -> "Audiobookshelf's answer couldn't be read.",
+            client.AbsError.NotSetUp(missing) -> "No Audiobookshelf token is set.",
         }
     }
 }

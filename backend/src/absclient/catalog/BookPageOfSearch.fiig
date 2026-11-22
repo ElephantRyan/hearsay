@@ -1,4 +1,4 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // GET /api/libraries/{id}/search as a BookPage of at most `size` books: only
 // the `book` hits are read; authors, series and tags are ignored.
@@ -18,10 +18,10 @@ conversion bookPageOfSearch(body: bytes, size: int) -> Result<BookPage, absclien
 
 private {
     model AbsSearchReply {
-        book: List<AbsSearchHit>
+        book: List<AbsSearchHit>;
     }
 
     model AbsSearchHit {
-        libraryItem: AbsListedItem
+        libraryItem: AbsListedItem;
     }
 }

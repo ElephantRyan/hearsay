@@ -1,4 +1,4 @@
-use hearsay.absclient as client
+use hearsay.absclient as client;
 
 // The admin role: an owner or an admin, and nobody else.
 test onlyAnAdminOrTheOwnerIsAnAdmin {

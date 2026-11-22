@@ -1,4 +1,4 @@
-use hearsay.accounts
+use hearsay.accounts;
 
 // Who the session cookie belongs to: settled once per request, by the adapter,
 // before the request is read. No token and no live session are the same answer.
@@ -6,18 +6,18 @@ workflow signedIn(token: string | None) -> Result<accounts.Identity, IdentityErr
     return match (token) {
         None -> {
             return Err(IdentityError.NotSignedIn);
-        }
+        },
 
         found -> {
             return match (liveSession(found)) {
                 None -> {
                     return Err(IdentityError.NotSignedIn);
-                }
+                },
 
                 identity -> {
                     return Ok(identity);
-                }
+                },
             }
-        }
+        },
     }
 }

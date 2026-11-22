@@ -1,4 +1,4 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // One page of GET /api/libraries/{id}/items?minified=1 as a BookPage. Pages
 // count from 0.
@@ -16,9 +16,9 @@ conversion bookPageOfListing(body: bytes) -> Result<BookPage, absclient.AbsError
 
 private {
     model AbsPage {
-        total: int
-        limit: int
-        page: int
-        results: List<AbsListedItem>
+        total: int;
+        limit: int;
+        page: int;
+        results: List<AbsListedItem>;
     }
 }

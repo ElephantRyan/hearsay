@@ -1,12 +1,12 @@
-use hearsay.sessions
+use hearsay.sessions;
 
 // The listening routes of the HTTP surface; src/Hearsay.fiig serves every domain's
 // adapter together.
 adapter http listeningApi {
-    wire sessions.me
+    wire sessions.me;
 
     GET "/me/listening" -> showMyListening(me) produces "application/json" {
-        Ok(books) -> 200 books
-        Err(error) -> listeningErrorResponse(error)
+        Ok(books) -> 200 books,
+        Err(error) -> listeningErrorResponse(error),
     }
 }

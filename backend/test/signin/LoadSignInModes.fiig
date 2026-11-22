@@ -1,18 +1,18 @@
-use hearsay.settings.SignInConfig
-use hearsay.settings
-use hearsay.settings.Oidc
+use hearsay.settings.SignInConfig;
+use hearsay.settings;
+use hearsay.settings.Oidc;
 
 test signInModesFollowAuthMode {
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "https://app.test/api/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "https://app.test/api/auth/callback";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Oidc
-        frontendUrl: "x"
+        authMode: settings.AuthMode.Oidc;
+        frontendUrl: "x";
     }
 
     expect loadSignInModes() == SignInModes(password: false, oidc: true);

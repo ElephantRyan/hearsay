@@ -2,8 +2,8 @@
 // linked server (or is taking up an invite). None of them says more than it must
 // to a caller that may not be a linked server at all.
 enum FederationError {
-    BadInvite
-    Invalid(field: string, reason: string)
-    AlreadyLinked
-    NoServerName
+    BadInvite,
+    Invalid(field: string, reason: string),
+    AlreadyLinked,
+    NoServerName,
 }

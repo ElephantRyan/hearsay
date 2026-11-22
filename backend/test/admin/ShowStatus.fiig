@@ -1,24 +1,24 @@
-use hearsay.absclient as client
-use hearsay.absclient.AbsServer
-use hearsay.absclient.members
-use hearsay.absclient.members.AbsMembers
-use hearsay.accounts
-use hearsay.settings
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
-use hearsay.settings.Oidc
-use hearsay.signin.authentik.AuthentikSignIn
+use hearsay.absclient as client;
+use hearsay.absclient.AbsServer;
+use hearsay.absclient.members;
+use hearsay.absclient.members.AbsMembers;
+use hearsay.accounts;
+use hearsay.settings;
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
+use hearsay.settings.Oidc;
+use hearsay.signin.authentik.AuthentikSignIn;
 
 test statusSaysWhoTheTokenBelongsTo {
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "https://app.test/api/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "https://app.test/api/auth/callback";
     }
 
     fake AuthentikSignIn {
@@ -39,7 +39,7 @@ test statusSaysWhoTheTokenBelongsTo {
         // The token the real gateway would send: the one saved in the app.
         gateway meAsService() -> Result<members.AbsUser, client.AbsError> {
             return match (AbsService.token) {
-                None -> Err(client.AbsError.Unauthorized)
+                None -> Err(client.AbsError.Unauthorized),
                 token -> {
                     if (!token.matches("good")) {
                         return Err(client.AbsError.Unauthorized);
@@ -52,7 +52,7 @@ test statusSaysWhoTheTokenBelongsTo {
                             type: client.AbsUserType.Admin,
                         ),
                     );
-                }
+                },
             }
         }
     }
@@ -77,18 +77,18 @@ test statusSaysWhoTheTokenBelongsTo {
 // Authentik has no client secret, so the card says what is missing.
 test statusSaysWhenNoTokenIsSet {
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake AbsService {
-        token: None
+        token: None;
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: None
-        redirectUri: "https://app.test/api/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: None;
+        redirectUri: "https://app.test/api/auth/callback";
     }
 
     fake AbsServer {

@@ -1,5 +1,5 @@
 // Whether this server may write collections into ABS at all (PLAN.md section 8):
 // saved in the app, or else MIRROR_ENABLED.
 wire SyncConfig {
-    mirrorEnabled: bool from setting "sync.mirrorEnabled" ?? env "MIRROR_ENABLED" = false
+    mirrorEnabled: bool from setting "sync.mirrorEnabled" ?? env "MIRROR_ENABLED" = false;
 }

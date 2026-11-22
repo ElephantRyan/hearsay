@@ -1,11 +1,11 @@
-use hearsay.sessions
+use hearsay.sessions;
 
 // What the signed-in person has rated.
 adapter http ratedApi {
-    wire sessions.me
+    wire sessions.me;
 
     GET "/ratings/mine?sort={sort}" -> listMyRatings(me, sort: RatingOrder | None)
             produces "application/json" {
-        rows -> 200 rows
+        rows -> 200 rows,
     }
 }

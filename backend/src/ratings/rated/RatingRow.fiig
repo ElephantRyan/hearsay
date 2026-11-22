@@ -3,17 +3,17 @@
 // matchedBy are None for this server's own ratings; for one fetched from a
 // linked server, they are its name and how the book was recognised.
 model RatingRow {
-    userId: string
-    username: string
-    itemId: string
-    libraryId: string
-    title: string
-    authors: string
-    score: int
-    note: string
-    recommended: bool
-    createdAt: int
-    updatedAt: int
-    via: string | None
-    matchedBy: string | None
+    userId: string;
+    username: string;
+    itemId: string;
+    libraryId: string;
+    title: string;
+    authors: string;
+    score: int;
+    note: string;
+    recommended: bool;
+    createdAt: int;
+    updatedAt: int;
+    via: string | None;
+    matchedBy: string | None;
 }

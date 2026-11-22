@@ -1,4 +1,4 @@
-use hearsay.ratings.rated
+use hearsay.ratings.rated;
 
 // A linked server's person keeps their name unless someone else among
 // `everyone` has it too, here or on another linked server: then their server's
@@ -17,13 +17,13 @@ private {
         return match (row.via) {
             None -> {
                 return row;
-            }
+            },
 
             server -> {
                 return match (sameName) {
                     None -> {
                         return row;
-                    }
+                    },
 
                     others -> {
                         if ((filter(o in others): o.userId != row.userId).length() == 0) {
@@ -31,9 +31,9 @@ private {
                         }
 
                         return copy(row, username: "${row.username} · ${server}");
-                    }
+                    },
                 }
-            }
+            },
         }
     }
 }

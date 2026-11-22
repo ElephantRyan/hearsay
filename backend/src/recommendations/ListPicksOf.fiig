@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.ratings.rated
+use hearsay.accounts;
+use hearsay.ratings.rated;
 
 workflow listPicksOf(me: accounts.Identity, userId: string) -> List<rated.RatingRow> {
     return picksOf(userId);

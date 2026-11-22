@@ -2,10 +2,10 @@
 // environment's: nothing was saved and the deployment left it as shipped.
 conversion sourceText(source: SettingSource) -> string {
     return match (source) {
-        SettingSource.Saved -> "saved"
-        SettingSource.Pending -> "saved"
-        SettingSource.Deployment -> "environment"
-        SettingSource.Default -> "environment"
-        SettingSource.Unset -> "unset"
+        SettingSource.Saved -> "saved",
+        SettingSource.Pending -> "saved",
+        SettingSource.Deployment -> "environment",
+        SettingSource.Default -> "environment",
+        SettingSource.Unset -> "unset",
     }
 }

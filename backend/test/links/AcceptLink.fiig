@@ -1,13 +1,13 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.accounts
-use fiig.http
-use fiig.http.HttpClient
-use hearsay.settings
-use hearsay.settings.Abs
-use hearsay.settings.ServerConfig
-use hearsay.settings.SignInConfig
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use fiig.http;
+use fiig.http.HttpClient;
+use hearsay.settings;
+use hearsay.settings.Abs;
+use hearsay.settings.ServerConfig;
+use hearsay.settings.SignInConfig;
 
 // The inviting side: an invite works once and for a day, and the key it
 // answers with is the only way back in. Making the first invite builds the
@@ -15,12 +15,12 @@ use hearsay.settings.SignInConfig
 // can match books.
 test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     fake ServerConfig {
-        name: "Ryan's library"
+        name: "Ryan's library";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://ryan.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://ryan.test";
     }
 
     fake AbsCatalog {
@@ -142,7 +142,7 @@ test anExpiredInviteIsRefused {
 
 test aBadOfferStillSpendsTheInvite {
     fake ServerConfig {
-        name: "Ryan's library"
+        name: "Ryan's library";
     }
 
     secret = newKey();
@@ -157,7 +157,7 @@ test aBadOfferStillSpendsTheInvite {
 // couldn't match any book.
 test anInviteWaitsForTheLibraryIndex {
     fake ServerConfig {
-        name: "Ryan's library"
+        name: "Ryan's library";
     }
 
     fake AbsCatalog {
@@ -188,7 +188,7 @@ test anInviteWaitsForTheLibraryIndex {
 
 test linkingWaitsForAServerName {
     fake ServerConfig {
-        name: None
+        name: None;
     }
 
     admin = accounts.Admin(

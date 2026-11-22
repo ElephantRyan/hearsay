@@ -1,8 +1,8 @@
 // Someone with published recommendations, and how many. via is their server's
 // name when they are on a linked one.
 model Recommender {
-    userId: string
-    username: string
-    count: int
-    via: string | None
+    userId: string;
+    username: string;
+    count: int;
+    via: string | None;
 }

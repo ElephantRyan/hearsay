@@ -6,11 +6,11 @@
 // `beginUrl` is outside the SignIn interface: only the OIDC path has a
 // redirect step. The caller makes `state` and `codeVerifier` (Random.bytes),
 // keeps them in a short-lived cookie, and passes them back at the callback.
-use hearsay.absclient as client
-use hearsay.absclient.members
-use hearsay.accounts
-use fiig.http
-use fiig.http.HttpClient
+use hearsay.absclient as client;
+use hearsay.absclient.members;
+use hearsay.accounts;
+use fiig.http;
+use fiig.http.HttpClient;
 
 capability AuthentikSignIn provides accounts.SignIn {
     gateway beginUrl(
@@ -40,7 +40,7 @@ capability AuthentikSignIn provides accounts.SignIn {
         return match (attempt) {
             accounts.SignInAttempt.Password(username, password) -> Err(
                 accounts.SignInError.WrongMethod,
-            )
+            ),
             accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> {
                 oidc = oidcOf(server)?;
                 found = oidcReply(HttpClient.send(oidcGet(discoveryUrl(oidc.issuer), "")))?;
@@ -81,7 +81,7 @@ capability AuthentikSignIn provides accounts.SignIn {
                     "list of Audiobookshelf users",
                 )?;
                 return identityOfMatches(members.usersMatchingEmail(everyone.users, email));
-            }
+            },
         }
     }
 

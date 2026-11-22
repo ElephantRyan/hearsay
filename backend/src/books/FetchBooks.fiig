@@ -1,6 +1,6 @@
-use hearsay.absclient
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
+use hearsay.absclient;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
 
 // Many books from ABS in one call, with the server's token.
 gateway fetchBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookError>

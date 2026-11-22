@@ -1,19 +1,19 @@
-use hearsay.absclient
-use hearsay.settings.Abs
-use fiig.http
-use fiig.http.HttpClient
-use hearsay.settings
-use hearsay.settings.AbsService
+use hearsay.absclient;
+use hearsay.settings.Abs;
+use fiig.http;
+use fiig.http.HttpClient;
+use hearsay.settings;
+use hearsay.settings.AbsService;
 
 // Writes are the dangerous calls, so bad ids stop before any request: a path
 // built from "../users" would be a write-capable request to the wrong place.
 test absCollectionWritesRefuseBadIdsAndMapFailures {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake HttpClient {
@@ -43,11 +43,11 @@ test absCollectionWritesRefuseBadIdsAndMapFailures {
 // carrying the books in order. ABS's reply is faked with the one member read.
 test absCollectionWritesSendExactlyWhatTheyShould {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake HttpClient {
@@ -59,21 +59,21 @@ test absCollectionWritesSendExactlyWhatTheyShould {
                 match (request.body) {
                     None -> {
                         expect false;
-                    }
+                    },
 
                     sent -> {
                         match (sent.utf8()) {
                             None -> {
                                 expect false;
-                            }
+                            },
 
                             text -> {
                                 expect text.contains("\"libraryId\":\"lib-1\"");
                                 expect text.contains("\"name\":\"Ann Recommends\"");
                                 expect text.contains("\"books\":[\"b-2\",\"b-1\"]");
-                            }
+                            },
                         }
-                    }
+                    },
                 }
 
                 return Ok(

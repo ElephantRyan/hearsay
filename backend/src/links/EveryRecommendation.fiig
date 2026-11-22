@@ -1,5 +1,5 @@
-use hearsay.ratings.rated
-use hearsay.ratings.rated.RatedBooks
+use hearsay.ratings.rated;
+use hearsay.ratings.rated.RatedBooks;
 
 // Every recommended rating, this server's and linked servers' alike (those of
 // books this library has), with linked names marked where they clash. What

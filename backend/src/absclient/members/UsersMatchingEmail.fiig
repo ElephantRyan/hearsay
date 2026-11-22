@@ -8,8 +8,8 @@ rule usersMatchingEmail(users: List<AbsUserEntry>, email: string) -> List<AbsUse
 private {
     hasEmail(candidate: string | None, wanted: string) -> bool {
         return match (candidate) {
-            None -> false
-            found -> found.equalsIgnoringCase(wanted)
+            None -> false,
+            found -> found.equalsIgnoringCase(wanted),
         }
     }
 }

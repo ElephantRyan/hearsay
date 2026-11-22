@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 // GET /api/libraries/{id}/items for one page, titles A to Z. The caller has
 // made the id one path segment with absPathId; the rest are integers.

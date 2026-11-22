@@ -1,4 +1,4 @@
 // The body of POST /admin/links: the link code the other server's admin gave.
 model LinkRequest {
-    code: string
+    code: string;
 }

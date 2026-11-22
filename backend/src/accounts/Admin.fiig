@@ -2,5 +2,5 @@
 // Only signedInAdmin settles one, so a workflow that takes an Admin is reached
 // by nobody else.
 model Admin {
-    identity: Identity
+    identity: Identity;
 }

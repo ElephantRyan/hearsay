@@ -1,4 +1,4 @@
-use hearsay.absclient.catalog
+use hearsay.absclient.catalog;
 
 gateway findBook(itemId: string) -> catalog.Book | None requires Database idempotent {
     return Database.queryOne(

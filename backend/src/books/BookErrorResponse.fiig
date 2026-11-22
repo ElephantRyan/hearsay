@@ -5,7 +5,7 @@ conversion bookErrorResponse(error: BookError) -> HttpResponse<string> {
         BookError.Missing -> HttpResponse(
             status: 404,
             body: "no book with that id in Audiobookshelf",
-        )
-        BookError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+        ),
+        BookError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
     }
 }

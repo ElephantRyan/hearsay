@@ -1,8 +1,8 @@
-use hearsay.absclient as client
-use hearsay.accounts
-use hearsay.settings
-use hearsay.settings.SignInConfig
-use hearsay.signin
+use hearsay.absclient as client;
+use hearsay.accounts;
+use hearsay.settings;
+use hearsay.settings.SignInConfig;
+use hearsay.signin;
 
 // A fake pins a setting's value, so these tests fake nothing an admin saves:
 // with no environment, each starts unset (or at its default) and is saved.
@@ -89,8 +89,8 @@ test switchingToAuthentikTurnsPasswordSignInOff {
 
 test authentikOnlyWaitsForEveryAuthentikSetting {
     fake SignInConfig {
-        authMode: settings.AuthMode.Oidc
-        frontendUrl: "https://app.test"
+        authMode: settings.AuthMode.Oidc;
+        frontendUrl: "https://app.test";
     }
 
     admin = accounts.Admin(
@@ -145,8 +145,8 @@ test authentikOnlyWaitsForTheClientSecret {
 private {
     tokenIs(expected: string) -> bool {
         return match (settings.serviceToken()) {
-            None -> false
-            token -> token.matches(expected)
+            None -> false,
+            token -> token.matches(expected),
         }
     }
 }

@@ -1,4 +1,4 @@
 model OidcUserInfo {
-    sub: string
-    email: string | None
+    sub: string;
+    email: string | None;
 }

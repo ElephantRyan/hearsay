@@ -1,8 +1,8 @@
-use hearsay.absclient
+use hearsay.absclient;
 
 // GET /api/me: who ABS says the token belongs to.
 model AbsUser {
-    id: string
-    username: string
-    type: absclient.AbsUserType
+    id: string;
+    username: string;
+    type: absclient.AbsUserType;
 }

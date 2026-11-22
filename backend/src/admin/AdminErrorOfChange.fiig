@@ -1,8 +1,8 @@
-use hearsay.settings
+use hearsay.settings;
 
 conversion adminErrorOfChange(error: settings.SettingsChangeError) -> AdminError {
     return match (error) {
-        settings.SettingsChangeError.Invalid(field, reason) -> AdminError.Invalid(field, reason)
-        settings.SettingsChangeError.UnknownSetting(name) -> AdminError.UnknownSetting(name)
+        settings.SettingsChangeError.Invalid(field, reason) -> AdminError.Invalid(field, reason),
+        settings.SettingsChangeError.UnknownSetting(name) -> AdminError.UnknownSetting(name),
     }
 }

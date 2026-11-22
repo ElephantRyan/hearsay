@@ -1,5 +1,5 @@
-use hearsay.absclient.members
-use hearsay.accounts
+use hearsay.absclient.members;
+use hearsay.accounts;
 
 conversion identityOfSession(session: members.AbsSession) -> accounts.Identity {
     return accounts.Identity(

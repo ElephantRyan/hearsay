@@ -1,6 +1,6 @@
 model AbsListedMetadata {
-    title: string
-    authorName: string | None
-    asin: string | None
-    isbn: string | None
+    title: string;
+    authorName: string | None;
+    asin: string | None;
+    isbn: string | None;
 }

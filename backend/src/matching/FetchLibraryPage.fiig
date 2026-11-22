@@ -1,6 +1,6 @@
-use hearsay.absclient
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
+use hearsay.absclient;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
 
 // One page of a library's books, ASIN and ISBN included, for an index rebuild.
 gateway fetchLibraryPage(

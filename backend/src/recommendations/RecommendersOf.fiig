@@ -1,4 +1,4 @@
-use hearsay.ratings.rated
+use hearsay.ratings.rated;
 
 // Who has published recommendations, and how many each, most first.
 rule recommendersOf(rows: List<rated.RatingRow>) -> List<Recommender> {

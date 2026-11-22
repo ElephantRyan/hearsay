@@ -1,4 +1,4 @@
-use hearsay.settings
+use hearsay.settings;
 
 // The scheduled sync: every collection brought up to date, when the server
 // writes collections at all. Off is a quiet no-op. A collection write that

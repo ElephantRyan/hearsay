@@ -2,8 +2,8 @@
 // (password and Authentik) say it. A way in the server doesn't offer looks, to
 // a caller, like a route that isn't there.
 enum LoginError {
-    PasswordNotOffered
-    OidcNotOffered
-    Refused(reason: string)
-    Unavailable(detail: string)
+    PasswordNotOffered,
+    OidcNotOffered,
+    Refused(reason: string),
+    Unavailable(detail: string),
 }

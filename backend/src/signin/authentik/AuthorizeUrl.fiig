@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 // Where the browser goes to sign in. state ties the callback to this
 // browser; the challenge ties the code to the verifier only we hold.
@@ -26,8 +26,8 @@ conversion authorizeUrl(
 private {
     queryOf(fields: List<http.Header>) -> string {
         return match (http.formEncode(fields).utf8()) {
-            None -> ""
-            text -> text
+            None -> "",
+            text -> text,
         }
     }
 }

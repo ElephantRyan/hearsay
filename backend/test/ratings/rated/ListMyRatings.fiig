@@ -1,5 +1,5 @@
-use hearsay.absclient as client
-use hearsay.accounts
+use hearsay.absclient as client;
+use hearsay.accounts;
 
 test myRatingsComeInAnyOrderAskedFor {
     ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);

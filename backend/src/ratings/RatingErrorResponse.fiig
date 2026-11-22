@@ -1,11 +1,11 @@
-use hearsay.books
+use hearsay.books;
 
 // The status and message a client sees for each way rating can fail.
 conversion ratingErrorResponse(error: RatingError) -> HttpResponse<string> {
     return match (error) {
-        RatingError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
-        RatingError.Book(cause) -> books.bookErrorResponse(cause)
-        RatingError.NoRating -> HttpResponse(status: 404, body: "no rating of yours for that book")
-        RatingError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+        RatingError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}"),
+        RatingError.Book(cause) -> books.bookErrorResponse(cause),
+        RatingError.NoRating -> HttpResponse(status: 404, body: "no rating of yours for that book"),
+        RatingError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
     }
 }

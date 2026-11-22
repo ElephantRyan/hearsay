@@ -1,7 +1,7 @@
 // A page of books for browsing, in the order ABS gave them.
 model BookPage {
-    total: int
-    page: int
-    limit: int
-    books: List<Book>
+    total: int;
+    page: int;
+    limit: int;
+    books: List<Book>;
 }

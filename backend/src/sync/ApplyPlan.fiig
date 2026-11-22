@@ -1,14 +1,14 @@
 // Carries out one planned change and records it. The only code in this app that
 // writes to ABS. A collection we made that ABS no longer has (someone deleted
 // it) is recreated; one that is already gone when we remove it is just forgotten.
-use hearsay.absclient as client
-use hearsay.absclient.collections.AbsCollections
+use hearsay.absclient as client;
+use hearsay.absclient.collections.AbsCollections;
 
 activity applyPlan(plan: SyncPlan, now: int) -> SyncResult {
     return match (plan.collectionId) {
         None -> {
             return createFor(plan, now);
-        }
+        },
 
         existing -> {
             if (plan.action == SyncAction.Remove) {
@@ -16,7 +16,7 @@ activity applyPlan(plan: SyncPlan, now: int) -> SyncResult {
             }
 
             return updateFor(plan, existing, now);
-        }
+        },
     }
 }
 
@@ -38,11 +38,11 @@ private {
             Ok(id) -> {
                 remember(plan, id, now);
                 return syncResultOf(plan, SyncOutcome.Created, None);
-            }
+            },
 
             Err(error) -> {
                 return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
-            }
+            },
         }
     }
 
@@ -51,7 +51,7 @@ private {
             Ok(_) -> {
                 remember(plan, existing, now);
                 return syncResultOf(plan, SyncOutcome.Updated, None);
-            }
+            },
 
             Err(error) -> {
                 if (error == client.AbsError.NotFound) {
@@ -60,7 +60,7 @@ private {
                 }
 
                 return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
-            }
+            },
         }
     }
 
@@ -69,7 +69,7 @@ private {
             Ok(_) -> {
                 deleteSyncState(plan.userId, plan.libraryId);
                 return syncResultOf(plan, SyncOutcome.Removed, None);
-            }
+            },
 
             Err(error) -> {
                 if (error == client.AbsError.NotFound) {
@@ -78,16 +78,16 @@ private {
                 }
 
                 return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
-            }
+            },
         }
     }
 
     // Short, safe text for a failed collection write. Never a token or a body.
     failedText(error: client.AbsError) -> string {
         return match (client.faultOfAbs(error)) {
-            client.AbsFault.Missing -> "Audiobookshelf has no such collection or library"
-            client.AbsFault.Denied -> "Audiobookshelf refused the server's token"
-            client.AbsFault.Down(detail) -> detail
+            client.AbsFault.Missing -> "Audiobookshelf has no such collection or library",
+            client.AbsFault.Denied -> "Audiobookshelf refused the server's token",
+            client.AbsFault.Down(detail) -> detail,
         }
     }
 

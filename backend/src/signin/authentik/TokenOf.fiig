@@ -1,4 +1,4 @@
-use hearsay.accounts
+use hearsay.accounts;
 
 // This server's own Audiobookshelf token, needed to find an account by email.
 // Without one, Authentik sign-in can't finish.
@@ -8,10 +8,10 @@ rule tokenOf(server: accounts.SignInServer) -> Result<Secret, accounts.SignInErr
             return Err(
                 accounts.SignInError.Unavailable("this server has no Audiobookshelf token yet"),
             );
-        }
+        },
 
         token -> {
             return Ok(token);
-        }
+        },
     }
 }

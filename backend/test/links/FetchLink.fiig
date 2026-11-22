@@ -1,13 +1,13 @@
-use hearsay.absclient as client
-use hearsay.absclient.catalog
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.accounts
-use fiig.http
-use fiig.http.HttpClient
-use hearsay.settings
-use hearsay.settings.Abs
-use hearsay.settings.ServerConfig
-use hearsay.settings.SignInConfig
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use fiig.http;
+use fiig.http.HttpClient;
+use hearsay.settings;
+use hearsay.settings.Abs;
+use hearsay.settings.ServerConfig;
+use hearsay.settings.SignInConfig;
 
 // The fetching side, against a fake of the other server: its first answer has
 // a book matched by ASIN, one by title and one this library hasn't (fetched as
@@ -15,12 +15,12 @@ use hearsay.settings.SignInConfig
 // only one; then it refuses the key, as after it unlinked this server.
 test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     fake ServerConfig {
-        name: "Alex's library"
+        name: "Alex's library";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://alex.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://alex.test";
     }
 
     fake AbsCatalog {
@@ -199,11 +199,11 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     match (refused.problem) {
         None -> {
             expect false;
-        }
+        },
 
         problem -> {
             expect problem.contains("may have unlinked");
-        }
+        },
     }
 
     expect linkedRatingsOf(link.id).length() == 1;
@@ -220,12 +220,12 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
 // ABS answers the listing once, when linking builds the index, then fails.
 test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     fake ServerConfig {
-        name: "Alex's library"
+        name: "Alex's library";
     }
 
     fake SignInConfig {
-        authMode: settings.AuthMode.Abs
-        frontendUrl: "https://alex.test"
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://alex.test";
     }
 
     fake AbsCatalog {

@@ -12,23 +12,23 @@ workflow fetchOnSchedule() -> Result<int, FetchError> {
     for (peer in peers) {
         match (fetchLink(peer)) {
             Err(_) -> {
-            }
+            },
 
             Ok(link) -> {
                 if (link.problem != None) {
                     failed = failed + 1;
                 }
-            }
+            },
         }
     }
 
     match (indexed) {
         Err(problem) -> {
             return Err(FetchError.IndexNotRebuilt(problem));
-        }
+        },
 
         Ok(_) -> {
-        }
+        },
     }
 
     if (failed > 0) {

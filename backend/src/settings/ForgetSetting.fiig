@@ -2,7 +2,7 @@
 // environment's value applies again. `by` is the admin's user id.
 activity forgetSetting(name: string, by: string) -> Result<None, SettingsChangeError> {
     return match (settingNamed(name)) {
-        None -> Err(SettingsChangeError.UnknownSetting(name))
-        known -> mapErr(e in clearSetting(known, by)): settingsChangeErrorOf(name, e)
+        None -> Err(SettingsChangeError.UnknownSetting(name)),
+        known -> mapErr(e in clearSetting(known, by)): settingsChangeErrorOf(name, e),
     }
 }

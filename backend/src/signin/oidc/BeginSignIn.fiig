@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.settings;
 
 // Step one of Authentik sign-in: fresh state and PKCE verifier (256 random
 // bits each, ADR 0068), and the URL to send the browser to.
@@ -7,11 +7,11 @@ activity beginSignIn() -> Result<OidcStart, accounts.SignInError> {
     return match (settings.oidcSettingsOf()) {
         None -> {
             return Err(accounts.SignInError.WrongMethod);
-        }
+        },
 
         oidc -> {
             return beginWith(oidc);
-        }
+        },
     }
 }
 

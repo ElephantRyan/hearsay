@@ -1,4 +1,4 @@
-use hearsay.accounts
+use hearsay.accounts;
 
 conversion emailOf(info: OidcUserInfo) -> Result<string, accounts.SignInError> {
     return match (info.email) {
@@ -6,7 +6,7 @@ conversion emailOf(info: OidcUserInfo) -> Result<string, accounts.SignInError> {
             accounts.SignInError.Refused(
                 "the identity provider gave no email, so your Audiobookshelf account can't be found",
             ),
-        )
-        given -> Ok(given)
+        ),
+        given -> Ok(given),
     }
 }

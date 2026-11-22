@@ -1,6 +1,6 @@
-use hearsay.absclient.catalog
-use hearsay.absclient.progress
-use hearsay.ratings.rated
+use hearsay.absclient.catalog;
+use hearsay.absclient.progress;
+use hearsay.ratings.rated;
 
 // What I have listened to, most recent first, each with my score if I gave one.
 // A book with progress but no metadata (gone from ABS) is left out.
@@ -23,7 +23,7 @@ rule listenedBooks(
     for (entry in sorted(p in started): p.lastListenedAt descending) {
         match (byId.atOrNone(entry.itemId)) {
             None -> {
-            }
+            },
 
             book -> {
                 rating = scores.atOrNone(entry.itemId);
@@ -41,7 +41,7 @@ rule listenedBooks(
                         recommended: recommendedOf(rating),
                     ),
                 );
-            }
+            },
         }
     }
 
@@ -51,15 +51,15 @@ rule listenedBooks(
 private {
     scoreOf(rating: rated.RatingRow | None) -> int | None {
         return match (rating) {
-            None -> None
-            row -> row.score
+            None -> None,
+            row -> row.score,
         }
     }
 
     recommendedOf(rating: rated.RatingRow | None) -> bool {
         return match (rating) {
-            None -> false
-            row -> row.recommended
+            None -> false,
+            row -> row.recommended,
         }
     }
 }

@@ -2,6 +2,6 @@
 // "environment" (its variable), or "unset". A secret's value is never shown:
 // it is always None, and only the source says whether one is there.
 model SettingValue {
-    value: string | None
-    source: string
+    value: string | None;
+    source: string;
 }

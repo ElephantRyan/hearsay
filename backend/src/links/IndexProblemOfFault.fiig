@@ -1,10 +1,10 @@
-use hearsay.absclient as client
+use hearsay.absclient as client;
 
 // Why ABS couldn't give the library index, in words.
 conversion indexProblemOfFault(fault: client.AbsFault) -> string {
     return match (fault) {
-        client.AbsFault.Missing -> "a library Audiobookshelf listed has gone"
-        client.AbsFault.Denied -> "Audiobookshelf refused this server's token"
-        client.AbsFault.Down(detail) -> detail
+        client.AbsFault.Missing -> "a library Audiobookshelf listed has gone",
+        client.AbsFault.Denied -> "Audiobookshelf refused this server's token",
+        client.AbsFault.Down(detail) -> detail,
     }
 }

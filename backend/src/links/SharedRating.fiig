@@ -2,13 +2,13 @@
 // what recognises the book, the rating, and who made it. personId is opaque:
 // the same person gets the same one each time, but it isn't their ABS id.
 model SharedRating {
-    personId: string
-    username: string
-    asin: string | None
-    isbn: string | None
-    title: string
-    authors: string
-    score: int
-    note: string
-    updatedAt: int
+    personId: string;
+    username: string;
+    asin: string | None;
+    isbn: string | None;
+    title: string;
+    authors: string;
+    score: int;
+    note: string;
+    updatedAt: int;
 }

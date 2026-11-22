@@ -1,4 +1,4 @@
-use fiig.http
+use fiig.http;
 
 // An id from our callers' URLs, made one segment of an ABS path. validId keeps
 // it to ABS's own id shape; http.pathSegment (ADR 0101) is what makes the path
@@ -10,7 +10,7 @@ conversion absPathId(id: string) -> Result<string, AbsError> {
     }
 
     return match (http.pathSegment(id)) {
-        None -> Err(AbsError.NotFound)
-        safe -> Ok(safe)
+        None -> Err(AbsError.NotFound),
+        safe -> Ok(safe),
     }
 }

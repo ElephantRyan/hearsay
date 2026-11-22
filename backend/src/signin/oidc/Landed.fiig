@@ -8,7 +8,7 @@ conversion landed(landing: Landing) -> HttpResponse<None> {
                 headers: ["Location": landing.location, "Cache-Control": "no-store"],
                 cookies: [Cookie(name: "oidc", value: "", maxAge: 0)],
             );
-        }
+        },
 
         session -> {
             return HttpResponse(
@@ -19,6 +19,6 @@ conversion landed(landing: Landing) -> HttpResponse<None> {
                     Cookie(name: "oidc", value: "", maxAge: 0),
                 ],
             );
-        }
+        },
     }
 }

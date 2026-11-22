@@ -1,11 +1,11 @@
 // What a sync would do for one person in one library. `collectionId` is the
 // collection we made earlier, if any.
 model SyncPlan {
-    userId: string
-    libraryId: string
-    name: string
-    description: string
-    bookIds: List<string>
-    collectionId: string | None
-    action: SyncAction
+    userId: string;
+    libraryId: string;
+    name: string;
+    description: string;
+    bookIds: List<string>;
+    collectionId: string | None;
+    action: SyncAction;
 }

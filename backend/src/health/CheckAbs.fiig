@@ -1,7 +1,7 @@
 // M3's exit check: sign in, ask ABS who we are, and look up one book.
-use hearsay.absclient as client
-use hearsay.absclient.catalog.AbsCatalog
-use hearsay.absclient.members.AbsMembers
+use hearsay.absclient as client;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.absclient.members.AbsMembers;
 
 activity checkAbs(
     url: string,

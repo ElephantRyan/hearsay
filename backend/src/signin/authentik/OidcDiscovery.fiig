@@ -1,6 +1,6 @@
 // The members of /.well-known/openid-configuration this provider uses.
 model OidcDiscovery {
-    authorizationEndpoint: string from json "authorization_endpoint"
-    tokenEndpoint: string from json "token_endpoint"
-    userinfoEndpoint: string from json "userinfo_endpoint"
+    authorizationEndpoint: string from json "authorization_endpoint";
+    tokenEndpoint: string from json "token_endpoint";
+    userinfoEndpoint: string from json "userinfo_endpoint";
 }

@@ -1,27 +1,27 @@
-use hearsay.absclient as client
-use hearsay.accounts
-use hearsay.settings.AbsService
-use hearsay.signin.authentik.AuthentikSignIn
-use hearsay.signin.password.AbsPasswordSignIn
-use hearsay.settings.Abs
-use hearsay.settings.Oidc
+use hearsay.absclient as client;
+use hearsay.accounts;
+use hearsay.settings.AbsService;
+use hearsay.signin.authentik.AuthentikSignIn;
+use hearsay.signin.password.AbsPasswordSignIn;
+use hearsay.settings.Abs;
+use hearsay.settings.Oidc;
 
 // signInProvider can return either provider, so both are faked (ADR 0091 §4);
 // the one the attempt should not reach fails the test if it is called.
 test signInUsesTheChosenProvider {
     fake AbsService {
-        token: "svc"
+        token: "svc";
     }
 
     fake Oidc {
-        issuer: "https://idp.test/application/o/abs/"
-        clientId: "cid"
-        clientSecret: "csec"
-        redirectUri: "https://app.test/api/auth/callback"
+        issuer: "https://idp.test/application/o/abs/";
+        clientId: "cid";
+        clientSecret: "csec";
+        redirectUri: "https://app.test/api/auth/callback";
     }
 
     fake Abs {
-        url: "https://abs.test"
+        url: "https://abs.test";
     }
 
     fake AbsPasswordSignIn {

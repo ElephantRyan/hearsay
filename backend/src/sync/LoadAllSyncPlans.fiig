@@ -1,4 +1,4 @@
-use hearsay.links
+use hearsay.links;
 
 // What a full sync would do, for everyone, linked servers' people included
 // (LINKED.md section 6): the scheduled run's plan. Reads our tables and

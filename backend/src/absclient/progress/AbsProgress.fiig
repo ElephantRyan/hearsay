@@ -1,8 +1,8 @@
-use hearsay.absclient
-use hearsay.settings.Abs
-use hearsay.settings.AbsService
-use fiig.http
-use fiig.http.HttpClient
+use hearsay.absclient;
+use hearsay.settings.Abs;
+use hearsay.settings.AbsService;
+use fiig.http;
+use fiig.http.HttpClient;
 
 // What ABS knows about a person's listening. Read with this server's own token:
 // GET /api/users/{id} is admin-only, and it is the one place ABS lists another

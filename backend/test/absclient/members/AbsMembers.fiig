@@ -1,6 +1,6 @@
-use hearsay.absclient
-use fiig.http
-use fiig.http.HttpClient
+use hearsay.absclient;
+use fiig.http;
+use fiig.http.HttpClient;
 
 // The reply body is the shape ABS 2.37.2 returned (checked live 2026-11-19):
 // extra members, including the legacy `token`, are ignored.

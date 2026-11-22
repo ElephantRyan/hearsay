@@ -1,5 +1,5 @@
-use hearsay.accounts
-use hearsay.settings
+use hearsay.accounts;
+use hearsay.settings;
 
 // Browse a library A to Z, or search it. What a page, a size and a search text
 // may be is decided here, before Audiobookshelf is asked anything; the activity

@@ -2,8 +2,8 @@
 // invite's secret, its own name and address, and the key the inviting server
 // will call it with.
 model LinkOffer {
-    secret: string
-    name: string
-    address: string
-    key: string
+    secret: string;
+    name: string;
+    address: string;
+    key: string;
 }

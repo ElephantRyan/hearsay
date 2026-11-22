@@ -3,15 +3,15 @@
 gateway saveSetting(name: SettingName, text: string, by: string) -> Result<None, SettingError>
         requires Settings {
     return match (name) {
-        SettingName.AbsUrl -> Settings.save("abs.url", text, by: by)
-        SettingName.ServiceToken -> Settings.save("abs.serviceToken", text, by: by)
-        SettingName.MirrorEnabled -> Settings.save("sync.mirrorEnabled", text, by: by)
-        SettingName.AuthMode -> Settings.save("signin.authMode", text, by: by)
-        SettingName.FrontendUrl -> Settings.save("signin.frontendUrl", text, by: by)
-        SettingName.OidcIssuer -> Settings.save("oidc.issuer", text, by: by)
-        SettingName.OidcClientId -> Settings.save("oidc.clientId", text, by: by)
-        SettingName.OidcClientSecret -> Settings.save("oidc.clientSecret", text, by: by)
-        SettingName.OidcRedirectUri -> Settings.save("oidc.redirectUri", text, by: by)
-        SettingName.ServerName -> Settings.save("server.name", text, by: by)
+        SettingName.AbsUrl -> Settings.save("abs.url", text, by: by),
+        SettingName.ServiceToken -> Settings.save("abs.serviceToken", text, by: by),
+        SettingName.MirrorEnabled -> Settings.save("sync.mirrorEnabled", text, by: by),
+        SettingName.AuthMode -> Settings.save("signin.authMode", text, by: by),
+        SettingName.FrontendUrl -> Settings.save("signin.frontendUrl", text, by: by),
+        SettingName.OidcIssuer -> Settings.save("oidc.issuer", text, by: by),
+        SettingName.OidcClientId -> Settings.save("oidc.clientId", text, by: by),
+        SettingName.OidcClientSecret -> Settings.save("oidc.clientSecret", text, by: by),
+        SettingName.OidcRedirectUri -> Settings.save("oidc.redirectUri", text, by: by),
+        SettingName.ServerName -> Settings.save("server.name", text, by: by),
     }
 }

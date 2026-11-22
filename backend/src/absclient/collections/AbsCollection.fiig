@@ -1,5 +1,5 @@
 // What a created collection answers with. Only the id is read; ABS also sends
 // the expanded books and timestamps, which decoding drops.
 model AbsCollection {
-    id: string
+    id: string;
 }

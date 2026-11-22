@@ -10,15 +10,15 @@ rule keysOf(asin: string | None, isbn: string | None, title: string, authors: st
 private {
     asinKey(asin: string | None) -> string | None {
         return match (asin) {
-            None -> None
-            given -> nonEmpty(given.trim().uppercase())
+            None -> None,
+            given -> nonEmpty(given.trim().uppercase()),
         }
     }
 
     isbnKey(isbn: string | None) -> string | None {
         return match (isbn) {
-            None -> None
-            given -> nonEmpty(given.replaceAll("-", "").replaceAll(" ", "").trim().uppercase())
+            None -> None,
+            given -> nonEmpty(given.replaceAll("-", "").replaceAll(" ", "").trim().uppercase()),
         }
     }
 

@@ -1,8 +1,8 @@
 // Who ABS says this username and password belong to. Nothing is saved.
-use hearsay.absclient as client
-use hearsay.absclient.members.AbsMembers
-use hearsay.accounts
-use hearsay.signin.password as passwordSignIn
+use hearsay.absclient as client;
+use hearsay.absclient.members.AbsMembers;
+use hearsay.accounts;
+use hearsay.signin.password as passwordSignIn;
 
 activity loginToAbs(
     url: string,

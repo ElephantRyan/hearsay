@@ -1,6 +1,6 @@
 // The orders GET /ratings/mine offers, spelled as the query string spells them.
 enum RatingOrder {
-    Score from json "score"
-    Newest from json "newest"
-    Title from json "title"
+    Score from json "score",
+    Newest from json "newest",
+    Title from json "title",
 }

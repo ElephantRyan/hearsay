@@ -6,18 +6,18 @@ conversion federationErrorResponse(error: FederationError) -> HttpResponse<strin
         FederationError.BadInvite -> HttpResponse(
             status: 403,
             body: "this link code is used, expired, or wrong",
-        )
+        ),
         FederationError.Invalid(field, reason) -> HttpResponse(
             status: 400,
             body: "${field} ${reason}",
-        )
+        ),
         FederationError.AlreadyLinked -> HttpResponse(
             status: 409,
             body: "already linked to that address",
-        )
+        ),
         FederationError.NoServerName -> HttpResponse(
             status: 412,
             body: "this server has no name yet",
-        )
+        ),
     }
 }
