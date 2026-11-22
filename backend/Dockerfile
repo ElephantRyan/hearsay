@@ -3,7 +3,7 @@
 # argument (`web` or `worker`).
 #
 # FIIG_IMAGE is fiig's runtime image, pinned to the release Hearsay is tested
-# on. fiig.lock.json names the same toolchain; change both together.
+# on.
 ARG FIIG_IMAGE=ghcr.io/elephantryan/fiig:v0.1.0-alpha.3
 
 # distroless has no shell to make a directory with, so /data is made here, owned

@@ -90,8 +90,8 @@ cp hearsay.env.example hearsay.env      # fill it in; anything marked "or the ad
 ABS_PUBLIC_URL=https://audiobooks.example.com docker compose up -d --build
 ```
 
-- The backend runs on fiig `v0.1.0-alpha.3` (`ghcr.io/elephantryan/fiig:v0.1.0-alpha.3`), the release
-  `backend/fiig.lock.json` names. Set `FIIG_IMAGE` to try another.
+- The backend runs on fiig `v0.1.0-alpha.3` (`ghcr.io/elephantryan/fiig:v0.1.0-alpha.3`), the
+  release it is tested on. Set `FIIG_IMAGE` to try another.
 - `ABS_PUBLIC_URL` is the Audiobookshelf address browsers load covers from. It is built into the
   browser app, so change it with `docker compose up -d --build`.
 - Only port 8080 (`HEARSAY_PORT`) is published. Put your reverse proxy, with HTTPS, in front of
