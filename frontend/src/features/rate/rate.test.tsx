@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
@@ -7,10 +7,7 @@ import { mount } from "../../test/mount";
 import { server } from "../../test/server";
 
 beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
-  localStorage.clear();
-});
+afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 const signedIn = http.get("/api/me", () =>
@@ -50,7 +47,7 @@ function serve(books: ListenedBook[]) {
 const card = (name: string) => screen.findByRole("article", { name });
 
 describe("the Rate tab", () => {
-  it("shows the unrated books one at a time, and asks before saving a star", async () => {
+  it("shows the unrated books one at a time, and saves a star only on Submit", async () => {
     const saved = serve([
       listened(1),
       listened(2, { myScore: 7 }),
@@ -62,8 +59,15 @@ describe("the Rate tab", () => {
     expect(screen.getByText("2 books to go")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "8 out of 10" }));
 
-    const confirm = await screen.findByRole("dialog", { name: "Save 8 out of 10?" });
-    await userEvent.click(within(confirm).getByRole("button", { name: "Save" }));
+    // picking a star saves nothing and stays on the book; Skip becomes Submit
+    expect(screen.getByRole("article")).toHaveAccessibleName("Book number 1");
+    expect(screen.queryByRole("button", { name: "Skip" })).not.toBeInTheDocument();
+    expect(saved).toEqual([]);
+    // a different star changes the pick; Submit saves it and moves on
+    await userEvent.click(screen.getByRole("button", { name: "7 out of 10" }));
+    await userEvent.click(screen.getByRole("button", { name: "8 out of 10" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await card("Book number 3")).toBeInTheDocument();
     expect(screen.getByText("40% through")).toBeInTheDocument();
@@ -88,24 +92,28 @@ describe("the Rate tab", () => {
     expect(await card("Book number 3")).toBeInTheDocument();
   });
 
-  it("saves the thumbs up with the score, and stops asking once told to", async () => {
+  it("saves the thumbs up with the score, and takes back a star tapped again", async () => {
     const saved = serve([listened(1), listened(2)]);
     mount("/rate");
 
     await card("Book number 1");
     await userEvent.click(screen.getByRole("button", { name: "Recommend Book number 1" }));
     await userEvent.click(screen.getByRole("button", { name: "9 out of 10" }));
-    const confirm = await screen.findByRole("dialog");
-    expect(confirm).toHaveTextContent("recommended to everyone on this server");
-    await userEvent.click(within(confirm).getByLabelText(/Don't ask again/));
-    await userEvent.click(within(confirm).getByRole("button", { name: "Save" }));
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await card("Book number 2")).toBeInTheDocument();
-    expect(screen.getByLabelText("Ask before saving a score")).not.toBeChecked();
     await userEvent.click(screen.getByRole("button", { name: "3 out of 10" }));
+    // the same star again clears the pick, and Submit goes back to Skip
+    await userEvent.click(screen.getByRole("button", { name: "3 out of 10" }));
+    expect(screen.getByRole("button", { name: "3 out of 10" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    expect(screen.getByRole("button", { name: "Skip" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "3 out of 10" }));
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await screen.findByText("All rated")).toBeInTheDocument();
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(saved).toEqual([
       { itemId: "it-1", score: 9, note: "", recommended: true },
       { itemId: "it-2", score: 3, note: "", recommended: false },
@@ -135,11 +143,11 @@ describe("the Rate tab", () => {
         HttpResponse.json("Audiobookshelf is unreachable", { status: 503 }),
       ),
     );
-    localStorage.setItem("rate.askBeforeSaving", "no");
     mount("/rate");
 
     await card("Book number 1");
     await userEvent.click(screen.getByRole("button", { name: "5 out of 10" }));
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Couldn't save that: Audiobookshelf is unreachable",
@@ -161,9 +169,7 @@ describe("the Rate tab", () => {
     await userEvent.click(screen.getByRole("button", { name: "Recommend Book number 1" }));
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
-    // no confirm: pressing Submit is the decision
     expect(await card("Book number 2")).toBeInTheDocument();
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(saved).toEqual([{ itemId: "it-1", score: null, note: "", recommended: true }]);
   });
 
@@ -173,25 +179,27 @@ describe("the Rate tab", () => {
       listened(2),
       listened(3, { recommended: true, finished: false, percent: 50 }),
     ]);
-    localStorage.setItem("rate.askBeforeSaving", "no");
     mount("/rate");
 
     expect(await card("Book number 2")).toBeInTheDocument();
     expect(screen.getByText("1 book to go")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "6 out of 10" }));
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await screen.findByText("All rated")).toBeInTheDocument();
     await userEvent.click(
       screen.getByRole("button", { name: "Score the 2 you recommended without one" }),
     );
 
-    // the thumbs is already up, and Skip stays Skip: there is nothing new to submit
+    // the thumbs is already up, and Skip stays Skip until a score is picked
     expect(await card("Book number 1")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Recommend Book number 1" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
+    expect(screen.getByRole("button", { name: "Skip" })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "8 out of 10" }));
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
     expect(await card("Book number 3")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Skip" }));
 
