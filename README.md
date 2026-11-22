@@ -21,13 +21,13 @@ how they compose are part of the language and the compiler rejects whole classes
 Hearsay is also fiig's first real application, so it doubles as a test of the language. fiig is
 alpha: syntax and behavior can still change, and Hearsay is kept building against it.
 
-If you haven't seen fiig before, a taste of this codebase (`backend/src/ratings/CreateRating.fiig`):
+If you haven't seen fiig before, a taste of this codebase (`backend/src/ratings/CheckRating.fiig`):
 
 ```fiig
-rule createRating(userId: string, itemId: string, input: RatingInput, now: int) -> Result<Rating, RatingError> {
-    note = input.note or ""
-    if input.score < 1 or input.score > 10 {
-        return Err(RatingError.Invalid("score", "must be from 1 to 10"))
+rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, RatingError> {
+    note = input.note ?? "";
+    if (input.score < 1 || input.score > 10) {
+        return Err(RatingError.Invalid("score", "must be from 1 to 10"));
     }
     ...
 }
