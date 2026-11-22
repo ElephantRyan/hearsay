@@ -1,12 +1,11 @@
+use hearsay.books
+
 // The status and message a client sees for each way browsing can fail.
 conversion libraryErrorResponse(error: LibraryError) -> HttpResponse<string> {
     return match (error) {
         LibraryError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}")
         LibraryError.LibraryNotFound -> HttpResponse(status: 404, body: "no library with that id")
-        LibraryError.BookNotFound -> HttpResponse(
-            status: 404,
-            body: "no book with that id in Audiobookshelf",
-        )
+        LibraryError.Book(cause) -> books.bookErrorResponse(cause)
         LibraryError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
     }
 }

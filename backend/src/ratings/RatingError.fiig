@@ -1,8 +1,10 @@
+use hearsay.books
+
 // Every way rating or unrating a book can be refused, as values the caller
 // must handle. Who is asking is the adapter's to settle, not a rating's.
 enum RatingError {
     Invalid(field: string, reason: string)
-    BookNotFound
+    Book(cause: books.BookError)
     NoRating
     Unavailable(detail: string)
 }

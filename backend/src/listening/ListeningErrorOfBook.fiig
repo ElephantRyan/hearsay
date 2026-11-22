@@ -1,8 +1,0 @@
-use hearsay.books
-
-conversion listeningErrorOfBook(error: books.BookError) -> ListeningError {
-    return match (error) {
-        books.BookError.Missing -> ListeningError.BookNotFound
-        books.BookError.Unavailable(detail) -> ListeningError.Unavailable(detail)
-    }
-}

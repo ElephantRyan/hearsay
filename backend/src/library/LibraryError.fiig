@@ -1,8 +1,10 @@
+use hearsay.books
+
 // Every way browsing libraries and books can be refused, as values the caller
 // must handle. Who is asking is the adapter's to settle, not a library's.
 enum LibraryError {
     Invalid(field: string, reason: string)
     LibraryNotFound
-    BookNotFound
+    Book(cause: books.BookError)
     Unavailable(detail: string)
 }

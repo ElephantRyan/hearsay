@@ -1,7 +1,9 @@
+use hearsay.books
+
 // Every way showing what a person has listened to can fail. Who is asking is
 // the adapter's to settle.
 enum ListeningError {
     AccountNotFound
-    BookNotFound
+    Book(cause: books.BookError)
     Unavailable(detail: string)
 }

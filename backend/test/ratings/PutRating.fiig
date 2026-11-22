@@ -33,7 +33,7 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
     expect second.note == "";
     expect putRating(ann, "dune", RatingInput(score: 12, note: None, recommended: true)) is Err(RatingError.Invalid(field, reason));
     expect field == "score";
-    expect putRating(ann, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(RatingError.BookNotFound);
+    expect putRating(ann, "gone", RatingInput(score: 5, note: None, recommended: true)) is Err(RatingError.Book(books.BookError.Missing));
     mine = rated.listMyRatings(ann, None);
     expect mine.length() == 1;
     expect mine.at(0).title == "Dune";

@@ -10,6 +10,6 @@ workflow putRating(
     input: RatingInput,
 ) -> Result<Rating, RatingError> {
     checked = checkRating(itemId, input)?;
-    book = mapErr(e in books.latestBook(itemId)): ratingErrorOfBook(e)?;
+    book = mapErr(e in books.latestBook(itemId)): RatingError.Book(e)?;
     return Ok(storeRating(me, book, checked));
 }

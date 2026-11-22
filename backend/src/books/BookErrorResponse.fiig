@@ -1,0 +1,11 @@
+// What a client sees when a feature couldn't have its book: every feature
+// carries the BookError as is (LibraryError.Book, ...) and answers with this.
+conversion bookErrorResponse(error: BookError) -> HttpResponse<string> {
+    return match (error) {
+        BookError.Missing -> HttpResponse(
+            status: 404,
+            body: "no book with that id in Audiobookshelf",
+        )
+        BookError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
+    }
+}
