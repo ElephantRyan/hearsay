@@ -15,3 +15,6 @@ dist/
 
 # IDE settings
 .idea/
+
+# docker-compose settings: secrets
+hearsay.env

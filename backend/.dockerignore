@@ -1,0 +1,7 @@
+# Only what the image copies: never local secrets or databases.
+*
+!fiig.pkg.json
+!fiig.lock.json
+!caps.container.json
+!migrations/
+!src/

@@ -1,0 +1,13 @@
+{
+  "Database": {
+    "type": "sql",
+    "driver": "sqlite",
+    "dsn": "file:${DB_PATH}"
+  },
+  "Socket": {
+    "type": "socket"
+  },
+  "ScheduleLock": {
+    "type": "local"
+  }
+}

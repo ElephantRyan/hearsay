@@ -79,6 +79,29 @@ npm run api:types   # regenerate the API types after the backend's routes change
 
 The API is described in `backend/openapi.json`, produced by `fiig openapi . web`.
 
+## Running it with Docker
+
+`docker-compose.yml` runs the whole app on one Docker host: `web` (the browser app, served by
+nginx, which passes `/api/` on to the API), `api`, and `worker` (the hourly collections sync),
+with the SQLite database on the `hearsay-data` volume.
+
+```sh
+cp hearsay.env.example hearsay.env      # fill it in; anything marked "or the admin screen" can wait
+ABS_PUBLIC_URL=https://audiobooks.example.com docker compose up -d --build
+```
+
+- The backend runs on fiig `v0.1.0-alpha.3` (`ghcr.io/elephantryan/fiig:v0.1.0-alpha.3`), the release
+  `backend/fiig.lock.json` names. Set `FIIG_IMAGE` to try another.
+- `ABS_PUBLIC_URL` is the Audiobookshelf address browsers load covers from. It is built into the
+  browser app, so change it with `docker compose up -d --build`.
+- Only port 8080 (`HEARSAY_PORT`) is published. Put your reverse proxy, with HTTPS, in front of
+  it, and set `FRONTEND_URL` to the address it serves. Sign-in cookies are `Secure`, so outside
+  `localhost` the app needs HTTPS.
+- These three can live in a `.env` file next to `docker-compose.yml`, which compose reads itself.
+
+To update, pull and run the same `docker compose up -d --build`; migrations apply on start. Back
+up the database with `docker compose stop` and a copy of the `hearsay-data` volume.
+
 ## Status
 
 Both Hearsay and fiig are alpha, so expect rough edges.
