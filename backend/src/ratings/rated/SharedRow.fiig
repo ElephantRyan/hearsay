@@ -8,7 +8,7 @@ model SharedRow {
     authors: string;
     asin: string | None;
     isbn: string | None;
-    score: int;
+    score: int | None;
     note: string;
     updatedAt: int;
 }

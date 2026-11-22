@@ -34,5 +34,6 @@ export function bookNamed(n: number, myScore: number | null = null) {
     title: `Book number ${n}`,
     authors: n % 2 === 0 ? "An Author" : "",
     myScore,
+    myRecommended: false,
   };
 }

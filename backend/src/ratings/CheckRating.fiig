@@ -2,8 +2,20 @@
 // rating is refused without a round trip to Audiobookshelf.
 rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, RatingError> {
     note = input.note ?? "";
-    if (input.score < 1 || input.score > 10) {
-        return Err(RatingError.Invalid("score", "must be from 1 to 10"));
+    match (input.score) {
+        None -> {
+            if (!input.recommended) {
+                return Err(
+                    RatingError.Invalid("score", "is needed unless the book is recommended"),
+                );
+            }
+        },
+
+        score -> {
+            if (score < 1 || score > 10) {
+                return Err(RatingError.Invalid("score", "must be from 1 to 10"));
+            }
+        },
     }
 
     if (note.length() > 280) {

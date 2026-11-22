@@ -2,9 +2,10 @@ use hearsay.absclient;
 use hearsay.absclient.catalog;
 use hearsay.absclient.catalog.AbsCatalog;
 
-// A page of a library, A to Z. A 404 here means the library, not a book.
-gateway fetchPage(libraryId: string, page: int, size: int)
+// A page of a library, in the order asked. A 404 here means the library, not a book.
+gateway fetchPage(libraryId: string, page: int, size: int, order: catalog.BookOrder)
         -> Result<catalog.BookPage, absclient.AbsFault>
         requires AbsCatalog {
-    return mapErr(e in AbsCatalog.pageAsService(libraryId, page, size)): absclient.faultOfAbs(e);
+    return mapErr(e in AbsCatalog.pageAsService(libraryId, page, size, order)):
+            absclient.faultOfAbs(e);
 }

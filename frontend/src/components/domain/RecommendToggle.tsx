@@ -14,7 +14,7 @@ export function RecommendToggle({ checked, onChange }: Props) {
         <p className="text-sm font-medium">{checked ? "Recommended" : "Recommend this book"}</p>
         <p className="mt-0.5 text-sm text-muted">
           {checked
-            ? "Everyone on this server can see this score and note, and the book joins your list."
+            ? "Everyone on this server can see this rating and note, and the book joins your list. A score is optional."
             : "Only you can see this rating."}
         </p>
       </div>

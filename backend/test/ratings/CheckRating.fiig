@@ -23,3 +23,13 @@ test aBlankItemIsRefused {
     expect checkRating("  ", ok) is Err(RatingError.Invalid(field, _));
     expect field == "itemId";
 }
+
+// A recommendation may go without a score; anything else needs one.
+test aRecommendationNeedsNoScore {
+    justRecommended = RatingInput(score: None, note: None, recommended: true);
+    expect checkRating("a", justRecommended) is Ok(checked);
+    expect checked == CheckedRating(itemId: "a", score: None, note: "", recommended: true);
+    neither = RatingInput(score: None, note: "liked it", recommended: false);
+    expect checkRating("a", neither) is Err(RatingError.Invalid(field, _));
+    expect field == "score";
+}

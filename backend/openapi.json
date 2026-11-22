@@ -1840,6 +1840,7 @@
                         "type": "string"
                       },
                       "score": {
+                        "nullable": true,
                         "type": "integer"
                       },
                       "title": {
@@ -1856,7 +1857,6 @@
                       "authors",
                       "note",
                       "personId",
-                      "score",
                       "title",
                       "updatedAt",
                       "username"
@@ -1937,6 +1937,7 @@
                   "properties": {
                     "average": {
                       "format": "decimal",
+                      "nullable": true,
                       "type": "number"
                     },
                     "book": {
@@ -1999,6 +2000,7 @@
                             "type": "boolean"
                           },
                           "score": {
+                            "nullable": true,
                             "type": "integer"
                           },
                           "title": {
@@ -2025,7 +2027,6 @@
                           "libraryId",
                           "note",
                           "recommended",
-                          "score",
                           "title",
                           "updatedAt",
                           "userId",
@@ -2037,7 +2038,6 @@
                     }
                   },
                   "required": [
-                    "average",
                     "book",
                     "count",
                     "ratings"
@@ -2212,6 +2212,20 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "enum": [
+                "title",
+                "title-desc",
+                "author",
+                "author-desc"
+              ],
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2232,6 +2246,9 @@
                           "libraryId": {
                             "type": "string"
                           },
+                          "myRecommended": {
+                            "type": "boolean"
+                          },
                           "myScore": {
                             "nullable": true,
                             "type": "integer"
@@ -2244,6 +2261,7 @@
                           "authors",
                           "itemId",
                           "libraryId",
+                          "myRecommended",
                           "title"
                         ],
                         "type": "object"
@@ -2517,6 +2535,7 @@
                         "type": "boolean"
                       },
                       "score": {
+                        "nullable": true,
                         "type": "integer"
                       },
                       "title": {
@@ -2543,7 +2562,6 @@
                       "libraryId",
                       "note",
                       "recommended",
-                      "score",
                       "title",
                       "updatedAt",
                       "userId",
@@ -2664,12 +2682,12 @@
                     "type": "boolean"
                   },
                   "score": {
+                    "nullable": true,
                     "type": "integer"
                   }
                 },
                 "required": [
-                  "recommended",
-                  "score"
+                  "recommended"
                 ],
                 "type": "object"
               }
@@ -2696,6 +2714,7 @@
                       "type": "boolean"
                     },
                     "score": {
+                      "nullable": true,
                       "type": "integer"
                     },
                     "updatedAt": {
@@ -2710,7 +2729,6 @@
                     "itemId",
                     "note",
                     "recommended",
-                    "score",
                     "updatedAt",
                     "userId"
                   ],
@@ -2809,6 +2827,7 @@
                       },
                       "average": {
                         "format": "decimal",
+                        "nullable": true,
                         "type": "number"
                       },
                       "count": {
@@ -2829,7 +2848,6 @@
                     },
                     "required": [
                       "authors",
-                      "average",
                       "count",
                       "itemId",
                       "latest",
@@ -2960,6 +2978,7 @@
                         "type": "boolean"
                       },
                       "score": {
+                        "nullable": true,
                         "type": "integer"
                       },
                       "title": {
@@ -2986,7 +3005,6 @@
                       "libraryId",
                       "note",
                       "recommended",
-                      "score",
                       "title",
                       "updatedAt",
                       "userId",
@@ -3045,6 +3063,7 @@
                         "type": "string"
                       },
                       "score": {
+                        "nullable": true,
                         "type": "integer"
                       },
                       "title": {
@@ -3060,7 +3079,6 @@
                     "required": [
                       "authors",
                       "note",
-                      "score",
                       "title",
                       "updatedAt",
                       "via"

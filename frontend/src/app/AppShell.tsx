@@ -29,7 +29,7 @@ const tabs: Tab[] = [
     label: "Browse",
     icon: <Search aria-hidden="true" className="h-5 w-5" />,
     link: (className, content) => (
-      <Link to="/browse" search={{ page: 0 }} className={className}>
+      <Link to="/browse" search={{ sort: "title" }} className={className}>
         {content}
       </Link>
     ),

@@ -1,12 +1,16 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { act } from "react";
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { mount } from "../../test/mount";
 import { bookNamed, library, server } from "../../test/server";
 
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  vi.unstubAllGlobals();
+});
 afterAll(() => server.close());
 
 const signedIn = http.get("/api/me", () =>
@@ -45,6 +49,32 @@ function recordRequests(total = 100) {
   return { asked, last: () => asked[asked.length - 1] };
 }
 
+/** Stands in for the browser's IntersectionObserver; `scrollToEnd` brings the list's end into view. */
+function stubScrolling() {
+  const watching = new Set<IntersectionObserverCallback>();
+  class Observer {
+    constructor(private readonly callback: IntersectionObserverCallback) {}
+    observe() {
+      watching.add(this.callback);
+    }
+    disconnect() {
+      watching.delete(this.callback);
+    }
+  }
+  vi.stubGlobal("IntersectionObserver", Observer);
+  return {
+    scrollToEnd: () =>
+      act(() => {
+        for (const callback of [...watching]) {
+          callback(
+            [{ isIntersecting: true } as IntersectionObserverEntry],
+            {} as IntersectionObserver,
+          );
+        }
+      }),
+  };
+}
+
 describe("the browse screen", () => {
   it("lists a library with the viewer's own scores, and no picker for one library", async () => {
     const { asked } = recordRequests(1117);
@@ -73,24 +103,66 @@ describe("the browse screen", () => {
     await waitFor(() => expect(last()?.pathname).toBe("/api/libraries/lib-2/items"));
   });
 
-  it("pages forward and back, counting pages from 1 for people and 0 for the API", async () => {
-    const { last } = recordRequests(100);
+  it("loads the next page as the end of the list scrolls into view, and stops at the last", async () => {
+    const { asked, last } = recordRequests(50);
+    const { scrollToEnd } = stubScrolling();
     mount("/browse");
 
     await screen.findByText("Book number 1");
-    expect(screen.getByText("Page 1 of 5")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: /previous|next/i })).not.toBeInTheDocument();
+    expect(asked).toHaveLength(1);
 
-    await userEvent.click(screen.getByRole("button", { name: /next/i }));
+    scrollToEnd();
     expect(await screen.findByText("Book number 25")).toBeInTheDocument();
     expect(last()?.searchParams.get("page")).toBe("1");
-    expect(screen.getByText("Page 2 of 5")).toBeInTheDocument();
+    // the first page stays: the list grows rather than turning over
+    expect(screen.getByText("Book number 1")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /previous/i }));
-    expect(await screen.findByText("Book number 1")).toBeInTheDocument();
+    scrollToEnd();
+    expect(await screen.findByText("Book number 49")).toBeInTheDocument();
+    expect(last()?.searchParams.get("page")).toBe("2");
+
+    // 50 books is three pages of 24; there is no fourth to ask for
+    scrollToEnd();
+    expect(asked).toHaveLength(3);
   });
 
-  it("searches once typing pauses, shows the matches, and hides the pager", async () => {
+  it("offers a button for more books in a browser that can't watch the scroll", async () => {
+    const { last } = recordRequests(50);
+    mount("/browse");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Show more books" }));
+    expect(await screen.findByText("Book number 25")).toBeInTheDocument();
+    expect(last()?.searchParams.get("page")).toBe("1");
+  });
+
+  it("sorts by title or author either way, starting again from the top", async () => {
+    const { last } = recordRequests(50);
+    const { scrollToEnd } = stubScrolling();
+    const router = mount("/browse");
+
+    await screen.findByText("Book number 1");
+    expect(last()?.searchParams.get("sort")).toBe("title");
+    scrollToEnd();
+    await screen.findByText("Book number 25");
+
+    await userEvent.selectOptions(screen.getByLabelText("Sort by"), "Author, Z to A");
+    await waitFor(() => expect(last()?.searchParams.get("sort")).toBe("author-desc"));
+    expect(last()?.searchParams.get("page")).toBe("0");
+    expect(router.state.location.search).toMatchObject({ sort: "author-desc" });
+    await waitFor(() => expect(screen.queryByText("Book number 25")).not.toBeInTheDocument());
+  });
+
+  it("starts from a shared link's order", async () => {
+    const { last } = recordRequests();
+    mount("/browse?sort=title-desc");
+
+    expect(await screen.findByText("Book number 1")).toBeInTheDocument();
+    expect(last()?.searchParams.get("sort")).toBe("title-desc");
+    expect(screen.getByLabelText("Sort by")).toHaveValue("title-desc");
+  });
+
+  it("searches once typing pauses, shows the matches, and asks for no more", async () => {
     const { asked, last } = recordRequests();
     const router = mount("/browse");
 
@@ -101,8 +173,8 @@ describe("the browse screen", () => {
     expect(await screen.findByText("Book number 101")).toBeInTheDocument();
     expect(last()?.searchParams.get("q")).toBe("rabbit");
     expect(screen.getByRole("status")).toHaveTextContent("2 matches for “rabbit”.");
-    expect(screen.queryByRole("navigation", { name: "Pages" })).not.toBeInTheDocument();
-    expect(router.state.location.search).toMatchObject({ q: "rabbit", page: 0 });
+    expect(screen.queryByRole("button", { name: "Show more books" })).not.toBeInTheDocument();
+    expect(router.state.location.search).toMatchObject({ q: "rabbit", sort: "title" });
     // typing six letters made one search, not six
     expect(asked.filter((url) => url.searchParams.get("q")).length).toBe(1);
   });

@@ -1,9 +1,10 @@
 use hearsay.ratings.rated;
+use hearsay.ratings.rated.scores;
 
-// Ranks books by the average score of their recommended ratings, highest
-// first. Ties go to the book with more ratings, then to the most recently
-// rated. Private ratings are not counted (PLAN.md section 4). The average is
-// the one rule to change if the formula should.
+// Ranks books by how many people recommend them, most first. Ties go to the
+// higher average score (a book nobody scored after any that were), then to the
+// most recently rated. Private ratings are not counted (PLAN.md section 4).
+// This is the one rule to change if the order should.
 rule rankRecommendations(rows: List<rated.RatingRow>) -> List<RecommendedBook> {
     recommended = filter(r in rows): r.recommended;
     groups = groupBy(r in recommended): r.itemId;
@@ -17,17 +18,12 @@ rule rankRecommendations(rows: List<rated.RatingRow>) -> List<RecommendedBook> {
                 libraryId: first.libraryId,
                 title: first.title,
                 authors: first.authors,
-                average: math.divide(
-                    math.toDecimal(sum(r in group): r.score),
-                    math.toDecimal(group.length()),
-                    places: 2,
-                    rounding: Rounding.HalfUp,
-                ),
+                average: scores.average(group),
                 count: group.length(),
                 latest: max(r in group): r.updatedAt,
             ),
         );
     }
 
-    return sorted(book in books): book.average descending then book.count descending then book.latest descending;
+    return sorted(book in books): book.count descending then (book.average ?? math.toDecimal(0)) descending then book.latest descending;
 }

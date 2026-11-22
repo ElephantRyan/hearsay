@@ -147,6 +147,61 @@ describe("the Rate tab", () => {
     expect(screen.getByRole("article")).toHaveAccessibleName("Book number 1");
   });
 
+  it("turns Skip into Submit once the thumbs is up, and recommends without a score", async () => {
+    const saved = serve([listened(1), listened(2)]);
+    mount("/rate");
+
+    await card("Book number 1");
+    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Recommend Book number 1" }));
+    expect(screen.queryByRole("button", { name: "Skip" })).not.toBeInTheDocument();
+    // turning it off again brings Skip back
+    await userEvent.click(screen.getByRole("button", { name: "Recommend Book number 1" }));
+    expect(screen.getByRole("button", { name: "Skip" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Recommend Book number 1" }));
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    // no confirm: pressing Submit is the decision
+    expect(await card("Book number 2")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(saved).toEqual([{ itemId: "it-1", score: null, note: "", recommended: true }]);
+  });
+
+  it("leaves recommended books without a score out, then offers them once the rest are done", async () => {
+    const saved = serve([
+      listened(1, { recommended: true }),
+      listened(2),
+      listened(3, { recommended: true, finished: false, percent: 50 }),
+    ]);
+    localStorage.setItem("rate.askBeforeSaving", "no");
+    mount("/rate");
+
+    expect(await card("Book number 2")).toBeInTheDocument();
+    expect(screen.getByText("1 book to go")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "6 out of 10" }));
+
+    expect(await screen.findByText("All rated")).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("button", { name: "Score the 2 you recommended without one" }),
+    );
+
+    // the thumbs is already up, and Skip stays Skip: there is nothing new to submit
+    expect(await card("Book number 1")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Recommend Book number 1" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await userEvent.click(screen.getByRole("button", { name: "8 out of 10" }));
+    expect(await card("Book number 3")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Skip" }));
+
+    expect(await screen.findByText("That's every one without a score")).toBeInTheDocument();
+    expect(saved).toEqual([
+      { itemId: "it-2", score: 6, note: "", recommended: false },
+      { itemId: "it-1", score: 8, note: "", recommended: true },
+    ]);
+  });
+
   it("says so when there is nothing to rate", async () => {
     serve([listened(1, { myScore: 6 })]);
     mount("/rate");

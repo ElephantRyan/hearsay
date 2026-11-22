@@ -15,7 +15,7 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
         }
 
         // 251 books: a full page of 250 numbered ones, then three named ones on page 1.
-        gateway pageAsService(libraryId: string, page: int, size: int)
+        gateway pageAsService(libraryId: string, page: int, size: int, order: catalog.BookOrder)
                 -> Result<catalog.BookPage, client.AbsError> {
             expect libraryId == "lib-1";
             expect size == 250;

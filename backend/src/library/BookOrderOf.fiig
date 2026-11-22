@@ -1,0 +1,11 @@
+use hearsay.absclient.catalog;
+
+// The order ABS is asked for, for the one a person chose.
+conversion bookOrderOf(order: BrowseOrder) -> catalog.BookOrder {
+    return match (order) {
+        BrowseOrder.TitleAscending -> catalog.BookOrder.TitleAscending,
+        BrowseOrder.TitleDescending -> catalog.BookOrder.TitleDescending,
+        BrowseOrder.AuthorAscending -> catalog.BookOrder.AuthorAscending,
+        BrowseOrder.AuthorDescending -> catalog.BookOrder.AuthorDescending,
+    }
+}

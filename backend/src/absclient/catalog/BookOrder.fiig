@@ -1,0 +1,7 @@
+// The orders a library page can be listed in, as ABS sorts them.
+enum BookOrder {
+    TitleAscending,
+    TitleDescending,
+    AuthorAscending,
+    AuthorDescending,
+}

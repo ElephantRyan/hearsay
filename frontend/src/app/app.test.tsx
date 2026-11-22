@@ -53,7 +53,9 @@ describe("the app against the API's contract", () => {
     const router = mount("/");
 
     expect(await screen.findByText(/after the rabbit/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/average 8\.7 out of 10 from 3 ratings/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Recommended by 3 people, averaging 8.7 out of 10"),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /ryan\s*2/i })).toHaveAttribute(
       "href",
       "/recommendations/users/u-1",

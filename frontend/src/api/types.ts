@@ -45,6 +45,9 @@ export interface SettingsChange {
 export type SettingName = keyof SettingsChange;
 
 export type RatingSort = "score" | "newest" | "title";
+export type BrowseSort = NonNullable<
+  NonNullable<paths["/libraries/{libraryId}/items"]["get"]["parameters"]["query"]>["sort"]
+>;
 
 export interface RecommendationFilters {
   userId?: string | undefined;

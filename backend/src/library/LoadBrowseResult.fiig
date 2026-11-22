@@ -1,5 +1,5 @@
-// One page of a library, or the hits of a search when `typed` is given, with
-// the viewer's own scores. The inputs are already checked by the workflow.
+// One page of a library, or the hits of a search when `typed` is given, in
+// `order`, with the viewer's own scores. The inputs are already checked by the workflow.
 use hearsay.absclient;
 use hearsay.absclient.catalog;
 use hearsay.ratings.rated;
@@ -12,9 +12,10 @@ activity loadBrowseResult(
     libraryId: string,
     page: int,
     size: int,
-    typed: string | None)
+    typed: string | None,
+    order: catalog.BookOrder)
         -> Result<BrowseResult, absclient.AbsFault> {
-    found = fetchBooks(libraryId, page, size, typed)?;
+    found = fetchBooks(libraryId, page, size, typed, order)?;
     mine = RatedBooks.byUser(userId);
     return Ok(
         BrowseResult(
@@ -27,28 +28,52 @@ activity loadBrowseResult(
 }
 
 private {
-    fetchBooks(libraryId: string, page: int, size: int, typed: string | None)
+    fetchBooks(
+        libraryId: string,
+        page: int,
+        size: int,
+        typed: string | None,
+        order: catalog.BookOrder)
             -> Result<catalog.BookPage, absclient.AbsFault> {
         return match (typed) {
             None -> {
-                return fetchPage(libraryId, page, size);
+                return fetchPage(libraryId, page, size, order);
             },
 
             text -> {
-                return fetchHits(libraryId, text, size);
+                hits = fetchHits(libraryId, text, size)?;
+                return Ok(
+                    catalog.BookPage(
+                        total: hits.total,
+                        page: hits.page,
+                        limit: hits.limit,
+                        books: sortHits(hits.books, order),
+                    ),
+                );
             },
         }
     }
 
-    // Marks each book with the viewer's own score, if they have one.
+    // Marks each book with the viewer's own score and recommendation, if they rated it.
     withMyScores(books: List<catalog.Book>, mine: List<rated.RatingRow>) -> List<BrowseItem> {
-        scores: Map<string, int> = [:];
+        ratings: Map<string, rated.RatingRow> = [:];
         for (row in mine) {
-            scores = scores.put(row.itemId, row.score);
+            ratings = ratings.put(row.itemId, row);
         }
 
         items: List<BrowseItem> = [];
         for (book in books) {
+            rating = ratings.atOrNone(book.itemId);
+            myScore: int | None = match (rating) {
+                None -> None,
+                row -> row.score,
+            }
+
+            myRecommended = match (rating) {
+                None -> false,
+                row -> row.recommended,
+            }
+
             items = append(
                 items,
                 BrowseItem(
@@ -56,7 +81,8 @@ private {
                     libraryId: book.libraryId,
                     title: book.title,
                     authors: book.authors,
-                    myScore: scores.atOrNone(book.itemId),
+                    myScore: myScore,
+                    myRecommended: myRecommended,
                 ),
             );
         }

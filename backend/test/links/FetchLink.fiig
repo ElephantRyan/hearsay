@@ -28,7 +28,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
 
-        gateway pageAsService(libraryId: string, page: int, size: int)
+        gateway pageAsService(libraryId: string, page: int, size: int, order: catalog.BookOrder)
                 -> Result<catalog.BookPage, client.AbsError> {
             return Ok(
                 catalog.BookPage(
@@ -107,7 +107,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                                     isbn: None,
                                     title: "The Hobbit",
                                     authors: "J.R.R. Tolkien",
-                                    score: 8,
+                                    score: None,
                                     note: "",
                                     updatedAt: 2,
                                 ),
@@ -182,6 +182,8 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     expect (filter(r in held): r.title == "Dune: Book One").first().itemId == "dune-here";
     expect (filter(r in held): r.title == "Dune: Book One").first().matchedBy == "asin";
     expect (filter(r in held): r.title == "The Hobbit").first().matchedBy == "title";
+    // A recommendation can cross without a score.
+    expect (filter(r in held): r.title == "The Hobbit").first().score == None;
     expect (filter(r in held): r.title == "Not Here").first().itemId == None;
     // A second fetch replaces the first; the index isn't rebuilt.
     expect refreshLink(admin, link.id) is Ok(second);
@@ -234,7 +236,7 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
             return Err(client.AbsError.Rejected(status: 502));
         }
 
-        gateway pageAsService(libraryId: string, page: int, size: int)
+        gateway pageAsService(libraryId: string, page: int, size: int, order: catalog.BookOrder)
                 -> Result<catalog.BookPage, client.AbsError> {
             return Ok(
                 catalog.BookPage(

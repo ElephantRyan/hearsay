@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { SkipForward } from "lucide-react";
+import { Check, SkipForward } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { useMyListening, useRateItem } from "../../api/hooks";
 import type { ListenedBook } from "../../api/types";
@@ -35,14 +35,31 @@ function writeAsk(ask: boolean) {
   }
 }
 
+/** The books the tab goes through: ones I haven't rated, or ones I recommended without a score. */
+type Pile = "unrated" | "unscored";
+
+/** A pile in queue order: the server sends most recent first, and finished books lead. */
+function queueOf(books: ListenedBook[], pile: Pile): string[] {
+  const chosen = books.filter(
+    (book) => book.myScore == null && book.recommended === (pile === "unscored"),
+  );
+  return [
+    ...chosen.filter((book) => book.finished),
+    ...chosen.filter((book) => !book.finished),
+  ].map((book) => book.itemId);
+}
+
 /**
- * The Rate tab: the books I've finished and not scored, one card at a time, most recently
- * listened first; the ones I'm still listening to come after all of those. A star saves the score (after a confirm, unless turned off); Skip
- * sends the book to the back. Once every book left has been skipped, a closing card offers to go
- * through the skipped ones again.
+ * The Rate tab: the books I've listened to and not rated, one card at a time, most recently
+ * listened first; the ones I'm still listening to come after all of those. A star saves the score
+ * (after a confirm, unless turned off); the thumbs up turns Skip into Submit, which recommends the
+ * book without a score; Skip sends the book to the back. Once every book left has been skipped, a
+ * closing card offers to go through the skipped ones again. When none are left, the books I
+ * recommended without a score can be gone through the same way.
  */
 export function RatePage() {
   const listening = useMyListening();
+  const [pile, setPile] = useState<Pile>("unrated");
   const [queue, setQueue] = useState<string[] | undefined>(undefined);
   const [skipped, setSkipped] = useState<ReadonlySet<string>>(new Set());
   const [ratedHere, setRatedHere] = useState(0);
@@ -51,15 +68,7 @@ export function RatePage() {
 
   // The queue is fixed when the list first arrives, so a refetch after each save doesn't reshuffle it.
   useEffect(() => {
-    if (queue === undefined && listening.data) {
-      const unrated = listening.data.filter((book) => book.myScore == null);
-      // The server sends most recent first; finished books lead, in that order.
-      const ordered = [
-        ...unrated.filter((book) => book.finished),
-        ...unrated.filter((book) => !book.finished),
-      ];
-      setQueue(ordered.map((book) => book.itemId));
-    }
+    if (queue === undefined && listening.data) setQueue(queueOf(listening.data, "unrated"));
   }, [queue, listening.data]);
 
   if (listening.isPending) return <LoadingState rows={1} label="Loading your books" />;
@@ -73,6 +82,14 @@ export function RatePage() {
   // Skipped books go to the back, so the front is skipped only once every book left has been.
   const allSkipped = current !== undefined && skipped.has(current);
   const book = current === undefined ? undefined : byId.get(current);
+  const unscored = queueOf(listening.data, "unscored");
+
+  function goThroughUnscored() {
+    setPile("unscored");
+    setQueue(unscored);
+    setSkipped(new Set());
+    setRatedHere(0);
+  }
 
   function skip(itemId: string) {
     setQueue((q) => [...(q ?? []).filter((id) => id !== itemId), itemId]);
@@ -100,31 +117,59 @@ export function RatePage() {
         )}
       </div>
 
-      {remaining.length === 0 && (
+      {remaining.length === 0 && pile === "unrated" && (
         <EmptyState
           title={ratedHere > 0 ? "All rated" : "Nothing to rate"}
+          action={
+            <div className="flex flex-col items-center gap-3">
+              {unscored.length > 0 && (
+                <Button onClick={goThroughUnscored}>
+                  Score the {unscored.length} you recommended without one
+                </Button>
+              )}
+              <Link to="/me/ratings" search={{ sort: "newest" }} className="text-sm">
+                See your ratings
+              </Link>
+            </div>
+          }
+        >
+          Every book you've started or finished in Audiobookshelf has a score or a recommendation.
+          New ones show up here as you listen.
+          {unscored.length > 0 &&
+            ` ${unscored.length === 1 ? "One you recommended has" : `${unscored.length} you recommended have`} no score; you can give ${unscored.length === 1 ? "it" : "them"} one if you like.`}
+        </EmptyState>
+      )}
+
+      {remaining.length === 0 && pile === "unscored" && (
+        <EmptyState
+          title={unscored.length === 0 ? "All scored" : "That's all of them"}
           action={
             <Link to="/me/ratings" search={{ sort: "newest" }} className="text-sm">
               See your ratings
             </Link>
           }
         >
-          Every book you've started or finished in Audiobookshelf has a score. New ones show up here
-          as you listen.
+          {unscored.length === 0
+            ? "Every book you recommended has a score now."
+            : "The rest stay recommended without a score. You can score them any time from your ratings."}
         </EmptyState>
       )}
 
       {allSkipped && (
         <EmptyState
-          title="That's everything unrated"
+          title={
+            pile === "unrated" ? "That's everything unrated" : "That's every one without a score"
+          }
           action={
             <Button onClick={() => setSkipped(new Set())}>
               Go through the {remaining.length} skipped {remaining.length === 1 ? "book" : "books"}
             </Button>
           }
         >
-          You've seen every book you've listened to that doesn't have a score yet. You skipped{" "}
-          {remaining.length === 1 ? "one" : remaining.length}. Want another look?
+          {pile === "unrated"
+            ? "You've seen every book you've listened to that you haven't rated yet."
+            : "You've seen every book you recommended without a score."}{" "}
+          You skipped {remaining.length === 1 ? "one" : remaining.length}. Want another look?
         </EmptyState>
       )}
 
@@ -161,10 +206,15 @@ interface CardProps {
   onRated: () => void;
 }
 
-/** One book: cover, title and author, a thumbs up, ten stars, and Skip. Swipe left to skip too. */
+/**
+ * One book: cover, title and author, a thumbs up, ten stars, and Skip. Swipe left to skip too.
+ * Turning the thumbs up on, for a book not already recommended, makes Skip a Submit, which saves
+ * the recommendation without a score.
+ */
 function RateCard({ book, ask, onAskChange, onSkip, onRated }: CardProps) {
   const rate = useRateItem();
-  const [recommended, setRecommended] = useState(false);
+  const [recommended, setRecommended] = useState(book.recommended);
+  const submits = recommended && !book.recommended;
   const [confirming, setConfirming] = useState<number | undefined>(undefined);
   const [dragX, setDragX] = useState(0);
   const start = useRef<number | undefined>(undefined);
@@ -172,6 +222,13 @@ function RateCard({ book, ask, onAskChange, onSkip, onRated }: CardProps) {
   function save(score: number) {
     setConfirming(undefined);
     rate.mutate({ itemId: book.itemId, score, note: "", recommended }, { onSuccess: onRated });
+  }
+
+  function submit() {
+    rate.mutate(
+      { itemId: book.itemId, score: null, note: "", recommended: true },
+      { onSuccess: onRated },
+    );
   }
 
   function pick(score: number) {
@@ -221,7 +278,7 @@ function RateCard({ book, ask, onAskChange, onSkip, onRated }: CardProps) {
 
         <div className="mt-3 space-y-2">
           <StarRating
-            value={rate.isPending ? rate.variables?.score : confirming}
+            value={rate.isPending ? (rate.variables?.score ?? undefined) : confirming}
             onPick={pick}
             disabled={rate.isPending}
           />
@@ -244,10 +301,17 @@ function RateCard({ book, ask, onAskChange, onSkip, onRated }: CardProps) {
                 {recommended ? "Recommended" : "Recommend?"}
               </span>
             </div>
-            <Button variant="ghost" onClick={onSkip} disabled={rate.isPending}>
-              <SkipForward aria-hidden="true" className="h-4 w-4" />
-              Skip
-            </Button>
+            {submits ? (
+              <Button onClick={submit} disabled={rate.isPending}>
+                <Check aria-hidden="true" className="h-4 w-4" />
+                Submit
+              </Button>
+            ) : (
+              <Button variant="ghost" onClick={onSkip} disabled={rate.isPending}>
+                <SkipForward aria-hidden="true" className="h-4 w-4" />
+                Skip
+              </Button>
+            )}
           </div>
         </div>
       </article>

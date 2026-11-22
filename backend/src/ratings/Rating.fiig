@@ -1,8 +1,9 @@
-// One user's rating of one ABS library item. Times are Unix milliseconds.
+// One user's rating of one ABS library item. Times are Unix milliseconds. A
+// recommendation may go without a score; anything else has one.
 model Rating {
     userId: string;
     itemId: string;
-    score: int;
+    score: int | None;
     note: string;
     recommended: bool;
     createdAt: int;

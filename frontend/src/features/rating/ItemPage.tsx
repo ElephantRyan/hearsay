@@ -71,7 +71,9 @@ export function ItemPage() {
         <RatingFormPanel
           key={mine ? `${mine.updatedAt}` : "new"}
           itemId={book.itemId}
-          existing={mine && { score: mine.score, note: mine.note, recommended: mine.recommended }}
+          existing={
+            mine && { score: mine.score ?? null, note: mine.note, recommended: mine.recommended }
+          }
         />
       </section>
 

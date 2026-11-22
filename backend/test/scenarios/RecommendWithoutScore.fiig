@@ -1,0 +1,52 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.library;
+use hearsay.ratings;
+use hearsay.recommendations;
+use hearsay.sessions;
+use hearsay.sessions.SessionConfig;
+
+// A person can recommend a book without scoring it. It counts as a
+// recommendation everywhere, has no score of its own, and stays out of the
+// average and of any minimum-score filter.
+test aRecommendationWithoutAScoreCountsButHasNoAverage {
+    fake AbsCatalog {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                ),
+            );
+        }
+    }
+
+    annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    bobId = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: None, note: None, recommended: true)) is Ok(saved);
+    expect saved.score == None;
+    expect saved.recommended;
+    expect library.showItem(bobId, "dune") is Ok(onlyUnscored);
+    expect onlyUnscored.count == 1;
+    expect onlyUnscored.average == None;
+    expect ratings.putRating(bobId, "dune", ratings.RatingInput(score: 6, note: "fine", recommended: true)) is Ok(_);
+    expect library.showItem(bobId, "dune") is Ok(both);
+    expect both.count == 2;
+    expect both.average == 6.00;
+    listed = recommendations.listRecommendations(bobId, None, None, None);
+    expect listed.length() == 1;
+    expect listed.at(0).count == 2;
+    expect listed.at(0).average == 6.00;
+    annsPicks = recommendations.listPicksOf(bobId, "u1");
+    expect annsPicks.length() == 1;
+    expect annsPicks.at(0).score == None;
+    // Taking the recommendation away with no score is refused: there would be nothing left.
+    expect ratings.putRating(annId, "dune", ratings.RatingInput(score: None, note: None, recommended: false)) is Err(ratings.RatingError.Invalid("score", _));
+    expect ratings.putRating(bobId, "dune", ratings.RatingInput(score: None, note: "fine", recommended: true)) is Ok(_);
+    expect recommendations.listRecommendations(bobId, None, None, None).at(0).average == None;
+    expect recommendations.listRecommendations(bobId, None, None, 1).length() == 0;
+}

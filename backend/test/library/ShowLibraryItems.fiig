@@ -12,7 +12,7 @@ test browseListsSearchesAndMarksMyScores {
     }
 
     fake AbsCatalog {
-        gateway pageAsService(libraryId: string, page: int, size: int)
+        gateway pageAsService(libraryId: string, page: int, size: int, order: catalog.BookOrder)
                 -> Result<catalog.BookPage, client.AbsError> {
             if (libraryId == "gone") {
                 return Err(client.AbsError.NotFound);
@@ -21,9 +21,17 @@ test browseListsSearchesAndMarksMyScores {
             expect libraryId == "lib-1";
             expect page == 2;
             expect size == 24;
+            // Each order gets its own total, so a test can see which one reached ABS.
+            total = match (order) {
+                catalog.BookOrder.TitleAscending -> 1117,
+                catalog.BookOrder.TitleDescending -> 1,
+                catalog.BookOrder.AuthorAscending -> 2,
+                catalog.BookOrder.AuthorDescending -> 4,
+            }
+
             return Ok(
                 catalog.BookPage(
-                    total: 1117,
+                    total: total,
                     page: page,
                     limit: size,
                     books: [
@@ -44,15 +52,27 @@ test browseListsSearchesAndMarksMyScores {
             expect query == "alp";
             return Ok(
                 catalog.BookPage(
-                    total: 1,
+                    total: 3,
                     page: 0,
                     limit: size,
                     books: [
+                        catalog.Book(
+                            itemId: "b",
+                            libraryId: "lib-1",
+                            title: "beta",
+                            authors: "Zed",
+                        ),
                         catalog.Book(
                             itemId: "a",
                             libraryId: "lib-1",
                             title: "Alpha",
                             authors: "A. Author",
+                        ),
+                        catalog.Book(
+                            itemId: "c",
+                            libraryId: "lib-1",
+                            title: "Gamma",
+                            authors: "a. author",
                         ),
                     ],
                 ),
@@ -74,17 +94,25 @@ test browseListsSearchesAndMarksMyScores {
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
     ann = sessions.startSession(annId).token;
     expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_);
-    expect showLibraryItems(annId, "lib-1", 2, None, None) is Ok(listed);
+    expect showLibraryItems(annId, "lib-1", 2, None, None, None) is Ok(listed);
     expect listed.total == 1117;
     expect listed.page == 2;
     expect listed.items.length() == 2;
     expect listed.items.at(0).myScore == 8;
     expect listed.items.at(1).myScore == None;
-    expect showLibraryItems(annId, "lib-1", None, None, "  alp ") is Ok(found);
-    expect found.items.length() == 1;
-    expect found.items.at(0).title == "Alpha";
+    expect showLibraryItems(annId, "lib-1", 2, None, None, BrowseOrder.AuthorDescending) is Ok(byAuthor);
+    expect byAuthor.total == 4;
+    expect showLibraryItems(annId, "lib-1", None, None, "  alp ", None) is Ok(found);
+    foundOrder = map(i in found.items): i.title;
+    expect foundOrder == ["Alpha", "beta", "Gamma"];
     expect found.items.at(0).myScore == 8;
-    expect showLibraryItems(annId, "gone", 2, None, None) is Err(LibraryError.LibraryNotFound);
-    expect showLibraryItems(annId, "lib-1", -1, None, None) is Err(LibraryError.Invalid(field, reason));
+    expect showLibraryItems(annId, "lib-1", None, None, "alp", BrowseOrder.TitleDescending) is Ok(backwards);
+    backwardsOrder = map(i in backwards.items): i.title;
+    expect backwardsOrder == ["Gamma", "beta", "Alpha"];
+    expect showLibraryItems(annId, "lib-1", None, None, "alp", BrowseOrder.AuthorAscending) is Ok(authors);
+    authorsOrder = map(i in authors.items): i.itemId;
+    expect authorsOrder == ["a", "c", "b"];
+    expect showLibraryItems(annId, "gone", 2, None, None, None) is Err(LibraryError.LibraryNotFound);
+    expect showLibraryItems(annId, "lib-1", -1, None, None, None) is Err(LibraryError.Invalid(field, reason));
     expect field == "page";
 }

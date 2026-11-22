@@ -53,7 +53,7 @@ capability AbsCatalog {
         return Ok(found.libraries);
     }
 
-    gateway pageAsService(libraryId: string, page: int, size: int)
+    gateway pageAsService(libraryId: string, page: int, size: int, order: BookOrder)
             -> Result<BookPage, absclient.AbsError>
             requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
@@ -62,7 +62,7 @@ capability AbsCatalog {
             HttpClient.send(
                 absclient.absGet(
                     abs.url,
-                    absListPath(libraryIdSegment, page, size),
+                    absListPath(libraryIdSegment, page, size, order),
                     abs.token.reveal(),
                 ),
             ),

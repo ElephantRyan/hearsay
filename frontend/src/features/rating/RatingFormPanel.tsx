@@ -10,8 +10,8 @@ import { type RatingForm, ratingSchema } from "../../lib/ratings";
 
 interface Props {
   itemId: string;
-  /** The viewer's existing rating, if any; the form edits it. */
-  existing?: { score: number; note: string; recommended: boolean } | undefined;
+  /** The viewer's existing rating, if any; the form edits it. A recommendation may have no score. */
+  existing?: { score?: number | null; note: string; recommended: boolean } | undefined;
   onDone?: () => void;
 }
 
@@ -24,19 +24,25 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<RatingForm>({
     resolver: zodResolver(ratingSchema),
     defaultValues: {
-      score: existing?.score as number,
+      score: existing?.score ?? undefined,
       note: existing?.note ?? "",
       recommended: existing?.recommended ?? false,
     },
   });
   const note = watch("note");
+  const score = watch("score");
+  const recommended = watch("recommended");
 
   const submit = handleSubmit((values) =>
-    rate.mutate({ itemId, ...values }, { onSuccess: () => onDone?.() }),
+    rate.mutate(
+      { itemId, ...values, score: values.score ?? null },
+      { onSuccess: () => onDone?.() },
+    ),
   );
 
   return (
@@ -53,6 +59,18 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
             />
           )}
         />
+        {score !== undefined && recommended && (
+          <Button
+            variant="ghost"
+            className="mt-1"
+            onClick={() => setValue("score", undefined, { shouldValidate: true })}
+          >
+            Clear score
+          </Button>
+        )}
+        {score === undefined && recommended && (
+          <p className="mt-1 text-sm text-muted">No score: recommended without one.</p>
+        )}
         {errors.score && (
           <p role="alert" className="mt-1 text-sm text-danger">
             {errors.score.message}

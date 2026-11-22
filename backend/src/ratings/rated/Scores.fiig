@@ -1,0 +1,30 @@
+// Arithmetic over scores. They are formulas, so a rule may use them.
+formulas scores {
+    // The average of the scores among `rows`, to two places, or None when none of
+    // them has one: a recommendation without a score counts in a book's number of
+    // recommendations, not in its average.
+    formula average(rows: List<RatingRow>) -> decimal | None {
+        scored: List<int> = [];
+        for (row in rows) {
+            match (row.score) {
+                None -> {
+                },
+
+                score -> {
+                    scored = append(scored, score);
+                },
+            }
+        }
+
+        if (scored.length() == 0) {
+            return None;
+        }
+
+        return math.divide(
+            math.toDecimal(sum(s in scored): s),
+            math.toDecimal(scored.length()),
+            places: 2,
+            rounding: Rounding.HalfUp,
+        );
+    }
+}

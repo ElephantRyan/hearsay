@@ -2,10 +2,11 @@ use hearsay.absclient.catalog;
 use hearsay.ratings.rated;
 
 // One book with the ratings the viewer may see: everyone's recommended ones,
-// linked servers' included, and the viewer's own, private or not.
+// linked servers' included, and the viewer's own, private or not. average is
+// over the recommended ratings that have a score, None when none do.
 model ItemDetail {
     book: catalog.Book;
-    average: decimal;
+    average: decimal | None;
     count: int;
     ratings: List<rated.RatingRow>;
 }

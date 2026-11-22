@@ -1,0 +1,12 @@
+use hearsay.absclient.catalog;
+
+// ABS answers a search in its own order; this puts the hits in the one chosen,
+// ignoring case. Ties keep ABS's order.
+rule sortHits(books: List<catalog.Book>, order: catalog.BookOrder) -> List<catalog.Book> {
+    return match (order) {
+        catalog.BookOrder.TitleAscending -> sorted(b in books): b.title.lowercase(),
+        catalog.BookOrder.TitleDescending -> sorted(b in books): b.title.lowercase() descending,
+        catalog.BookOrder.AuthorAscending -> sorted(b in books): b.authors.lowercase() then b.title.lowercase(),
+        catalog.BookOrder.AuthorDescending -> sorted(b in books): b.authors.lowercase() descending then b.title.lowercase(),
+    }
+}

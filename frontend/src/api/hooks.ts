@@ -1,6 +1,7 @@
 import {
   keepPreviousData,
   queryOptions,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -9,6 +10,8 @@ import { api } from "./client";
 import { ApiError, messageOf, unwrap } from "./errors";
 import { keys } from "./keys";
 import type {
+  BrowseResult,
+  BrowseSort,
   RatingRow,
   RatingSort,
   RecommendationFilters,
@@ -108,21 +111,25 @@ export const useLibraries = () =>
 export const BROWSE_PAGE_SIZE = 24;
 
 /**
- * One page of a library, or the hits of a search when `q` is not blank. The
- * previous page stays on screen while the next loads, so paging and typing
- * don't flash a skeleton.
+ * A library a page at a time in `sort` order, or the hits of a search when `q`
+ * is not blank (ABS doesn't page a search, so there is only ever one page of
+ * hits). The old list stays on screen while a new search or order loads, so
+ * typing doesn't flash a skeleton.
  */
-export const useBrowse = (libraryId: string | undefined, page: number, q: string) =>
-  useQuery({
-    queryKey: keys.browse(libraryId ?? "", page, q),
+export const useBrowse = (libraryId: string | undefined, q: string, sort: BrowseSort) =>
+  useInfiniteQuery({
+    queryKey: keys.browse(libraryId ?? "", q, sort),
     enabled: libraryId !== undefined,
     placeholderData: keepPreviousData,
-    queryFn: async () =>
+    initialPageParam: 0,
+    getNextPageParam: (last: BrowseResult) =>
+      q === "" && (last.page + 1) * last.limit < last.total ? last.page + 1 : undefined,
+    queryFn: async ({ pageParam }) =>
       unwrap(
         await api.GET("/libraries/{libraryId}/items", {
           params: {
             path: { libraryId: libraryId as string },
-            query: { page, size: BROWSE_PAGE_SIZE, ...(q ? { q } : {}) },
+            query: { page: pageParam, size: BROWSE_PAGE_SIZE, sort, ...(q ? { q } : {}) },
           },
         }),
       ),
@@ -130,7 +137,8 @@ export const useBrowse = (libraryId: string | undefined, page: number, q: string
 
 export interface RatingDraft {
   itemId: string;
-  score: number;
+  /** None for a recommendation without a score. */
+  score: number | null;
   note: string;
   recommended: boolean;
 }

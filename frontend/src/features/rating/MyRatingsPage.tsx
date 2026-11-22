@@ -88,9 +88,15 @@ function MyRating({ row }: { row: RatingRow }) {
             size="card"
             on={shared}
             label={`Recommend ${row.title}`}
-            disabled={rate.isPending}
+            // A recommendation without a score can't be made private: there would be nothing left.
+            disabled={rate.isPending || (shared && row.score == null)}
             onChange={(on) =>
-              rate.mutate({ itemId: row.itemId, score: row.score, note: row.note, recommended: on })
+              rate.mutate({
+                itemId: row.itemId,
+                score: row.score ?? null,
+                note: row.note,
+                recommended: on,
+              })
             }
           />
           <RateButton itemId={row.itemId} title={row.title} />
@@ -100,7 +106,13 @@ function MyRating({ row }: { row: RatingRow }) {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <RatingBadge score={row.score} />
-            <span>{shared ? "Shared with everyone" : "Only you"}</span>
+            <span>
+              {shared
+                ? row.score == null
+                  ? "Shared with everyone; give it a score to make it private"
+                  : "Shared with everyone"
+                : "Only you"}
+            </span>
           </div>
           {rate.isError && (
             <p role="alert" className="text-danger">

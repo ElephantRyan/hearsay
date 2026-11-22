@@ -3,36 +3,15 @@
 // first rating.
 use hearsay.absclient.catalog;
 use hearsay.ratings.rated;
+use hearsay.ratings.rated.scores;
 use hearsay.links;
 
 activity loadItemDetail(userId: string, book: catalog.Book) -> ItemDetail {
     rows = links.ratingsOfBook(book.itemId, userId);
     return ItemDetail(
         book: book,
-        average: averageOf(rows),
+        average: scores.average(filter(r in rows): r.recommended),
         count: count(r in rows): r.recommended,
         ratings: rows,
     );
-}
-
-private {
-    // The average score over the recommended rows, or 0.00 for none.
-    averageOf(rows: List<rated.RatingRow>) -> decimal {
-        recommended = filter(r in rows): r.recommended;
-        if (recommended.length() == 0) {
-            return math.divide(
-                math.toDecimal(0),
-                math.toDecimal(1),
-                places: 2,
-                rounding: Rounding.HalfUp,
-            );
-        }
-
-        return math.divide(
-            math.toDecimal(sum(r in recommended): r.score),
-            math.toDecimal(recommended.length()),
-            places: 2,
-            rounding: Rounding.HalfUp,
-        );
-    }
 }

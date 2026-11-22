@@ -71,7 +71,7 @@ const browseRoute = createRoute({
   validateSearch: z.object({
     library: z.string().optional(),
     q: z.string().optional(),
-    page: z.number().int().min(0).catch(0),
+    sort: z.enum(["title", "title-desc", "author", "author-desc"]).catch("title"),
   }),
   component: lazyRouteComponent(() => import("../features/browse/BrowsePage"), "BrowsePage"),
 });

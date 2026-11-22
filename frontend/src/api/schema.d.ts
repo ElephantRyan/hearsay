@@ -1485,7 +1485,7 @@ export interface operations {
                         isbn?: string | null;
                         note: string;
                         personId: string;
-                        score: number;
+                        score?: number | null;
                         title: string;
                         updatedAt: number;
                         username: string;
@@ -1542,7 +1542,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** Format: decimal */
-                        average: number;
+                        average?: number | null;
                         book: {
                             asin?: string | null;
                             authors: string;
@@ -1560,7 +1560,7 @@ export interface operations {
                             matchedBy?: string | null;
                             note: string;
                             recommended: boolean;
-                            score: number;
+                            score?: number | null;
                             title: string;
                             updatedAt: number;
                             userId: string;
@@ -1665,6 +1665,7 @@ export interface operations {
                 page?: number;
                 size?: number;
                 q?: string;
+                sort?: "title" | "title-desc" | "author" | "author-desc";
             };
             header?: never;
             path: {
@@ -1684,6 +1685,7 @@ export interface operations {
                             authors: string;
                             itemId: string;
                             libraryId: string;
+                            myRecommended: boolean;
                             myScore?: number | null;
                             title: string;
                         }[];
@@ -1836,7 +1838,7 @@ export interface operations {
                         matchedBy?: string | null;
                         note: string;
                         recommended: boolean;
-                        score: number;
+                        score?: number | null;
                         title: string;
                         updatedAt: number;
                         userId: string;
@@ -1869,7 +1871,7 @@ export interface operations {
                 "application/json": {
                     note?: string | null;
                     recommended: boolean;
-                    score: number;
+                    score?: number | null;
                 };
             };
         };
@@ -1884,7 +1886,7 @@ export interface operations {
                         itemId: string;
                         note: string;
                         recommended: boolean;
-                        score: number;
+                        score?: number | null;
                         updatedAt: number;
                         userId: string;
                     };
@@ -1996,7 +1998,7 @@ export interface operations {
                     "application/json": {
                         authors: string;
                         /** Format: decimal */
-                        average: number;
+                        average?: number | null;
                         count: number;
                         itemId: string;
                         latest: number;
@@ -2071,7 +2073,7 @@ export interface operations {
                         matchedBy?: string | null;
                         note: string;
                         recommended: boolean;
-                        score: number;
+                        score?: number | null;
                         title: string;
                         updatedAt: number;
                         userId: string;
@@ -2109,7 +2111,7 @@ export interface operations {
                     "application/json": {
                         authors: string;
                         note: string;
-                        score: number;
+                        score?: number | null;
                         title: string;
                         updatedAt: number;
                         via: string;

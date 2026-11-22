@@ -8,7 +8,7 @@ model SharedRating {
     isbn: string | None;
     title: string;
     authors: string;
-    score: int;
+    score: int | None;
     note: string;
     updatedAt: int;
 }

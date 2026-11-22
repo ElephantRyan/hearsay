@@ -1,8 +1,9 @@
 // minScore applies to a book's average, after ranking, so one 10 from one
-// person doesn't pull a 4.0 average over a bar of 7.
+// person doesn't pull a 4.0 average over a bar of 7. A book nobody scored has
+// no average, so any bar leaves it out.
 rule atLeast(books: List<RecommendedBook>, minScore: int | None) -> List<RecommendedBook> {
     return match (minScore) {
         None -> books,
-        bar -> filter(b in books): b.average >= math.toDecimal(bar),
+        bar -> filter(b in books): (b.average ?? math.toDecimal(0)) >= math.toDecimal(bar),
     }
 }

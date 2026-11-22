@@ -1,6 +1,8 @@
 use hearsay.ratings.rated;
 
-test rankingOrdersByAverageThenCountThenRecency {
+// Most recommended first; then the higher average, a book nobody scored after
+// any that were; then the most recently rated.
+test rankingOrdersByRecommendationsThenAverageThenRecency {
     rows = [
         row("u1", "dune", 9, true, 1),
         row("u2", "dune", 8, true, 2),
@@ -11,20 +13,30 @@ test rankingOrdersByAverageThenCountThenRecency {
         row("u1", "kim", 8, true, 7),
         row("u2", "kim", 9, true, 8),
         row("u1", "secret", 10, false, 9),
+        row("u1", "wool", None, true, 10),
+        row("u2", "wool", None, true, 11),
+        row("u3", "wool", None, true, 12),
+        row("u4", "silo", None, true, 13),
+        row("u1", "lamb", 6, true, 14),
+        row("u2", "lamb", None, true, 15),
     ];
     ranked = rankRecommendations(rows);
-    expect ranked.length() == 4;
-    expect ranked.at(0).itemId == "emma";
-    expect ranked.at(1).itemId == "ubik";
-    expect ranked.at(2).itemId == "kim";
-    expect ranked.at(3).itemId == "dune";
-    expect ranked.at(1).average == 8.67;
+    order = map(b in ranked): b.itemId;
+    expect order == ["ubik", "wool", "kim", "dune", "lamb", "emma", "silo"];
+    expect ranked.at(0).average == 8.67;
+    expect ranked.at(0).count == 3;
+    expect ranked.at(1).average == None;
+    expect ranked.at(1).count == 3;
+    // lamb's one score is its average; the unscored recommendation still counts
     expect ranked.at(2).average == 8.5;
-    expect ranked.at(1).title == "Title of ubik";
+    expect ranked.at(4).average == 6.00;
+    expect ranked.at(4).count == 2;
+    expect ranked.at(0).title == "Title of ubik";
 }
 
 private {
-    row(userId: string, itemId: string, score: int, recommended: bool, at: int) -> rated.RatingRow {
+    row(userId: string, itemId: string, score: int | None, recommended: bool, at: int)
+            -> rated.RatingRow {
         return rated.RatingRow(
             userId: userId,
             username: "name-${userId}",

@@ -1,10 +1,11 @@
-// A book's standing across everyone who recommended it.
+// A book's standing across everyone who recommended it: how many did, and the
+// average of the scores they gave (None when nobody gave one).
 model RecommendedBook {
     itemId: string;
     libraryId: string;
     title: string;
     authors: string;
-    average: decimal;
+    average: decimal | None;
     count: int;
     latest: int;
 }

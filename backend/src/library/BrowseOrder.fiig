@@ -1,0 +1,8 @@
+// The orders GET /libraries/{libraryId}/items offers, spelled as the query
+// string spells them.
+enum BrowseOrder {
+    TitleAscending from json "title",
+    TitleDescending from json "title-desc",
+    AuthorAscending from json "author",
+    AuthorDescending from json "author-desc",
+}

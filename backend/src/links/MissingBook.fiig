@@ -3,7 +3,7 @@
 model MissingBook {
     title: string;
     authors: string;
-    score: int;
+    score: int | None;
     note: string;
     updatedAt: int;
     via: string;

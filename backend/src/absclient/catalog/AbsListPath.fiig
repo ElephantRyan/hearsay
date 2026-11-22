@@ -1,7 +1,18 @@
 use fiig.http;
 
-// GET /api/libraries/{id}/items for one page, titles A to Z. The caller has
-// made the id one path segment with absPathId; the rest are integers.
-conversion absListPath(libraryId: string, page: int, size: int) -> string {
-    return "/api/libraries/${libraryId}/items?sort=media.metadata.title&minified=1&page=${page}&limit=${size}";
+// GET /api/libraries/{id}/items for one page, in the order asked. The caller
+// has made the id one path segment with absPathId; the rest are integers.
+conversion absListPath(libraryId: string, page: int, size: int, order: BookOrder) -> string {
+    return "/api/libraries/${libraryId}/items?${absSort(order)}&minified=1&page=${page}&limit=${size}";
+}
+
+private {
+    absSort(order: BookOrder) -> string {
+        return match (order) {
+            BookOrder.TitleAscending -> "sort=media.metadata.title",
+            BookOrder.TitleDescending -> "sort=media.metadata.title&desc=1",
+            BookOrder.AuthorAscending -> "sort=media.metadata.authorName",
+            BookOrder.AuthorDescending -> "sort=media.metadata.authorName&desc=1",
+        }
+    }
 }

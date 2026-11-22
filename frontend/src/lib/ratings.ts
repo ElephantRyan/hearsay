@@ -18,17 +18,26 @@ export function noteLength(note: string): number {
   return count;
 }
 
-/** The same rules the server enforces (backend/src/ratings/CreateRating.fiig). */
-export const ratingSchema = z.object({
-  score: z
-    .number({ error: "Pick a score from 1 to 10." })
-    .int()
-    .min(MIN_SCORE, "Pick a score from 1 to 10.")
-    .max(MAX_SCORE, "Pick a score from 1 to 10."),
-  note: z
-    .string()
-    .refine((note) => noteLength(note) <= MAX_NOTE, `Keep the note to ${MAX_NOTE} characters.`),
-  recommended: z.boolean(),
-});
+/**
+ * The same rules the server enforces (backend/src/ratings/CheckRating.fiig). A recommendation may
+ * go without a score; anything else needs one.
+ */
+export const ratingSchema = z
+  .object({
+    score: z
+      .number()
+      .int()
+      .min(MIN_SCORE, "Pick a score from 1 to 10.")
+      .max(MAX_SCORE, "Pick a score from 1 to 10.")
+      .optional(),
+    note: z
+      .string()
+      .refine((note) => noteLength(note) <= MAX_NOTE, `Keep the note to ${MAX_NOTE} characters.`),
+    recommended: z.boolean(),
+  })
+  .refine((form) => form.score !== undefined || form.recommended, {
+    path: ["score"],
+    message: "Pick a score from 1 to 10, or recommend the book.",
+  });
 
 export type RatingForm = z.infer<typeof ratingSchema>;

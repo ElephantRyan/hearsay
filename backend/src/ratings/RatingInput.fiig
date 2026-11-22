@@ -1,7 +1,8 @@
 // The body of PUT /ratings/{itemId}. The item comes from the path and the
-// user from the session, never from the body.
+// user from the session, never from the body. score may be left out only
+// when the book is recommended.
 model RatingInput {
-    score: int;
+    score: int | None;
     note: string | None;
     recommended: bool;
 }

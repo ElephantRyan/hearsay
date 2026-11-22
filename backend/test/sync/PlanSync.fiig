@@ -54,6 +54,19 @@ test planSyncCreatesUpdatesAndRemoves {
             createdAt: 4,
             updatedAt: 4,
         ),
+        rated.RatingRow(
+            userId: "u1",
+            username: "Ann",
+            itemId: "e",
+            libraryId: "lib-1",
+            title: "E",
+            authors: "x",
+            score: None,
+            note: "",
+            recommended: true,
+            createdAt: 5,
+            updatedAt: 5,
+        ),
     ];
     states = [
         SyncState(
@@ -84,7 +97,8 @@ test planSyncCreatesUpdatesAndRemoves {
     expect first.libraryId == "lib-1";
     expect first.action == SyncAction.Create;
     expect first.name == "Ann Recommends";
-    expect first.bookIds == ["b", "a"];
+    // Every recommended book goes in, the ones without a score after the rest.
+    expect first.bookIds == ["b", "a", "e"];
     expect first.collectionId == None;
     second = plans.at(1);
     expect second.libraryId == "lib-2";

@@ -41,6 +41,16 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                 );
             }
 
+            if (request.url == "https://abs.test/api/libraries/lib-1/items?sort=media.metadata.authorName&desc=1&minified=1&page=0&limit=2") {
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: "{\"results\":[],\"total\":1117,\"limit\":2,\"page\":0}".utf8(),
+                    ),
+                );
+            }
+
             if (request.url == "https://abs.test/api/libraries/lib-1/search?q=war+%26+peace&limit=5") {
                 return Ok(
                     http.Reply(
@@ -59,16 +69,18 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
     expect AbsCatalog.librariesAsService() is Ok(libraries);
     expect libraries.length() == 2;
     expect libraries.at(0) == AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book");
-    expect AbsCatalog.pageAsService("lib-1", 2, 2) is Ok(page);
+    expect AbsCatalog.pageAsService("lib-1", 2, 2, BookOrder.TitleAscending) is Ok(page);
     expect page.total == 1117;
     expect page.page == 2;
     expect page.books.length() == 2;
     expect page.books.at(0) == Book(itemId: "it-1", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert");
     expect page.books.at(1).authors == "";
+    expect AbsCatalog.pageAsService("lib-1", 0, 2, BookOrder.AuthorDescending) is Ok(byAuthor);
+    expect byAuthor.total == 1117;
     expect AbsCatalog.searchAsService("lib-1", "war & peace", 5) is Ok(found);
     expect found.books.length() == 1;
     expect found.books.at(0).title == "War and Peace";
-    expect calls(HttpClient.send) == 3;
+    expect calls(HttpClient.send) == 4;
 }
 
 // An id from a caller's URL goes into an ABS path sent with the server's own
@@ -93,7 +105,7 @@ test absRefusesHostileIdsWithoutCallingAbs {
     expect AbsCatalog.itemAsService("a/b") is Err(absclient.AbsError.NotFound);
     expect AbsCatalog.itemAsService("") is Err(absclient.AbsError.NotFound);
     expect AbsCatalog.item("https://abs.test", "tok", "x?y=1") is Err(absclient.AbsError.NotFound);
-    expect AbsCatalog.pageAsService("../users", 0, 10) is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.pageAsService("../users", 0, 10, BookOrder.TitleAscending) is Err(absclient.AbsError.NotFound);
     expect AbsCatalog.searchAsService("lib/../x", "q", 10) is Err(absclient.AbsError.NotFound);
     expect calls(HttpClient.send) == 0;
 }
