@@ -12,9 +12,12 @@ capability RatedBooks {
     }
 
     // Every recommended rating with its book, for ranking and for the list of
-    // recommenders. Private ratings never leave the database through here.
+    // recommenders. Private ratings never leave the database through here, and
+    // a note only when its writer shared it.
     gateway recommended() -> List<RatingRow> requires Database idempotent {
-        return Database.queryMany("SELECT * FROM rating_row WHERE recommended = 1");
+        return Database.queryMany(
+            "SELECT user_id, username, item_id, library_id, title, authors, score, CASE WHEN note_shared = 1 THEN note ELSE '' END AS note, recommended, created_at, updated_at, via, matched_by, note_shared FROM rating_row WHERE recommended = 1",
+        );
     }
 
     // Every recommended rating with what recognises its book on another server
@@ -24,12 +27,13 @@ capability RatedBooks {
     }
 
     // What a viewer may see of one book: everyone's recommended ratings, plus
-    // their own whether recommended or not.
+    // their own whether recommended or not. Others' notes only when shared.
     gateway visibleFor(itemId: string, viewerId: string) -> List<RatingRow>
             requires Database
             idempotent {
         return Database.queryMany(
-            "SELECT * FROM rating_row WHERE item_id = ? AND (recommended = 1 OR user_id = ?) ORDER BY updated_at DESC",
+            "SELECT user_id, username, item_id, library_id, title, authors, score, CASE WHEN note_shared = 1 OR user_id = ? THEN note ELSE '' END AS note, recommended, created_at, updated_at, via, matched_by, note_shared FROM rating_row WHERE item_id = ? AND (recommended = 1 OR user_id = ?) ORDER BY updated_at DESC",
+            viewerId,
             itemId,
             viewerId,
         );

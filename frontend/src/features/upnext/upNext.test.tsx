@@ -4,6 +4,7 @@ import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import type { UpNextBook } from "../../api/types";
 import { mount } from "../../test/mount";
+import { pickScore } from "../../test/score";
 import { book, bookNamed, server } from "../../test/server";
 
 beforeAll(() => server.listen());
@@ -122,6 +123,8 @@ describe("the Up next list", () => {
             lastListenedAt: 1,
             myScore: null,
             recommended: false,
+            myNote: "",
+            myNoteShared: false,
           },
         ]),
       ),
@@ -133,7 +136,7 @@ describe("the Up next list", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Mark Book number 2 as read" }));
     const sheet = await screen.findByRole("dialog", { name: "Finished Book number 2?" });
-    await userEvent.click(await within(sheet).findByLabelText("9"));
+    pickScore(9, await within(sheet).findByRole("slider"));
     await userEvent.click(within(sheet).getByRole("button", { name: "Save rating" }));
     await waitFor(() => expect(titles()).toEqual(["Book number 1", "Book number 3"]));
 
@@ -147,7 +150,7 @@ describe("the Up next list", () => {
     );
     expect(await screen.findByText("Nothing up next")).toBeInTheDocument();
     expect(sent).toEqual([
-      { rate: "it-2", score: 9, note: "", recommended: false },
+      { rate: "it-2", score: 9, note: "", recommended: false, noteShared: false },
       { remove: "it-2" },
       { remove: "it-1" },
       { remove: "it-3" },

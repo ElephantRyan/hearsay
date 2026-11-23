@@ -39,6 +39,8 @@ rule listenedBooks(
                         lastListenedAt: entry.lastListenedAt,
                         myScore: scoreOf(rating),
                         recommended: recommendedOf(rating),
+                        myNote: noteOf(rating),
+                        myNoteShared: noteSharedOf(rating),
                     ),
                 );
             },
@@ -53,6 +55,20 @@ private {
         return match (rating) {
             None -> None,
             row -> row.score,
+        }
+    }
+
+    noteOf(rating: rated.RatingRow | None) -> string {
+        return match (rating) {
+            None -> "",
+            row -> row.note,
+        }
+    }
+
+    noteSharedOf(rating: rated.RatingRow | None) -> bool {
+        return match (rating) {
+            None -> false,
+            row -> row.noteShared,
         }
     }
 

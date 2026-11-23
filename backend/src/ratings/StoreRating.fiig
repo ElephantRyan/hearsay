@@ -15,6 +15,7 @@ activity storeRating(user: accounts.Identity, book: catalog.Book, checked: Check
         itemId: book.itemId,
         score: checked.score,
         note: checked.note,
+        noteShared: checked.noteShared,
         recommended: checked.recommended,
         createdAt: now,
         updatedAt: now,

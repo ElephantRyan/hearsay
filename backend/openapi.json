@@ -2086,6 +2086,9 @@
                           "note": {
                             "type": "string"
                           },
+                          "noteShared": {
+                            "type": "boolean"
+                          },
                           "recommended": {
                             "type": "boolean"
                           },
@@ -2116,6 +2119,7 @@
                           "itemId",
                           "libraryId",
                           "note",
+                          "noteShared",
                           "recommended",
                           "title",
                           "updatedAt",
@@ -2621,6 +2625,12 @@
                       "libraryId": {
                         "type": "string"
                       },
+                      "myNote": {
+                        "type": "string"
+                      },
+                      "myNoteShared": {
+                        "type": "boolean"
+                      },
                       "myScore": {
                         "nullable": true,
                         "type": "integer"
@@ -2641,6 +2651,8 @@
                       "itemId",
                       "lastListenedAt",
                       "libraryId",
+                      "myNote",
+                      "myNoteShared",
                       "percent",
                       "recommended",
                       "title"
@@ -3114,6 +3126,9 @@
                       "note": {
                         "type": "string"
                       },
+                      "noteShared": {
+                        "type": "boolean"
+                      },
                       "recommended": {
                         "type": "boolean"
                       },
@@ -3144,6 +3159,7 @@
                       "itemId",
                       "libraryId",
                       "note",
+                      "noteShared",
                       "recommended",
                       "title",
                       "updatedAt",
@@ -3261,6 +3277,10 @@
                     "nullable": true,
                     "type": "string"
                   },
+                  "noteShared": {
+                    "nullable": true,
+                    "type": "boolean"
+                  },
                   "recommended": {
                     "type": "boolean"
                   },
@@ -3293,6 +3313,9 @@
                     "note": {
                       "type": "string"
                     },
+                    "noteShared": {
+                      "type": "boolean"
+                    },
                     "recommended": {
                       "type": "boolean"
                     },
@@ -3311,6 +3334,7 @@
                     "createdAt",
                     "itemId",
                     "note",
+                    "noteShared",
                     "recommended",
                     "updatedAt",
                     "userId"
@@ -3557,6 +3581,9 @@
                       "note": {
                         "type": "string"
                       },
+                      "noteShared": {
+                        "type": "boolean"
+                      },
                       "recommended": {
                         "type": "boolean"
                       },
@@ -3587,6 +3614,7 @@
                       "itemId",
                       "libraryId",
                       "note",
+                      "noteShared",
                       "recommended",
                       "title",
                       "updatedAt",

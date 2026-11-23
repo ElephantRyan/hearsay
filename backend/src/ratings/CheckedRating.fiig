@@ -5,5 +5,6 @@ model CheckedRating {
     itemId: string;
     score: int | None;
     note: string;
+    noteShared: bool;
     recommended: bool;
 }

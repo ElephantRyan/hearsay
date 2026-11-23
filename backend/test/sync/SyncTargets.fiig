@@ -16,6 +16,7 @@ test syncTargetsAreSelfUnlessAdmin {
             recommended: true,
             createdAt: 1,
             updatedAt: 1,
+            noteShared: false,
         ),
         rated.RatingRow(
             userId: "u2",
@@ -29,6 +30,7 @@ test syncTargetsAreSelfUnlessAdmin {
             recommended: false,
             createdAt: 1,
             updatedAt: 1,
+            noteShared: false,
         ),
     ];
     states = [

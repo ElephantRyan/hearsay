@@ -2,11 +2,12 @@
 // original created_at.
 gateway saveRating(rating: Rating) -> int requires Database {
     return Database.execute(
-        "INSERT INTO rating (user_id, item_id, score, note, recommended, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, item_id) DO UPDATE SET score = excluded.score, note = excluded.note, recommended = excluded.recommended, updated_at = excluded.updated_at",
+        "INSERT INTO rating (user_id, item_id, score, note, note_shared, recommended, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, item_id) DO UPDATE SET score = excluded.score, note = excluded.note, note_shared = excluded.note_shared, recommended = excluded.recommended, updated_at = excluded.updated_at",
         rating.userId,
         rating.itemId,
         rating.score,
         rating.note,
+        rating.noteShared,
         rating.recommended,
         rating.createdAt,
         rating.updatedAt,

@@ -77,7 +77,12 @@ export function ItemPage() {
           key={mine ? `${mine.updatedAt}` : "new"}
           itemId={book.itemId}
           existing={
-            mine && { score: mine.score ?? null, note: mine.note, recommended: mine.recommended }
+            mine && {
+              score: mine.score ?? null,
+              note: mine.note,
+              recommended: mine.recommended,
+              noteShared: mine.noteShared,
+            }
           }
         />
       </section>

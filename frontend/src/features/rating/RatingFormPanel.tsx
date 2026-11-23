@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { useRateItem, useRemoveRating } from "../../api/hooks";
 import { NoteField } from "../../components/domain/NoteField";
-import { RatingInput } from "../../components/domain/RatingInput";
 import { RecommendToggle } from "../../components/domain/RecommendToggle";
+import { ScoreSlider } from "../../components/domain/ScoreSlider";
 import { messageFor } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
 import { type RatingForm, ratingSchema } from "../../lib/ratings";
@@ -11,7 +11,9 @@ import { type RatingForm, ratingSchema } from "../../lib/ratings";
 interface Props {
   itemId: string;
   /** The viewer's existing rating, if any; the form edits it. A recommendation may have no score. */
-  existing?: { score?: number | null; note: string; recommended: boolean } | undefined;
+  existing?:
+    | { score?: number | null; note: string; recommended: boolean; noteShared: boolean }
+    | undefined;
   onDone?: () => void;
 }
 
@@ -32,6 +34,7 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
       score: existing?.score ?? undefined,
       note: existing?.note ?? "",
       recommended: existing?.recommended ?? false,
+      noteShared: existing?.noteShared ?? false,
     },
   });
   const note = watch("note");
@@ -52,7 +55,7 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
           control={control}
           name="score"
           render={({ field }) => (
-            <RatingInput
+            <ScoreSlider
               value={field.value}
               onChange={field.onChange}
               invalid={errors.score !== undefined}
@@ -78,7 +81,24 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
         )}
       </div>
 
-      <NoteField {...register("note")} value={note} error={errors.note?.message} />
+      <div className="space-y-2">
+        <NoteField {...register("note")} value={note} error={errors.note?.message} />
+        {recommended && note.trim() !== "" && (
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              {...register("noteShared")}
+              className="mt-0.5 h-4 w-4 accent-[var(--color-accent)]"
+            />
+            <span>
+              Share my note with everyone
+              <span className="block text-xs text-muted">
+                Off: everyone sees your score and recommendation, but the note is yours alone.
+              </span>
+            </span>
+          </label>
+        )}
+      </div>
 
       <Controller
         control={control}

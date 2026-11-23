@@ -96,6 +96,7 @@ function MyRating({ row }: { row: RatingRow }) {
                 score: row.score ?? null,
                 note: row.note,
                 recommended: on,
+                noteShared: row.noteShared,
               })
             }
           />

@@ -31,6 +31,7 @@ rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, Ra
             itemId: itemId,
             score: input.score,
             note: note,
+            noteShared: input.noteShared ?? false,
             recommended: input.recommended,
         ),
     );

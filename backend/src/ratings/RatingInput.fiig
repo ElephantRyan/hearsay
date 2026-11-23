@@ -1,8 +1,10 @@
 // The body of PUT /ratings/{itemId}. The item comes from the path and the
 // user from the session, never from the body. score may be left out only
-// when the book is recommended.
+// when the book is recommended. The note stays private unless noteShared is
+// true.
 model RatingInput {
     score: int | None;
     note: string | None;
+    noteShared: bool | None;
     recommended: bool;
 }

@@ -34,6 +34,7 @@ export const ratingSchema = z
       .string()
       .refine((note) => noteLength(note) <= MAX_NOTE, `Keep the note to ${MAX_NOTE} characters.`),
     recommended: z.boolean(),
+    noteShared: z.boolean(),
   })
   .refine((form) => form.score !== undefined || form.recommended, {
     path: ["score"],

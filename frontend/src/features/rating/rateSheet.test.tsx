@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { mount } from "../../test/mount";
+import { pickScore } from "../../test/score";
 import { book, server } from "../../test/server";
 
 beforeAll(() => server.listen());
@@ -52,6 +53,42 @@ describe("the book page", () => {
 });
 
 describe("the rating sheet", () => {
+  it("keeps a note private unless 'Share my note' is ticked", async () => {
+    const sent: unknown[] = [];
+    server.use(
+      signedIn,
+      itemAnswer(),
+      http.put("/api/ratings/:itemId", async ({ request, params }) => {
+        sent.push({ itemId: params.itemId, ...((await request.json()) as object) });
+        return HttpResponse.json({});
+      }),
+    );
+    mount("/");
+
+    await userEvent.click(await screen.findByRole("button", { name: `Rate ${book.title}` }));
+    const sheet = await screen.findByRole("dialog", { name: book.title });
+    pickScore(8, await within(sheet).findByRole("slider"));
+    await userEvent.type(within(sheet).getByRole("textbox"), "Loved the ending");
+    // a rating that isn't recommended is private already; the checkbox only shows once it is
+    expect(within(sheet).queryByLabelText(/Share my note/)).not.toBeInTheDocument();
+    await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
+    const share = within(sheet).getByLabelText(/Share my note/);
+    expect(share).not.toBeChecked();
+    await userEvent.click(share);
+    await userEvent.click(within(sheet).getByRole("button", { name: "Save rating" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(sent).toEqual([
+      {
+        itemId: book.itemId,
+        score: 8,
+        note: "Loved the ending",
+        recommended: true,
+        noteShared: true,
+      },
+    ]);
+  });
+
   it("recommends without a score, and clears a score only while recommended", async () => {
     const sent: unknown[] = [];
     server.use(
@@ -66,7 +103,10 @@ describe("the rating sheet", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: `Rate ${book.title}` }));
     const sheet = await screen.findByRole("dialog", { name: book.title });
-    await within(sheet).findByLabelText("7");
+    expect(await within(sheet).findByRole("slider")).toHaveAttribute(
+      "aria-valuetext",
+      "7 out of 10",
+    );
     // a private rating needs its score, so there is nothing to clear
     expect(within(sheet).queryByRole("button", { name: "Clear score" })).not.toBeInTheDocument();
     await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
@@ -84,7 +124,9 @@ describe("the rating sheet", () => {
     await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
     await userEvent.click(within(sheet).getByRole("button", { name: "Update rating" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(sent).toEqual([{ itemId: book.itemId, score: null, note: "", recommended: true }]);
+    expect(sent).toEqual([
+      { itemId: book.itemId, score: null, note: "", recommended: true, noteShared: false },
+    ]);
   });
 
   it("rates a book from the home list and closes once saved", async () => {
@@ -101,11 +143,13 @@ describe("the rating sheet", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: `Rate ${book.title}` }));
     const sheet = await screen.findByRole("dialog", { name: book.title });
-    await userEvent.click(await within(sheet).findByLabelText("8"));
+    pickScore(8, await within(sheet).findByRole("slider"));
     await userEvent.click(within(sheet).getByRole("button", { name: "Save rating" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(sent).toEqual([{ itemId: book.itemId, score: 8, note: "", recommended: false }]);
+    expect(sent).toEqual([
+      { itemId: book.itemId, score: 8, note: "", recommended: false, noteShared: false },
+    ]);
   });
 
   it("opens on my current rating, and Escape closes it without saving", async () => {
@@ -122,7 +166,10 @@ describe("the rating sheet", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: `Rate ${book.title}` }));
     const sheet = await screen.findByRole("dialog", { name: book.title });
-    expect(await within(sheet).findByLabelText("6")).toBeChecked();
+    expect(await within(sheet).findByRole("slider")).toHaveAttribute(
+      "aria-valuetext",
+      "6 out of 10",
+    );
     expect(within(sheet).getByRole("textbox")).toHaveValue("Slow start");
     expect(within(sheet).getByRole("button", { name: "Recommend this book" })).toHaveAttribute(
       "aria-pressed",
@@ -148,7 +195,7 @@ describe("the rating sheet", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: `Rate ${book.title}` }));
     const sheet = await screen.findByRole("dialog", { name: book.title });
-    await userEvent.click(await within(sheet).findByLabelText("3"));
+    pickScore(3, await within(sheet).findByRole("slider"));
     await userEvent.click(within(sheet).getByRole("button", { name: "Save rating" }));
 
     expect(await within(sheet).findByRole("alert")).toHaveTextContent(

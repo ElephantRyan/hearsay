@@ -1,6 +1,12 @@
 use hearsay.accounts;
 use hearsay.ratings.rated;
 
+// One person's list. Their own, they see with every note; someone else's, with
+// only the notes its writer shared.
 workflow listPicksOf(me: accounts.Identity, userId: string) -> List<rated.RatingRow> {
+    if (userId == me.userId) {
+        return myPicks(userId);
+    }
+
     return picksOf(userId);
 }

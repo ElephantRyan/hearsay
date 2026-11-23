@@ -1,6 +1,6 @@
 gateway findRating(userId: string, itemId: string) -> Rating | None requires Database idempotent {
     return Database.queryOne(
-        "SELECT user_id, item_id, score, note, recommended, created_at, updated_at FROM rating WHERE user_id = ? AND item_id = ?",
+        "SELECT user_id, item_id, score, note, note_shared, recommended, created_at, updated_at FROM rating WHERE user_id = ? AND item_id = ?",
         userId,
         itemId,
     );

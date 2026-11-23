@@ -38,6 +38,7 @@ private {
             recommended: recommended,
             createdAt: at,
             updatedAt: at,
+            noteShared: false,
         );
     }
 }

@@ -1,10 +1,12 @@
 // One user's rating of one ABS library item. Times are Unix milliseconds. A
 // recommendation may go without a score; anything else has one.
+// The note is the writer's own unless noteShared.
 model Rating {
     userId: string;
     itemId: string;
     score: int | None;
     note: string;
+    noteShared: bool;
     recommended: bool;
     createdAt: int;
     updatedAt: int;

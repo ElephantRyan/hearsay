@@ -143,6 +143,8 @@ export interface RatingDraft {
   score: number | null;
   note: string;
   recommended: boolean;
+  /** Whether others may see the note; it is the writer's own otherwise. */
+  noteShared: boolean;
 }
 
 /** Everything a changed rating can change: lists, averages, rankings. */
@@ -173,7 +175,12 @@ export function useRateItem() {
       unwrap(
         await api.PUT("/ratings/{itemId}", {
           params: { path: { itemId: draft.itemId } },
-          body: { score: draft.score, note: draft.note, recommended: draft.recommended },
+          body: {
+            score: draft.score,
+            note: draft.note,
+            recommended: draft.recommended,
+            noteShared: draft.noteShared,
+          },
         }),
       ),
     onMutate: async (draft) => {
@@ -185,7 +192,13 @@ export function useRateItem() {
           key,
           rows.map((row) =>
             row.itemId === draft.itemId
-              ? { ...row, score: draft.score, note: draft.note, recommended: draft.recommended }
+              ? {
+                  ...row,
+                  score: draft.score,
+                  note: draft.note,
+                  recommended: draft.recommended,
+                  noteShared: draft.noteShared,
+                }
               : row,
           ),
         );

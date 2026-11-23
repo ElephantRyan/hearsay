@@ -14,6 +14,7 @@ test filtersAndMinScore {
             recommended: true,
             createdAt: 1,
             updatedAt: 1,
+            noteShared: false,
         ),
         rated.RatingRow(
             userId: "u2",
@@ -27,6 +28,7 @@ test filtersAndMinScore {
             recommended: true,
             createdAt: 2,
             updatedAt: 2,
+            noteShared: false,
         ),
     ];
     expect filterRows(rows, None, None).length() == 2;

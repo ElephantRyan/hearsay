@@ -1665,6 +1665,7 @@ export interface operations {
                             libraryId: string;
                             matchedBy?: string | null;
                             note: string;
+                            noteShared: boolean;
                             recommended: boolean;
                             score?: number | null;
                             title: string;
@@ -1961,6 +1962,8 @@ export interface operations {
                         itemId: string;
                         lastListenedAt: number;
                         libraryId: string;
+                        myNote: string;
+                        myNoteShared: boolean;
                         myScore?: number | null;
                         percent: number;
                         recommended: boolean;
@@ -2235,6 +2238,7 @@ export interface operations {
                         libraryId: string;
                         matchedBy?: string | null;
                         note: string;
+                        noteShared: boolean;
                         recommended: boolean;
                         score?: number | null;
                         title: string;
@@ -2268,6 +2272,7 @@ export interface operations {
             content: {
                 "application/json": {
                     note?: string | null;
+                    noteShared?: boolean | null;
                     recommended: boolean;
                     score?: number | null;
                 };
@@ -2283,6 +2288,7 @@ export interface operations {
                         createdAt: number;
                         itemId: string;
                         note: string;
+                        noteShared: boolean;
                         recommended: boolean;
                         score?: number | null;
                         updatedAt: number;
@@ -2470,6 +2476,7 @@ export interface operations {
                         libraryId: string;
                         matchedBy?: string | null;
                         note: string;
+                        noteShared: boolean;
                         recommended: boolean;
                         score?: number | null;
                         title: string;

@@ -5,7 +5,7 @@ import { useMyListening, useRateItem } from "../../api/hooks";
 import type { ListenedBook } from "../../api/types";
 import { BookCover } from "../../components/domain/BookCover";
 import { RecommendButton } from "../../components/domain/RecommendButton";
-import { StarRating } from "../../components/domain/StarRating";
+import { ScoreSlider } from "../../components/domain/ScoreSlider";
 import {
   EmptyState,
   ErrorState,
@@ -180,7 +180,14 @@ function RateCard({ book, onSkip, onRated }: CardProps) {
 
   function submit() {
     rate.mutate(
-      { itemId: book.itemId, score: score ?? null, note: "", recommended },
+      {
+        itemId: book.itemId,
+        score: score ?? null,
+        // A book recommended earlier may already have a note: keep it, and whether it's shared.
+        note: book.myNote,
+        recommended,
+        noteShared: book.myNoteShared,
+      },
       { onSuccess: onRated },
     );
   }
@@ -226,12 +233,14 @@ function RateCard({ book, onSkip, onRated }: CardProps) {
       </div>
 
       <div className="mt-3 space-y-2">
-        {/* Tapping the picked star again takes the score back. */}
-        <StarRating
-          value={score}
-          onPick={(picked) => setScore(picked === score ? undefined : picked)}
-          disabled={rate.isPending}
-        />
+        <ScoreSlider value={score} onChange={setScore} disabled={rate.isPending} />
+        {score !== undefined && (
+          <div className="text-center">
+            <Button variant="ghost" onClick={() => setScore(undefined)} disabled={rate.isPending}>
+              Clear score
+            </Button>
+          </div>
+        )}
         {rate.isError && (
           <p role="alert" className="text-center text-sm text-danger">
             Couldn't save that: {messageFor(rate.error)}

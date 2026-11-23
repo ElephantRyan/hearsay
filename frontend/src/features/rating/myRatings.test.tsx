@@ -28,6 +28,7 @@ function myRating(n: number, recommended: boolean): RatingRow {
     authors: "An Author",
     score: 7,
     note: `note ${n}`,
+    noteShared: false,
     recommended,
     createdAt: 1795000000000,
     updatedAt: 1795000000000,
@@ -58,7 +59,9 @@ describe("the my-ratings screen", () => {
 
     expect(await screen.findByText("Shared with everyone")).toBeInTheDocument();
     expect(toggle).toHaveAttribute("aria-pressed", "true");
-    expect(sent).toEqual([{ itemId: "it-1", score: 7, note: "note 1", recommended: true }]);
+    expect(sent).toEqual([
+      { itemId: "it-1", score: 7, note: "note 1", recommended: true, noteShared: false },
+    ]);
   });
 
   it("flips back and says so when the server refuses", async () => {

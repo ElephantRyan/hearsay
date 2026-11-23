@@ -1,0 +1,8 @@
+use hearsay.ratings.rated;
+use hearsay.ratings.rated.RatedBooks;
+
+// The signed-in person's own list, best first, read from their own ratings so
+// their notes show whether shared or not.
+activity myPicks(userId: string) -> List<rated.RatingRow> {
+    return bestFirst(RatedBooks.byUser(userId), userId);
+}

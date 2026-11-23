@@ -1,7 +1,8 @@
 // A rating joined with who made it and the book it is about, as the
 // rating_row view returns it (migrations/0001_initial_schema.sql). via and
 // matchedBy are None for this server's own ratings; for one fetched from a
-// linked server, they are its name and how the book was recognised.
+// linked server, they are its name and how the book was recognised. A note
+// read for anyone but its writer is blank unless noteShared (RatedBooks).
 model RatingRow {
     userId: string;
     username: string;
@@ -16,4 +17,5 @@ model RatingRow {
     updatedAt: int;
     via: string | None;
     matchedBy: string | None;
+    noteShared: bool;
 }

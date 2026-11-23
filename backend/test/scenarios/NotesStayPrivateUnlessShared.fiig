@@ -1,0 +1,42 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.library;
+use hearsay.ratings;
+use hearsay.recommendations;
+
+// A recommendation's score shows to everyone, its note only once its writer
+// shares it. The writer always sees their own note.
+test aNoteStaysPrivateUntilShared {
+    fake AbsCatalog {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                ),
+            );
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    bob = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 9, note: "my secret take", recommended: true)) is Ok(saved);
+    expect saved.noteShared == false;
+    expect library.showItem(bob, "dune") is Ok(bobSees);
+    expect bobSees.ratings.length() == 1;
+    expect bobSees.ratings.at(0).score == 9;
+    expect bobSees.ratings.at(0).note == "";
+    expect recommendations.listPicksOf(bob, "u1").at(0).note == "";
+    expect library.showItem(ann, "dune") is Ok(annSees);
+    expect annSees.ratings.at(0).note == "my secret take";
+    expect recommendations.listPicksOf(ann, "u1").at(0).note == "my secret take";
+    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 9, note: "my secret take", recommended: true, noteShared: true)) is Ok(_);
+    expect library.showItem(bob, "dune") is Ok(bobNow);
+    expect bobNow.ratings.at(0).note == "my secret take";
+    expect bobNow.ratings.at(0).noteShared;
+    expect recommendations.listPicksOf(bob, "u1").at(0).note == "my secret take";
+}

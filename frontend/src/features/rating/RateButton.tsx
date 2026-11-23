@@ -50,7 +50,12 @@ function RateSheetBody({ itemId, onDone }: { itemId: string; onDone: () => void 
     <RatingFormPanel
       itemId={itemId}
       existing={
-        mine && { score: mine.score ?? null, note: mine.note, recommended: mine.recommended }
+        mine && {
+          score: mine.score ?? null,
+          note: mine.note,
+          recommended: mine.recommended,
+          noteShared: mine.noteShared,
+        }
       }
       onDone={onDone}
     />

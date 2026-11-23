@@ -14,6 +14,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 1,
             updatedAt: 1,
+            noteShared: false,
         ),
         rated.RatingRow(
             userId: "u1",
@@ -27,6 +28,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 2,
             updatedAt: 2,
+            noteShared: false,
         ),
         rated.RatingRow(
             userId: "u1",
@@ -40,6 +42,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: false,
             createdAt: 3,
             updatedAt: 3,
+            noteShared: false,
         ),
         rated.RatingRow(
             userId: "u1",
@@ -53,6 +56,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 4,
             updatedAt: 4,
+            noteShared: false,
         ),
         rated.RatingRow(
             userId: "u1",
@@ -66,6 +70,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 5,
             updatedAt: 5,
+            noteShared: false,
         ),
     ];
     states = [

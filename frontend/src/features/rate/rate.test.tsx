@@ -4,6 +4,7 @@ import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import type { ListenedBook } from "../../api/types";
 import { mount } from "../../test/mount";
+import { pickScore } from "../../test/score";
 import { server } from "../../test/server";
 
 beforeAll(() => server.listen());
@@ -25,6 +26,8 @@ function listened(n: number, over: Partial<ListenedBook> = {}): ListenedBook {
     lastListenedAt: 1795000000000 - n,
     myScore: null,
     recommended: false,
+    myNote: "",
+    myNoteShared: false,
     ...over,
   };
 }
@@ -57,21 +60,23 @@ describe("the Rate tab", () => {
 
     expect(await card("Book number 1")).toBeInTheDocument();
     expect(screen.getByText("2 books to go")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "8 out of 10" }));
+    pickScore(8);
 
     // picking a star saves nothing and stays on the book; Skip becomes Submit
     expect(screen.getByRole("article")).toHaveAccessibleName("Book number 1");
     expect(screen.queryByRole("button", { name: "Skip" })).not.toBeInTheDocument();
     expect(saved).toEqual([]);
     // a different star changes the pick; Submit saves it and moves on
-    await userEvent.click(screen.getByRole("button", { name: "7 out of 10" }));
-    await userEvent.click(screen.getByRole("button", { name: "8 out of 10" }));
+    pickScore(7);
+    pickScore(8);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await card("Book number 3")).toBeInTheDocument();
     expect(screen.getByText("40% through")).toBeInTheDocument();
-    expect(saved).toEqual([{ itemId: "it-1", score: 8, note: "", recommended: false }]);
+    expect(saved).toEqual([
+      { itemId: "it-1", score: 8, note: "", recommended: false, noteShared: false },
+    ]);
   });
 
   it("puts every finished book before the ones still being listened to", async () => {
@@ -92,31 +97,28 @@ describe("the Rate tab", () => {
     expect(await card("Book number 3")).toBeInTheDocument();
   });
 
-  it("saves the thumbs up with the score, and takes back a star tapped again", async () => {
+  it("saves the thumbs up with the score, and Clear score takes it back", async () => {
     const saved = serve([listened(1), listened(2)]);
     mount("/rate");
 
     await card("Book number 1");
     await userEvent.click(screen.getByRole("button", { name: "Recommend Book number 1" }));
-    await userEvent.click(screen.getByRole("button", { name: "9 out of 10" }));
+    pickScore(9);
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await card("Book number 2")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "3 out of 10" }));
-    // the same star again clears the pick, and Submit goes back to Skip
-    await userEvent.click(screen.getByRole("button", { name: "3 out of 10" }));
-    expect(screen.getByRole("button", { name: "3 out of 10" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
+    pickScore(3);
+    // Clear score takes the pick back, and Submit goes back to Skip
+    await userEvent.click(screen.getByRole("button", { name: "Clear score" }));
+    expect(screen.getByRole("slider")).toHaveAttribute("aria-valuetext", "No score");
     expect(screen.getByRole("button", { name: "Skip" })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "3 out of 10" }));
+    pickScore(3);
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await screen.findByText("All rated")).toBeInTheDocument();
     expect(saved).toEqual([
-      { itemId: "it-1", score: 9, note: "", recommended: true },
-      { itemId: "it-2", score: 3, note: "", recommended: false },
+      { itemId: "it-1", score: 9, note: "", recommended: true, noteShared: false },
+      { itemId: "it-2", score: 3, note: "", recommended: false, noteShared: false },
     ]);
   });
 
@@ -151,7 +153,7 @@ describe("the Rate tab", () => {
     mount("/rate");
 
     await card("Book number 1");
-    await userEvent.click(screen.getByRole("button", { name: "5 out of 10" }));
+    pickScore(5);
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -175,7 +177,9 @@ describe("the Rate tab", () => {
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await card("Book number 2")).toBeInTheDocument();
-    expect(saved).toEqual([{ itemId: "it-1", score: null, note: "", recommended: true }]);
+    expect(saved).toEqual([
+      { itemId: "it-1", score: null, note: "", recommended: true, noteShared: false },
+    ]);
   });
 
   it("leaves recommended books without a score out, then offers them once the rest are done", async () => {
@@ -188,7 +192,7 @@ describe("the Rate tab", () => {
 
     expect(await card("Book number 2")).toBeInTheDocument();
     expect(screen.getByText("1 book to go")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "6 out of 10" }));
+    pickScore(6);
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(await screen.findByText("All rated")).toBeInTheDocument();
@@ -203,15 +207,34 @@ describe("the Rate tab", () => {
       "true",
     );
     expect(screen.getByRole("button", { name: "Skip" })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "8 out of 10" }));
+    pickScore(8);
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
     expect(await card("Book number 3")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Skip" }));
 
     expect(await screen.findByText("That's every one without a score")).toBeInTheDocument();
     expect(saved).toEqual([
-      { itemId: "it-2", score: 6, note: "", recommended: false },
-      { itemId: "it-1", score: 8, note: "", recommended: true },
+      { itemId: "it-2", score: 6, note: "", recommended: false, noteShared: false },
+      { itemId: "it-1", score: 8, note: "", recommended: true, noteShared: false },
+    ]);
+  });
+
+  it("keeps the note of a book recommended earlier when it's scored here", async () => {
+    const saved = serve([
+      listened(1, { recommended: true, myNote: "Great narrator", myNoteShared: true }),
+    ]);
+    mount("/rate");
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Score the 1 you recommended without one" }),
+    );
+    expect(await card("Book number 1")).toBeInTheDocument();
+    pickScore(9);
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    await waitFor(() => expect(saved).toHaveLength(1));
+    expect(saved).toEqual([
+      { itemId: "it-1", score: 9, note: "Great narrator", recommended: true, noteShared: true },
     ]);
   });
 
