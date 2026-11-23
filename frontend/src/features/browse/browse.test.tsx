@@ -173,16 +173,85 @@ describe("the browse screen", () => {
     const router = mount("/browse");
 
     await screen.findByText("Book number 1");
-    const box = screen.getByLabelText("Search titles");
+    const box = screen.getByLabelText("Search titles, authors and series");
     await userEvent.type(box, "rabbit");
 
     expect(await screen.findByText("Book number 101")).toBeInTheDocument();
     expect(last()?.searchParams.get("q")).toBe("rabbit");
     expect(screen.getByRole("status")).toHaveTextContent("2 matches for “rabbit”.");
     expect(screen.queryByRole("button", { name: "Show more books" })).not.toBeInTheDocument();
-    expect(router.state.location.search).toMatchObject({ q: "rabbit", sort: "title" });
+    expect(router.state.location.search).toMatchObject({ q: "rabbit" });
+    expect(last()?.searchParams.get("sort")).toBe("title");
     // typing six letters made one search, not six
     expect(asked.filter((url) => url.searchParams.get("q")).length).toBe(1);
+  });
+
+  it("shows the books of each author and series a search matched, a series in its own order", async () => {
+    const asked: URL[] = [];
+    server.use(
+      signedIn,
+      http.get("/api/libraries/:libraryId/items", ({ request }) => {
+        const url = new URL(request.url);
+        asked.push(url);
+        const empty = { total: 0, page: 0, limit: 24, items: [], authors: [], series: [] };
+        if (url.searchParams.get("q")) {
+          return HttpResponse.json({
+            ...empty,
+            authors: [{ id: "au-1", name: "James Islington", books: 2 }],
+            series: [{ id: "se-1", name: "The Licanius Trilogy", books: 1 }],
+          });
+        }
+        if (url.searchParams.get("author") === "au-1") {
+          return HttpResponse.json({ ...empty, total: 2, items: [bookNamed(11), bookNamed(12)] });
+        }
+        if (url.searchParams.get("series") === "se-1") {
+          return HttpResponse.json({ ...empty, total: 1, items: [bookNamed(21)] });
+        }
+        return HttpResponse.json({ ...empty, total: 1, items: [bookNamed(1)] });
+      }),
+    );
+    const router = mount("/browse");
+
+    await screen.findByText("Book number 1");
+    await userEvent.type(screen.getByLabelText("Search titles, authors and series"), "islington");
+
+    // no title matched, but the author's and the series' books show at once, no tap needed
+    const author = await screen.findByRole("region", { name: /Books by James Islington/ });
+    expect(await within(author).findByText("Book number 11")).toBeInTheDocument();
+    expect(within(author).getByText("Book number 12")).toBeInTheDocument();
+    const series = screen.getByRole("region", { name: /Series: The Licanius Trilogy/ });
+    expect(await within(series).findByText("Book number 21")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "No titles match “islington”; 1 author and 1 series with that name are below.",
+    );
+    const bySeries = asked.find((url) => url.searchParams.get("series") === "se-1");
+    expect(bySeries?.searchParams.get("sort")).toBe("series");
+    expect(asked.find((url) => url.searchParams.get("author") === "au-1")).toBeDefined();
+
+    // a section's heading opens it on its own, where the order can be changed
+    await userEvent.click(
+      within(series).getByRole("link", { name: /Series: The Licanius Trilogy/ }),
+    );
+    expect(await screen.findByLabelText("Sort by")).toHaveValue("series");
+    expect(router.state.location.search).toMatchObject({ series: "se-1" });
+    expect(screen.getByLabelText("Search titles, authors and series")).toHaveValue("");
+    await userEvent.click(screen.getByRole("button", { name: "Show the whole library" }));
+    await waitFor(() => expect(router.state.location.search).not.toHaveProperty("series"));
+  });
+
+  it("keeps a space typed after a pause, so a two-word search works", async () => {
+    const { last } = recordRequests();
+    mount("/browse");
+
+    await screen.findByText("Book number 1");
+    const box = screen.getByLabelText("Search titles, authors and series");
+    await userEvent.type(box, "Drew ");
+    // the search for "Drew" has gone out; the space must still be in the box
+    await waitFor(() => expect(last()?.searchParams.get("q")).toBe("Drew"));
+    expect(box).toHaveValue("Drew ");
+    await userEvent.type(box, "Hayes");
+    expect(box).toHaveValue("Drew Hayes");
+    await waitFor(() => expect(last()?.searchParams.get("q")).toBe("Drew Hayes"));
   });
 
   it("starts from a shared link and says plainly when nothing matches", async () => {
@@ -190,7 +259,7 @@ describe("the browse screen", () => {
     mount("/browse?q=nothing");
 
     expect(await screen.findByText("No books match “nothing”.")).toBeInTheDocument();
-    expect(screen.getByLabelText("Search titles")).toHaveValue("nothing");
+    expect(screen.getByLabelText("Search titles, authors and series")).toHaveValue("nothing");
   });
 
   it("shows a retryable error, in words, when the server fails", async () => {

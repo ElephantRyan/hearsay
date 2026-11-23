@@ -1,5 +1,6 @@
-// One page of a library, or the hits of a search when `typed` is given, in
-// `order`, with the viewer's own scores. The inputs are already checked by the workflow.
+// One page of a library (or of one author's or series' books), or the hits of a
+// search when `typed` is given, in `order`, with the viewer's own scores. The
+// inputs are already checked by the workflow.
 use hearsay.absclient;
 use hearsay.absclient.catalog;
 use hearsay.ratings.rated;
@@ -13,41 +14,52 @@ activity loadBrowseResult(
     page: int,
     size: int,
     typed: string | None,
-    order: catalog.BookOrder)
+    order: catalog.BookOrder,
+    scope: catalog.BookScope)
         -> Result<BrowseResult, absclient.AbsFault> {
-    found = fetchBooks(libraryId, page, size, typed, order)?;
+    found = fetchBooks(libraryId, page, size, typed, order, scope)?;
     mine = RatedBooks.byUser(userId);
     return Ok(
         BrowseResult(
-            total: found.total,
-            page: found.page,
-            limit: found.limit,
-            items: withMyScores(found.books, mine),
+            total: found.page.total,
+            page: found.page.page,
+            limit: found.page.limit,
+            items: withMyScores(found.page.books, mine),
+            authors: map(a in found.authors): BrowseMatch(id: a.id, name: a.name, books: a.books),
+            series: map(s in found.series): BrowseMatch(id: s.id, name: s.name, books: s.books),
         ),
     );
 }
 
 private {
+    // A listing is a page with no author or series matches; a search, its hits
+    // put in the order chosen.
     fetchBooks(
         libraryId: string,
         page: int,
         size: int,
         typed: string | None,
-        order: catalog.BookOrder)
-            -> Result<catalog.BookPage, absclient.AbsFault> {
+        order: catalog.BookOrder,
+        scope: catalog.BookScope)
+            -> Result<catalog.SearchHits, absclient.AbsFault> {
         return match (typed) {
             None -> {
-                return fetchPage(libraryId, page, size, order);
+                listed = fetchPage(libraryId, page, size, order, scope)?;
+                return Ok(catalog.SearchHits(page: listed, authors: [], series: []));
             },
 
             text -> {
                 hits = fetchHits(libraryId, text, size)?;
                 return Ok(
-                    catalog.BookPage(
-                        total: hits.total,
-                        page: hits.page,
-                        limit: hits.limit,
-                        books: sortHits(hits.books, order),
+                    catalog.SearchHits(
+                        page: catalog.BookPage(
+                            total: hits.page.total,
+                            page: hits.page.page,
+                            limit: hits.page.limit,
+                            books: sortHits(hits.page.books, order),
+                        ),
+                        authors: hits.authors,
+                        series: hits.series,
                     ),
                 );
             },

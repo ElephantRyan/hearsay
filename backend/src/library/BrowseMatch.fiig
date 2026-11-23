@@ -1,0 +1,6 @@
+// An author or a series a search matched: open it with ?author= or ?series=.
+model BrowseMatch {
+    id: string;
+    name: string;
+    books: int;
+}

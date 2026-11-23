@@ -11,7 +11,8 @@ export const keys = {
   missing: (userId: string) => ["missing", userId] as const,
   item: (itemId: string) => ["item", itemId] as const,
   libraries: ["libraries"] as const,
-  browse: (libraryId: string, q: string, sort: string) => ["browse", libraryId, q, sort] as const,
+  browse: (libraryId: string, q: string, sort: string, scope: string) =>
+    ["browse", libraryId, q, sort, scope] as const,
   allBrowse: ["browse"] as const,
   myRatings: (sort: RatingSort) => ["my-ratings", sort] as const,
   allMyRatings: ["my-ratings"] as const,

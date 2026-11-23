@@ -53,16 +53,32 @@ capability AbsCatalog {
         return Ok(found.libraries);
     }
 
-    gateway pageAsService(libraryId: string, page: int, size: int, order: BookOrder)
+    gateway pageAsService(
+        libraryId: string,
+        page: int,
+        size: int,
+        order: BookOrder,
+        scope: BookScope)
             -> Result<BookPage, absclient.AbsError>
             requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         libraryIdSegment = absclient.absPathId(libraryId)?;
+        // A scope's id goes into the URL too, so it must be one ABS could have made.
+        scopeId = match (scope) {
+            BookScope.All -> "all",
+            BookScope.Author(id) -> id,
+            BookScope.Series(id) -> id,
+        }
+
+        if (!absclient.validId(scopeId)) {
+            return Err(absclient.AbsError.NotFound);
+        }
+
         reply = absclient.absReply(
             HttpClient.send(
                 absclient.absGet(
                     abs.url,
-                    absListPath(libraryIdSegment, page, size, order),
+                    absListPath(libraryIdSegment, page, size, order, scope),
                     abs.token.reveal(),
                 ),
             ),
@@ -71,7 +87,7 @@ capability AbsCatalog {
     }
 
     gateway searchAsService(libraryId: string, query: string, size: int)
-            -> Result<BookPage, absclient.AbsError>
+            -> Result<SearchHits, absclient.AbsError>
             requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         libraryIdSegment = absclient.absPathId(libraryId)?;
@@ -84,6 +100,6 @@ capability AbsCatalog {
                 ),
             ),
         )?;
-        return bookPageOfSearch(reply.body, size);
+        return searchHitsOf(reply.body, size);
     }
 }

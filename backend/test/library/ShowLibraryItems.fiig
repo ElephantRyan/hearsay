@@ -12,7 +12,12 @@ test browseListsSearchesAndMarksMyScores {
     }
 
     fake AbsCatalog {
-        gateway pageAsService(libraryId: string, page: int, size: int, order: catalog.BookOrder)
+        gateway pageAsService(
+            libraryId: string,
+            page: int,
+            size: int,
+            order: catalog.BookOrder,
+            scope: catalog.BookScope)
                 -> Result<catalog.BookPage, client.AbsError> {
             if (libraryId == "gone") {
                 return Err(client.AbsError.NotFound);
@@ -21,14 +26,23 @@ test browseListsSearchesAndMarksMyScores {
             expect libraryId == "lib-1";
             expect page == 2;
             expect size == 24;
-            // Each order gets its own total, so a test can see which one reached ABS.
-            total = match (order) {
+            // Each order and scope adds its own amount to the total, so a test can
+            // see which reached ABS.
+            byOrder = match (order) {
                 catalog.BookOrder.TitleAscending -> 1117,
                 catalog.BookOrder.TitleDescending -> 1,
                 catalog.BookOrder.AuthorAscending -> 2,
                 catalog.BookOrder.AuthorDescending -> 4,
+                catalog.BookOrder.SeriesOrder -> 8,
             }
 
+            byScope = match (scope) {
+                catalog.BookScope.All -> 0,
+                catalog.BookScope.Author(id) -> 100,
+                catalog.BookScope.Series(id) -> 1000,
+            }
+
+            total = byOrder + byScope;
             return Ok(
                 catalog.BookPage(
                     total: total,
@@ -48,33 +62,37 @@ test browseListsSearchesAndMarksMyScores {
         }
 
         gateway searchAsService(libraryId: string, query: string, size: int)
-                -> Result<catalog.BookPage, client.AbsError> {
+                -> Result<catalog.SearchHits, client.AbsError> {
             expect query == "alp";
             return Ok(
-                catalog.BookPage(
-                    total: 3,
-                    page: 0,
-                    limit: size,
-                    books: [
-                        catalog.Book(
-                            itemId: "b",
-                            libraryId: "lib-1",
-                            title: "beta",
-                            authors: "Zed",
-                        ),
-                        catalog.Book(
-                            itemId: "a",
-                            libraryId: "lib-1",
-                            title: "Alpha",
-                            authors: "A. Author",
-                        ),
-                        catalog.Book(
-                            itemId: "c",
-                            libraryId: "lib-1",
-                            title: "Gamma",
-                            authors: "a. author",
-                        ),
-                    ],
+                catalog.SearchHits(
+                    authors: [catalog.CatalogMatch(id: "au-1", name: "A. Author", books: 2)],
+                    series: [catalog.CatalogMatch(id: "se-1", name: "The Alpha Saga", books: 3)],
+                    page: catalog.BookPage(
+                        total: 3,
+                        page: 0,
+                        limit: size,
+                        books: [
+                            catalog.Book(
+                                itemId: "b",
+                                libraryId: "lib-1",
+                                title: "beta",
+                                authors: "Zed",
+                            ),
+                            catalog.Book(
+                                itemId: "a",
+                                libraryId: "lib-1",
+                                title: "Alpha",
+                                authors: "A. Author",
+                            ),
+                            catalog.Book(
+                                itemId: "c",
+                                libraryId: "lib-1",
+                                title: "Gamma",
+                                authors: "a. author",
+                            ),
+                        ],
+                    ),
                 ),
             );
         }
@@ -94,25 +112,42 @@ test browseListsSearchesAndMarksMyScores {
     annId = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
     ann = sessions.startSession(annId).token;
     expect ratings.putRating(annId, "a", ratings.RatingInput(score: 8, note: None, recommended: false)) is Ok(_);
-    expect showLibraryItems(annId, "lib-1", 2, None, None, None) is Ok(listed);
+    expect showLibraryItems(annId, "lib-1", 2, None, None, None, None, None) is Ok(listed);
     expect listed.total == 1117;
     expect listed.page == 2;
     expect listed.items.length() == 2;
     expect listed.items.at(0).myScore == 8;
     expect listed.items.at(1).myScore == None;
-    expect showLibraryItems(annId, "lib-1", 2, None, None, BrowseOrder.AuthorDescending) is Ok(byAuthor);
+    expect showLibraryItems(annId, "lib-1", 2, None, None, BrowseOrder.AuthorDescending, None, None) is Ok(byAuthor);
     expect byAuthor.total == 4;
-    expect showLibraryItems(annId, "lib-1", None, None, "  alp ", None) is Ok(found);
+    // one author's books, A to Z unless asked; one series', in series order unless asked
+    expect showLibraryItems(annId, "lib-1", 2, None, None, None, "au-1", None) is Ok(oneAuthor);
+    expect oneAuthor.total == 1217;
+    expect showLibraryItems(annId, "lib-1", 2, None, None, None, None, "se-1") is Ok(oneSeries);
+    expect oneSeries.total == 1008;
+    expect showLibraryItems(annId, "lib-1", 2, None, None, BrowseOrder.TitleDescending, None, "se-1") is Ok(seriesBackwards);
+    expect seriesBackwards.total == 1001;
+    // series order outside a series is A to Z
+    expect showLibraryItems(annId, "lib-1", 2, None, None, BrowseOrder.SeriesOrder, None, None) is Ok(notASeries);
+    expect notASeries.total == 1117;
+    expect showLibraryItems(annId, "lib-1", 2, None, None, None, "au-1", "se-1") is Err(LibraryError.Invalid("author", _));
+    expect showLibraryItems(annId, "lib-1", 2, None, None, None, " ", None) is Err(LibraryError.Invalid("author", _));
+    // a listing has no author or series matches
+    expect listed.authors.length() == 0;
+    expect showLibraryItems(annId, "lib-1", None, None, "  alp ", None, None, None) is Ok(found);
     foundOrder = map(i in found.items): i.title;
     expect foundOrder == ["Alpha", "beta", "Gamma"];
     expect found.items.at(0).myScore == 8;
-    expect showLibraryItems(annId, "lib-1", None, None, "alp", BrowseOrder.TitleDescending) is Ok(backwards);
+    // ABS matches books by title only; authors and series come as matches to open
+    expect found.authors == [BrowseMatch(id: "au-1", name: "A. Author", books: 2)];
+    expect found.series == [BrowseMatch(id: "se-1", name: "The Alpha Saga", books: 3)];
+    expect showLibraryItems(annId, "lib-1", None, None, "alp", BrowseOrder.TitleDescending, None, None) is Ok(backwards);
     backwardsOrder = map(i in backwards.items): i.title;
     expect backwardsOrder == ["Gamma", "beta", "Alpha"];
-    expect showLibraryItems(annId, "lib-1", None, None, "alp", BrowseOrder.AuthorAscending) is Ok(authors);
+    expect showLibraryItems(annId, "lib-1", None, None, "alp", BrowseOrder.AuthorAscending, None, None) is Ok(authors);
     authorsOrder = map(i in authors.items): i.itemId;
     expect authorsOrder == ["a", "c", "b"];
-    expect showLibraryItems(annId, "gone", 2, None, None, None) is Err(LibraryError.LibraryNotFound);
-    expect showLibraryItems(annId, "lib-1", -1, None, None, None) is Err(LibraryError.Invalid(field, reason));
+    expect showLibraryItems(annId, "gone", 2, None, None, None, None, None) is Err(LibraryError.LibraryNotFound);
+    expect showLibraryItems(annId, "lib-1", -1, None, None, None, None, None) is Err(LibraryError.Invalid(field, reason));
     expect field == "page";
 }

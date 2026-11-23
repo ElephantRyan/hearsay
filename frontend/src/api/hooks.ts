@@ -112,15 +112,26 @@ export const useLibraries = () =>
 
 export const BROWSE_PAGE_SIZE = 24;
 
+/** Which books a browse lists: the whole library, one author's, or one series'. */
+export interface BrowseScope {
+  author?: string | undefined;
+  series?: string | undefined;
+}
+
 /**
- * A library a page at a time in `sort` order, or the hits of a search when `q`
- * is not blank (ABS doesn't page a search, so there is only ever one page of
- * hits). The old list stays on screen while a new search or order loads, so
- * typing doesn't flash a skeleton.
+ * A library a page at a time in `sort` order (or one author's or series' books in it), or the
+ * hits of a search when `q` is not blank (ABS doesn't page a search, so there is only ever one
+ * page of hits). The old list stays on screen while a new search or order loads, so typing
+ * doesn't flash a skeleton.
  */
-export const useBrowse = (libraryId: string | undefined, q: string, sort: BrowseSort) =>
+export const useBrowse = (
+  libraryId: string | undefined,
+  q: string,
+  sort: BrowseSort,
+  scope: BrowseScope = {},
+) =>
   useInfiniteQuery({
-    queryKey: keys.browse(libraryId ?? "", q, sort),
+    queryKey: keys.browse(libraryId ?? "", q, sort, `${scope.author ?? ""}|${scope.series ?? ""}`),
     enabled: libraryId !== undefined,
     placeholderData: keepPreviousData,
     initialPageParam: 0,
@@ -131,7 +142,14 @@ export const useBrowse = (libraryId: string | undefined, q: string, sort: Browse
         await api.GET("/libraries/{libraryId}/items", {
           params: {
             path: { libraryId: libraryId as string },
-            query: { page: pageParam, size: BROWSE_PAGE_SIZE, sort, ...(q ? { q } : {}) },
+            query: {
+              page: pageParam,
+              size: BROWSE_PAGE_SIZE,
+              sort,
+              ...(q ? { q } : {}),
+              ...(scope.author ? { author: scope.author } : {}),
+              ...(scope.series ? { series: scope.series } : {}),
+            },
           },
         }),
       ),

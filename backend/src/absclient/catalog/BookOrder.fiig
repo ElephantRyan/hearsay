@@ -1,7 +1,9 @@
-// The orders a library page can be listed in, as ABS sorts them.
+// The orders a library page can be listed in, as ABS sorts them. SeriesOrder
+// is the books' place in their series, for a series' own listing.
 enum BookOrder {
     TitleAscending,
     TitleDescending,
     AuthorAscending,
     AuthorDescending,
+    SeriesOrder,
 }

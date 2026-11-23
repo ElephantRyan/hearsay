@@ -1772,7 +1772,9 @@ export interface operations {
                 page?: number;
                 size?: number;
                 q?: string;
-                sort?: "title" | "title-desc" | "author" | "author-desc";
+                sort?: "title" | "title-desc" | "author" | "author-desc" | "series";
+                author?: string;
+                series?: string;
             };
             header?: never;
             path: {
@@ -1788,6 +1790,11 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        authors: {
+                            books: number;
+                            id: string;
+                            name: string;
+                        }[];
                         items: {
                             authors: string;
                             itemId: string;
@@ -1798,6 +1805,11 @@ export interface operations {
                         }[];
                         limit: number;
                         page: number;
+                        series: {
+                            books: number;
+                            id: string;
+                            name: string;
+                        }[];
                         total: number;
                     };
                 };

@@ -12,6 +12,7 @@ export type ItemDetail = Ok<paths["/items/{itemId}"]["get"]>;
 export type Library = Ok<paths["/libraries"]["get"]>[number];
 export type BrowseResult = Ok<paths["/libraries/{libraryId}/items"]["get"]>;
 export type BrowseItem = BrowseResult["items"][number];
+export type BrowseMatch = BrowseResult["authors"][number];
 export type Rating = Ok<paths["/ratings/{itemId}"]["put"]>;
 export type ListenedBook = Ok<paths["/me/listening"]["get"]>[number];
 export type UpNextBook = Ok<paths["/me/up-next"]["get"]>[number];

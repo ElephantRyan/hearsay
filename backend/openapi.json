@@ -2316,8 +2316,25 @@
                 "title",
                 "title-desc",
                 "author",
-                "author-desc"
+                "author-desc",
+                "series"
               ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "series",
+            "required": false,
+            "schema": {
               "type": "string"
             }
           }
@@ -2328,6 +2345,28 @@
               "application/json": {
                 "schema": {
                   "properties": {
+                    "authors": {
+                      "items": {
+                        "properties": {
+                          "books": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "books",
+                          "id",
+                          "name"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
                     "items": {
                       "items": {
                         "properties": {
@@ -2368,14 +2407,38 @@
                     "page": {
                       "type": "integer"
                     },
+                    "series": {
+                      "items": {
+                        "properties": {
+                          "books": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "books",
+                          "id",
+                          "name"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
                     "total": {
                       "type": "integer"
                     }
                   },
                   "required": [
+                    "authors",
                     "items",
                     "limit",
                     "page",
+                    "series",
                     "total"
                   ],
                   "type": "object"

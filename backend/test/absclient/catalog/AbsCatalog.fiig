@@ -51,12 +51,34 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                 );
             }
 
+            // a series' books in series order, and an author's: ABS's filter is the
+            // group and the id in unpadded URL-safe base64 ("se-1", "au-1")
+            if (request.url == "https://abs.test/api/libraries/lib-1/items?sort=sequence&filter=series.c2UtMQ&minified=1&page=0&limit=2") {
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: "{\"results\":[],\"total\":3,\"limit\":2,\"page\":0}".utf8(),
+                    ),
+                );
+            }
+
+            if (request.url == "https://abs.test/api/libraries/lib-1/items?sort=media.metadata.title&filter=authors.YXUtMQ&minified=1&page=0&limit=2") {
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: "{\"results\":[],\"total\":4,\"limit\":2,\"page\":0}".utf8(),
+                    ),
+                );
+            }
+
             if (request.url == "https://abs.test/api/libraries/lib-1/search?q=war+%26+peace&limit=5") {
                 return Ok(
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"book\":[{\"libraryItem\":{\"id\":\"it-9\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"War and Peace\",\"authorName\":\"Leo Tolstoy\"}}},\"matchKey\":\"title\"}],\"series\":[],\"authors\":[],\"narrators\":[],\"tags\":[],\"genres\":[]}".utf8(),
+                        body: "{\"book\":[{\"libraryItem\":{\"id\":\"it-9\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"War and Peace\",\"authorName\":\"Leo Tolstoy\"}}},\"matchKey\":\"title\"}],\"series\":[{\"series\":{\"id\":\"se-1\",\"name\":\"War Stories\"},\"books\":[{\"id\":\"it-9\"},{\"id\":\"it-10\"}]}],\"authors\":[{\"id\":\"au-1\",\"name\":\"Leo Tolstoy\",\"numBooks\":4}],\"narrators\":[],\"tags\":[],\"genres\":[]}".utf8(),
                     ),
                 );
             }
@@ -69,18 +91,26 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
     expect AbsCatalog.librariesAsService() is Ok(libraries);
     expect libraries.length() == 2;
     expect libraries.at(0) == AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book");
-    expect AbsCatalog.pageAsService("lib-1", 2, 2, BookOrder.TitleAscending) is Ok(page);
+    expect AbsCatalog.pageAsService("lib-1", 2, 2, BookOrder.TitleAscending, BookScope.All) is Ok(page);
     expect page.total == 1117;
     expect page.page == 2;
     expect page.books.length() == 2;
     expect page.books.at(0) == Book(itemId: "it-1", libraryId: "lib-1", title: "Dune", authors: "Frank Herbert");
     expect page.books.at(1).authors == "";
-    expect AbsCatalog.pageAsService("lib-1", 0, 2, BookOrder.AuthorDescending) is Ok(byAuthor);
+    expect AbsCatalog.pageAsService("lib-1", 0, 2, BookOrder.AuthorDescending, BookScope.All) is Ok(byAuthor);
     expect byAuthor.total == 1117;
     expect AbsCatalog.searchAsService("lib-1", "war & peace", 5) is Ok(found);
-    expect found.books.length() == 1;
-    expect found.books.at(0).title == "War and Peace";
-    expect calls(HttpClient.send) == 4;
+    expect found.page.books.length() == 1;
+    expect found.page.books.at(0).title == "War and Peace";
+    expect found.authors == [CatalogMatch(id: "au-1", name: "Leo Tolstoy", books: 4)];
+    expect found.series == [CatalogMatch(id: "se-1", name: "War Stories", books: 2)];
+    expect AbsCatalog.pageAsService("lib-1", 0, 2, BookOrder.SeriesOrder, BookScope.Series("se-1")) is Ok(oneSeries);
+    expect oneSeries.total == 3;
+    expect AbsCatalog.pageAsService("lib-1", 0, 2, BookOrder.TitleAscending, BookScope.Author("au-1")) is Ok(oneAuthor);
+    expect oneAuthor.total == 4;
+    // a scope id is checked as a book id is, before anything is sent
+    expect AbsCatalog.pageAsService("lib-1", 0, 2, BookOrder.TitleAscending, BookScope.Author("../users")) is Err(absclient.AbsError.NotFound);
+    expect calls(HttpClient.send) == 6;
 }
 
 // An id from a caller's URL goes into an ABS path sent with the server's own
@@ -105,7 +135,7 @@ test absRefusesHostileIdsWithoutCallingAbs {
     expect AbsCatalog.itemAsService("a/b") is Err(absclient.AbsError.NotFound);
     expect AbsCatalog.itemAsService("") is Err(absclient.AbsError.NotFound);
     expect AbsCatalog.item("https://abs.test", "tok", "x?y=1") is Err(absclient.AbsError.NotFound);
-    expect AbsCatalog.pageAsService("../users", 0, 10, BookOrder.TitleAscending) is Err(absclient.AbsError.NotFound);
+    expect AbsCatalog.pageAsService("../users", 0, 10, BookOrder.TitleAscending, BookScope.All) is Err(absclient.AbsError.NotFound);
     expect AbsCatalog.searchAsService("lib/../x", "q", 10) is Err(absclient.AbsError.NotFound);
     expect calls(HttpClient.send) == 0;
 }

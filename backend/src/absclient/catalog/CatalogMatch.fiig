@@ -1,0 +1,7 @@
+// An author or a series a search matched: its ABS id, its name, and how many
+// books it has in the library.
+model CatalogMatch {
+    id: string;
+    name: string;
+    books: int;
+}

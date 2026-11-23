@@ -10,13 +10,15 @@ adapter http libraryApi {
         Err(error) -> libraryErrorResponse(error),
     }
 
-    GET "/libraries/{libraryId}/items?page={page}&size={size}&q={q}&sort={sort}" -> showLibraryItems(
+    GET "/libraries/{libraryId}/items?page={page}&size={size}&q={q}&sort={sort}&author={author}&series={series}" -> showLibraryItems(
         me,
         libraryId: string,
         page: int | None,
         size: int | None,
         q: string | None,
         sort: BrowseOrder | None,
+        author: string | None,
+        series: string | None,
     )
             produces "application/json" {
         Ok(result) -> 200 result,

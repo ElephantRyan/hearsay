@@ -1,0 +1,34 @@
+use hearsay.absclient.catalog;
+
+// Which books a browse lists: one author's or one series', or the whole
+// library. Not both at once; an id that is blank is a mistake to report.
+rule browseScope(author: string | None, series: string | None)
+        -> Result<catalog.BookScope, LibraryError> {
+    if (author != None && series != None) {
+        return Err(LibraryError.Invalid("author", "can't be given with series"));
+    }
+
+    match (author) {
+        None -> {
+        },
+
+        id -> {
+            if (id.isBlank()) {
+                return Err(LibraryError.Invalid("author", "must not be blank"));
+            }
+
+            return Ok(catalog.BookScope.Author(id));
+        },
+    }
+
+    return match (series) {
+        None -> Ok(catalog.BookScope.All),
+        id -> {
+            if (id.isBlank()) {
+                return Err(LibraryError.Invalid("series", "must not be blank"));
+            }
+
+            return Ok(catalog.BookScope.Series(id));
+        },
+    }
+}

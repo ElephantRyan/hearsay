@@ -71,7 +71,15 @@ const browseRoute = createRoute({
   validateSearch: z.object({
     library: z.string().optional(),
     q: z.string().optional(),
-    sort: z.enum(["title", "title-desc", "author", "author-desc"]).catch("title"),
+    sort: z
+      .enum(["title", "title-desc", "author", "author-desc", "series"])
+      .optional()
+      .catch(undefined),
+    // One author's or series' books: the ABS id, and the name to head the page with.
+    author: z.string().optional(),
+    authorName: z.string().optional(),
+    series: z.string().optional(),
+    seriesName: z.string().optional(),
   }),
   component: lazyRouteComponent(() => import("../features/browse/BrowsePage"), "BrowsePage"),
 });

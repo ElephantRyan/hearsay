@@ -1,0 +1,7 @@
+// Which books of a library a listing holds: all of them, one author's, or one
+// series'. Ids are ABS's.
+enum BookScope {
+    All,
+    Author(id: string),
+    Series(id: string),
+}

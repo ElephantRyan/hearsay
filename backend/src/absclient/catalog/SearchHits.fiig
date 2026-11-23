@@ -1,0 +1,8 @@
+// What a library search found. ABS matches books by title, subtitle, ASIN and
+// ISBN only, so authors and series come as matches of their own, each to be
+// opened as a listing of its books (BookScope).
+model SearchHits {
+    page: BookPage;
+    authors: List<CatalogMatch>;
+    series: List<CatalogMatch>;
+}

@@ -1,0 +1,15 @@
+// The order a browse uses: the one asked, or a series' own order when browsing
+// a series and A to Z by title otherwise. Series order means nothing outside a
+// series, so there it is A to Z too.
+rule browseOrderFor(asked: BrowseOrder | None, inSeries: bool) -> BrowseOrder {
+    if (asked == None && inSeries) {
+        return BrowseOrder.SeriesOrder;
+    }
+
+    order = asked ?? BrowseOrder.TitleAscending;
+    if (order == BrowseOrder.SeriesOrder && !inSeries) {
+        return BrowseOrder.TitleAscending;
+    }
+
+    return order;
+}

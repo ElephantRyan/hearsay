@@ -8,5 +8,7 @@ rule sortHits(books: List<catalog.Book>, order: catalog.BookOrder) -> List<catal
         catalog.BookOrder.TitleDescending -> sorted(b in books): b.title.lowercase() descending,
         catalog.BookOrder.AuthorAscending -> sorted(b in books): b.authors.lowercase() then b.title.lowercase(),
         catalog.BookOrder.AuthorDescending -> sorted(b in books): b.authors.lowercase() descending then b.title.lowercase(),
+        // a search spans series, so its hits keep ABS's order
+        catalog.BookOrder.SeriesOrder -> books,
     }
 }

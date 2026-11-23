@@ -1,20 +1,25 @@
 use hearsay.accounts;
 use hearsay.settings;
 
-// Browse a library in the order chosen (A to Z by title unless asked), or search
-// it. What a page, a size and a search text may be is decided here, before Audiobookshelf is asked anything; the activity
-// only fetches.
+// Browse a library in the order chosen (A to Z by title unless asked), or one
+// author's or series' books in it (a series in its own order unless asked), or
+// search it. What a page, a size and a search text may be is decided here,
+// before Audiobookshelf is asked anything; the activity only fetches.
 workflow showLibraryItems(
     me: accounts.Identity,
     libraryId: string,
     page: int | None,
     size: int | None,
     q: string | None,
-    sort: BrowseOrder | None)
+    sort: BrowseOrder | None,
+    author: string | None,
+    series: string | None)
         -> Result<BrowseResult, LibraryError> {
     pageNumber = checkPage(page)?;
     pageSize = checkSize(size)?;
     typed = searchText(q)?;
-    return mapErr(e in loadBrowseResult(me.userId, libraryId, pageNumber, pageSize, typed, bookOrderOf(sort ?? BrowseOrder.TitleAscending))):
+    scope = browseScope(author, series)?;
+    order = browseOrderFor(sort, series != None);
+    return mapErr(e in loadBrowseResult(me.userId, libraryId, pageNumber, pageSize, typed, bookOrderOf(order), scope)):
             libraryErrorOfFault(e);
 }

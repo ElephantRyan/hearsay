@@ -1,9 +1,12 @@
 use fiig.http;
 
-// GET /api/libraries/{id}/items for one page, in the order asked. The caller
-// has made the id one path segment with absPathId; the rest are integers.
-conversion absListPath(libraryId: string, page: int, size: int, order: BookOrder) -> string {
-    return "/api/libraries/${libraryId}/items?${absSort(order)}&minified=1&page=${page}&limit=${size}";
+// GET /api/libraries/{id}/items for one page, of the scope and in the order
+// asked. The caller has made the library id one path segment with absPathId and
+// checked a scope's id with validId. ABS takes a filter as group.<base64 of the
+// id>; the URL-safe, unpadded form needs no escaping and ABS decodes it.
+conversion absListPath(libraryId: string, page: int, size: int, order: BookOrder, scope: BookScope)
+        -> string {
+    return "/api/libraries/${libraryId}/items?${absSort(order)}${absFilter(scope)}&minified=1&page=${page}&limit=${size}";
 }
 
 private {
@@ -13,6 +16,15 @@ private {
             BookOrder.TitleDescending -> "sort=media.metadata.title&desc=1",
             BookOrder.AuthorAscending -> "sort=media.metadata.authorName",
             BookOrder.AuthorDescending -> "sort=media.metadata.authorName&desc=1",
+            BookOrder.SeriesOrder -> "sort=sequence",
+        }
+    }
+
+    absFilter(scope: BookScope) -> string {
+        return match (scope) {
+            BookScope.All -> "",
+            BookScope.Author(id) -> "&filter=authors.${id.utf8().toBase64Url()}",
+            BookScope.Series(id) -> "&filter=series.${id.utf8().toBase64Url()}",
         }
     }
 }

@@ -1,8 +1,12 @@
 // One page of browsing, or the hits of a search (then `page` is 0 and `total`
-// is the number of hits returned: ABS caps a search, it doesn't page it).
+// is the number of hits returned: ABS caps a search, it doesn't page it). A
+// search also gives the authors and series whose names matched, each to be
+// browsed as its own listing; a listing gives none.
 model BrowseResult {
     total: int;
     page: int;
     limit: int;
     items: List<BrowseItem>;
+    authors: List<BrowseMatch>;
+    series: List<BrowseMatch>;
 }

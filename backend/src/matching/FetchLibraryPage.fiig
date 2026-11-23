@@ -6,6 +6,6 @@ use hearsay.absclient.catalog.AbsCatalog;
 gateway fetchLibraryPage(libraryId: string, page: int, size: int)
         -> Result<catalog.BookPage, absclient.AbsFault>
         requires AbsCatalog {
-    return mapErr(e in AbsCatalog.pageAsService(libraryId, page, size, catalog.BookOrder.TitleAscending)):
+    return mapErr(e in AbsCatalog.pageAsService(libraryId, page, size, catalog.BookOrder.TitleAscending, catalog.BookScope.All)):
             absclient.faultOfAbs(e);
 }
