@@ -27,12 +27,15 @@ capability RatedBooks {
     }
 
     // What a viewer may see of one book: everyone's recommended ratings, plus
-    // their own whether recommended or not. Others' notes only when shared.
+    // their own whether recommended or not, and anyone's shared note on a book
+    // they didn't recommend (the note alone: its score stays theirs). Others'
+    // notes only when shared.
     gateway visibleFor(itemId: string, viewerId: string) -> List<RatingRow>
             requires Database
             idempotent {
         return Database.queryMany(
-            "SELECT user_id, username, item_id, library_id, title, authors, score, CASE WHEN note_shared = 1 OR user_id = ? THEN note ELSE '' END AS note, recommended, created_at, updated_at, via, matched_by, note_shared FROM rating_row WHERE item_id = ? AND (recommended = 1 OR user_id = ?) ORDER BY updated_at DESC",
+            "SELECT user_id, username, item_id, library_id, title, authors, CASE WHEN recommended = 1 OR user_id = ? THEN score ELSE NULL END AS score, CASE WHEN note_shared = 1 OR user_id = ? THEN note ELSE '' END AS note, recommended, created_at, updated_at, via, matched_by, note_shared FROM rating_row WHERE item_id = ? AND (recommended = 1 OR user_id = ? OR (note_shared = 1 AND note <> '')) ORDER BY updated_at DESC",
+            viewerId,
             viewerId,
             itemId,
             viewerId,

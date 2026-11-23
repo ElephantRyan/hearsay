@@ -76,7 +76,7 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
 
       <div className="space-y-2">
         <NoteField {...register("note")} value={note} error={errors.note?.message} />
-        {recommended && note.trim() !== "" && (
+        {note.trim() !== "" && (
           <label className="flex items-start gap-2 text-sm">
             <input
               type="checkbox"
@@ -86,7 +86,9 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
             <span>
               Share my note with everyone
               <span className="block text-xs text-muted">
-                Off: everyone sees your score and recommendation, but the note is yours alone.
+                {recommended
+                  ? "Off: everyone sees your score and recommendation, but the note is yours alone."
+                  : "On: others see just the note, on this book's page. Your score stays yours."}
               </span>
             </span>
           </label>

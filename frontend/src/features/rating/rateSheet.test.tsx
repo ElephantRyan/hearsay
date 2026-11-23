@@ -85,7 +85,7 @@ describe("the rating sheet", () => {
     ]);
   });
 
-  it("keeps a note private unless 'Share my note' is ticked", async () => {
+  it("offers 'Share my note' as soon as there's a note, unticked", async () => {
     const sent: unknown[] = [];
     server.use(
       signedIn,
@@ -101,11 +101,14 @@ describe("the rating sheet", () => {
     const sheet = await screen.findByRole("dialog", { name: book.title });
     pickScore(8, await within(sheet).findByRole("slider"));
     await userEvent.type(within(sheet).getByRole("textbox"), "Loved the ending");
-    // a rating that isn't recommended is private already; the checkbox only shows once it is
-    expect(within(sheet).queryByLabelText(/Share my note/)).not.toBeInTheDocument();
-    await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
+    // the checkbox shows as soon as there's a note, unticked, and says what sharing means
     const share = within(sheet).getByLabelText(/Share my note/);
     expect(share).not.toBeChecked();
+    expect(within(sheet).getByText(/others see just the note/)).toBeInTheDocument();
+    await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
+    expect(
+      within(sheet).getByText(/everyone sees your score and recommendation/),
+    ).toBeInTheDocument();
     await userEvent.click(share);
     await userEvent.click(within(sheet).getByRole("button", { name: "Save rating" }));
 

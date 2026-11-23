@@ -68,3 +68,40 @@ test aNoteAloneIsSavedAndStaysOutOfEveryList {
     expect recommendations.listRecommendations(bob, None, None, None).length() == 0;
     expect ratings.putRating(ann, "dune", ratings.RatingInput(score: None, note: "", recommended: false)) is Err(ratings.RatingError.Invalid("score", _));
 }
+
+// A shared note on a book its writer didn't recommend shows on that book's page
+// alone: the note, never the score, and the book counts in no list.
+test aSharedNoteWithoutARecommendationShowsJustTheNote {
+    fake AbsCatalog {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dune",
+                    authors: "Frank Herbert",
+                ),
+            );
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    bob = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 4, note: "slow middle, great ending", recommended: false, noteShared: true)) is Ok(_);
+    expect library.showItem(bob, "dune") is Ok(bobSees);
+    expect bobSees.ratings.length() == 1;
+    expect bobSees.ratings.at(0).note == "slow middle, great ending";
+    expect bobSees.ratings.at(0).score == None;
+    expect bobSees.ratings.at(0).recommended == false;
+    expect bobSees.count == 0;
+    expect bobSees.average == None;
+    expect recommendations.listRecommendations(bob, None, None, None).length() == 0;
+    expect recommendations.listPicksOf(bob, "u1").length() == 0;
+    // the writer still sees their own score
+    expect library.showItem(ann, "dune") is Ok(annSees);
+    expect annSees.ratings.at(0).score == 4;
+    // unshared again, it's gone from bob's view
+    expect ratings.putRating(ann, "dune", ratings.RatingInput(score: 4, note: "slow middle, great ending", recommended: false)) is Ok(_);
+    expect library.showItem(bob, "dune") is Ok(bobNow);
+    expect bobNow.ratings.length() == 0;
+}

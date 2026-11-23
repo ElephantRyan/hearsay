@@ -92,7 +92,9 @@ export function ItemPage() {
           What others said
         </h2>
         {others.length === 0 ? (
-          <p className="text-sm text-muted">No one else has recommended this book yet.</p>
+          <p className="text-sm text-muted">
+            No one else has recommended this book or shared a note on it yet.
+          </p>
         ) : (
           <ul className="space-y-3">
             {others.map((row) => (
@@ -102,7 +104,8 @@ export function ItemPage() {
               >
                 <div className="flex items-center justify-between gap-3">
                   <RecommenderChip userId={row.userId} username={row.username} />
-                  <RatingBadge score={row.score} />
+                  {/* A shared note on a book they didn't recommend comes alone, with no score. */}
+                  {row.recommended && <RatingBadge score={row.score} />}
                 </div>
                 {row.note && (
                   <p className="mt-2 whitespace-pre-wrap break-words text-sm">{row.note}</p>
