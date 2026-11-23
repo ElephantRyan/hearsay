@@ -1,14 +1,31 @@
 use hearsay.absclient.catalog;
 use hearsay.absclient.progress;
+use hearsay.books as cache;
 use hearsay.ratings.rated;
+use hearsay.series;
 
-// What I have listened to, most recent first, each with my score if I gave one.
+// What I have listened to, most recent first, each with my score if I gave one
+// and the series it is in, with my rating of that series.
 // A book with progress but no metadata (gone from ABS) is left out.
 rule listenedBooks(
     started: List<progress.Progress>,
     books: List<catalog.Book>,
-    mine: List<rated.RatingRow>)
+    mine: List<rated.RatingRow>,
+    seriesContext: SeriesContext)
         -> List<ListenedBook> {
+    // A book in several series shows the first ABS gave.
+    seriesOf: Map<string, cache.BookSeriesRow> = [:];
+    for (row in seriesContext.books) {
+        if (!seriesOf.containsKey(row.itemId)) {
+            seriesOf = seriesOf.put(row.itemId, row);
+        }
+    }
+
+    mySeries: Map<string, series.SeriesRatingRow> = [:];
+    for (row in seriesContext.mine) {
+        mySeries = mySeries.put(row.seriesId, row);
+    }
+
     byId: Map<string, catalog.Book> = [:];
     for (book in books) {
         byId = byId.put(book.itemId, book);
@@ -41,6 +58,7 @@ rule listenedBooks(
                         recommended: recommendedOf(rating),
                         myNote: noteOf(rating),
                         myNoteShared: noteSharedOf(rating),
+                        series: listenedSeriesOf(seriesOf.atOrNone(book.itemId), mySeries),
                     ),
                 );
             },
@@ -51,6 +69,38 @@ rule listenedBooks(
 }
 
 private {
+    listenedSeriesOf(row: cache.BookSeriesRow | None, mine: Map<string, series.SeriesRatingRow>)
+            -> ListenedSeries | None {
+        return match (row) {
+            None -> None,
+            found -> {
+                rating = mine.atOrNone(found.seriesId);
+                return ListenedSeries(
+                    seriesId: found.seriesId,
+                    name: found.name,
+                    sequence: found.sequence,
+                    rated: rating != None,
+                    myScore: seriesScoreOf(rating),
+                    recommended: seriesRecommendedOf(rating),
+                );
+            },
+        }
+    }
+
+    seriesScoreOf(rating: series.SeriesRatingRow | None) -> int | None {
+        return match (rating) {
+            None -> None,
+            row -> row.score,
+        }
+    }
+
+    seriesRecommendedOf(rating: series.SeriesRatingRow | None) -> bool {
+        return match (rating) {
+            None -> false,
+            row -> row.recommended,
+        }
+    }
+
     scoreOf(rating: rated.RatingRow | None) -> int | None {
         return match (rating) {
             None -> None,

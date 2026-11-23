@@ -11,6 +11,21 @@ use hearsay.sync;
 // books in it fold into it, and a collection holds its book 1, not book 4.
 test aRecommendedSeriesStandsForItsBooks {
     fake AbsCatalog {
+        // Every book is in no series, as ABS would say.
+        gateway itemsAsService(itemIds: List<string>)
+                -> Result<List<catalog.Book>, client.AbsError> {
+            return Ok(
+                map(id in itemIds):
+                        catalog.Book(
+                            itemId: id,
+                            libraryId: "lib-1",
+                            title: "T",
+                            authors: "A",
+                            series: [],
+                        ),
+            );
+        }
+
         gateway seriesAsService(seriesId: string)
                 -> Result<catalog.CatalogSeries, client.AbsError> {
             if (seriesId == "gone") {

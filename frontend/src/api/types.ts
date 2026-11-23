@@ -36,7 +36,9 @@ export interface SettingsChange {
   absUrl?: string;
   serviceToken?: string;
   mirrorEnabled?: boolean;
-  topCollections?: boolean;
+  topSeries?: boolean;
+  topStandalones?: boolean;
+  refreshHourUtc?: number;
   authMode?: AuthMode;
   frontendUrl?: string;
   oidcIssuer?: string;

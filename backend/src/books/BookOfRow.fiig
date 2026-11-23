@@ -1,0 +1,13 @@
+use hearsay.absclient.catalog;
+
+// A cached row as a Book, its series not read (None: not said here).
+conversion bookOfRow(row: CachedBookRow) -> catalog.Book {
+    return catalog.Book(
+        itemId: row.itemId,
+        libraryId: row.libraryId,
+        title: row.title,
+        authors: row.authors,
+        asin: row.asin,
+        isbn: row.isbn,
+    );
+}

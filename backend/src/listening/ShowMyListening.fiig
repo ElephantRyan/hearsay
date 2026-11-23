@@ -7,5 +7,5 @@ use hearsay.settings;
 workflow showMyListening(me: accounts.Identity) -> Result<List<ListenedBook>, ListeningError> {
     started = mapErr(e in loadProgress(me.userId)): listeningErrorOfFault(e)?;
     found = mapErr(e in books.cachedBooks(map(p in started): p.itemId)): ListeningError.Book(e)?;
-    return Ok(listenedBooks(started, found, loadMyScores(me.userId)));
+    return Ok(listenedBooks(started, found, loadMyScores(me.userId), loadSeriesContext(me.userId)));
 }

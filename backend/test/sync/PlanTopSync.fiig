@@ -1,0 +1,46 @@
+use hearsay.recommendations;
+
+// Collections of a kind no longer made ("Top 25 Recommended", "Top 25 Rated")
+// are removed, whatever the settings say; the current two follow theirs.
+test retiredTopCollectionsAreRemoved {
+    states = [
+        SyncState(
+            userId: "top-recommended",
+            libraryId: "lib-1",
+            collectionId: "old-1",
+            lastSyncedAt: 1,
+            lastError: None,
+        ),
+        SyncState(
+            userId: "top-rated",
+            libraryId: "lib-1",
+            collectionId: "old-2",
+            lastSyncedAt: 1,
+            lastError: None,
+        ),
+        SyncState(
+            userId: "u1",
+            libraryId: "lib-1",
+            collectionId: "mine",
+            lastSyncedAt: 1,
+            lastError: None,
+        ),
+    ];
+    book = recommendations.RecommendedBook(
+        itemId: "a",
+        libraryId: "lib-1",
+        title: "A",
+        authors: "x",
+        average: None,
+        count: 1,
+        latest: 1,
+        seriesBooks: 0,
+    );
+    plans = planTopSync([], [book], states, false, true);
+    removed = map(p in filter(p in plans): p.action == SyncAction.Remove): p.collectionId ?? "";
+    expect removed == ["old-1", "old-2"];
+    made = filter(p in plans): p.action == SyncAction.Create;
+    expect made.length() == 1;
+    expect made.at(0).name == "Top 25 Standalones";
+    expect made.at(0).bookIds == ["a"];
+}

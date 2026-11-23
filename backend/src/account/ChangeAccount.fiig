@@ -1,9 +1,18 @@
 use hearsay.accounts;
 
-// PUT /me/account: the name is checked before anything is saved. Lists show it
-// at once; an ABS collection takes it on the next sync.
+// PUT /me/account: a new name is checked before anything is saved. Lists show
+// it at once; an ABS collection takes it on the next sync.
 workflow changeAccount(me: accounts.Identity, change: AccountChange)
         -> Result<Account, AccountError> {
-    name = checkDisplayName(change.displayName)?;
-    return Ok(storeDisplayName(me, name));
+    name: string | None = None;
+    match (change.displayName) {
+        None -> {
+        },
+
+        given -> {
+            name = checkDisplayName(given)?;
+        },
+    }
+
+    return Ok(storeAccount(me, name, change.shareNotesByDefault, change.skipRatedSeriesBooks));
 }

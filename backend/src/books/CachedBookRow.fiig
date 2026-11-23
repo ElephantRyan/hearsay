@@ -1,0 +1,11 @@
+use hearsay.absclient.catalog;
+
+// A cached book as the book table holds it; its series are in book_series.
+model CachedBookRow {
+    itemId: string;
+    libraryId: string;
+    title: string;
+    authors: string;
+    asin: string | None;
+    isbn: string | None;
+}

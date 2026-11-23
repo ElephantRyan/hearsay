@@ -7,6 +7,7 @@ use hearsay.listening;
 use hearsay.ratings;
 use hearsay.ratings.rated;
 use hearsay.recommendations;
+use hearsay.refresh;
 use hearsay.series;
 use hearsay.sessions;
 use hearsay.setup;
@@ -16,7 +17,8 @@ use hearsay.sync;
 use hearsay.upnext;
 
 // What Hearsay runs (fiig ADR 0132): the HTTP surface, linked servers' routes
-// included, and the hourly collections sync and linked-server fetch.
+// included, the hourly collections sync and linked-server fetch, and the
+// daily refresh from Audiobookshelf.
 application Hearsay {
     serve web {
         sessions.sessionsApi;
@@ -41,5 +43,6 @@ application Hearsay {
     serve worker {
         sync.syncSchedule;
         links.linksSchedule;
+        refresh.refreshSchedule;
     }
 }

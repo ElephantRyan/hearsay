@@ -1,0 +1,4 @@
+// Whether every library also gets the server-wide "Top 25 Standalones".
+activity topStandalones() -> bool {
+    return SyncConfig.topStandalones;
+}

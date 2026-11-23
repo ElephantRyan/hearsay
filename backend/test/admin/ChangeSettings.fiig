@@ -92,9 +92,18 @@ test aBadChangeSavesNothing {
     admin = adminOf("a1", "boss", client.AbsUserType.Admin);
     expect changeSettings(admin, settings.SettingsChange(absUrl: "ftp://abs.test", serviceToken: "fine", mirrorEnabled: None)) is Err(AdminError.Invalid("absUrl", _));
     expect changeSettings(admin, settings.SettingsChange(absUrl: None, serviceToken: "   ", mirrorEnabled: None)) is Err(AdminError.Invalid("serviceToken", _));
+    expect changeSettings(admin, settings.SettingsChange(refreshHourUtc: 24)) is Err(AdminError.Invalid("refreshHourUtc", _));
     view = showSettings(admin);
     expect view.absUrl == settings.SettingValue(value: "https://env.test", source: "environment");
+    expect view.refreshHourUtc == settings.SettingValue(value: "11", source: "environment");
     expect tokenIs("old-token");
+}
+
+// The refresh hour is saved as given; the hourly check reads it from then on.
+test anAdminChoosesTheRefreshHour {
+    admin = adminOf("a1", "boss", client.AbsUserType.Admin);
+    expect changeSettings(admin, settings.SettingsChange(refreshHourUtc: 0)) is Ok(view);
+    expect view.refreshHourUtc == settings.SettingValue(value: "0", source: "saved");
 }
 
 test switchingToAuthentikTurnsPasswordSignInOff {

@@ -3,9 +3,10 @@ use hearsay.absclient.catalog;
 // Writes to our cached copy of what ABS says about a book. A group, so a
 // transaction in another domain can include the write (ADR 0043 §5).
 capability BookCache {
-    // Adds the book or refreshes its copy.
+    // Adds the book or refreshes its copy, and which series it is in when the
+    // book says (a book from a listing that doesn't, keeps what was known).
     gateway save(book: catalog.Book, now: int) -> int requires Database {
-        return Database.execute(
+        saved = Database.execute(
             "INSERT INTO book (item_id, library_id, title, authors, asin, isbn, fetched_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (item_id) DO UPDATE SET library_id = excluded.library_id, title = excluded.title, authors = excluded.authors, asin = excluded.asin, isbn = excluded.isbn, fetched_at = excluded.fetched_at",
             book.itemId,
             book.libraryId,
@@ -15,5 +16,26 @@ capability BookCache {
             book.isbn,
             now,
         );
+        match (book.series) {
+            None -> {
+            },
+
+            refs -> {
+                Database.execute("DELETE FROM book_series WHERE item_id = ?", book.itemId);
+                for (ref in refs) {
+                    Database.execute(
+                        "INSERT INTO book_series (item_id, series_id, name, sequence) VALUES (?, ?, ?, ?) ON CONFLICT (item_id, series_id) DO NOTHING",
+                        book.itemId,
+                        ref.id,
+                        ref.name,
+                        ref.sequence,
+                    );
+                }
+
+                Database.execute("UPDATE book SET series_known = 1 WHERE item_id = ?", book.itemId);
+            },
+        }
+
+        return saved;
     }
 }

@@ -1,6 +1,10 @@
-// The signed-in person's account as the account page shows it: the ABS username
-// they sign in with, and the name everyone else sees, which they choose.
+// The signed-in person's account as the settings page shows it: the ABS
+// username they sign in with, the name everyone else sees, which they choose,
+// and their own settings: notes shared by default, and the Rate tab leaving out
+// books of a series they have rated.
 model Account {
     username: string;
     displayName: string;
+    shareNotesByDefault: bool;
+    skipRatedSeriesBooks: bool;
 }

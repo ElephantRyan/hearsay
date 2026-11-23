@@ -1,0 +1,20 @@
+use hearsay.accounts;
+
+// Saves a checked change over what is stored, and returns the account as it
+// now stands. A field the change leaves out keeps its value.
+activity storeAccount(
+    me: accounts.Identity,
+    displayName: string | None,
+    shareNotesByDefault: bool | None,
+    skipRatedSeriesBooks: bool | None)
+        -> Account {
+    current = loadAccount(me);
+    account = Account(
+        username: me.username,
+        displayName: displayName ?? current.displayName,
+        shareNotesByDefault: shareNotesByDefault ?? current.shareNotesByDefault,
+        skipRatedSeriesBooks: skipRatedSeriesBooks ?? current.skipRatedSeriesBooks,
+    );
+    saveAccount(me, account);
+    return account;
+}

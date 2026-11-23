@@ -1,13 +1,13 @@
 use hearsay.absclient.catalog;
 use hearsay.settings;
 
-// Many books, in the order asked: our cached copies, and the rest from ABS in
-// one call, which are then cached too. A book ABS no longer has is left out.
+// Many books, in the order asked: our cached copies whose series are known,
+// and the rest from ABS in one call, which are then cached with their series. A book ABS no longer has is left out.
 activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookError> {
     found: Map<string, catalog.Book> = [:];
     missing: List<string> = [];
     for (itemId in itemIds) {
-        match (findBook(itemId)) {
+        match (findBookWithSeries(itemId)) {
             None -> {
                 missing = append(missing, itemId);
             },

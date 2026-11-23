@@ -1,5 +1,0 @@
-// Books and series together in "Top 25 Rated"'s order: the higher average
-// first, then more scores, then the most recent.
-rule sortTopRated(entries: List<RecommendedBook>) -> List<RecommendedBook> {
-    return sorted(e in entries): (e.average ?? math.toDecimal(0)) descending then e.count descending then e.latest descending;
-}

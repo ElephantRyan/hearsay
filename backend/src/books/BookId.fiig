@@ -1,0 +1,4 @@
+// A book by id alone.
+model BookId {
+    itemId: string;
+}

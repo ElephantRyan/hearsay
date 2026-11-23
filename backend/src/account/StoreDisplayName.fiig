@@ -1,7 +1,0 @@
-use hearsay.accounts;
-
-// Saves a checked display name and returns the account as it now stands.
-activity storeDisplayName(me: accounts.Identity, displayName: string) -> Account {
-    saveDisplayName(me, displayName);
-    return Account(username: me.username, displayName: displayName);
-}

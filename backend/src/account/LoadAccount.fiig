@@ -1,6 +1,20 @@
 use hearsay.accounts;
 
-// A person's account: their username, and the name they chose or else that.
+// A person's account: their username, the name they chose or else that, and
+// their settings (both off until set).
 activity loadAccount(me: accounts.Identity) -> Account {
-    return Account(username: me.username, displayName: findDisplayName(me.userId) ?? me.username);
+    return match (findAccountRow(me.userId)) {
+        None -> Account(
+            username: me.username,
+            displayName: me.username,
+            shareNotesByDefault: false,
+            skipRatedSeriesBooks: false,
+        ),
+        row -> Account(
+            username: me.username,
+            displayName: row.displayName,
+            shareNotesByDefault: row.shareNotesDefault,
+            skipRatedSeriesBooks: row.skipRatedSeries,
+        ),
+    }
 }

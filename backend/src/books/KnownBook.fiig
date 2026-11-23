@@ -1,0 +1,4 @@
+// A cached book whose series ABS was asked about, by id.
+model KnownBook {
+    itemId: string;
+}

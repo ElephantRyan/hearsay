@@ -103,7 +103,7 @@ export function AppShell() {
         <div className="flex items-center gap-2 text-sm">
           <Link
             to="/me/account"
-            aria-label="Account"
+            aria-label="My settings"
             className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2 text-muted no-underline hover:bg-surface-2 [&.active]:text-accent"
           >
             <UserRound aria-hidden="true" className="h-5 w-5" />

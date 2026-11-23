@@ -6,7 +6,9 @@ rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, Setti
             absUrl: checkUrl("absUrl", change.absUrl)?,
             serviceToken: checkText("serviceToken", change.serviceToken)?,
             mirrorEnabled: change.mirrorEnabled,
-            topCollections: change.topCollections,
+            topSeries: change.topSeries,
+            topStandalones: change.topStandalones,
+            refreshHourUtc: checkHour("refreshHourUtc", change.refreshHourUtc)?,
             authMode: change.authMode,
             frontendUrl: checkUrl("frontendUrl", change.frontendUrl)?,
             oidcIssuer: checkUrl("oidcIssuer", change.oidcIssuer)?,
@@ -19,6 +21,24 @@ rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, Setti
 }
 
 private {
+    checkHour(field: string, given: int | None) -> Result<int | None, SettingsChangeError> {
+        return match (given) {
+            None -> Ok(None),
+            hour -> {
+                if (hour < 0 || hour > 23) {
+                    return Err(
+                        SettingsChangeError.Invalid(
+                            field: field,
+                            reason: "must be an hour from 0 to 23",
+                        ),
+                    );
+                }
+
+                return Ok(hour);
+            },
+        }
+    }
+
     checkUrl(field: string, given: string | None) -> Result<string | None, SettingsChangeError> {
         return match (given) {
             None -> {

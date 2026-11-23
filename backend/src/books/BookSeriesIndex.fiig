@@ -1,0 +1,16 @@
+// Which series cached books are in, for the Rate tab and the collections to
+// read (ADR 0079 6a). Only books whose series ABS was asked about count.
+capability BookSeriesIndex {
+    // Every book-in-a-series pair.
+    gateway all() -> List<BookSeriesRow> requires Database idempotent {
+        return Database.queryMany("SELECT item_id, series_id, name, sequence FROM book_series");
+    }
+
+    // The books whose series are known, in a series or not.
+    gateway known() -> List<string> requires Database idempotent {
+        rows: List<KnownBook> = Database.queryMany(
+            "SELECT item_id FROM book WHERE series_known = 1",
+        );
+        return map(r in rows): r.itemId;
+    }
+}

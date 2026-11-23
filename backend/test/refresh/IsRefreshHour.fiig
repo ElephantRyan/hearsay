@@ -1,0 +1,10 @@
+// The hour is read from the moment in UTC: from 2026-11-23 11:00 UTC to 11:59
+// is hour 11; 10:59 and 12:00 are not.
+test theRefreshRunsInTheChosenHourOnly {
+    elevenUtc = 1795431600000;
+    expect isRefreshHour(elevenUtc, 11);
+    expect isRefreshHour(elevenUtc + 59 * 60000, 11);
+    expect !isRefreshHour(elevenUtc - 60000, 11);
+    expect !isRefreshHour(elevenUtc + 3600000, 11);
+    expect isRefreshHour(elevenUtc + 13 * 3600000, 0);
+}

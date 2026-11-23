@@ -1,0 +1,9 @@
+// Checks at the top of every hour (UTC, fiig ADR 0112) and refreshes from ABS
+// in the hour the admin chose (11:00 UTC unless changed). An Err is logged by
+// the runtime.
+adapter schedule refreshSchedule {
+    every "1h" -> refreshOnSchedule() {
+        Ok(_) -> done,
+        Err(_) -> done,
+    }
+}

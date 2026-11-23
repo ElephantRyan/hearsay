@@ -1,7 +1,10 @@
 // Whether this server may write collections into ABS at all (PLAN.md section 8):
-// saved in the app, or else MIRROR_ENABLED. topCollections adds the server-wide
-// "Top 25 Recommended" and "Top 25 Rated" collections to every library.
+// saved in the app, or else MIRROR_ENABLED. topSeries and topStandalones add the
+// server-wide "Top 10 Series" and "Top 25 Standalones" collections to every
+// library. refreshHourUtc is the hour (UTC, 0-23) of the daily refresh from ABS.
 wire SyncConfig {
     mirrorEnabled: bool from setting "sync.mirrorEnabled" ?? env "MIRROR_ENABLED" = false;
-    topCollections: bool from setting "sync.topCollections" ?? env "TOP_COLLECTIONS" = false;
+    topSeries: bool from setting "sync.topSeries" ?? env "TOP_SERIES" = false;
+    topStandalones: bool from setting "sync.topStandalones" ?? env "TOP_STANDALONES" = false;
+    refreshHourUtc: int from setting "sync.refreshHourUtc" ?? env "REFRESH_HOUR_UTC" = 11;
 }

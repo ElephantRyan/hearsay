@@ -1,0 +1,8 @@
+// A person's saved settings, or None if they have no row yet (nothing rated or
+// set so far), when the defaults stand.
+gateway findAccountRow(userId: string) -> AccountRow | None requires Database idempotent {
+    return Database.queryOne(
+        "SELECT display_name, share_notes_default, skip_rated_series FROM app_user WHERE user_id = ?",
+        userId,
+    );
+}

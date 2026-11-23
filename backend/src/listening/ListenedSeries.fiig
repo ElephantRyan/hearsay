@@ -1,0 +1,11 @@
+// The series a book I have listened to is in, with its number there, and my
+// rating of the series as a whole: rated is true once I have a rating of it
+// (a score, a recommendation, or both).
+model ListenedSeries {
+    seriesId: string;
+    name: string;
+    sequence: string | None;
+    rated: bool;
+    myScore: int | None;
+    recommended: bool;
+}

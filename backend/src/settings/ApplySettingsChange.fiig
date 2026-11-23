@@ -7,8 +7,12 @@ activity applySettingsChange(change: SettingsChange, by: string)
             settingsChangeErrorOf("serviceToken", e)?;
     mapErr(e in saveGiven(SettingName.MirrorEnabled, boolText(change.mirrorEnabled), by)):
             settingsChangeErrorOf("mirrorEnabled", e)?;
-    mapErr(e in saveGiven(SettingName.TopCollections, boolText(change.topCollections), by)):
-            settingsChangeErrorOf("topCollections", e)?;
+    mapErr(e in saveGiven(SettingName.TopSeries, boolText(change.topSeries), by)):
+            settingsChangeErrorOf("topSeries", e)?;
+    mapErr(e in saveGiven(SettingName.TopStandalones, boolText(change.topStandalones), by)):
+            settingsChangeErrorOf("topStandalones", e)?;
+    mapErr(e in saveGiven(SettingName.RefreshHourUtc, hourText(change.refreshHourUtc), by)):
+            settingsChangeErrorOf("refreshHourUtc", e)?;
     mapErr(e in saveGiven(SettingName.AuthMode, modeText(change.authMode), by)):
             settingsChangeErrorOf("authMode", e)?;
     mapErr(e in saveGiven(SettingName.FrontendUrl, change.frontendUrl, by)):
@@ -27,6 +31,13 @@ activity applySettingsChange(change: SettingsChange, by: string)
 }
 
 private {
+    hourText(hour: int | None) -> string | None {
+        return match (hour) {
+            None -> None,
+            given -> "${given}",
+        }
+    }
+
     saveGiven(name: SettingName, text: string | None, by: string) -> Result<None, SettingError> {
         return match (text) {
             None -> Ok(None),

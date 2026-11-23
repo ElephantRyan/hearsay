@@ -1,0 +1,4 @@
+// Whether every library also gets the server-wide "Top 10 Series".
+activity topSeries() -> bool {
+    return SyncConfig.topSeries;
+}

@@ -54,7 +54,8 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
   const [texts, setTexts] = useState(() => textsOf(settings));
   const [secrets, setSecrets] = useState(noSecrets);
   const [mirror, setMirror] = useState(settings.mirrorEnabled.value === "true");
-  const [top, setTop] = useState(settings.topCollections.value === "true");
+  const [topSeries, setTopSeries] = useState(settings.topSeries.value === "true");
+  const [topStandalones, setTopStandalones] = useState(settings.topStandalones.value === "true");
   const [mode, setMode] = useState(settings.authMode.value ?? "both");
   const [notice, setNotice] = useState<string | null>(null);
   // Authentik starts folded on a server that doesn't use it.
@@ -75,7 +76,9 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
       if (secrets[name].trim() !== "") change[name] = secrets[name];
     }
     if (mirror !== (settings.mirrorEnabled.value === "true")) change.mirrorEnabled = mirror;
-    if (top !== (settings.topCollections.value === "true")) change.topCollections = top;
+    if (topSeries !== (settings.topSeries.value === "true")) change.topSeries = topSeries;
+    if (topStandalones !== (settings.topStandalones.value === "true"))
+      change.topStandalones = topStandalones;
     if (mode !== settings.authMode.value) change.authMode = mode as AuthMode;
     return change;
   }
@@ -130,11 +133,34 @@ export function SettingsForm({ settings }: { settings: AdminSettings }) {
               }
             />
             <MirrorField checked={mirror} onChange={setMirror} setting={settings.mirrorEnabled} />
+          </fieldset>
+        </Section>
+
+        <Section title="Top collections">
+          <fieldset className="space-y-5" aria-label="Top collections">
+            <p className="text-sm text-muted">
+              Server-wide collections in every library, listed before everyone's own, most
+              recommended first (ties to the higher average score). Linked servers' recommendations
+              count too.
+              {!mirror && " Written only while recommendation collections are."}
+            </p>
             <TopField
-              checked={top}
-              onChange={setTop}
-              setting={settings.topCollections}
-              mirroring={mirror}
+              label='"Top 10 Series"'
+              hint="The series the most people recommend, each as its book 1."
+              checked={topSeries}
+              onChange={setTopSeries}
+              setting={settings.topSeries}
+              name="topSeries"
+              variable="TOP_SERIES"
+            />
+            <TopField
+              label='"Top 25 Standalones"'
+              hint="The books in no series that the most people recommend."
+              checked={topStandalones}
+              onChange={setTopStandalones}
+              setting={settings.topStandalones}
+              name="topStandalones"
+              variable="TOP_STANDALONES"
             />
           </fieldset>
         </Section>
@@ -370,17 +396,23 @@ function MirrorField({
   );
 }
 
-/** The server-wide Top 25 collections, written only while collections are written at all. */
+/** One server-wide Top collection, on or off; written only while collections are written at all. */
 function TopField({
+  label,
+  hint,
   checked,
   onChange,
   setting,
-  mirroring,
+  name,
+  variable,
 }: {
+  label: string;
+  hint: string;
   checked: boolean;
   onChange: (on: boolean) => void;
   setting: SettingValue;
-  mirroring: boolean;
+  name: "topSeries" | "topStandalones";
+  variable: string;
 }) {
   const id = useId();
   return (
@@ -394,16 +426,11 @@ function TopField({
           className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]"
         />
         <label htmlFor={id} className="text-sm">
-          <span className="font-medium">Add "Top 25 Recommended" and "Top 25 Rated"</span>
-          <span className="block text-muted">
-            Two collections in every library, listed before everyone's own: the books the most
-            people recommend, and the highest average scores (books with at least two). Linked
-            servers' recommendations count too.
-            {!mirroring && " Written only while recommendation collections are."}
-          </span>
+          <span className="font-medium">Add {label}</span>
+          <span className="block text-muted">{hint}</span>
         </label>
       </div>
-      <Source name="topCollections" setting={setting} variable="TOP_COLLECTIONS" />
+      <Source name={name} setting={setting} variable={variable} />
     </div>
   );
 }

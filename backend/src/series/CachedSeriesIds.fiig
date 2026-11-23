@@ -1,0 +1,5 @@
+// Every series we keep a copy of.
+gateway cachedSeriesIds() -> List<string> requires Database idempotent {
+    rows: List<SeriesId> = Database.queryMany("SELECT series_id FROM series");
+    return map(r in rows): r.seriesId;
+}

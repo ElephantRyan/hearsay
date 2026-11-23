@@ -1,0 +1,24 @@
+// Fetches every cached book from ABS again, 50 to a call, and saves what it
+// says now: title, authors, ASIN, ISBN and series. A book ABS no longer has
+// keeps its copy. Says how many were refreshed.
+activity refreshBooks() -> Result<int, BookError> {
+    ids = booksToRefresh();
+    refreshed: int = 0;
+    start: int = 0;
+    while (start < ids.length()) {
+        end: int = start + 50;
+        if (end > ids.length()) {
+            end = ids.length();
+        }
+
+        now = Clock.now();
+        for (book in fetchBooks(ids.slice(start, end))?) {
+            BookCache.save(book, now);
+            refreshed = refreshed + 1;
+        }
+
+        start = end;
+    }
+
+    return Ok(refreshed);
+}

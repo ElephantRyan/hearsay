@@ -35,12 +35,12 @@ private {
         return copy(plan, action: SyncAction.Recreate);
     }
 
-    // Top 25 Recommended comes before Top 25 Rated, and both before everyone's own.
+    // Top 10 Series comes before Top 25 Standalones, and both before everyone's own.
     comesBefore(made: string, other: string, otherIsTop: bool) -> bool {
         if (!otherIsTop) {
             return true;
         }
 
-        return made == topList.recommendedId() && other == topList.ratedId();
+        return made == topList.seriesId() && other == topList.standalonesId();
     }
 }

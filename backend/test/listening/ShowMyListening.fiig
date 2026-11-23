@@ -52,6 +52,7 @@ test myListeningIsMostRecentFirstWithMyScores {
                     libraryId: "lib-1",
                     title: "Alpha",
                     authors: "A. Author",
+                    series: [],
                 ),
             );
         }
@@ -66,6 +67,7 @@ test myListeningIsMostRecentFirstWithMyScores {
                         libraryId: "lib-1",
                         title: "Beta",
                         authors: "B. Author",
+                        series: [],
                     ),
                 ],
             );
@@ -104,6 +106,7 @@ test myListeningCachesWhatItLooksUp {
                         libraryId: "lib-1",
                         title: "Beta",
                         authors: "B. Author",
+                        series: [],
                     ),
                 ],
             );

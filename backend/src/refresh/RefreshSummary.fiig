@@ -1,0 +1,5 @@
+// What a refresh from Audiobookshelf read again.
+model RefreshSummary {
+    books: int;
+    series: int;
+}

@@ -1,21 +1,26 @@
-// The server-wide collections, in the order they should come first in ABS.
-// Each is kept in sync_state under its own id, as a person's collection is
-// kept under their user id.
+// The server-wide collections, in the order they should come first in ABS:
+// "Top 10 Series", then "Top 25 Standalones". Each is kept in sync_state under
+// its own id, as a person's collection is kept under their user id. The two
+// before them ("Top 25 Recommended" and "Top 25 Rated") are only removed.
 formulas topList {
-    formula recommendedId() -> string {
-        return "top-recommended";
+    formula seriesId() -> string {
+        return "top-series";
     }
 
-    formula ratedId() -> string {
-        return "top-rated";
+    formula standalonesId() -> string {
+        return "top-standalones";
     }
 
     formula isTop(userId: string) -> bool {
-        return userId == "top-recommended" || userId == "top-rated";
+        return userId == "top-series" || userId == "top-standalones" || userId == "top-recommended" || userId == "top-rated";
     }
 
-    // How many books each one holds.
-    formula size() -> int {
+    // How many each one holds.
+    formula seriesSize() -> int {
+        return 10;
+    }
+
+    formula standalonesSize() -> int {
         return 25;
     }
 }

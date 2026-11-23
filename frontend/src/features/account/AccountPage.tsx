@@ -7,7 +7,7 @@ import { Button } from "../../components/ui/Button";
 const MAX_NAME = 40;
 
 /**
- * My account: the name everyone else sees, beside my ratings, on my list, on linked servers, and
+ * My settings: the name everyone else sees, beside my ratings, on my list, on linked servers, and
  * as my Audiobookshelf collection ("<name> Recommends"). The username I sign in with stays as ABS
  * has it.
  */
@@ -32,12 +32,12 @@ export function AccountPage() {
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     setSaved(false);
-    save.mutate(trimmed, { onSuccess: () => setSaved(true) });
+    save.mutate({ displayName: trimmed }, { onSuccess: () => setSaved(true) });
   }
 
   return (
     <div className="mx-auto max-w-md space-y-5">
-      <h1 className="text-xl font-semibold">Account</h1>
+      <h1 className="text-xl font-semibold">My settings</h1>
 
       <form
         onSubmit={onSubmit}
@@ -97,6 +97,62 @@ export function AccountPage() {
         You sign in as <span className="font-medium text-text">{account.data.username}</span>, your
         Audiobookshelf username. That doesn't change.
       </p>
+
+      <section
+        aria-labelledby="preferences-heading"
+        className="space-y-4 rounded-card border border-border bg-surface p-4 shadow-card"
+      >
+        <h2 id="preferences-heading" className="text-base font-semibold">
+          Preferences
+        </h2>
+        <Preference
+          label="Share my notes by default"
+          hint="Ticks “Share my note with everyone” for you on each new rating. You can still untick it for any one note."
+          checked={account.data.shareNotesByDefault}
+          disabled={save.isPending}
+          onChange={(on) => save.mutate({ shareNotesByDefault: on })}
+        />
+        <Preference
+          label="On the Rate tab, skip books from series I've rated"
+          hint="Once you've rated or recommended a series, its books stop coming up to rate one by one."
+          checked={account.data.skipRatedSeriesBooks}
+          disabled={save.isPending}
+          onChange={(on) => save.mutate({ skipRatedSeriesBooks: on })}
+        />
+      </section>
+    </div>
+  );
+}
+
+/** One setting, saved as soon as it's ticked or unticked. */
+function Preference({
+  label,
+  hint,
+  checked,
+  disabled,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  checked: boolean;
+  disabled: boolean;
+  onChange: (on: boolean) => void;
+}) {
+  const id = useId();
+  return (
+    <div className="flex items-start gap-3">
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.checked)}
+        className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]"
+      />
+      <label htmlFor={id} className="text-sm">
+        <span className="font-medium">{label}</span>
+        <span className="block text-muted">{hint}</span>
+      </label>
     </div>
   );
 }

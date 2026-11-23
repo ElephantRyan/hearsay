@@ -1,0 +1,75 @@
+use hearsay.absclient.catalog;
+use hearsay.absclient.progress;
+use hearsay.books;
+use hearsay.series;
+
+// Each book comes with the series it is in (the first ABS gave, if several), its
+// number there, and my rating of that series; a book in none has no series.
+test eachBookCarriesItsSeriesAndMyRatingOfIt {
+    started = [
+        progress.Progress(itemId: "hw-4", finished: true, percent: 100, lastListenedAt: 3),
+        progress.Progress(itemId: "dcc-2", finished: true, percent: 100, lastListenedAt: 2),
+        progress.Progress(itemId: "alone", finished: false, percent: 10, lastListenedAt: 1),
+    ];
+    found = [
+        catalog.Book(itemId: "hw-4", libraryId: "lib-1", title: "HWFWM 4", authors: "Shirtaloon"),
+        catalog.Book(
+            itemId: "dcc-2",
+            libraryId: "lib-1",
+            title: "Carl's Doomsday Scenario",
+            authors: "Matt Dinniman",
+        ),
+        catalog.Book(
+            itemId: "alone",
+            libraryId: "lib-1",
+            title: "Project Hail Mary",
+            authors: "Andy Weir",
+        ),
+    ];
+    context = SeriesContext(
+        books: [
+            books.BookSeriesRow(
+                itemId: "hw-4",
+                seriesId: "hw",
+                name: "He Who Fights With Monsters",
+                sequence: "4",
+            ),
+            books.BookSeriesRow(
+                itemId: "hw-4",
+                seriesId: "other",
+                name: "Some Omnibus",
+                sequence: None,
+            ),
+            books.BookSeriesRow(
+                itemId: "dcc-2",
+                seriesId: "dcc",
+                name: "Dungeon Crawler Carl",
+                sequence: "2",
+            ),
+        ],
+        mine: [
+            series.SeriesRatingRow(
+                userId: "u1",
+                username: "ann",
+                seriesId: "dcc",
+                libraryId: "lib-1",
+                name: "Dungeon Crawler Carl",
+                authors: "Matt Dinniman",
+                books: 7,
+                firstItemId: "dcc-1",
+                score: None,
+                note: "",
+                recommended: true,
+                createdAt: 1,
+                updatedAt: 1,
+                noteShared: false,
+                via: None,
+            ),
+        ],
+    );
+    listened = listenedBooks(started, found, [], context);
+    expect listened.at(0).series == ListenedSeries(seriesId: "hw", name: "He Who Fights With Monsters", sequence: "4", rated: false, myScore: None, recommended: false);
+    // Recommended without a score still counts as rated.
+    expect listened.at(1).series == ListenedSeries(seriesId: "dcc", name: "Dungeon Crawler Carl", sequence: "2", rated: true, myScore: None, recommended: true);
+    expect listened.at(2).series == None;
+}

@@ -1,0 +1,7 @@
+use hearsay.books.BookSeriesIndex;
+use hearsay.series.SeriesRatings;
+
+// Which series each cached book is in, and my own ratings of series.
+activity loadSeriesContext(userId: string) -> SeriesContext {
+    return SeriesContext(books: BookSeriesIndex.all(), mine: SeriesRatings.byUser(userId));
+}

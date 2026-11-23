@@ -1,0 +1,6 @@
+// A person's app_user row as far as their settings go.
+model AccountRow {
+    displayName: string;
+    shareNotesDefault: bool;
+    skipRatedSeries: bool;
+}

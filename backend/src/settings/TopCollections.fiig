@@ -1,4 +1,0 @@
-// Whether every library also gets the server-wide Top 25 collections.
-activity topCollections() -> bool {
-    return SyncConfig.topCollections;
-}

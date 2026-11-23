@@ -100,6 +100,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["refreshNow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/settings": {
         parameters: {
             query?: never;
@@ -1085,6 +1101,68 @@ export interface operations {
             };
         };
     };
+    refreshNow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        books: number;
+                        series: number;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
     showSettings: {
         parameters: {
             query?: never;
@@ -1132,6 +1210,10 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
+                        refreshHourUtc: {
+                            source: string;
+                            value?: string | null;
+                        };
                         serverName: {
                             source: string;
                             value?: string | null;
@@ -1140,7 +1222,11 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
-                        topCollections: {
+                        topSeries: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        topStandalones: {
                             source: string;
                             value?: string | null;
                         };
@@ -1184,9 +1270,11 @@ export interface operations {
                     oidcClientSecret?: string | null;
                     oidcIssuer?: string | null;
                     oidcRedirectUri?: string | null;
+                    refreshHourUtc?: number | null;
                     serverName?: string | null;
                     serviceToken?: string | null;
-                    topCollections?: boolean | null;
+                    topSeries?: boolean | null;
+                    topStandalones?: boolean | null;
                 };
             };
         };
@@ -1229,6 +1317,10 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
+                        refreshHourUtc: {
+                            source: string;
+                            value?: string | null;
+                        };
                         serverName: {
                             source: string;
                             value?: string | null;
@@ -1237,7 +1329,11 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
-                        topCollections: {
+                        topSeries: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        topStandalones: {
                             source: string;
                             value?: string | null;
                         };
@@ -1335,6 +1431,10 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
+                        refreshHourUtc: {
+                            source: string;
+                            value?: string | null;
+                        };
                         serverName: {
                             source: string;
                             value?: string | null;
@@ -1343,7 +1443,11 @@ export interface operations {
                             source: string;
                             value?: string | null;
                         };
-                        topCollections: {
+                        topSeries: {
+                            source: string;
+                            value?: string | null;
+                        };
+                        topStandalones: {
                             source: string;
                             value?: string | null;
                         };
@@ -1757,6 +1861,11 @@ export interface operations {
                             isbn?: string | null;
                             itemId: string;
                             libraryId: string;
+                            series?: {
+                                id: string;
+                                name: string;
+                                sequence?: string | null;
+                            }[] | null;
                             title: string;
                         };
                         count: number;
@@ -2003,6 +2112,8 @@ export interface operations {
                 content: {
                     "application/json": {
                         displayName: string;
+                        shareNotesByDefault: boolean;
+                        skipRatedSeriesBooks: boolean;
                         username: string;
                     };
                 };
@@ -2027,7 +2138,9 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    displayName: string;
+                    displayName?: string | null;
+                    shareNotesByDefault?: boolean | null;
+                    skipRatedSeriesBooks?: boolean | null;
                 };
             };
         };
@@ -2039,6 +2152,8 @@ export interface operations {
                 content: {
                     "application/json": {
                         displayName: string;
+                        shareNotesByDefault: boolean;
+                        skipRatedSeriesBooks: boolean;
                         username: string;
                     };
                 };
@@ -2086,6 +2201,14 @@ export interface operations {
                         myScore?: number | null;
                         percent: number;
                         recommended: boolean;
+                        series?: {
+                            myScore?: number | null;
+                            name: string;
+                            rated: boolean;
+                            recommended: boolean;
+                            sequence?: string | null;
+                            seriesId: string;
+                        } | null;
                         title: string;
                     }[];
                 };

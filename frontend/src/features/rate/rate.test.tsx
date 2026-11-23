@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
@@ -28,6 +28,7 @@ function listened(n: number, over: Partial<ListenedBook> = {}): ListenedBook {
     recommended: false,
     myNote: "",
     myNoteShared: false,
+    series: null,
     ...over,
   };
 }
@@ -259,5 +260,120 @@ describe("my books", () => {
     expect(await screen.findByText("Book number 1")).toBeInTheDocument();
     expect(screen.getByLabelText("Rated 9 out of 10")).toBeInTheDocument();
     await waitFor(() => expect(screen.queryByText("Book number 2")).not.toBeInTheDocument());
+  });
+});
+
+const hwfwm = {
+  seriesId: "s-hw",
+  name: "He Who Fights With Monsters",
+  rated: false,
+  myScore: null,
+  recommended: false,
+};
+
+/** Serves my account with the skip setting as given, and records every series rating saved. */
+function serveSeries(skipRatedSeriesBooks: boolean) {
+  const saved: unknown[] = [];
+  server.use(
+    http.get("/api/me/account", () =>
+      HttpResponse.json({
+        username: "ryan",
+        displayName: "ryan",
+        shareNotesByDefault: false,
+        skipRatedSeriesBooks,
+      }),
+    ),
+    http.put("/api/series-ratings/:seriesId", async ({ request, params }) => {
+      saved.push({ seriesId: params.seriesId, ...((await request.json()) as object) });
+      return HttpResponse.json({});
+    }),
+  );
+  return saved;
+}
+
+describe("the Rate tab and series", () => {
+  it("says which series a book is in, its number there, and my rating of the series", async () => {
+    serve([
+      listened(1, { series: { ...hwfwm, sequence: "4" } }),
+      listened(2, {
+        series: {
+          ...hwfwm,
+          seriesId: "s-dcc",
+          name: "Dungeon Crawler Carl",
+          sequence: "2",
+          rated: true,
+          myScore: 9,
+          recommended: true,
+        },
+      }),
+    ]);
+    serveSeries(false);
+    mount("/rate");
+
+    const first = await card("Book number 1");
+    expect(first).toHaveTextContent("Series: He Who Fights With Monsters · Book 4");
+    expect(first).toHaveTextContent("Series not rated yet");
+    expect(screen.getByRole("button", { name: "Rate the series" })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Skip" }));
+    const second = await card("Book number 2");
+    expect(second).toHaveTextContent("You gave the series 9/10 and recommend it");
+    expect(screen.getByRole("button", { name: "Change" })).toBeInTheDocument();
+  });
+
+  it("leaves out books of a series I've rated when I asked it to", async () => {
+    serve([
+      listened(1, { series: { ...hwfwm, sequence: "4", rated: true, recommended: true } }),
+      listened(2),
+    ]);
+    serveSeries(true);
+    mount("/rate");
+
+    expect(await card("Book number 2")).toBeInTheDocument();
+    expect(screen.queryByRole("article", { name: "Book number 1" })).not.toBeInTheDocument();
+    expect(screen.getByText("1 book to go")).toBeInTheDocument();
+  });
+
+  it("goes through the series I've started, one card each, and saves on Submit", async () => {
+    const saved = serveSeries(false);
+    server.use(
+      http.get("/api/series/:seriesId", () =>
+        HttpResponse.json({
+          seriesId: "s-hw",
+          libraryId: "lib-1",
+          name: "He Who Fights With Monsters",
+          authors: "Shirtaloon",
+          books: 12,
+          firstItemId: "hw-1",
+          average: null,
+          count: 0,
+          ratings: [],
+        }),
+      ),
+    );
+    serve([
+      listened(1, { series: { ...hwfwm, sequence: "4" } }),
+      listened(2, { series: { ...hwfwm, sequence: "2" } }),
+      listened(3),
+    ]);
+    mount("/rate");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Series" }));
+    const series = await card("He Who Fights With Monsters");
+    // The card reads the series from ABS: its book 1 for the cover, and how many books it has.
+    expect(
+      await within(series).findByText(/you've listened to 2 of its 12 books/),
+    ).toBeInTheDocument();
+    expect(screen.getByText("1 series to go")).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Recommend He Who Fights With Monsters" }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await waitFor(() =>
+      expect(saved).toEqual([
+        { seriesId: "s-hw", score: null, note: "", recommended: true, noteShared: false },
+      ]),
+    );
   });
 });

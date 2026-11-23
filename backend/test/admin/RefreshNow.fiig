@@ -1,0 +1,85 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.books;
+use hearsay.books.BookSeriesIndex;
+use hearsay.ratings;
+use hearsay.series;
+use hearsay.series.SeriesRatings;
+
+// A change made in ABS after Hearsay cached it shows once refreshed: a book
+// moved out of a series it was wrongly in, and a series that gained a new book
+// 1, which is fetched too.
+test aRefreshReadsBooksAndSeriesAgain {
+    fake AbsCatalog {
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Elantris",
+                    authors: "Brandon Sanderson",
+                    series: [catalog.SeriesRef(id: "cosmere", name: "The Cosmere", sequence: None)],
+                ),
+            );
+        }
+
+        // After the fix in ABS: Elantris is in no series.
+        gateway itemsAsService(itemIds: List<string>)
+                -> Result<List<catalog.Book>, client.AbsError> {
+            return Ok(
+                map(id in itemIds):
+                        catalog.Book(
+                            itemId: id,
+                            libraryId: "lib-1",
+                            title: "Now ${id}",
+                            authors: "A",
+                            series: [],
+                        ),
+            );
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            // book 1 is new on the second read
+            bookIds: List<string> = ["dcc-0", "dcc-1", "dcc-2"];
+            if (calls(AbsCatalog.seriesAsService) == 1) {
+                bookIds = ["dcc-1", "dcc-2"];
+            }
+
+            return Ok(
+                catalog.CatalogSeries(
+                    seriesId: "dcc",
+                    libraryId: "lib-1",
+                    name: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    bookIds: bookIds,
+                ),
+            );
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect ratings.putRating(ann, "elantris", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_);
+    expect series.putSeriesRating(ann, "dcc", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_);
+    expect (filter(r in BookSeriesIndex.all()): r.itemId == "elantris").length() == 1;
+    boss = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect refreshNow(boss) is Ok(summary);
+    expect summary.series == 1;
+    expect (filter(r in BookSeriesIndex.all()): r.itemId == "elantris").length() == 0;
+    // Both read from the saved copy, without asking ABS for one book.
+    before = calls(AbsCatalog.itemAsService);
+    expect books.cachedBook("elantris") is Ok(elantris);
+    expect elantris.title == "Now elantris";
+    first = filter(b in SeriesRatings.books()): b.seriesId == "dcc" && b.position == 0;
+    expect first.first().itemId == "dcc-0";
+    expect books.cachedBook("dcc-0") is Ok(_);
+    expect calls(AbsCatalog.itemAsService) == before;
+}

@@ -1,0 +1,9 @@
+use hearsay.ratings.rated;
+
+// The ratings of books known to be in no series: their series were asked about
+// (known) and none came back (inSeries). A book whose series aren't known yet
+// is left out rather than guessed.
+rule standalonesOf(rows: List<rated.RatingRow>, known: List<string>, inSeries: List<string>)
+        -> List<rated.RatingRow> {
+    return filter(r in rows): known.contains(r.itemId) && !inSeries.contains(r.itemId);
+}

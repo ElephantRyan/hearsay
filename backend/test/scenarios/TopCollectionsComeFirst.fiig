@@ -4,17 +4,19 @@ use hearsay.absclient.catalog.AbsCatalog;
 use hearsay.absclient.collections.AbsCollections;
 use hearsay.accounts;
 use hearsay.ratings;
+use hearsay.series;
 use hearsay.settings;
-use hearsay.sync;
 use hearsay.settings.Abs;
 use hearsay.settings.AbsService;
 use hearsay.settings.SyncConfig;
+use hearsay.sync;
 
-// Turning the top collections on makes "Top 25 Recommended" and "Top 25 Rated"
-// first in ABS (which lists oldest first): they are made, then everyone's own
-// collections are made again after them. After that, a sync only updates; off
-// removes the two.
-test topCollectionsComeFirstAndGoWhenTurnedOff {
+// "Top 10 Series" holds each recommended series as its book 1; "Top 25
+// Standalones" the recommended books in no series, most recommended first.
+// Turning them on makes them first in ABS (oldest first): they are made, then
+// everyone's own collections are made again after them. After that a sync only
+// updates; each one's setting turns it off on its own.
+test topSeriesAndStandalonesComeFirstAndGoWhenTurnedOff {
     fake AbsService {
         token: "svc";
     }
@@ -25,12 +27,48 @@ test topCollectionsComeFirstAndGoWhenTurnedOff {
 
     fake SyncConfig {
         mirrorEnabled: true;
-        topCollections: false;
+        topSeries: false;
+        topStandalones: false;
     }
 
     fake AbsCatalog {
         gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
-            return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"));
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "T",
+                    authors: "A",
+                    series: [],
+                ),
+            );
+        }
+
+        gateway itemsAsService(itemIds: List<string>)
+                -> Result<List<catalog.Book>, client.AbsError> {
+            return Ok(
+                map(id in itemIds):
+                        catalog.Book(
+                            itemId: id,
+                            libraryId: "lib-1",
+                            title: "T",
+                            authors: "A",
+                            series: [],
+                        ),
+            );
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Ok(
+                catalog.CatalogSeries(
+                    seriesId: "dcc",
+                    libraryId: "lib-1",
+                    name: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    bookIds: ["dcc-1", "dcc-2"],
+                ),
+            );
         }
     }
 
@@ -44,11 +82,11 @@ test topCollectionsComeFirstAndGoWhenTurnedOff {
             n = calls(AbsCollections.createCollectionAsService);
             // 1-2: everyone's own; 3-4: the two tops, in order; 5-6: everyone's own again.
             if (n == 3) {
-                expect name == "Top 25 Recommended";
-                expect bookIds == ["a", "b"];
+                expect name == "Top 10 Series";
+                expect bookIds == ["dcc-1"];
             } else if (n == 4) {
-                expect name == "Top 25 Rated";
-                expect bookIds == ["a"];
+                expect name == "Top 25 Standalones";
+                expect bookIds == ["a", "b"];
             } else {
                 expect name.endsWith(" Recommends");
             }
@@ -66,14 +104,6 @@ test topCollectionsComeFirstAndGoWhenTurnedOff {
         }
 
         gateway deleteCollectionAsService(collectionId: string) -> Result<int, client.AbsError> {
-            n = calls(AbsCollections.deleteCollectionAsService);
-            // 1-2: everyone's own, to be made again after the tops; 3-4: the tops.
-            if (n <= 2) {
-                expect collectionId == "col-1" || collectionId == "col-2";
-            } else {
-                expect collectionId == "col-3" || collectionId == "col-4";
-            }
-
             return Ok(200);
         }
     }
@@ -83,9 +113,10 @@ test topCollectionsComeFirstAndGoWhenTurnedOff {
     expect ratings.putRating(ann, "a", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_);
     expect ratings.putRating(ann, "b", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_);
     expect ratings.putRating(bob, "a", ratings.RatingInput(score: 8, note: None, recommended: true)) is Ok(_);
+    expect series.putSeriesRating(ann, "dcc", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_);
     expect sync.syncOnSchedule() is Ok(2);
     expect calls(AbsCollections.createCollectionAsService) == 2;
-    expect settings.applySettingsChange(settings.SettingsChange(topCollections: true), "a1") is Ok(_);
+    expect settings.applySettingsChange(settings.SettingsChange(topSeries: true, topStandalones: true), "a1") is Ok(_);
     expect sync.syncOnSchedule() is Ok(4);
     expect calls(AbsCollections.createCollectionAsService) == 6;
     expect calls(AbsCollections.deleteCollectionAsService) == 2;
@@ -93,8 +124,9 @@ test topCollectionsComeFirstAndGoWhenTurnedOff {
     expect sync.syncOnSchedule() is Ok(4);
     expect calls(AbsCollections.createCollectionAsService) == 6;
     expect calls(AbsCollections.deleteCollectionAsService) == 2;
-    expect settings.applySettingsChange(settings.SettingsChange(topCollections: false), "a1") is Ok(_);
+    // Standalones off on its own: only that one goes.
+    expect settings.applySettingsChange(settings.SettingsChange(topStandalones: false), "a1") is Ok(_);
     expect sync.syncOnSchedule() is Ok(4);
-    expect calls(AbsCollections.deleteCollectionAsService) == 4;
+    expect calls(AbsCollections.deleteCollectionAsService) == 3;
     expect calls(AbsCollections.createCollectionAsService) == 6;
 }

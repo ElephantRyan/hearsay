@@ -763,6 +763,90 @@
         ]
       }
     },
+    "/admin/refresh": {
+      "post": {
+        "operationId": "refreshNow",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "books": {
+                      "type": "integer"
+                    },
+                    "series": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "books",
+                    "series"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sessionsMe": []
+          }
+        ]
+      }
+    },
     "/admin/settings": {
       "get": {
         "operationId": "showSettings",
@@ -892,6 +976,21 @@
                       ],
                       "type": "object"
                     },
+                    "refreshHourUtc": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
                     "serverName": {
                       "properties": {
                         "source": {
@@ -922,7 +1021,22 @@
                       ],
                       "type": "object"
                     },
-                    "topCollections": {
+                    "topSeries": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "topStandalones": {
                       "properties": {
                         "source": {
                           "type": "string"
@@ -947,9 +1061,11 @@
                     "oidcClientSecret",
                     "oidcIssuer",
                     "oidcRedirectUri",
+                    "refreshHourUtc",
                     "serverName",
                     "serviceToken",
-                    "topCollections"
+                    "topSeries",
+                    "topStandalones"
                   ],
                   "type": "object"
                 }
@@ -1028,6 +1144,10 @@
                     "nullable": true,
                     "type": "string"
                   },
+                  "refreshHourUtc": {
+                    "nullable": true,
+                    "type": "integer"
+                  },
                   "serverName": {
                     "nullable": true,
                     "type": "string"
@@ -1036,7 +1156,11 @@
                     "nullable": true,
                     "type": "string"
                   },
-                  "topCollections": {
+                  "topSeries": {
+                    "nullable": true,
+                    "type": "boolean"
+                  },
+                  "topStandalones": {
                     "nullable": true,
                     "type": "boolean"
                   }
@@ -1173,6 +1297,21 @@
                       ],
                       "type": "object"
                     },
+                    "refreshHourUtc": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
                     "serverName": {
                       "properties": {
                         "source": {
@@ -1203,7 +1342,22 @@
                       ],
                       "type": "object"
                     },
-                    "topCollections": {
+                    "topSeries": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "topStandalones": {
                       "properties": {
                         "source": {
                           "type": "string"
@@ -1228,9 +1382,11 @@
                     "oidcClientSecret",
                     "oidcIssuer",
                     "oidcRedirectUri",
+                    "refreshHourUtc",
                     "serverName",
                     "serviceToken",
-                    "topCollections"
+                    "topSeries",
+                    "topStandalones"
                   ],
                   "type": "object"
                 }
@@ -1435,6 +1591,21 @@
                       ],
                       "type": "object"
                     },
+                    "refreshHourUtc": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
                     "serverName": {
                       "properties": {
                         "source": {
@@ -1465,7 +1636,22 @@
                       ],
                       "type": "object"
                     },
-                    "topCollections": {
+                    "topSeries": {
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "topStandalones": {
                       "properties": {
                         "source": {
                           "type": "string"
@@ -1490,9 +1676,11 @@
                     "oidcClientSecret",
                     "oidcIssuer",
                     "oidcRedirectUri",
+                    "refreshHourUtc",
                     "serverName",
                     "serviceToken",
-                    "topCollections"
+                    "topSeries",
+                    "topStandalones"
                   ],
                   "type": "object"
                 }
@@ -2128,6 +2316,29 @@
                         "libraryId": {
                           "type": "string"
                         },
+                        "series": {
+                          "items": {
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "sequence": {
+                                "nullable": true,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "type": "object"
+                          },
+                          "nullable": true,
+                          "type": "array"
+                        },
                         "title": {
                           "type": "string"
                         }
@@ -2663,12 +2874,20 @@
                     "displayName": {
                       "type": "string"
                     },
+                    "shareNotesByDefault": {
+                      "type": "boolean"
+                    },
+                    "skipRatedSeriesBooks": {
+                      "type": "boolean"
+                    },
                     "username": {
                       "type": "string"
                     }
                   },
                   "required": [
                     "displayName",
+                    "shareNotesByDefault",
+                    "skipRatedSeriesBooks",
                     "username"
                   ],
                   "type": "object"
@@ -2702,12 +2921,18 @@
               "schema": {
                 "properties": {
                   "displayName": {
+                    "nullable": true,
                     "type": "string"
+                  },
+                  "shareNotesByDefault": {
+                    "nullable": true,
+                    "type": "boolean"
+                  },
+                  "skipRatedSeriesBooks": {
+                    "nullable": true,
+                    "type": "boolean"
                   }
                 },
-                "required": [
-                  "displayName"
-                ],
                 "type": "object"
               }
             }
@@ -2723,12 +2948,20 @@
                     "displayName": {
                       "type": "string"
                     },
+                    "shareNotesByDefault": {
+                      "type": "boolean"
+                    },
+                    "skipRatedSeriesBooks": {
+                      "type": "boolean"
+                    },
                     "username": {
                       "type": "string"
                     }
                   },
                   "required": [
                     "displayName",
+                    "shareNotesByDefault",
+                    "skipRatedSeriesBooks",
                     "username"
                   ],
                   "type": "object"
@@ -2805,6 +3038,38 @@
                       },
                       "recommended": {
                         "type": "boolean"
+                      },
+                      "series": {
+                        "nullable": true,
+                        "properties": {
+                          "myScore": {
+                            "nullable": true,
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "rated": {
+                            "type": "boolean"
+                          },
+                          "recommended": {
+                            "type": "boolean"
+                          },
+                          "sequence": {
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "seriesId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "rated",
+                          "recommended",
+                          "seriesId"
+                        ],
+                        "type": "object"
                       },
                       "title": {
                         "type": "string"

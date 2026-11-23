@@ -1,0 +1,25 @@
+use hearsay.absclient;
+
+// Reads every cached series from ABS again: its name, author line, and books in
+// order (so its book 1 too). One ABS no longer has keeps its copy; if ABS can't
+// be asked at all, the refresh stops there. Says how many were refreshed.
+activity refreshSeries() -> Result<int, absclient.AbsFault> {
+    refreshed: int = 0;
+    for (seriesId in cachedSeriesIds()) {
+        match (fetchSeries(seriesId)) {
+            Ok(series) -> {
+                saveSeriesCache(series, Clock.now());
+                refreshed = refreshed + 1;
+            },
+
+            Err(absclient.AbsFault.Missing) -> {
+            },
+
+            Err(fault) -> {
+                return Err(fault);
+            },
+        }
+    }
+
+    return Ok(refreshed);
+}

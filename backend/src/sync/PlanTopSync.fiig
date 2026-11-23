@@ -2,25 +2,37 @@ use hearsay.sync.once;
 use hearsay.sync.topList;
 use hearsay.recommendations;
 
-// What the server-wide collections should become in each library: "Top 25
-// Recommended" (most recommended first) and "Top 25 Rated" (highest average
-// first), from the two rankings, already in order. A library with nothing to
-// list gets no collection, and one of ours with nothing left, or with the
-// setting off, is a remove.
+// What the server-wide collections should become in each library: "Top 10
+// Series" (recommended series, as each one's book 1) and "Top 25 Standalones"
+// (recommended books in no series), each most recommended first. A library with
+// nothing to list gets no collection; one of ours with nothing left, with its
+// setting off, or of a kind no longer made, is a remove.
 rule planTopSync(
-    byRecommendations: List<recommendations.RecommendedBook>,
-    byRating: List<recommendations.RecommendedBook>,
+    bySeries: List<recommendations.RecommendedBook>,
+    standalones: List<recommendations.RecommendedBook>,
     states: List<SyncState>,
-    on: bool)
+    seriesOn: bool,
+    standalonesOn: bool)
         -> List<SyncPlan> {
-    return plansFor(topList.recommendedId(), byRecommendations, states, on).concat(
-        plansFor(topList.ratedId(), byRating, states, on),
+    current = plansFor(topList.seriesId(), "Top ${topList.seriesSize()} Series", topList.seriesSize(), bySeries, states, seriesOn).concat(
+        plansFor(
+            topList.standalonesId(),
+            "Top ${topList.standalonesSize()} Standalones",
+            topList.standalonesSize(),
+            standalones,
+            states,
+            standalonesOn,
+        ),
     );
+    retired = filter(s in states): topList.isTop(s.userId) && s.userId != topList.seriesId() && s.userId != topList.standalonesId();
+    return current.concat(map(s in retired): removeOf(s));
 }
 
 private {
     plansFor(
         top: string,
+        name: string,
+        size: int,
         ranked: List<recommendations.RecommendedBook>,
         states: List<SyncState>,
         on: bool)
@@ -36,9 +48,9 @@ private {
                     SyncPlan(
                         userId: top,
                         libraryId: libraryId,
-                        name: nameOf(top),
+                        name: name,
                         description: "Maintained by Hearsay. Edits here are overwritten on the next sync.",
-                        bookIds: once.unique(map(b in books): b.itemId).take(topList.size()),
+                        bookIds: once.unique(map(b in books): b.itemId).take(size),
                         collectionId: existing,
                         action: createOrUpdate(existing),
                     ),
@@ -48,30 +60,23 @@ private {
 
         for (state in theirs) {
             if (!on || !byLibrary.containsKey(state.libraryId)) {
-                plans = append(
-                    plans,
-                    SyncPlan(
-                        userId: top,
-                        libraryId: state.libraryId,
-                        name: "",
-                        description: "",
-                        bookIds: [],
-                        collectionId: state.collectionId,
-                        action: SyncAction.Remove,
-                    ),
-                );
+                plans = append(plans, removeOf(state));
             }
         }
 
         return plans;
     }
 
-    nameOf(top: string) -> string {
-        if (top == topList.recommendedId()) {
-            return "Top ${topList.size()} Recommended";
-        }
-
-        return "Top ${topList.size()} Rated";
+    removeOf(state: SyncState) -> SyncPlan {
+        return SyncPlan(
+            userId: state.userId,
+            libraryId: state.libraryId,
+            name: "",
+            description: "",
+            bookIds: [],
+            collectionId: state.collectionId,
+            action: SyncAction.Remove,
+        );
     }
 
     collectionIn(theirs: List<SyncState>, libraryId: string) -> string | None {

@@ -159,7 +159,7 @@ test absItemBecomesABook {
     }
 
     expect AbsCatalog.item("https://abs.test", "tok", "it-1") is Ok(book);
-    expect book == Book(itemId: "it-1", libraryId: "lib-1", title: "After the Rabbit", authors: "Nelson Chereta");
+    expect book == Book(itemId: "it-1", libraryId: "lib-1", title: "After the Rabbit", authors: "Nelson Chereta", series: []);
 }
 
 // A refusal is a value, not a fault: a missing book, a reply that isn't JSON.

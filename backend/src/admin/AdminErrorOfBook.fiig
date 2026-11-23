@@ -1,0 +1,8 @@
+use hearsay.books;
+
+conversion adminErrorOfBook(error: books.BookError) -> AdminError {
+    return match (error) {
+        books.BookError.Missing -> AdminError.LibraryNotFound,
+        books.BookError.Unavailable(detail) -> AdminError.Unavailable(detail),
+    }
+}

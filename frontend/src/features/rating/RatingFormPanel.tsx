@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import {
+  useAccount,
   useRateItem,
   useRateSeries,
   useRemoveRating,
@@ -33,6 +34,8 @@ export function RatingFormPanel({ itemId, series = false, existing, onDone }: Pr
   const removeBook = useRemoveRating();
   const removeSeries = useRemoveSeriesRating();
   const rate = series ? rateSeries : rateBook;
+  // A new note starts shared when I said so in my settings.
+  const account = useAccount();
   const remove = series ? removeSeries : removeBook;
   const {
     control,
@@ -47,7 +50,7 @@ export function RatingFormPanel({ itemId, series = false, existing, onDone }: Pr
       score: existing?.score ?? undefined,
       note: existing?.note ?? "",
       recommended: existing?.recommended ?? false,
-      noteShared: existing?.noteShared ?? false,
+      noteShared: existing?.noteShared ?? account.data?.shareNotesByDefault ?? false,
     },
   });
   const note = watch("note");

@@ -10,7 +10,9 @@ import {
   useLinkServer,
   useMe,
   useRecommenders,
+  useRefreshFromAbs,
   useRefreshLink,
+  useSaveSettings,
   useSyncCollections,
   useUnlinkServer,
 } from "../../api/hooks";
@@ -46,6 +48,7 @@ export function AdminPage() {
       <StatusCard />
       <SettingsCard />
       <CollectionsCard />
+      <BookDetailsCard />
       <LinksCard />
     </div>
   );
@@ -190,6 +193,105 @@ function SettingsCard() {
   );
 }
 
+/**
+ * Hearsay keeps a copy of what Audiobookshelf says about each book and series it shows. A daily
+ * refresh reads them all again; Refresh now does it straight away, after a fix in Audiobookshelf.
+ */
+function BookDetailsCard() {
+  const refresh = useRefreshFromAbs();
+  const id = useId();
+  return (
+    <Card title="Book details" id={id}>
+      <div className="space-y-4">
+        <p className="text-sm text-muted">
+          Hearsay keeps a copy of each book's title, authors and series from Audiobookshelf, and
+          reads them all again once a day. After you fix something in Audiobookshelf, Refresh now
+          picks it up straight away.
+        </p>
+        <RefreshHourField />
+        <Button onClick={() => refresh.mutate()} disabled={refresh.isPending}>
+          {refresh.isPending ? "Refreshing…" : "Refresh now"}
+        </Button>
+        {refresh.isError && (
+          <p role="alert" className="text-sm text-danger">
+            {messageFor(refresh.error)}
+          </p>
+        )}
+        {refresh.data && (
+          <p role="status" className="text-sm">
+            Read {refresh.data.books} {refresh.data.books === 1 ? "book" : "books"} and{" "}
+            {refresh.data.series} series again.
+          </p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+/** The UTC hour, as an hour of the day in this browser's time zone. */
+function localHourOf(hourUtc: number): number {
+  const at = new Date();
+  at.setUTCHours(hourUtc, 0, 0, 0);
+  return at.getHours();
+}
+
+/** An hour of the day in this browser's time zone, as the UTC hour the server keeps. */
+function utcHourOf(localHour: number): number {
+  const at = new Date();
+  at.setHours(localHour, 0, 0, 0);
+  return at.getUTCHours();
+}
+
+/** "4 AM", "12 PM": an hour of the day as people say it. */
+function hourName(hour: number): string {
+  const twelve = hour % 12 === 0 ? 12 : hour % 12;
+  return `${twelve} ${hour < 12 ? "AM" : "PM"}`;
+}
+
+/**
+ * When the daily refresh runs, picked in this browser's time zone and kept by the server in UTC, so
+ * it is saved as soon as it is picked. Where clocks change for summer, it moves an hour with them.
+ */
+function RefreshHourField() {
+  const settings = useAdminSettings();
+  const save = useSaveSettings();
+  const id = useId();
+  const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const saved = Number(settings.data?.refreshHourUtc.value ?? "11");
+  const hours = Array.from({ length: 24 }, (_, hour) => hour);
+
+  return (
+    <div className="space-y-1">
+      <label htmlFor={id} className="block text-sm font-medium">
+        Daily refresh at
+      </label>
+      <div className="flex flex-wrap items-center gap-3">
+        <select
+          id={id}
+          value={localHourOf(saved)}
+          disabled={settings.isPending || save.isPending}
+          onChange={(event) =>
+            save.mutate({ refreshHourUtc: utcHourOf(Number(event.target.value)) })
+          }
+          className="min-h-11 rounded-lg border border-border bg-surface px-3 text-sm"
+        >
+          {hours.map((hour) => (
+            <option key={hour} value={hour}>
+              {hourName(hour)}
+            </option>
+          ))}
+        </select>
+        <span className="text-sm text-muted">your time ({zone})</span>
+      </div>
+      {save.isError && (
+        <p role="alert" className="text-sm text-danger">
+          {messageFor(save.error)}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function CollectionsCard() {
   const settings = useAdminSettings();
   const sync = useSyncCollections();
@@ -248,6 +350,8 @@ const actionWords: Record<string, string> = {
 
 /** The server-wide collections, as the sync names them (backend/src/sync/TopList.fiig). */
 const topNames: Record<string, string> = {
+  "top-series": "Top 10 Series",
+  "top-standalones": "Top 25 Standalones",
   "top-recommended": "Top 25 Recommended",
   "top-rated": "Top 25 Rated",
 };

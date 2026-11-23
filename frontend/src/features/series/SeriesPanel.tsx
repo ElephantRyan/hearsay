@@ -10,7 +10,7 @@ import { RatingFormPanel } from "../rating/RatingFormPanel";
  * as a whole (recommending it puts its book 1 in my collection, in place of its other books), and
  * what others said of it.
  */
-export function SeriesPanel({ seriesId }: { seriesId: string }) {
+export function SeriesPanel({ seriesId, onDone }: { seriesId: string; onDone?: () => void }) {
   const series = useSeries(seriesId);
   const me = useMe();
 
@@ -46,6 +46,7 @@ export function SeriesPanel({ seriesId }: { seriesId: string }) {
           key={mine ? `${mine.updatedAt}` : "new"}
           itemId={seriesId}
           series
+          onDone={onDone}
           existing={
             mine && {
               score: mine.score ?? null,

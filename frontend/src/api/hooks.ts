@@ -356,6 +356,19 @@ export function useSyncCollections() {
   });
 }
 
+/**
+ * Read every saved book and series again from Audiobookshelf, as the daily refresh does. Every
+ * list may show something new after it, so all are refetched.
+ */
+export function useRefreshFromAbs() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => unwrap(await api.POST("/admin/refresh")),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] !== "me" }),
+  });
+}
+
 /** A link, a fetch or an unlink changes every list that counts linked ratings. */
 function refreshAfterLinkChange(queryClient: ReturnType<typeof useQueryClient>) {
   return queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] !== "me" });
@@ -458,8 +471,12 @@ export const useAccount = () =>
 export function useSaveAccount() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (displayName: string) =>
-      unwrap(await api.PUT("/me/account", { body: { displayName } })),
+    // Only what changes is sent: a name, or one of the settings.
+    mutationFn: async (change: {
+      displayName?: string;
+      shareNotesByDefault?: boolean;
+      skipRatedSeriesBooks?: boolean;
+    }) => unwrap(await api.PUT("/me/account", { body: change })),
     onSuccess: async (account) => {
       queryClient.setQueryData(keys.account, account);
       await queryClient.invalidateQueries({

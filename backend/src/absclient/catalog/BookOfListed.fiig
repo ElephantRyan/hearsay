@@ -8,6 +8,7 @@ conversion bookOfListed(item: AbsListedItem) -> Book {
         authors: authorLine(item.media.metadata.authorName),
         asin: item.media.metadata.asin,
         isbn: item.media.metadata.isbn,
+        series: item.media.metadata.series,
     );
 }
 

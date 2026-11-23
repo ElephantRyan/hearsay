@@ -1,8 +1,12 @@
 use hearsay.absclient.catalog;
 
 gateway findBook(itemId: string) -> catalog.Book | None requires Database idempotent {
-    return Database.queryOne(
+    row: CachedBookRow | None = Database.queryOne(
         "SELECT item_id, library_id, title, authors, asin, isbn FROM book WHERE item_id = ?",
         itemId,
     );
+    return match (row) {
+        None -> None,
+        found -> bookOfRow(found),
+    }
 }

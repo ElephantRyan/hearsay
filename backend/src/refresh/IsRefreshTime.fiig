@@ -1,0 +1,6 @@
+use hearsay.settings.SyncConfig;
+
+// Whether now is in the hour (UTC) the admin chose for the refresh.
+activity isRefreshTime() -> bool {
+    return isRefreshHour(Clock.now(), SyncConfig.refreshHourUtc);
+}

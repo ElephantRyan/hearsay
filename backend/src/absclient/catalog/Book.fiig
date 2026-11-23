@@ -1,6 +1,8 @@
 // A book as the API shows it: ABS owns the metadata, we cache only what a
 // list needs. `authors` is one display line, "A, B". The ASIN and ISBN are as
 // ABS has them, to recognise the same book on a linked server (LINKED.md).
+// series is what ABS says it belongs to, with its number in each: None when
+// the reply didn't say (a minified listing), [] when it is in none.
 model Book {
     itemId: string;
     libraryId: string;
@@ -8,4 +10,5 @@ model Book {
     authors: string;
     asin: string | None;
     isbn: string | None;
+    series: List<SeriesRef> | None;
 }

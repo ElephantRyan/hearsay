@@ -1,4 +1,6 @@
-// The body of PUT /me/account: the name to show everyone else.
+// The body of PUT /me/account: what to change; a field left out stays as it is.
 model AccountChange {
-    displayName: string;
+    displayName: string | None;
+    shareNotesByDefault: bool | None;
+    skipRatedSeriesBooks: bool | None;
 }

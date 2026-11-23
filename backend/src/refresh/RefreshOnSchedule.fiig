@@ -1,0 +1,16 @@
+use hearsay.books;
+use hearsay.series;
+
+// The hourly check: in the chosen hour, reads again from Audiobookshelf what
+// Hearsay keeps a copy of, so a change made there (a title, a series, a book's
+// number in it) shows here; otherwise does nothing (None). The series go first,
+// so a new book 1 is among the books fetched after.
+workflow refreshOnSchedule() -> Result<RefreshSummary | None, RefreshError> {
+    if (!isRefreshTime()) {
+        return Ok(None);
+    }
+
+    seriesCount = mapErr(e in series.refreshSeries()): RefreshError.Unavailable(detail: "${e}")?;
+    bookCount = mapErr(e in books.refreshBooks()): RefreshError.Unavailable(detail: "${e}")?;
+    return Ok(RefreshSummary(books: bookCount, series: seriesCount));
+}

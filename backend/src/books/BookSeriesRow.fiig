@@ -1,0 +1,7 @@
+// One series one cached book is in, with its number there.
+model BookSeriesRow {
+    itemId: string;
+    seriesId: string;
+    name: string;
+    sequence: string | None;
+}

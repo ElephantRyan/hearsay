@@ -1,0 +1,4 @@
+// A series by id alone.
+model SeriesId {
+    seriesId: string;
+}

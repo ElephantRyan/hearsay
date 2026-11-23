@@ -1,0 +1,9 @@
+use hearsay.books;
+use hearsay.series;
+
+// What the Rate tab needs to know about series: which series each cached book
+// is in, and my own ratings of series.
+model SeriesContext {
+    books: List<books.BookSeriesRow>;
+    mine: List<series.SeriesRatingRow>;
+}

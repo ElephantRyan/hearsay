@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
@@ -18,7 +18,9 @@ function settingsOf(mirror: "true" | "false", source = "environment"): AdminSett
     absUrl: { value: "https://abs.home.test", source },
     serviceToken: { value: null, source: "saved" },
     mirrorEnabled: { value: mirror, source: "environment" },
-    topCollections: { value: "false", source: "environment" },
+    topSeries: { value: "false", source: "environment" },
+    topStandalones: { value: "false", source: "environment" },
+    refreshHourUtc: { value: "11", source: "environment" },
     authMode: { value: "abs", source: "environment" },
     frontendUrl: { value: "http://localhost:3000", source: "environment" },
     oidcIssuer: { value: null, source: "unset" },
@@ -218,37 +220,74 @@ describe("the admin screen", () => {
     ]);
   });
 
-  it("turns the top collections on, and the preview names them first", async () => {
+  it("turns each top collection on by its own box, and the preview names them first", async () => {
     const sent = serve(settingsOf("true"));
     server.use(
       http.post("/api/sync", () =>
         HttpResponse.json([
-          { userId: "top-recommended", libraryId: "lib-1", action: "would-create", books: 25 },
-          { userId: "top-rated", libraryId: "lib-1", action: "would-create", books: 12 },
+          { userId: "top-series", libraryId: "lib-1", action: "would-create", books: 10 },
+          { userId: "top-standalones", libraryId: "lib-1", action: "would-create", books: 25 },
+          { userId: "top-rated", libraryId: "lib-1", action: "would-remove", books: 0 },
           { userId: "u-1", libraryId: "lib-1", action: "would-recreate", books: 3 },
         ]),
       ),
     );
     mount("/admin");
 
-    await userEvent.click(
-      await screen.findByLabelText(/Add "Top 25 Recommended" and "Top 25 Rated"/),
-    );
+    const collections = await screen.findByRole("group", { name: "Top collections" });
+    await userEvent.click(within(collections).getByLabelText(/Add "Top 10 Series"/));
     await userEvent.click(screen.getByRole("button", { name: "Save settings" }));
     expect(await screen.findByText("Saved.")).toBeInTheDocument();
     expect(sent).toContainEqual({
       method: "PUT",
       path: "/admin/settings",
-      body: { topCollections: true },
+      body: { topSeries: true },
     });
+    expect(within(collections).getByLabelText(/Add "Top 25 Standalones"/)).not.toBeChecked();
 
     await userEvent.click(screen.getByRole("button", { name: "Preview" }));
     const preview = await screen.findByRole("list", { name: "What would change" });
-    expect(await within(preview).findByText("Top 25 Recommended · Audiobooks")).toBeInTheDocument();
+    expect(await within(preview).findByText("Top 10 Series · Audiobooks")).toBeInTheDocument();
+    expect(within(preview).getByText("Top 25 Standalones · Audiobooks")).toBeInTheDocument();
+    // the retired one is only removed
     expect(within(preview).getByText("Top 25 Rated · Audiobooks")).toBeInTheDocument();
     expect(
       within(preview).getByText("Would remake (to list after the top collections), 3 books"),
     ).toBeInTheDocument();
+  });
+
+  it("reads every book again from Audiobookshelf on Refresh now", async () => {
+    serve(settingsOf("false"));
+    let asked = 0;
+    server.use(
+      http.post("/api/admin/refresh", () => {
+        asked += 1;
+        return HttpResponse.json({ books: 94, series: 3 });
+      }),
+    );
+    mount("/admin");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Refresh now" }));
+    expect(await screen.findByText("Read 94 books and 3 series again.")).toBeInTheDocument();
+    expect(asked).toBe(1);
+  });
+
+  it("saves the daily refresh hour as soon as it is picked, in UTC", async () => {
+    const sent = serve(settingsOf("false"));
+    mount("/admin");
+
+    const hour = await screen.findByLabelText("Daily refresh at");
+    const local = new Date();
+    local.setHours(5, 0, 0, 0);
+    await waitFor(() => expect(hour).toBeEnabled());
+    await userEvent.selectOptions(hour, "5 AM");
+    await waitFor(() =>
+      expect(sent).toContainEqual({
+        method: "PUT",
+        path: "/admin/settings",
+        body: { refreshHourUtc: local.getUTCHours() },
+      }),
+    );
   });
 
   it("says when writing collections is off", async () => {

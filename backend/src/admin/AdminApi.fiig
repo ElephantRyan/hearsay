@@ -28,6 +28,11 @@ adapter http adminApi {
         Err(error) -> adminErrorResponse(error),
     }
 
+    POST "/admin/refresh" -> refreshNow(admin) produces "application/json" {
+        Ok(summary) -> 200 summary,
+        Err(error) -> adminErrorResponse(error),
+    }
+
     GET "/admin/status" -> showStatus(admin) produces "application/json" {
         status -> 200 status,
     }

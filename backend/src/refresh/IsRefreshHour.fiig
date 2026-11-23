@@ -1,0 +1,5 @@
+// Whether the hour (UTC) of a moment, in milliseconds since 1970, is the one
+// chosen for the refresh.
+rule isRefreshHour(now: int, hourUtc: int) -> bool {
+    return (now / 3600000) % 24 == hourUtc;
+}

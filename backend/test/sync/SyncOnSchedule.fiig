@@ -65,6 +65,21 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
     }
 
     fake AbsCatalog {
+        // Every book is in no series, as ABS would say.
+        gateway itemsAsService(itemIds: List<string>)
+                -> Result<List<catalog.Book>, client.AbsError> {
+            return Ok(
+                map(id in itemIds):
+                        catalog.Book(
+                            itemId: id,
+                            libraryId: "lib-1",
+                            title: "T",
+                            authors: "A",
+                            series: [],
+                        ),
+            );
+        }
+
         gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"));
         }

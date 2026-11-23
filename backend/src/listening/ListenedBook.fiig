@@ -1,5 +1,6 @@
 // A book I have started or finished in ABS, with my rating of it if I have one
-// (my note and whether it's shared, so a new score can keep them).
+// (my note and whether it's shared, so a new score can keep them), and the
+// series it is in, if any, with my rating of that series.
 // `percent` is 0 to 100; `lastListenedAt` is milliseconds since the epoch.
 model ListenedBook {
     itemId: string;
@@ -13,4 +14,5 @@ model ListenedBook {
     recommended: bool;
     myNote: string;
     myNoteShared: bool;
+    series: ListenedSeries | None;
 }

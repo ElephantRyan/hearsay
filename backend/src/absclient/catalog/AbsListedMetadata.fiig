@@ -3,4 +3,5 @@ model AbsListedMetadata {
     authorName: string | None;
     asin: string | None;
     isbn: string | None;
+    series: List<SeriesRef> | None;
 }
