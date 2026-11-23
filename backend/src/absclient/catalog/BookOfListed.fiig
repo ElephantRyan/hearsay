@@ -1,5 +1,6 @@
 // A book from a library listing or a search hit. These carry one author line
-// (`authorName`), where GET /api/items/{id} carries a list of authors.
+// (`authorName`), where GET /api/items/{id} carries a list of authors. Their
+// series aren't read: a listing filtered by series gives one object, not a list.
 conversion bookOfListed(item: AbsListedItem) -> Book {
     return Book(
         itemId: item.id,
@@ -8,7 +9,7 @@ conversion bookOfListed(item: AbsListedItem) -> Book {
         authors: authorLine(item.media.metadata.authorName),
         asin: item.media.metadata.asin,
         isbn: item.media.metadata.isbn,
-        series: item.media.metadata.series,
+        series: None,
     );
 }
 

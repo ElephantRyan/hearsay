@@ -222,7 +222,7 @@ test absBatchLooksUpManyBooksInOneCall {
     }
 
     expect AbsCatalog.itemsAsService(["b-1", "gone", "b-2"]) is Ok(found);
-    expect found == [Book(itemId: "b-1", libraryId: "lib-1", title: "Alpha", authors: "A. Author, B. Author"), Book(itemId: "b-2", libraryId: "lib-1", title: "Beta", authors: "")];
+    expect found == [Book(itemId: "b-1", libraryId: "lib-1", title: "Alpha", authors: "A. Author, B. Author", series: []), Book(itemId: "b-2", libraryId: "lib-1", title: "Beta", authors: "", series: [])];
 }
 
 test absBatchRefusesAHostileIdWithoutCallingAbs {
@@ -242,4 +242,22 @@ test absBatchRefusesAHostileIdWithoutCallingAbs {
     }
 
     expect AbsCatalog.itemsAsService(["b-1", "../users"]) is Err(absclient.AbsError.NotFound);
+}
+
+// A listing filtered by series gives each book's series as one object, not a
+// list, so a listing doesn't read it: the page still parses.
+test aSeriesListingParsesWhateverShapeItsSeriesHas {
+    body = "{\"results\":[{\"id\":\"vc-1\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"Forging Hephaestus\",\"authorName\":\"Drew Hayes\",\"series\":{\"id\":\"vc\",\"name\":\"Villains' Code\",\"sequence\":\"1\"}}}}],\"total\":1,\"limit\":100,\"page\":0}";
+    expect bookPageOfListing(body.utf8()) is Ok(page);
+    expect page.books.first().title == "Forging Hephaestus";
+    expect page.books.first().series == None;
+}
+
+// The batch lookup gives series as a list, which is read; none is [].
+test aBatchReplyReadsEachBooksSeries {
+    body = "{\"libraryItems\":[{\"id\":\"vc-2.5\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"Villains' Vignettes Volume I\",\"authorName\":\"Drew Hayes\",\"series\":[{\"id\":\"vc\",\"name\":\"Villains' Code\",\"sequence\":\"2.5\"}]}}},{\"id\":\"alone\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"Warbreaker\",\"authorName\":\"Brandon Sanderson\",\"series\":[]}}}]}";
+    expect booksOfBatchReply(body.utf8()) is Ok(found);
+    expect found.at(0).series == [SeriesRef(id: "vc", name: "Villains' Code", sequence: "2.5")];
+    none: List<SeriesRef> = [];
+    expect found.at(1).series == none;
 }

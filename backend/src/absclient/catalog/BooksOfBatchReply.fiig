@@ -1,15 +1,46 @@
 use hearsay.absclient;
 
-// POST /api/items/batch/get's body as books. ABS leaves out ids it doesn't
-// have, so the list can be shorter than what was asked for.
+// POST /api/items/batch/get's body as books, each with the series it is in (a
+// list here; none is an empty one). ABS leaves out ids it doesn't have, so the
+// list can be shorter than what was asked for.
 conversion booksOfBatchReply(body: bytes) -> Result<List<Book>, absclient.AbsError> {
     found: AbsBatchReply = mapErr(e in json.decode(body)):
             absclient.AbsError.Unreadable(failure: e)?;
-    return Ok(map(item in found.libraryItems): bookOfListed(item));
+    return Ok(map(item in found.libraryItems): bookOfBatchItem(item));
 }
 
 private {
     model AbsBatchReply {
-        libraryItems: List<AbsListedItem>;
+        libraryItems: List<AbsBatchItem>;
+    }
+
+    model AbsBatchItem {
+        id: string;
+        libraryId: string;
+        media: AbsBatchMedia;
+    }
+
+    model AbsBatchMedia {
+        metadata: AbsBatchMetadata;
+    }
+
+    model AbsBatchMetadata {
+        title: string;
+        authorName: string | None;
+        asin: string | None;
+        isbn: string | None;
+        series: List<SeriesRef> | None;
+    }
+
+    bookOfBatchItem(item: AbsBatchItem) -> Book {
+        return Book(
+            itemId: item.id,
+            libraryId: item.libraryId,
+            title: item.media.metadata.title,
+            authors: item.media.metadata.authorName ?? "",
+            asin: item.media.metadata.asin,
+            isbn: item.media.metadata.isbn,
+            series: item.media.metadata.series ?? [],
+        );
     }
 }
