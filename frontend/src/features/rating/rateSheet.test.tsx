@@ -35,6 +35,7 @@ function itemAnswer(rating?: ReturnType<typeof mine>) {
       average: rating ? rating.score : 0,
       count: rating?.recommended ? 1 : 0,
       ratings: rating ? [rating] : [],
+      series: [{ id: "dcc", name: "Dungeon Crawler Carl", sequence: "4" }],
     }),
   );
 }
@@ -49,6 +50,11 @@ describe("the book page", () => {
       new RegExp(`/audiobookshelf/item/${encodeURIComponent(book.itemId)}$`),
     );
     expect(link).toHaveAttribute("target", "_blank");
+    // a book in a series links to it, with its number
+    expect(screen.getByRole("link", { name: "Book 4 of Dungeon Crawler Carl" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("series=dcc"),
+    );
   });
 });
 

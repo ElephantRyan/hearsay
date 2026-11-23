@@ -1,0 +1,4 @@
+// Deletes a person's rating of a series and says how many rows went.
+activity removeSeriesRating(userId: string, seriesId: string) -> int {
+    return deleteSeriesRating(userId, seriesId);
+}

@@ -1,5 +1,5 @@
-import { useParams } from "@tanstack/react-router";
-import { ExternalLink } from "lucide-react";
+import { Link, useParams } from "@tanstack/react-router";
+import { ExternalLink, Library } from "lucide-react";
 import { ApiError } from "../../api/errors";
 import { useAbsUrl, useItem, useMe } from "../../api/hooks";
 import { BookCover } from "../../components/domain/BookCover";
@@ -28,7 +28,7 @@ export function ItemPage() {
     return <ErrorState error={item.error} onRetry={() => item.refetch()} />;
   }
 
-  const { book, average, count, ratings } = item.data;
+  const { book, average, count, ratings, series } = item.data;
   const mine = ratings.find((row) => row.userId === me.data?.userId);
   const others = ratings.filter((row) => row.userId !== me.data?.userId);
   const listenUrl = absItemUrl(book.itemId, absUrl);
@@ -42,6 +42,20 @@ export function ItemPage() {
         <div className="min-w-0">
           <h1 className="break-words text-xl font-semibold leading-tight">{book.title}</h1>
           <p className="mt-1 text-muted">{book.authors}</p>
+          {series.map((inSeries) => (
+            <p key={inSeries.id} className="mt-1 text-sm">
+              <Link
+                to="/browse"
+                search={{ series: inSeries.id, seriesName: inSeries.name }}
+                className="inline-flex items-center gap-1 font-medium"
+              >
+                <Library aria-hidden="true" className="h-4 w-4" />
+                {inSeries.sequence
+                  ? `Book ${inSeries.sequence} of ${inSeries.name}`
+                  : inSeries.name}
+              </Link>
+            </p>
+          ))}
           <div className="mt-3">
             {count > 0 ? (
               <RatingBadge score={average} count={count} />

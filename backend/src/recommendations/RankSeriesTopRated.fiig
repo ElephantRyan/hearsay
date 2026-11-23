@@ -1,0 +1,31 @@
+use hearsay.ratings.rated.scores;
+use hearsay.series;
+
+// Recommended series for "Top 25 Rated": those with at least two scores, as
+// books need, by the average of those scores.
+rule rankSeriesTopRated(picks: List<series.SeriesRatingRow>) -> List<RecommendedBook> {
+    scored = filter(p in picks): p.recommended && p.score != None && p.firstItemId != None;
+    groups = groupBy(p in scored): p.seriesId;
+    entries: List<RecommendedBook> = [];
+    for (seriesId, group in groups) {
+        if (group.length() >= 2) {
+            first = group.at(0);
+            entries = append(
+                entries,
+                RecommendedBook(
+                    itemId: first.firstItemId ?? "",
+                    libraryId: first.libraryId,
+                    title: first.name,
+                    authors: first.authors,
+                    average: scores.averageOf(map(p in group): p.score),
+                    count: group.length(),
+                    latest: max(p in group): p.updatedAt,
+                    seriesId: seriesId,
+                    seriesBooks: first.books,
+                ),
+            );
+        }
+    }
+
+    return entries;
+}

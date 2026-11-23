@@ -1,0 +1,89 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.ratings;
+use hearsay.recommendations;
+use hearsay.series;
+use hearsay.sync;
+
+// A series is recommended as a whole: it ranks as one entry, a person's own
+// books in it fold into it, and a collection holds its book 1, not book 4.
+test aRecommendedSeriesStandsForItsBooks {
+    fake AbsCatalog {
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            if (seriesId == "gone") {
+                return Err(client.AbsError.NotFound);
+            }
+
+            return Ok(
+                catalog.CatalogSeries(
+                    seriesId: "dcc",
+                    libraryId: "lib-1",
+                    name: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    bookIds: ["dcc-1", "dcc-2", "dcc-3", "dcc-4"],
+                ),
+            );
+        }
+
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Title of ${itemId}",
+                    authors: "Matt Dinniman",
+                ),
+            );
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    bob = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    // Ann loves book 4 and the series; she also recommends a book outside it.
+    expect ratings.putRating(ann, "dcc-4", ratings.RatingInput(score: 10, note: None, recommended: true)) is Ok(_);
+    expect ratings.putRating(ann, "other", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_);
+    expect series.putSeriesRating(ann, "dcc", ratings.RatingInput(score: 9, note: "start at book 1", recommended: true, noteShared: true)) is Ok(saved);
+    expect saved.score == 9;
+    expect series.putSeriesRating(bob, "dcc", ratings.RatingInput(score: 7, note: None, recommended: true)) is Ok(_);
+    // a rating with nothing in it is refused before ABS is asked
+    expect series.putSeriesRating(bob, "gone", ratings.RatingInput(score: None, note: None, recommended: false)) is Err(series.SeriesError.Invalid("score", _));
+    expect series.putSeriesRating(bob, "gone", ratings.RatingInput(score: 5, note: None, recommended: false)) is Err(series.SeriesError.Missing);
+    expect series.showSeries(bob, "dcc") is Ok(detail);
+    expect detail.name == "Dungeon Crawler Carl";
+    expect detail.books == 4;
+    expect detail.firstItemId == "dcc-1";
+    expect detail.count == 2;
+    expect detail.average == 8.00;
+    // The ranked list: the series once, with two recommendations; Ann's book 4
+    // folded into it; her other book on its own.
+    ranked = recommendations.listRecommendations(bob, None, None, None);
+    ids = map(b in ranked): b.seriesId ?? b.itemId;
+    expect ids == ["dcc", "other"];
+    expect ranked.at(0).itemId == "dcc-1";
+    expect ranked.at(0).title == "Dungeon Crawler Carl";
+    expect ranked.at(0).seriesBooks == 4;
+    expect ranked.at(0).count == 2;
+    // Ann's list: her other book (book 4 folded away), and the series beside it.
+    annBooks = map(r in recommendations.listPicksOf(bob, "u1")): r.itemId;
+    expect annBooks == ["other"];
+    annSeries = series.listSeriesPicksOf(bob, "u1");
+    expect annSeries.length() == 1;
+    expect annSeries.at(0).note == "start at book 1";
+    people = recommendations.listRecommenderUsers(bob);
+    expect (filter(p in people): p.userId == "u1").first().count == 2;
+    expect (filter(p in people): p.userId == "u2").first().count == 1;
+    // Her collection holds book 1 for the series, never book 4.
+    plans = sync.loadAllSyncPlans();
+    annPlan = (filter(p in plans): p.userId == "u1").first();
+    expect annPlan.bookIds.contains("dcc-1");
+    expect annPlan.bookIds.contains("other");
+    expect !annPlan.bookIds.contains("dcc-4");
+    // Taking the series rating away gives her book 4 back on her list.
+    expect series.deleteMySeriesRating(ann, "dcc") is Ok(_);
+    expect series.deleteMySeriesRating(ann, "dcc") is Err(series.SeriesError.NoRating);
+    back = map(r in recommendations.listPicksOf(bob, "u1")): r.itemId;
+    expect back.contains("dcc-4");
+}

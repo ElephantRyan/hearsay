@@ -102,4 +102,63 @@ capability AbsCatalog {
         )?;
         return searchHitsOf(reply.body, size);
     }
+
+    // The series a book is in, with its number in each.
+    gateway itemSeriesAsService(itemId: string) -> Result<List<SeriesRef>, absclient.AbsError>
+            requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
+        itemIdSegment = absclient.absPathId(itemId)?;
+        reply = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(abs.url, "/api/items/${itemIdSegment}", abs.token.reveal()),
+            ),
+        )?;
+        return seriesRefsOfItemReply(reply.body);
+    }
+
+    // A series: its name and library (GET /api/series/{id}), and its books in
+    // series order (the library listing filtered to it), at most 100.
+    gateway seriesAsService(seriesId: string) -> Result<CatalogSeries, absclient.AbsError>
+            requires HttpClient {
+        abs = absclient.targetOf(Abs.url, AbsService.token)?;
+        seriesIdSegment = absclient.absPathId(seriesId)?;
+        found = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(abs.url, "/api/series/${seriesIdSegment}", abs.token.reveal()),
+            ),
+        )?;
+        series: AbsSeriesReply = mapErr(e in json.decode(found.body)):
+                absclient.AbsError.Unreadable(failure: e)?;
+        libraryIdSegment = absclient.absPathId(series.libraryId)?;
+        listed = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(
+                    abs.url,
+                    absListPath(
+                        libraryIdSegment,
+                        0,
+                        100,
+                        BookOrder.SeriesOrder,
+                        BookScope.Series(series.id),
+                    ),
+                    abs.token.reveal(),
+                ),
+            ),
+        )?;
+        page = bookPageOfListing(listed.body)?;
+        authors = match (page.books.firstOrNone()) {
+            None -> "",
+            first -> first.authors,
+        }
+
+        return Ok(
+            CatalogSeries(
+                seriesId: series.id,
+                libraryId: series.libraryId,
+                name: series.name,
+                authors: authors,
+                bookIds: map(b in page.books): b.itemId,
+            ),
+        );
+    }
 }

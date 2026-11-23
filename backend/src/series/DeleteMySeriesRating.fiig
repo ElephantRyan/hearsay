@@ -1,0 +1,11 @@
+use hearsay.accounts;
+
+// Removing a series rating you never made is "not found".
+workflow deleteMySeriesRating(me: accounts.Identity, seriesId: string) -> Result<int, SeriesError> {
+    removed = removeSeriesRating(me.userId, seriesId);
+    if (removed == 0) {
+        return Err(SeriesError.NoRating);
+    }
+
+    return Ok(removed);
+}

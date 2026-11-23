@@ -1,0 +1,9 @@
+use hearsay.absclient;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+
+// The series a book is in, as ABS has them now.
+gateway fetchItemSeries(itemId: string) -> Result<List<catalog.SeriesRef>, absclient.AbsFault>
+        requires AbsCatalog {
+    return mapErr(e in AbsCatalog.itemSeriesAsService(itemId)): absclient.faultOfAbs(e);
+}

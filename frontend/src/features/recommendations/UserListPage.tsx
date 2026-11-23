@@ -1,9 +1,10 @@
 import { useParams } from "@tanstack/react-router";
-import { useMissing, usePicks } from "../../api/hooks";
+import { useMissing, usePicks, useSeriesPicks } from "../../api/hooks";
 import type { MissingBook } from "../../api/types";
 import { BookCard } from "../../components/domain/BookCard";
 import { BookGrid } from "../../components/domain/BookGrid";
 import { RatingBadge } from "../../components/domain/RatingBadge";
+import { SeriesCard } from "../../components/domain/SeriesCard";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { listTitle } from "../../lib/format";
 import { RateButton } from "../rating/RateButton";
@@ -16,16 +17,45 @@ import { UpNextButton } from "../upnext/UpNextButton";
 export function UserListPage() {
   const { userId } = useParams({ from: "/app/recommendations/users/$userId" });
   const picks = usePicks(userId);
+  const series = useSeriesPicks(userId);
   const missing = useMissing(userId);
-  const name = picks.data?.[0]?.username;
+  const name = picks.data?.[0]?.username ?? series.data?.[0]?.username;
   const nothingMissing = (missing.data?.length ?? 0) === 0;
+  const noSeries = (series.data?.length ?? 0) === 0;
 
   return (
     <div className="space-y-5">
       <h1 className="text-xl font-semibold">{name ? listTitle(name) : "Recommendations"}</h1>
       {picks.isPending && <LoadingState />}
       {picks.isError && <ErrorState error={picks.error} onRetry={() => picks.refetch()} />}
-      {picks.data && picks.data.length === 0 && nothingMissing && (
+      {series.data && series.data.length > 0 && (
+        <section aria-labelledby="series-heading" className="space-y-3">
+          <h2 id="series-heading" className="text-base font-semibold">
+            Series
+          </h2>
+          <BookGrid label="Recommended series">
+            {series.data.map((pick) =>
+              pick.firstItemId ? (
+                <SeriesCard
+                  key={pick.seriesId}
+                  seriesId={pick.seriesId}
+                  name={pick.name}
+                  authors={pick.authors}
+                  books={pick.books}
+                  firstItemId={pick.firstItemId}
+                  meta={
+                    <div className="space-y-1">
+                      <RatingBadge score={pick.score} />
+                      {pick.note && <p className="line-clamp-3">{pick.note}</p>}
+                    </div>
+                  }
+                />
+              ) : null,
+            )}
+          </BookGrid>
+        </section>
+      )}
+      {picks.data && picks.data.length === 0 && nothingMissing && noSeries && (
         <EmptyState title="Nothing here">This person hasn't recommended any books.</EmptyState>
       )}
       {picks.data && picks.data.length > 0 && (

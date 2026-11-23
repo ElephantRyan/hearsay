@@ -1,5 +1,9 @@
 use hearsay.links;
+use hearsay.series.SeriesRatings;
 
+// Everyone with published recommendations, books and series counted together.
 activity listRecommenders() -> List<Recommender> {
-    return recommendersOf(links.everyRecommendation());
+    picks = SeriesRatings.recommended();
+    folded = collapseSeries(links.everyRecommendation(), picks, SeriesRatings.books());
+    return recommendersOf(folded, picks);
 }

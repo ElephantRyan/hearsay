@@ -1,0 +1,20 @@
+// A series rating with who made it and the series it is about, as the
+// series_rating_row view returns it: the series' name, author line, how many
+// books, and book 1 (whose cover stands for it). A note read for anyone but its
+// writer is blank unless noteShared (SeriesRatings).
+model SeriesRatingRow {
+    userId: string;
+    username: string;
+    seriesId: string;
+    libraryId: string;
+    name: string;
+    authors: string;
+    books: int;
+    firstItemId: string | None;
+    score: int | None;
+    note: string;
+    recommended: bool;
+    createdAt: int;
+    updatedAt: int;
+    noteShared: bool;
+}

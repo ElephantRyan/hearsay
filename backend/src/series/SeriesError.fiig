@@ -1,0 +1,7 @@
+// Every way showing or rating a series can be refused.
+enum SeriesError {
+    Missing,
+    Unavailable(detail: string),
+    Invalid(field: string, reason: string),
+    NoRating,
+}

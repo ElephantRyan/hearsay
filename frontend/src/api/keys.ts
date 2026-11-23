@@ -10,6 +10,10 @@ export const keys = {
   allPicks: ["picks"] as const,
   missing: (userId: string) => ["missing", userId] as const,
   item: (itemId: string) => ["item", itemId] as const,
+  series: (seriesId: string) => ["series", seriesId] as const,
+  allSeries: ["series"] as const,
+  seriesPicks: (userId: string) => ["seriesPicks", userId] as const,
+  allSeriesPicks: ["seriesPicks"] as const,
   libraries: ["libraries"] as const,
   browse: (libraryId: string, q: string, sort: string, scope: string) =>
     ["browse", libraryId, q, sort, scope] as const,

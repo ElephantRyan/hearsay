@@ -1,0 +1,11 @@
+use hearsay.ratings;
+
+// A rating refused by the book rules, as a series error.
+conversion seriesErrorOfRating(error: ratings.RatingError) -> SeriesError {
+    return match (error) {
+        ratings.RatingError.Invalid(field, reason) -> SeriesError.Invalid(field, reason),
+        ratings.RatingError.Book(cause) -> SeriesError.Missing,
+        ratings.RatingError.NoRating -> SeriesError.NoRating,
+        ratings.RatingError.Unavailable(detail) -> SeriesError.Unavailable(detail),
+    }
+}

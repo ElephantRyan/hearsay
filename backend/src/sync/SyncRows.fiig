@@ -1,0 +1,17 @@
+use hearsay.links;
+use hearsay.ratings.rated;
+use hearsay.recommendations;
+use hearsay.series.SeriesRatings;
+
+// What each person's collection is made from: their recommended books, with the
+// books of a series they recommend folded into it, and each such series as its
+// book 1.
+activity syncRows() -> List<rated.RatingRow> {
+    picks = SeriesRatings.recommended();
+    folded = recommendations.collapseSeries(
+        links.everyRecommendation(),
+        picks,
+        SeriesRatings.books(),
+    );
+    return folded.concat(seriesRows(picks));
+}

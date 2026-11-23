@@ -1,6 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { useRateItem, useRemoveRating } from "../../api/hooks";
+import {
+  useRateItem,
+  useRateSeries,
+  useRemoveRating,
+  useRemoveSeriesRating,
+} from "../../api/hooks";
 import { NoteField } from "../../components/domain/NoteField";
 import { RecommendToggle } from "../../components/domain/RecommendToggle";
 import { ScoreSlider } from "../../components/domain/ScoreSlider";
@@ -9,7 +14,10 @@ import { Button } from "../../components/ui/Button";
 import { hasSomething, type RatingForm, ratingSchema } from "../../lib/ratings";
 
 interface Props {
+  /** The book's id, or the series' when `series` is set. */
   itemId: string;
+  /** Rate a series as a whole rather than a book. */
+  series?: boolean;
   /** The viewer's existing rating, if any; the form edits it. A recommendation may have no score. */
   existing?:
     | { score?: number | null; note: string; recommended: boolean; noteShared: boolean }
@@ -18,9 +26,14 @@ interface Props {
 }
 
 /** Rate, change or remove my rating of one book. */
-export function RatingFormPanel({ itemId, existing, onDone }: Props) {
-  const rate = useRateItem();
-  const remove = useRemoveRating();
+export function RatingFormPanel({ itemId, series = false, existing, onDone }: Props) {
+  // Both are always made (hooks can't be chosen at run time); the one for what's rated is used.
+  const rateBook = useRateItem();
+  const rateSeries = useRateSeries();
+  const removeBook = useRemoveRating();
+  const removeSeries = useRemoveSeriesRating();
+  const rate = series ? rateSeries : rateBook;
+  const remove = series ? removeSeries : removeBook;
   const {
     control,
     register,
@@ -98,7 +111,13 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
       <Controller
         control={control}
         name="recommended"
-        render={({ field }) => <RecommendToggle checked={field.value} onChange={field.onChange} />}
+        render={({ field }) => (
+          <RecommendToggle
+            checked={field.value}
+            onChange={field.onChange}
+            what={series ? "series" : "book"}
+          />
+        )}
       />
 
       {(rate.isError || remove.isError) && (

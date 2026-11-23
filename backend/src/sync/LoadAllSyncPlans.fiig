@@ -1,17 +1,29 @@
 use hearsay.links;
 use hearsay.recommendations;
+use hearsay.series.SeriesRatings;
 use hearsay.settings;
 
 // What a full sync would do, for everyone, linked servers' people included
 // (LINKED.md section 6), and the server-wide top collections first: the
-// scheduled run's plan. Reads our tables and touches nothing.
+// scheduled run's plan. A recommended series counts as one entry, its book 1.
+// Reads our tables and touches nothing.
 activity loadAllSyncPlans() -> List<SyncPlan> {
-    rows = links.everyRecommendation();
+    rows = syncRows();
     states = allSyncStates();
     people = planSync(rows, states, everyoneToSync(rows, states));
+    picks = SeriesRatings.recommended();
+    folded = recommendations.collapseSeries(
+        links.everyRecommendation(),
+        picks,
+        SeriesRatings.books(),
+    );
     top = planTopSync(
-        recommendations.rankRecommendations(rows),
-        recommendations.rankTopRated(rows),
+        recommendations.sortRanked(
+            recommendations.rankRecommendations(folded).concat(recommendations.rankSeries(picks)),
+        ),
+        recommendations.sortTopRated(
+            recommendations.rankTopRated(folded).concat(recommendations.rankSeriesTopRated(picks)),
+        ),
         states,
         settings.topCollections(),
     );

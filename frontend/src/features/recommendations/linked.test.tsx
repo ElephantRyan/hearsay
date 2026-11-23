@@ -30,7 +30,7 @@ describe("linked servers' recommendations", () => {
     server.use(
       signedIn,
       http.get("/api/items/:itemId", () =>
-        HttpResponse.json({ book, average: 6, count: 1, ratings: [fromAlex] }),
+        HttpResponse.json({ book, average: 6, count: 1, ratings: [fromAlex], series: [] }),
       ),
     );
     mount(`/items/${book.itemId}`);

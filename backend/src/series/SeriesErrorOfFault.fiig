@@ -1,0 +1,12 @@
+use hearsay.absclient as client;
+
+// Here a 404 from ABS means the series.
+conversion seriesErrorOfFault(fault: client.AbsFault) -> SeriesError {
+    return match (fault) {
+        client.AbsFault.Missing -> SeriesError.Missing,
+        client.AbsFault.Denied -> SeriesError.Unavailable(
+            "this server's Audiobookshelf token was refused; tell the server's admin",
+        ),
+        client.AbsFault.Down(detail) -> SeriesError.Unavailable(detail),
+    }
+}

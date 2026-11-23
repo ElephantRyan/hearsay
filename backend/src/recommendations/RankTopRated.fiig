@@ -22,6 +22,8 @@ rule rankTopRated(rows: List<rated.RatingRow>) -> List<RecommendedBook> {
                     average: scores.average(group),
                     count: group.length(),
                     latest: max(r in group): r.updatedAt,
+                    seriesId: None,
+                    seriesBooks: 0,
                 ),
             );
         }

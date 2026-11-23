@@ -1,6 +1,14 @@
 use hearsay.ratings.rated;
 use hearsay.links;
+use hearsay.series.SeriesRatings;
 
+// Someone else's list of books, best first, with their books in a series they
+// recommend folded into it (the series is listed separately).
 activity picksOf(userId: string) -> List<rated.RatingRow> {
-    return bestFirst(links.everyRecommendation(), userId);
+    folded = collapseSeries(
+        links.everyRecommendation(),
+        SeriesRatings.recommended(),
+        SeriesRatings.books(),
+    );
+    return bestFirst(folded, userId);
 }

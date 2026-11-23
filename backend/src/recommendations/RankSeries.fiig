@@ -1,0 +1,30 @@
+use hearsay.ratings.rated.scores;
+use hearsay.series;
+
+// Recommended series as entries of the ranked list: how many recommend each, the
+// average of the series' own scores, and the latest. A series with no cached
+// books has no cover to show and is left out.
+rule rankSeries(picks: List<series.SeriesRatingRow>) -> List<RecommendedBook> {
+    withBooks = filter(p in picks): p.recommended && p.firstItemId != None;
+    groups = groupBy(p in withBooks): p.seriesId;
+    entries: List<RecommendedBook> = [];
+    for (seriesId, group in groups) {
+        first = group.at(0);
+        entries = append(
+            entries,
+            RecommendedBook(
+                itemId: first.firstItemId ?? "",
+                libraryId: first.libraryId,
+                title: first.name,
+                authors: first.authors,
+                average: scores.averageOf(map(p in group): p.score),
+                count: group.length(),
+                latest: max(p in group): p.updatedAt,
+                seriesId: seriesId,
+                seriesBooks: first.books,
+            ),
+        );
+    }
+
+    return entries;
+}

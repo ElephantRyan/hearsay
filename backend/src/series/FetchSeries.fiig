@@ -1,0 +1,9 @@
+use hearsay.absclient;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+
+// A series as ABS has it now, with its books in order.
+gateway fetchSeries(seriesId: string) -> Result<catalog.CatalogSeries, absclient.AbsFault>
+        requires AbsCatalog {
+    return mapErr(e in AbsCatalog.seriesAsService(seriesId)): absclient.faultOfAbs(e);
+}

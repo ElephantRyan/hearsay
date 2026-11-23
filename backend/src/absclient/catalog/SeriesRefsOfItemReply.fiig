@@ -1,0 +1,23 @@
+use hearsay.absclient;
+
+// The series a book is in, from GET /api/items/{id}'s body. A book in no
+// series has none.
+conversion seriesRefsOfItemReply(body: bytes) -> Result<List<SeriesRef>, absclient.AbsError> {
+    item: AbsItemSeries = mapErr(e in json.decode(body)):
+            absclient.AbsError.Unreadable(failure: e)?;
+    return Ok(item.media.metadata.series ?? []);
+}
+
+private {
+    model AbsItemSeries {
+        media: AbsSeriesMedia;
+    }
+
+    model AbsSeriesMedia {
+        metadata: AbsSeriesMetadata;
+    }
+
+    model AbsSeriesMetadata {
+        series: List<SeriesRef> | None;
+    }
+}

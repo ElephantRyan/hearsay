@@ -1,20 +1,44 @@
 use hearsay.ratings.rated;
+use hearsay.series;
 
-// Who has published recommendations, and how many each, most first.
-rule recommendersOf(rows: List<rated.RatingRow>) -> List<Recommender> {
+// Who has published recommendations, and how many each (books and series),
+// most first.
+rule recommendersOf(rows: List<rated.RatingRow>, picks: List<series.SeriesRatingRow>)
+        -> List<Recommender> {
     recommended = filter(r in rows): r.recommended;
     groups = groupBy(r in recommended): r.userId;
+    seriesGroups = groupBy(p in filter(p in picks): p.recommended): p.userId;
     people: List<Recommender> = [];
     for (userId, group in groups) {
+        seriesCount = match (seriesGroups.atOrNone(userId)) {
+            None -> 0,
+            theirs -> theirs.length(),
+        }
+
         people = append(
             people,
             Recommender(
                 userId: userId,
                 username: group.at(0).username,
-                count: group.length(),
+                count: group.length() + seriesCount,
                 via: group.at(0).via,
             ),
         );
+    }
+
+    // Someone who recommends only series.
+    for (userId, group in seriesGroups) {
+        if (!groups.containsKey(userId)) {
+            people = append(
+                people,
+                Recommender(
+                    userId: userId,
+                    username: group.at(0).username,
+                    count: group.length(),
+                    via: None,
+                ),
+            );
+        }
     }
 
     return sorted(person in people): person.count descending then person.username;

@@ -27,4 +27,30 @@ formulas scores {
             rounding: Rounding.HalfUp,
         );
     }
+
+    // The average of the scores given, to two places, or None when none was.
+    formula averageOf(given: List<int | None>) -> decimal | None {
+        scored: List<int> = [];
+        for (score in given) {
+            match (score) {
+                None -> {
+                },
+
+                value -> {
+                    scored = append(scored, value);
+                },
+            }
+        }
+
+        if (scored.length() == 0) {
+            return None;
+        }
+
+        return math.divide(
+            math.toDecimal(sum(s in scored): s),
+            math.toDecimal(scored.length()),
+            places: 2,
+            rounding: Rounding.HalfUp,
+        );
+    }
 }

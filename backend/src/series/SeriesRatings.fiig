@@ -1,0 +1,39 @@
+// What has been said about series, read from series_rating_row and series_book.
+// Other domains read them only through this group (ADR 0079 6a), and a test can
+// fake it.
+capability SeriesRatings {
+    // Every recommended series rating, for rankings, lists and collections.
+    // Private ratings never leave here, and a note only when shared.
+    gateway recommended() -> List<SeriesRatingRow> requires Database idempotent {
+        return Database.queryMany(
+            "SELECT user_id, username, series_id, library_id, name, authors, books, first_item_id, score, CASE WHEN note_shared = 1 THEN note ELSE '' END AS note, recommended, created_at, updated_at, note_shared FROM series_rating_row WHERE recommended = 1",
+        );
+    }
+
+    // All of one person's series ratings; the caller asks only for the viewer's own.
+    gateway byUser(userId: string) -> List<SeriesRatingRow> requires Database idempotent {
+        return Database.queryMany(
+            "SELECT * FROM series_rating_row WHERE user_id = ? ORDER BY updated_at DESC",
+            userId,
+        );
+    }
+
+    // What a viewer may see of one series: everyone's recommendations, anyone's
+    // shared note (the note alone: its score stays theirs), and their own.
+    gateway visibleFor(seriesId: string, viewerId: string) -> List<SeriesRatingRow>
+            requires Database
+            idempotent {
+        return Database.queryMany(
+            "SELECT user_id, username, series_id, library_id, name, authors, books, first_item_id, CASE WHEN recommended = 1 OR user_id = ? THEN score ELSE NULL END AS score, CASE WHEN note_shared = 1 OR user_id = ? THEN note ELSE '' END AS note, recommended, created_at, updated_at, note_shared FROM series_rating_row WHERE series_id = ? AND (recommended = 1 OR user_id = ? OR (note_shared = 1 AND note <> '')) ORDER BY updated_at DESC",
+            viewerId,
+            viewerId,
+            seriesId,
+            viewerId,
+        );
+    }
+
+    // Which books are in which cached series, to fold a series' books into it.
+    gateway books() -> List<SeriesBook> requires Database idempotent {
+        return Database.queryMany("SELECT series_id, item_id, position FROM series_book");
+    }
+}

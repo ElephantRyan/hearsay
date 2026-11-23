@@ -1,5 +1,7 @@
 // A book's standing across everyone who recommended it: how many did, and the
-// average of the scores they gave (None when nobody gave one).
+// average of the scores they gave (None when nobody gave one). A recommended
+// series is one too: seriesId is set, itemId is its book 1 (whose cover stands
+// for it), title the series' name, and seriesBooks how many books it has.
 model RecommendedBook {
     itemId: string;
     libraryId: string;
@@ -8,4 +10,6 @@ model RecommendedBook {
     average: decimal | None;
     count: int;
     latest: int;
+    seriesId: string | None;
+    seriesBooks: int;
 }

@@ -1,0 +1,19 @@
+use hearsay.absclient.catalog;
+use hearsay.ratings.rated.scores;
+
+// One series with the ratings the viewer may see.
+activity loadSeriesDetail(viewerId: string, series: catalog.CatalogSeries) -> SeriesDetail {
+    rows = SeriesRatings.visibleFor(series.seriesId, viewerId);
+    recommended = filter(r in rows): r.recommended;
+    return SeriesDetail(
+        seriesId: series.seriesId,
+        libraryId: series.libraryId,
+        name: series.name,
+        authors: series.authors,
+        books: series.bookIds.length(),
+        firstItemId: series.bookIds.firstOrNone(),
+        average: scores.averageOf(map(r in recommended): r.score),
+        count: recommended.length(),
+        ratings: rows,
+    );
+}

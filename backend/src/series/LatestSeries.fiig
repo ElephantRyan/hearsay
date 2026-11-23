@@ -1,0 +1,6 @@
+use hearsay.absclient.catalog;
+
+// What ABS says about a series right now.
+activity latestSeries(seriesId: string) -> Result<catalog.CatalogSeries, SeriesError> {
+    return mapErr(e in fetchSeries(seriesId)): seriesErrorOfFault(e);
+}

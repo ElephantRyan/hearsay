@@ -7,6 +7,7 @@ use hearsay.listening;
 use hearsay.ratings;
 use hearsay.ratings.rated;
 use hearsay.recommendations;
+use hearsay.series;
 use hearsay.sessions;
 use hearsay.setup;
 use hearsay.signin;
@@ -26,6 +27,7 @@ application Hearsay {
         rated.ratedApi;
         library.libraryApi;
         recommendations.recommendationsApi;
+        series.seriesApi;
         sync.syncApi;
         listening.listeningApi;
         upnext.upNextApi;

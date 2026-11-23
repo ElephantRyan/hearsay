@@ -16,6 +16,7 @@ import {
 import { Button } from "../../components/ui/Button";
 import { useDebounced } from "../../lib/useDebounced";
 import { RateButton } from "../rating/RateButton";
+import { SeriesPanel } from "../series/SeriesPanel";
 import { UpNextButton } from "../upnext/UpNextButton";
 
 const sorts: { value: BrowseSort; label: string }[] = [
@@ -189,6 +190,8 @@ export function BrowsePage() {
           </button>
         </div>
       )}
+
+      {search.series && <SeriesPanel seriesId={search.series} />}
 
       {results.data && (
         <section aria-label="Results" aria-busy={results.isPlaceholderData}>

@@ -1,0 +1,14 @@
+// One series with the ratings the viewer may see: everyone's recommendations,
+// anyone's shared note, and the viewer's own. average is over the recommended
+// ratings that have a score, None when none do.
+model SeriesDetail {
+    seriesId: string;
+    libraryId: string;
+    name: string;
+    authors: string;
+    books: int;
+    firstItemId: string | None;
+    average: decimal | None;
+    count: int;
+    ratings: List<SeriesRatingRow>;
+}

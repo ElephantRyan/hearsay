@@ -3,10 +3,13 @@ use hearsay.ratings.rated;
 
 // One book with the ratings the viewer may see: everyone's recommended ones,
 // linked servers' included, and the viewer's own, private or not. average is
-// over the recommended ratings that have a score, None when none do.
+// over the recommended ratings that have a score, None when none do. series
+// is what ABS says the book belongs to, with its number in each (none when ABS
+// can't be asked just then).
 model ItemDetail {
     book: catalog.Book;
     average: decimal | None;
     count: int;
     ratings: List<rated.RatingRow>;
+    series: List<catalog.SeriesRef>;
 }

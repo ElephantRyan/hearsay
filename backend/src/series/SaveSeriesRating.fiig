@@ -1,0 +1,15 @@
+// Creates or updates a person's rating of a series. An update keeps the
+// original created_at.
+gateway saveSeriesRating(rating: SeriesRating) -> int requires Database {
+    return Database.execute(
+        "INSERT INTO series_rating (user_id, series_id, score, note, note_shared, recommended, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, series_id) DO UPDATE SET score = excluded.score, note = excluded.note, note_shared = excluded.note_shared, recommended = excluded.recommended, updated_at = excluded.updated_at",
+        rating.userId,
+        rating.seriesId,
+        rating.score,
+        rating.note,
+        rating.noteShared,
+        rating.recommended,
+        rating.createdAt,
+        rating.updatedAt,
+    );
+}

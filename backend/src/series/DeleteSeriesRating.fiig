@@ -1,0 +1,7 @@
+gateway deleteSeriesRating(userId: string, seriesId: string) -> int requires Database {
+    return Database.execute(
+        "DELETE FROM series_rating WHERE user_id = ? AND series_id = ?",
+        userId,
+        seriesId,
+    );
+}

@@ -8,10 +8,17 @@ use hearsay.links;
 
 activity loadItemDetail(userId: string, book: catalog.Book) -> ItemDetail {
     rows = links.ratingsOfBook(book.itemId, userId);
+    // Which series it's in is a nicety: the page shows without it if ABS can't say.
+    series: List<catalog.SeriesRef> = match (fetchItemSeries(book.itemId)) {
+        Ok(refs) -> refs,
+        Err(_) -> [],
+    }
+
     return ItemDetail(
         book: book,
         average: scores.average(filter(r in rows): r.recommended),
         count: count(r in rows): r.recommended,
         ratings: rows,
+        series: series,
     );
 }

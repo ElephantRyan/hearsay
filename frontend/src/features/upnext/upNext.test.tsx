@@ -58,7 +58,7 @@ function serveList(start: UpNextBook[]) {
       return HttpResponse.json({});
     }),
     http.get("/api/items/:itemId", () =>
-      HttpResponse.json({ book, average: null, count: 0, ratings: [] }),
+      HttpResponse.json({ book, average: null, count: 0, ratings: [], series: [] }),
     ),
   );
   return sent;

@@ -1,6 +1,5 @@
 use hearsay.absclient as client;
 use hearsay.accounts;
-use hearsay.links;
 
 // What sync would do for whoever the caller may sync, linked servers' people
 // included: reads tables and plans, and touches nothing. An admin's sync of
@@ -12,7 +11,7 @@ activity loadSyncPlans(me: accounts.Identity, userId: string | None)
         return Ok(loadAllSyncPlans());
     }
 
-    rows = links.everyRecommendation();
+    rows = syncRows();
     states = allSyncStates();
     targets = syncTargets(me, admin, userId, everyoneToSync(rows, states))?;
     return Ok(planSync(rows, states, targets));

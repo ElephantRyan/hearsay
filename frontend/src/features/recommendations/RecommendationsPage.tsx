@@ -4,6 +4,7 @@ import { useRecommendations, useRecommenders } from "../../api/hooks";
 import { BookCard } from "../../components/domain/BookCard";
 import { BookGrid } from "../../components/domain/BookGrid";
 import { RatingBadge } from "../../components/domain/RatingBadge";
+import { SeriesCard } from "../../components/domain/SeriesCard";
 import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
 import { RateButton } from "../rating/RateButton";
@@ -91,26 +92,43 @@ export function RecommendationsPage() {
       )}
       {list.data && list.data.length > 0 && (
         <BookGrid ordered label="Recommended books, best first">
-          {list.data.map((book, index) => (
-            <BookCard
-              key={book.itemId}
-              itemId={book.itemId}
-              title={book.title}
-              authors={book.authors}
-              badge={
-                <span className="rounded-full bg-black/70 px-2 py-0.5 text-xs font-semibold text-white tabular-nums">
-                  {index + 1}
-                </span>
-              }
-              action={
-                <>
-                  <UpNextButton itemId={book.itemId} title={book.title} />
-                  <RateButton itemId={book.itemId} title={book.title} />
-                </>
-              }
-              meta={<RatingBadge score={book.average} count={book.count} />}
-            />
-          ))}
+          {list.data.map((book, index) =>
+            book.seriesId ? (
+              <SeriesCard
+                key={`series-${book.seriesId}`}
+                seriesId={book.seriesId}
+                name={book.title}
+                authors={book.authors}
+                books={book.seriesBooks}
+                firstItemId={book.itemId}
+                badge={
+                  <span className="rounded-full bg-black/70 px-2 py-0.5 text-xs font-semibold text-white tabular-nums">
+                    {index + 1}
+                  </span>
+                }
+                meta={<RatingBadge score={book.average} count={book.count} />}
+              />
+            ) : (
+              <BookCard
+                key={book.itemId}
+                itemId={book.itemId}
+                title={book.title}
+                authors={book.authors}
+                badge={
+                  <span className="rounded-full bg-black/70 px-2 py-0.5 text-xs font-semibold text-white tabular-nums">
+                    {index + 1}
+                  </span>
+                }
+                action={
+                  <>
+                    <UpNextButton itemId={book.itemId} title={book.title} />
+                    <RateButton itemId={book.itemId} title={book.title} />
+                  </>
+                }
+                meta={<RatingBadge score={book.average} count={book.count} />}
+              />
+            ),
+          )}
         </BookGrid>
       )}
     </div>

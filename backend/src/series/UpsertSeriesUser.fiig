@@ -1,0 +1,11 @@
+// Remembers a person's username as ABS has it, as rating a book does; a display
+// name they chose is never overwritten.
+gateway upsertSeriesUser(userId: string, username: string, now: int) -> int requires Database {
+    return Database.execute(
+        "INSERT INTO app_user (user_id, username, display_name, last_seen_at) VALUES (?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET username = excluded.username, last_seen_at = excluded.last_seen_at",
+        userId,
+        username,
+        username,
+        now,
+    );
+}

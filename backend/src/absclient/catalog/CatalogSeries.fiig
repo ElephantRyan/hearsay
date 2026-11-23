@@ -1,0 +1,9 @@
+// A series as a library has it: its name, the first book's author line, and its
+// books in series order (bookIds), the first being book 1.
+model CatalogSeries {
+    seriesId: string;
+    libraryId: string;
+    name: string;
+    authors: string;
+    bookIds: List<string>;
+}

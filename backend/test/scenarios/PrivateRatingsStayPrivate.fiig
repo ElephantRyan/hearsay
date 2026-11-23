@@ -14,6 +14,11 @@ test privateRatingsStayPrivate {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
         gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(

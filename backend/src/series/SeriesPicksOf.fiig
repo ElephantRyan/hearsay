@@ -1,0 +1,11 @@
+// One person's recommended series, best first (unscored after scored). Read
+// from their own ratings when they are the viewer, so every note shows.
+activity seriesPicksOf(userId: string, own: bool) -> List<SeriesRatingRow> {
+    rows: List<SeriesRatingRow> = SeriesRatings.recommended();
+    if (own) {
+        rows = SeriesRatings.byUser(userId);
+    }
+
+    theirs = filter(r in rows): r.userId == userId && r.recommended;
+    return sorted(r in theirs): (r.score ?? 0) descending then r.updatedAt descending;
+}

@@ -1,0 +1,7 @@
+use hearsay.accounts;
+
+// The series one person recommends, best first. Their own, they see with every
+// note; someone else's, with only the notes shared.
+workflow listSeriesPicksOf(me: accounts.Identity, userId: string) -> List<SeriesRatingRow> {
+    return seriesPicksOf(userId, userId == me.userId);
+}

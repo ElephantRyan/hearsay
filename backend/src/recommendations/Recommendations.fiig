@@ -1,7 +1,13 @@
 use hearsay.links;
+use hearsay.series.SeriesRatings;
 
+// The ranked list: books and recommended series together, each person's books in
+// a series they recommend folded into it.
 activity recommendations(userId: string | None, libraryId: string | None, minScore: int | None)
         -> List<RecommendedBook> {
     rows = filterRows(links.everyRecommendation(), userId, libraryId);
-    return atLeast(rankRecommendations(rows), minScore);
+    allPicks = SeriesRatings.recommended();
+    picks = filter(p in allPicks): (userId == None || p.userId == userId) && (libraryId == None || p.libraryId == libraryId);
+    folded = collapseSeries(rows, allPicks, SeriesRatings.books());
+    return atLeast(sortRanked(rankRecommendations(folded).concat(rankSeries(picks))), minScore);
 }

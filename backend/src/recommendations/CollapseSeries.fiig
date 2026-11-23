@@ -1,0 +1,24 @@
+use hearsay.ratings.rated;
+use hearsay.series;
+
+// A person who recommends a series has their own ratings of its books folded
+// into it: those books leave their list, the series stands for them. Everyone
+// else's ratings of the same books stay.
+rule collapseSeries(
+    rows: List<rated.RatingRow>,
+    picks: List<series.SeriesRatingRow>,
+    books: List<series.SeriesBook>)
+        -> List<rated.RatingRow> {
+    folded: List<string> = [];
+    for (pick in picks) {
+        if (pick.recommended) {
+            for (book in books) {
+                if (book.seriesId == pick.seriesId) {
+                    folded = append(folded, "${pick.userId}|${book.itemId}");
+                }
+            }
+        }
+    }
+
+    return filter(r in rows): !folded.contains("${r.userId}|${r.itemId}");
+}

@@ -1,0 +1,8 @@
+use hearsay.accounts;
+
+// GET /series/{seriesId}: the series as ABS has it now, with the ratings the
+// viewer may see.
+workflow showSeries(me: accounts.Identity, seriesId: string) -> Result<SeriesDetail, SeriesError> {
+    series = latestSeries(seriesId)?;
+    return Ok(loadSeriesDetail(me.userId, series));
+}

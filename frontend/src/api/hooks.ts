@@ -178,6 +178,8 @@ async function refreshAfterRatingChange(
     queryClient.invalidateQueries({ queryKey: keys.item(itemId) }),
     queryClient.invalidateQueries({ queryKey: keys.allPicks }),
     queryClient.invalidateQueries({ queryKey: keys.listening }),
+    queryClient.invalidateQueries({ queryKey: keys.allSeries }),
+    queryClient.invalidateQueries({ queryKey: keys.allSeriesPicks }),
   ]);
 }
 
@@ -511,5 +513,58 @@ export function useReorderUpNext() {
     },
     onError: (_error, _books, context) => queryClient.setQueryData(keys.upNext, context?.before),
     onSuccess: (books) => queryClient.setQueryData(keys.upNext, books),
+  });
+}
+
+/** One series with its books' count and book 1, and the ratings of it I may see. */
+export const useSeries = (seriesId: string | undefined) =>
+  useQuery({
+    queryKey: keys.series(seriesId ?? ""),
+    enabled: seriesId !== undefined,
+    queryFn: async () =>
+      unwrap(
+        await api.GET("/series/{seriesId}", {
+          params: { path: { seriesId: seriesId as string } },
+        }),
+      ),
+  });
+
+/** The series one person recommends, best first. */
+export const useSeriesPicks = (userId: string) =>
+  useQuery({
+    queryKey: keys.seriesPicks(userId),
+    queryFn: async () =>
+      unwrap(
+        await api.GET("/recommendations/users/{userId}/series", { params: { path: { userId } } }),
+      ),
+  });
+
+/** Rate or recommend a series; everything that ranks or lists series is refetched after. */
+export function useRateSeries() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (draft: RatingDraft) =>
+      unwrap(
+        await api.PUT("/series-ratings/{seriesId}", {
+          params: { path: { seriesId: draft.itemId } },
+          body: {
+            score: draft.score,
+            note: draft.note,
+            recommended: draft.recommended,
+            noteShared: draft.noteShared,
+          },
+        }),
+      ),
+    onSettled: (_data, _error, draft) => refreshAfterRatingChange(queryClient, draft.itemId),
+  });
+}
+
+/** Remove my rating of a series. */
+export function useRemoveSeriesRating() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (seriesId: string) =>
+      unwrap(await api.DELETE("/series-ratings/{seriesId}", { params: { path: { seriesId } } })),
+    onSettled: (_data, _error, seriesId) => refreshAfterRatingChange(queryClient, seriesId),
   });
 }

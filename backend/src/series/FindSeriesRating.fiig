@@ -1,0 +1,9 @@
+gateway findSeriesRating(userId: string, seriesId: string) -> SeriesRating | None
+        requires Database
+        idempotent {
+    return Database.queryOne(
+        "SELECT user_id, series_id, score, note, note_shared, recommended, created_at, updated_at FROM series_rating WHERE user_id = ? AND series_id = ?",
+        userId,
+        seriesId,
+    );
+}

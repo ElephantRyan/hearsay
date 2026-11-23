@@ -39,6 +39,6 @@ test filtersAndMinScore {
     expect atLeast(ranked, None).length() == 2;
     expect atLeast(ranked, 7).length() == 1;
     expect atLeast(ranked, 7).at(0).itemId == "a";
-    expect recommendersOf(rows).length() == 2;
+    expect recommendersOf(rows, []).length() == 2;
     expect bestFirst(rows, "u2").at(0).itemId == "b";
 }

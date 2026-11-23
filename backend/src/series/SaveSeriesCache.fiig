@@ -1,0 +1,27 @@
+use hearsay.absclient.catalog;
+
+// Caches a series as ABS has it now: its name and author line, and its books in
+// series order, replacing what was cached before. Says how many books.
+gateway saveSeriesCache(series: catalog.CatalogSeries, now: int) -> int requires Database {
+    Database.execute(
+        "INSERT INTO series (series_id, library_id, name, authors, fetched_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (series_id) DO UPDATE SET library_id = excluded.library_id, name = excluded.name, authors = excluded.authors, fetched_at = excluded.fetched_at",
+        series.seriesId,
+        series.libraryId,
+        series.name,
+        series.authors,
+        now,
+    );
+    Database.execute("DELETE FROM series_book WHERE series_id = ?", series.seriesId);
+    position: int = 0;
+    for (itemId in series.bookIds) {
+        Database.execute(
+            "INSERT INTO series_book (series_id, item_id, position) VALUES (?, ?, ?) ON CONFLICT (series_id, item_id) DO NOTHING",
+            series.seriesId,
+            itemId,
+            position,
+        );
+        position = position + 1;
+    }
+
+    return position;
+}

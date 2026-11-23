@@ -1,0 +1,15 @@
+// The status and message a client sees for each way a series can be refused.
+conversion seriesErrorResponse(error: SeriesError) -> HttpResponse<string> {
+    return match (error) {
+        SeriesError.Missing -> HttpResponse(
+            status: 404,
+            body: "no series with that id in Audiobookshelf",
+        ),
+        SeriesError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
+        SeriesError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}"),
+        SeriesError.NoRating -> HttpResponse(
+            status: 404,
+            body: "no rating of yours for that series",
+        ),
+    }
+}

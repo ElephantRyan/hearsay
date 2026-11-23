@@ -10,6 +10,11 @@ use hearsay.recommendations;
 // shares it. The writer always sees their own note.
 test aNoteStaysPrivateUntilShared {
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
         gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(
@@ -44,6 +49,11 @@ test aNoteStaysPrivateUntilShared {
 // A rating can be only a note: saved, the writer's own, and in no list.
 test aNoteAloneIsSavedAndStaysOutOfEveryList {
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
         gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(
@@ -73,6 +83,11 @@ test aNoteAloneIsSavedAndStaysOutOfEveryList {
 // alone: the note, never the score, and the book counts in no list.
 test aSharedNoteWithoutARecommendationShowsJustTheNote {
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
         gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
             return Ok(
                 catalog.Book(

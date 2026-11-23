@@ -1,3 +1,4 @@
+use hearsay.sync.once;
 use hearsay.sync.topList;
 use hearsay.recommendations;
 
@@ -37,7 +38,7 @@ private {
                         libraryId: libraryId,
                         name: nameOf(top),
                         description: "Maintained by Hearsay. Edits here are overwritten on the next sync.",
-                        bookIds: map(b in books.take(topList.size())): b.itemId,
+                        bookIds: once.unique(map(b in books): b.itemId).take(topList.size()),
                         collectionId: existing,
                         action: createOrUpdate(existing),
                     ),

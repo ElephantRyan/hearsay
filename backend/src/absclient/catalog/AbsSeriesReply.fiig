@@ -1,0 +1,6 @@
+// GET /api/series/{id} as far as Hearsay reads it.
+model AbsSeriesReply {
+    id: string;
+    name: string;
+    libraryId: string;
+}

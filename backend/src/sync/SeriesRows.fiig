@@ -1,0 +1,25 @@
+use hearsay.ratings.rated;
+use hearsay.series;
+
+// Each recommended series as the one book a collection holds for it, its book 1.
+// A series with no cached books has nothing to add.
+conversion seriesRows(picks: List<series.SeriesRatingRow>) -> List<rated.RatingRow> {
+    withBooks = filter(p in picks): p.recommended && p.firstItemId != None;
+    return map(p in withBooks):
+            rated.RatingRow(
+                userId: p.userId,
+                username: p.username,
+                itemId: p.firstItemId ?? "",
+                libraryId: p.libraryId,
+                title: p.name,
+                authors: p.authors,
+                score: p.score,
+                note: "",
+                recommended: true,
+                createdAt: p.createdAt,
+                updatedAt: p.updatedAt,
+                via: None,
+                matchedBy: None,
+                noteShared: false,
+            );
+}

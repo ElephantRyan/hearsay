@@ -1,0 +1,11 @@
+use hearsay.accounts;
+use hearsay.ratings;
+
+// Rate or recommend a series: the same checks as a book's rating come first, so
+// a bad rating costs no Audiobookshelf call; then the series as ABS has it now.
+workflow putSeriesRating(me: accounts.Identity, seriesId: string, input: ratings.RatingInput)
+        -> Result<SeriesRating, SeriesError> {
+    checked = mapErr(e in ratings.checkRating(seriesId, input)): seriesErrorOfRating(e)?;
+    series = latestSeries(seriesId)?;
+    return Ok(storeSeriesRating(me, series, checked));
+}

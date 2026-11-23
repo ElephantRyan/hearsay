@@ -1,0 +1,13 @@
+// One person's rating of one series, as stored. The rules are a book's: a score
+// of 1 to 10, or none when recommended or with a note; the note the writer's own
+// unless noteShared.
+model SeriesRating {
+    userId: string;
+    seriesId: string;
+    score: int | None;
+    note: string;
+    noteShared: bool;
+    recommended: bool;
+    createdAt: int;
+    updatedAt: int;
+}

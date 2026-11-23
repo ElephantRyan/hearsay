@@ -1,0 +1,14 @@
+// A list without repeats, first place kept: a collection holds a book once,
+// though a series (as its book 1) and the book itself can both name it.
+formulas once {
+    formula unique(ids: List<string>) -> List<string> {
+        kept: List<string> = [];
+        for (id in ids) {
+            if (!kept.contains(id)) {
+                kept = append(kept, id);
+            }
+        }
+
+        return kept;
+    }
+}

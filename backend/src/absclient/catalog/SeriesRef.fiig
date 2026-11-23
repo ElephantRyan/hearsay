@@ -1,0 +1,7 @@
+// A series a book is in, with its number there as ABS writes it ("4", "2.5"),
+// None when ABS has no number for it.
+model SeriesRef {
+    id: string;
+    name: string;
+    sequence: string | None;
+}

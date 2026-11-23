@@ -484,6 +484,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recommendations/users/{userId}/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listSeriesPicksOf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/series-ratings/{seriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["putSeriesRating"];
+        post?: never;
+        delete: operations["deleteMySeriesRating"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/series/{seriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["showSeries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/session": {
         parameters: {
             query?: never;
@@ -1674,6 +1722,11 @@ export interface operations {
                             username: string;
                             via?: string | null;
                         }[];
+                        series: {
+                            id: string;
+                            name: string;
+                            sequence?: string | null;
+                        }[];
                     };
                 };
             };
@@ -2419,6 +2472,8 @@ export interface operations {
                         itemId: string;
                         latest: number;
                         libraryId: string;
+                        seriesBooks: number;
+                        seriesId?: string | null;
                         title: string;
                     }[];
                 };
@@ -2536,6 +2591,251 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    listSeriesPicksOf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        authors: string;
+                        books: number;
+                        createdAt: number;
+                        firstItemId?: string | null;
+                        libraryId: string;
+                        name: string;
+                        note: string;
+                        noteShared: boolean;
+                        recommended: boolean;
+                        score?: number | null;
+                        seriesId: string;
+                        updatedAt: number;
+                        userId: string;
+                        username: string;
+                    }[];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    putSeriesRating: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    note?: string | null;
+                    noteShared?: boolean | null;
+                    recommended: boolean;
+                    score?: number | null;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        createdAt: number;
+                        note: string;
+                        noteShared: boolean;
+                        recommended: boolean;
+                        score?: number | null;
+                        seriesId: string;
+                        updatedAt: number;
+                        userId: string;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    deleteMySeriesRating: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    showSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        authors: string;
+                        /** Format: decimal */
+                        average?: number | null;
+                        books: number;
+                        count: number;
+                        firstItemId?: string | null;
+                        libraryId: string;
+                        name: string;
+                        ratings: {
+                            authors: string;
+                            books: number;
+                            createdAt: number;
+                            firstItemId?: string | null;
+                            libraryId: string;
+                            name: string;
+                            note: string;
+                            noteShared: boolean;
+                            recommended: boolean;
+                            score?: number | null;
+                            seriesId: string;
+                            updatedAt: number;
+                            userId: string;
+                            username: string;
+                        }[];
+                        seriesId: string;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

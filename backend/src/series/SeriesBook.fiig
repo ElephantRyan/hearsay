@@ -1,0 +1,6 @@
+// One book of a cached series, by its place in the series (0 is book 1).
+model SeriesBook {
+    seriesId: string;
+    itemId: string;
+    position: int;
+}

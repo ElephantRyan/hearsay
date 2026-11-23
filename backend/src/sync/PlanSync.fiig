@@ -1,4 +1,5 @@
 use hearsay.ratings.rated;
+use hearsay.sync.once;
 
 // Works out, without touching anything, what each named person's collections
 // should become. One collection per person per library, "<name> Recommends",
@@ -23,7 +24,7 @@ rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: Lis
                     libraryId: libraryId,
                     name: "${group.at(0).username} Recommends",
                     description: descriptionFor(group.at(0).via),
-                    bookIds: map(r in ordered): r.itemId,
+                    bookIds: once.unique(map(r in ordered): r.itemId),
                     collectionId: existing,
                     action: createOrUpdate(existing),
                 ),

@@ -1,8 +1,15 @@
 use hearsay.ratings.rated;
 use hearsay.ratings.rated.RatedBooks;
+use hearsay.series.SeriesRatings;
 
-// The signed-in person's own list, best first, read from their own ratings so
-// their notes show whether shared or not.
+// The signed-in person's own list of books, best first, read from their own
+// ratings so their notes show whether shared or not; books in a series they
+// recommend are folded into it.
 activity myPicks(userId: string) -> List<rated.RatingRow> {
-    return bestFirst(RatedBooks.byUser(userId), userId);
+    folded = collapseSeries(
+        RatedBooks.byUser(userId),
+        SeriesRatings.recommended(),
+        SeriesRatings.books(),
+    );
+    return bestFirst(folded, userId);
 }
