@@ -7,5 +7,6 @@ workflow putSeriesRating(me: accounts.Identity, seriesId: string, input: ratings
         -> Result<SeriesRating, SeriesError> {
     checked = mapErr(e in ratings.checkRating(seriesId, input)): seriesErrorOfRating(e)?;
     series = latestSeries(seriesId)?;
-    return Ok(storeSeriesRating(me, series, checked));
+    // Book 1's title, ASIN and ISBN are what a linked server recognises the series by.
+    return Ok(storeSeriesRating(me, series, firstBookOf(series), checked));
 }

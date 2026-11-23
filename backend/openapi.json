@@ -1977,6 +1977,85 @@
         ]
       }
     },
+    "/federation/series": {
+      "get": {
+        "operationId": "shareSeries",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "properties": {
+                      "asin": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "authors": {
+                        "type": "string"
+                      },
+                      "firstTitle": {
+                        "type": "string"
+                      },
+                      "isbn": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "note": {
+                        "type": "string"
+                      },
+                      "personId": {
+                        "type": "string"
+                      },
+                      "score": {
+                        "nullable": true,
+                        "type": "integer"
+                      },
+                      "seriesName": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "integer"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "authors",
+                      "firstTitle",
+                      "note",
+                      "personId",
+                      "seriesName",
+                      "updatedAt",
+                      "username"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
     "/health": {
       "get": {
         "operationId": "healthCheck",
@@ -3877,6 +3956,10 @@
                       },
                       "username": {
                         "type": "string"
+                      },
+                      "via": {
+                        "nullable": true,
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -4208,6 +4291,10 @@
                             "type": "string"
                           },
                           "username": {
+                            "type": "string"
+                          },
+                          "via": {
+                            "nullable": true,
                             "type": "string"
                           }
                         },

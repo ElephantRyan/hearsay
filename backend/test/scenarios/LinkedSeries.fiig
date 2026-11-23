@@ -1,0 +1,216 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.links;
+use hearsay.ratings;
+use hearsay.recommendations;
+use hearsay.series;
+use hearsay.settings;
+use fiig.http;
+use fiig.http.HttpClient;
+use hearsay.settings.ServerConfig;
+use hearsay.settings.SignInConfig;
+
+// What this server shows a linked one of a recommended series: its name, and its
+// book 1's title and ASIN to recognise it by; the note only once shared.
+test aRecommendedSeriesIsSharedByItsBookOne {
+    fake AbsCatalog {
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Ok(
+                catalog.CatalogSeries(
+                    seriesId: seriesId,
+                    libraryId: "lib-1",
+                    name: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    bookIds: ["dcc-1", "dcc-2"],
+                ),
+            );
+        }
+
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            expect itemId == "dcc-1";
+            return Ok(
+                catalog.Book(
+                    itemId: itemId,
+                    libraryId: "lib-1",
+                    title: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    asin: "B08BX5DHWW",
+                    isbn: None,
+                ),
+            );
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect series.putSeriesRating(ann, "dcc", ratings.RatingInput(score: 9, note: "start at 1", recommended: true)) is Ok(_);
+    shared = links.sharedSeriesList();
+    expect shared.length() == 1;
+    expect shared.at(0).seriesName == "Dungeon Crawler Carl";
+    expect shared.at(0).firstTitle == "Dungeon Crawler Carl";
+    expect shared.at(0).asin == "B08BX5DHWW";
+    expect shared.at(0).score == 9;
+    // not shared, so the note stays here
+    expect shared.at(0).note == "";
+    expect shared.at(0).personId != "u1";
+}
+
+// The fetching side: the other server's series is recognised by its book 1 (by
+// ASIN, through the library index) and then by which local series that book is
+// in. It ranks here as that series, on the linked person's list too. One this
+// library hasn't is listed as theirs, "(series)", under "not in your library".
+test aLinkedServersSeriesIsMatchedThroughItsBookOne {
+    fake ServerConfig {
+        name: "Alex's library";
+    }
+
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://alex.test";
+    }
+
+    fake AbsCatalog {
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
+        }
+
+        gateway pageAsService(
+            libraryId: string,
+            page: int,
+            size: int,
+            order: catalog.BookOrder,
+            scope: catalog.BookScope)
+                -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(
+                catalog.BookPage(
+                    total: 1,
+                    page: 0,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "dcc-1-here",
+                            libraryId: "lib-1",
+                            title: "Dungeon Crawler Carl",
+                            authors: "Matt Dinniman",
+                            asin: "B08BX5DHWW",
+                            isbn: None,
+                        ),
+                    ],
+                ),
+            );
+        }
+
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            expect itemId == "dcc-1-here";
+            return Ok(
+                [catalog.SeriesRef(id: "dcc-here", name: "Dungeon Crawler Carl", sequence: "1")],
+            );
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            expect seriesId == "dcc-here";
+            return Ok(
+                catalog.CatalogSeries(
+                    seriesId: "dcc-here",
+                    libraryId: "lib-1",
+                    name: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    bookIds: ["dcc-1-here", "dcc-2-here", "dcc-3-here"],
+                ),
+            );
+        }
+    }
+
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if (request.url == "https://family.test/api/federation/link") {
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: json.encode(
+                            links.LinkAcceptance(
+                                name: "The family library",
+                                key: "k".padRight(43, "k"),
+                            ),
+                        ),
+                    ),
+                );
+            }
+
+            if (request.url == "https://family.test/api/federation/series") {
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: json.encode(
+                            [
+                                links.SharedSeries(
+                                    personId: "p1",
+                                    username: "ryan",
+                                    seriesName: "Dungeon Crawler Carl",
+                                    authors: "Matt Dinniman",
+                                    firstTitle: "Dungeon Crawler Carl",
+                                    asin: "B08BX5DHWW",
+                                    isbn: None,
+                                    score: 10,
+                                    note: "read them all",
+                                    updatedAt: 5,
+                                ),
+                                links.SharedSeries(
+                                    personId: "p1",
+                                    username: "ryan",
+                                    seriesName: "The Stormlight Archive",
+                                    authors: "Brandon Sanderson",
+                                    firstTitle: "The Way of Kings",
+                                    asin: "B0NOTHERE",
+                                    isbn: None,
+                                    score: None,
+                                    note: "",
+                                    updatedAt: 6,
+                                ),
+                            ],
+                        ),
+                    ),
+                );
+            }
+
+            if (request.url == "https://family.test/api/federation/recommendations") {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
+            return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
+        }
+    }
+
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect links.linkServer(admin, links.LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
+    bob = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    ranked = recommendations.listRecommendations(bob, None, None, None);
+    expect ranked.length() == 1;
+    expect ranked.at(0).seriesId == "dcc-here";
+    expect ranked.at(0).itemId == "dcc-1-here";
+    expect ranked.at(0).seriesBooks == 3;
+    expect ranked.at(0).average == 10.00;
+    person = "linked-${link.id}-p1";
+    theirs = series.listSeriesPicksOf(bob, person);
+    expect theirs.length() == 1;
+    expect theirs.at(0).note == "read them all";
+    expect theirs.at(0).via == "The family library";
+    missing = recommendations.listMissingOf(bob, person);
+    expect missing.length() == 1;
+    expect missing.at(0).title == "The Stormlight Archive (series)";
+    // Unlinking forgets the series too.
+    expect links.unlinkServer(admin, link.id) is Ok(_);
+    expect recommendations.listRecommendations(bob, None, None, None).length() == 0;
+}

@@ -1,0 +1,16 @@
+// A recommended series as linked servers are shown it, from the shared_series
+// view: its name and author line, and its book 1's title, ASIN and ISBN to
+// recognise it by. userId stays on this server: the links package sends an
+// opaque id instead.
+model SharedSeriesRow {
+    userId: string;
+    username: string;
+    seriesName: string;
+    authors: string;
+    firstTitle: string;
+    asin: string | None;
+    isbn: string | None;
+    score: int | None;
+    note: string;
+    updatedAt: int;
+}

@@ -24,6 +24,16 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
@@ -57,6 +67,11 @@ test anInviteLinksOnceAndItsKeyIdentifiesTheServer {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            // No series shared: the fetch asks for them after the books.
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
             expect request.url == "https://alex.test/api/federation/recommendations";
             return Ok(
                 http.Reply(
@@ -162,6 +177,16 @@ test anInviteWaitsForTheLibraryIndex {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Err(client.AbsError.Unauthorized);
         }

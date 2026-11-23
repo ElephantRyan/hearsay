@@ -18,7 +18,7 @@ conversion seriesRows(picks: List<series.SeriesRatingRow>) -> List<rated.RatingR
                 recommended: true,
                 createdAt: p.createdAt,
                 updatedAt: p.updatedAt,
-                via: None,
+                via: p.via,
                 matchedBy: None,
                 noteShared: false,
             );

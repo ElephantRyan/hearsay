@@ -244,6 +244,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/federation/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["shareSeries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1656,6 +1672,44 @@ export interface operations {
             };
         };
     };
+    shareSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        asin?: string | null;
+                        authors: string;
+                        firstTitle: string;
+                        isbn?: string | null;
+                        note: string;
+                        personId: string;
+                        score?: number | null;
+                        seriesName: string;
+                        updatedAt: number;
+                        username: string;
+                    }[];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
     healthCheck: {
         parameters: {
             query?: never;
@@ -2631,6 +2685,7 @@ export interface operations {
                         updatedAt: number;
                         userId: string;
                         username: string;
+                        via?: string | null;
                     }[];
                 };
             };
@@ -2806,6 +2861,7 @@ export interface operations {
                             updatedAt: number;
                             userId: string;
                             username: string;
+                            via?: string | null;
                         }[];
                         seriesId: string;
                     };

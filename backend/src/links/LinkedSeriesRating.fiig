@@ -1,0 +1,18 @@
+// A series recommendation fetched from a linked server, with the local series
+// its book 1 was matched to: seriesId and matchedBy are None when this library
+// doesn't have it.
+model LinkedSeriesRating {
+    linkId: string;
+    personId: string;
+    username: string;
+    seriesName: string;
+    authors: string;
+    firstTitle: string;
+    asin: string | None;
+    isbn: string | None;
+    score: int | None;
+    note: string;
+    updatedAt: int;
+    seriesId: string | None;
+    matchedBy: string | None;
+}

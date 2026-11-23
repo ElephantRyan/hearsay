@@ -1,0 +1,31 @@
+use hearsay.absclient.catalog;
+
+// The local series a linked server's series is, found through the local book
+// its book 1 matched: of the series that book is in, the one of the same name,
+// or else its first. The series is cached so lists can show it. None when the
+// book is in no series or ABS can't be asked.
+activity localSeriesOf(itemId: string, name: string) -> string | None {
+    refs: List<catalog.SeriesRef> = match (fetchItemSeriesRefs(itemId)) {
+        Ok(found) -> found,
+        Err(_) -> [],
+    }
+
+    named = filter(r in refs): r.name.lowercase() == name.lowercase();
+    return match (named.firstOrNone() ?? refs.firstOrNone()) {
+        None -> None,
+        chosen -> cachedSeriesId(chosen.id),
+    }
+}
+
+private {
+    cachedSeriesId(seriesId: string) -> string | None {
+        return match (fetchSeries(seriesId)) {
+            Ok(series) -> {
+                saveSeriesCache(series, Clock.now());
+                return series.seriesId;
+            },
+
+            Err(_) -> None,
+        }
+    }
+}

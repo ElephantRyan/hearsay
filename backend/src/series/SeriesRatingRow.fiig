@@ -1,7 +1,8 @@
 // A series rating with who made it and the series it is about, as the
 // series_rating_row view returns it: the series' name, author line, how many
 // books, and book 1 (whose cover stands for it). A note read for anyone but its
-// writer is blank unless noteShared (SeriesRatings).
+// writer is blank unless noteShared (SeriesRatings). via is the linked server a
+// rating came from, None for this server's own.
 model SeriesRatingRow {
     userId: string;
     username: string;
@@ -17,4 +18,5 @@ model SeriesRatingRow {
     createdAt: int;
     updatedAt: int;
     noteShared: bool;
+    via: string | None;
 }

@@ -23,6 +23,16 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
@@ -56,6 +66,11 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            // No series shared: the fetch asks for them after the books.
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
             key = "k".padRight(43, "k");
             if (request.url == "https://family.test/api/federation/link" && request.method == http.Method.Post) {
                 expect http.headerValue(request.headers, "content-type") == "application/json";
@@ -132,10 +147,11 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
     expect link.lastFetchedAt != None;
     expect link.ratings == 1;
     expect link.matched == 1;
-    expect calls(HttpClient.send) == 3;
+    // the fetch at link time also asks for series
+    expect calls(HttpClient.send) == 4;
     expect linkServer(admin, LinkRequest(code: code)) is Err(LinkError.AlreadyLinked(name));
     expect name == "The family library";
-    expect calls(HttpClient.send) == 3;
+    expect calls(HttpClient.send) == 4;
     expect unlinkServer(admin, link.id) is Ok(unlinked);
     expect unlinked == Unlinked(name: "The family library", told: true);
     expect unlinkServer(admin, link.id) is Err(LinkError.UnknownLink);
@@ -154,6 +170,16 @@ test aLoginPageOrARefusalKeepsNothing {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
@@ -187,6 +213,11 @@ test aLoginPageOrARefusalKeepsNothing {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            // No series shared: the fetch asks for them after the books.
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
             if (request.url.startsWith("https://login.test")) {
                 return Ok(
                     http.Reply(
@@ -252,6 +283,16 @@ test linkingWaitsForTheLibraryIndex {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Err(client.AbsError.Rejected(status: 502));
         }
@@ -270,6 +311,11 @@ test linkingWaitsForTheLibraryIndex {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            // No series shared: the fetch asks for them after the books.
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
             expect false;
             return Err(http.HttpError.InvalidRequest(reason: "unexpected"));
         }
@@ -299,6 +345,16 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
@@ -316,6 +372,11 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            // No series shared: the fetch asks for them after the books.
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
             if (request.url == "https://family.test/api/federation/link" && request.method == http.Method.Post) {
                 return Ok(
                     http.Reply(

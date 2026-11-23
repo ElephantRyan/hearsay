@@ -1,13 +1,16 @@
 use hearsay.absclient.catalog;
 use hearsay.accounts;
+use hearsay.books.BookCache;
 use hearsay.ratings;
 
 // Stores a checked rating of a series and returns what is now stored. The
-// person, the series (with its books, to fold them into it) and the rating are
-// written in one transaction.
+// person, the series (with its books, to fold them into it, and book 1 itself,
+// for linked servers to recognise it by) and the rating are written in one
+// transaction.
 activity storeSeriesRating(
     user: accounts.Identity,
     series: catalog.CatalogSeries,
+    first: catalog.Book | None,
     checked: ratings.CheckedRating)
         -> SeriesRating {
     now = Clock.now();
@@ -24,6 +27,15 @@ activity storeSeriesRating(
     transaction Database {
         upsertSeriesUser(user.userId, user.username, now);
         saveSeriesCache(series, now);
+        match (first) {
+            None -> {
+            },
+
+            book -> {
+                BookCache.save(book, now);
+            },
+        }
+
         saveSeriesRating(rating);
     }
 

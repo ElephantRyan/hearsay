@@ -17,10 +17,12 @@ capability LinkedRatings {
         );
     }
 
-    // What one linked person recommends that this library doesn't have.
+    // What one linked person recommends that this library doesn't have, books
+    // and series (a series named "<name> (series)").
     gateway missingOf(userId: string) -> List<MissingBook> requires Database idempotent {
         return Database.queryMany(
-            "SELECT lr.title, lr.authors, lr.score, lr.note, lr.updated_at, ls.name AS via FROM linked_rating lr JOIN linked_server ls ON ls.id = lr.link_id WHERE lr.item_id IS NULL AND 'linked-' || lr.link_id || '-' || lr.person_id = ? ORDER BY lr.score DESC, lr.updated_at DESC",
+            "SELECT title, authors, score, note, updated_at, via FROM (SELECT lr.title, lr.authors, lr.score, lr.note, lr.updated_at, ls.name AS via FROM linked_rating lr JOIN linked_server ls ON ls.id = lr.link_id WHERE lr.item_id IS NULL AND 'linked-' || lr.link_id || '-' || lr.person_id = ? UNION ALL SELECT lsr.series_name || ' (series)' AS title, lsr.authors, lsr.score, lsr.note, lsr.updated_at, ls.name AS via FROM linked_series_rating lsr JOIN linked_server ls ON ls.id = lsr.link_id WHERE lsr.series_id IS NULL AND 'linked-' || lsr.link_id || '-' || lsr.person_id = ?) ORDER BY score DESC, updated_at DESC",
+            userId,
             userId,
         );
     }

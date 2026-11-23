@@ -1,0 +1,15 @@
+// One recommended series as it crosses to a linked server: what recognises it
+// (its name, and its book 1's title, ASIN and ISBN), the rating, and who made
+// it. personId is opaque, as a book recommendation's is (SharedRating).
+model SharedSeries {
+    personId: string;
+    username: string;
+    seriesName: string;
+    authors: string;
+    firstTitle: string;
+    asin: string | None;
+    isbn: string | None;
+    score: int | None;
+    note: string;
+    updatedAt: int;
+}

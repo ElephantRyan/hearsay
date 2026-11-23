@@ -1,0 +1,6 @@
+// GET /federation/series: this server's recommended series, to a linked server
+// only (the adapter has settled that it is one). A server older than this
+// route answers it with an error, which a fetch takes as no series.
+workflow shareSeries(peer: LinkedServer) -> List<SharedSeries> {
+    return sharedSeriesList();
+}

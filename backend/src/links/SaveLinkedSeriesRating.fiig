@@ -1,0 +1,18 @@
+gateway saveLinkedSeriesRating(rating: LinkedSeriesRating) -> int requires Database {
+    return Database.execute(
+        "INSERT INTO linked_series_rating (link_id, person_id, username, series_name, authors, first_title, asin, isbn, score, note, updated_at, series_id, matched_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        rating.linkId,
+        rating.personId,
+        rating.username,
+        rating.seriesName,
+        rating.authors,
+        rating.firstTitle,
+        rating.asin,
+        rating.isbn,
+        rating.score,
+        rating.note,
+        rating.updatedAt,
+        rating.seriesId,
+        rating.matchedBy,
+    );
+}

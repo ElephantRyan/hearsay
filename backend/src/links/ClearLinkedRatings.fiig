@@ -1,4 +1,5 @@
-// Forgets everything fetched from one server, before a fetch writes it again.
+// Forgets everything fetched from one server (books and series), before a fetch writes it again.
 gateway clearLinkedRatings(linkId: string) -> int requires Database {
+    Database.execute("DELETE FROM linked_series_rating WHERE link_id = ?", linkId);
     return Database.execute("DELETE FROM linked_rating WHERE link_id = ?", linkId);
 }

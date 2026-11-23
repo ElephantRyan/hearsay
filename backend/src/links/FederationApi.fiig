@@ -18,6 +18,10 @@ adapter http federationApi {
         ratings -> 200 ratings,
     }
 
+    GET "/federation/series" -> shareSeries(peer) produces "application/json" {
+        series -> 200 series,
+    }
+
     POST "/federation/fetch" -> fetchForCaller(peer) produces "application/json" {
         _ -> noContent(),
     }

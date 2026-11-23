@@ -1,0 +1,18 @@
+use hearsay.series.SeriesRatings;
+
+// Every series recommended on this server, as a linked server is shown it.
+activity sharedSeriesList() -> List<SharedSeries> {
+    return map(row in SeriesRatings.shared()):
+            SharedSeries(
+                personId: keyHash("person:${row.userId}"),
+                username: row.username,
+                seriesName: row.seriesName,
+                authors: row.authors,
+                firstTitle: row.firstTitle,
+                asin: row.asin,
+                isbn: row.isbn,
+                score: row.score,
+                note: row.note,
+                updatedAt: row.updatedAt,
+            );
+}

@@ -1,8 +1,11 @@
 use hearsay.matching;
+use hearsay.series;
 
 // Fetches one server's recommendations and matches each book against the
-// library index. A fetch that works replaces everything held from that server
-// in one transaction; one that doesn't keeps it and records why.
+// library index, then its recommended series, each recognised by its book 1 and
+// then by which local series that book is in. A server that doesn't share
+// series yet has none. A fetch that works replaces everything held from that
+// server in one transaction; one that doesn't keeps it and records why.
 activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
     now = Clock.now();
     match (PeerServer.recommendations(peer.address, peer.keyOut)) {
@@ -20,10 +23,27 @@ activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
             }
 
             found = filter(rating in matched): rating.itemId != None;
+            sharedSeries: List<SharedSeries> = match (PeerServer.series(peer.address, peer.keyOut)) {
+                Ok(list) -> list,
+                Err(_) -> [],
+            }
+
+            seriesMatched: List<LinkedSeriesRating> = [];
+            for (shared in sharedSeries) {
+                local = matching.matchBook(
+                    matching.keysOf(shared.asin, shared.isbn, shared.firstTitle, shared.authors),
+                );
+                seriesMatched = append(seriesMatched, withSeriesMatch(peer.id, shared, local));
+            }
+
             transaction Database {
                 clearLinkedRatings(peer.id);
                 for (rating in matched) {
                     saveLinkedRating(rating);
+                }
+
+                for (rating in seriesMatched) {
+                    saveLinkedSeriesRating(rating);
                 }
 
                 markFetched(peer.id, now, matched.length(), found.length());
@@ -82,5 +102,40 @@ private {
                 );
             },
         }
+    }
+
+    withSeriesMatch(linkId: string, shared: SharedSeries, local: matching.LocalMatch | None)
+            -> LinkedSeriesRating {
+        found: string | None = match (local) {
+            None -> None,
+            book -> series.localSeriesOf(book.itemId, shared.seriesName),
+        }
+
+        bookHow: string | None = match (local) {
+            None -> None,
+            book -> book.how,
+        }
+
+        // How it was recognised, only when it was.
+        how: string | None = None;
+        if (found != None) {
+            how = bookHow;
+        }
+
+        return LinkedSeriesRating(
+            linkId: linkId,
+            personId: shared.personId,
+            username: shared.username,
+            seriesName: shared.seriesName,
+            authors: shared.authors,
+            firstTitle: shared.firstTitle,
+            asin: shared.asin,
+            isbn: shared.isbn,
+            score: shared.score,
+            note: shared.note,
+            updatedAt: shared.updatedAt,
+            seriesId: found,
+            matchedBy: how,
+        );
     }
 }

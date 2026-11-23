@@ -1,0 +1,20 @@
+use hearsay.absclient.catalog;
+use hearsay.books;
+
+// A series' book 1 as ABS has it now, or None if it has no books or ABS can't
+// say: its keys are what a linked server recognises the series by.
+activity firstBookOf(series: catalog.CatalogSeries) -> catalog.Book | None {
+    return match (series.bookIds.firstOrNone()) {
+        None -> None,
+        itemId -> bookOrNone(itemId),
+    }
+}
+
+private {
+    bookOrNone(itemId: string) -> catalog.Book | None {
+        return match (books.latestBook(itemId)) {
+            Ok(book) -> book,
+            Err(_) -> None,
+        }
+    }
+}

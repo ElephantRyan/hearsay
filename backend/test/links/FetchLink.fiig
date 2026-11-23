@@ -24,6 +24,16 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
         }
@@ -65,6 +75,12 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            // A server from before series sharing: the route isn't there. The books
+            // still arrive; the series are just none.
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 404, headers: [], body: "Not Found".utf8()));
+            }
+
             if (request.url == "https://family.test/api/federation/link" && request.method == http.Method.Post) {
                 return Ok(
                     http.Reply(
@@ -133,7 +149,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                 );
             }
 
-            if (calls(HttpClient.send) == 4) {
+            if (calls(HttpClient.send) == 5) {
                 return Ok(
                     http.Reply(
                         status: 200,
@@ -233,6 +249,16 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     }
 
     fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
         gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
             if (calls(AbsCatalog.librariesAsService) == 1) {
                 return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
@@ -270,6 +296,11 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
 
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            // No series shared: the fetch asks for them after the books.
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
             if (request.url == "https://family.test/api/federation/link") {
                 return Ok(
                     http.Reply(
@@ -324,7 +355,8 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     expect fetchOnSchedule() is Err(FetchError.IndexNotRebuilt(problem));
     expect problem == "Audiobookshelf answered 502";
     expect calls(AbsCatalog.librariesAsService) == 2;
-    expect calls(HttpClient.send) == 4;
+    // each fetch that works also asks for series
+    expect calls(HttpClient.send) == 6;
     held = linkedRatingsOf(link.id);
     expect held.length() == 1;
     expect held.first().itemId == "dune-here";
