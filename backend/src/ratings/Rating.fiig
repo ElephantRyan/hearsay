@@ -1,5 +1,5 @@
 // One user's rating of one ABS library item. Times are Unix milliseconds. A
-// recommendation may go without a score; anything else has one.
+// recommendation, or a rating that is only a note, may go without a score.
 // The note is the writer's own unless noteShared.
 model Rating {
     userId: string;

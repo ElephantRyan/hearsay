@@ -4,9 +4,13 @@ rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, Ra
     note = input.note ?? "";
     match (input.score) {
         None -> {
-            if (!input.recommended) {
+            // A note alone is a private line about the book; with nothing at all there's nothing to save.
+            if (!input.recommended && note.isBlank()) {
                 return Err(
-                    RatingError.Invalid("score", "is needed unless the book is recommended"),
+                    RatingError.Invalid(
+                        "score",
+                        "is needed unless the book is recommended or has a note",
+                    ),
                 );
             }
         },

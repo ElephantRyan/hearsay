@@ -6,7 +6,7 @@ import { RecommendToggle } from "../../components/domain/RecommendToggle";
 import { ScoreSlider } from "../../components/domain/ScoreSlider";
 import { messageFor } from "../../components/domain/StateViews";
 import { Button } from "../../components/ui/Button";
-import { type RatingForm, ratingSchema } from "../../lib/ratings";
+import { hasSomething, type RatingForm, ratingSchema } from "../../lib/ratings";
 
 interface Props {
   itemId: string;
@@ -56,28 +56,21 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
           name="score"
           render={({ field }) => (
             <ScoreSlider
-              value={field.value}
+              // the watched value: a cleared field reads back as its default otherwise
+              value={score}
               onChange={field.onChange}
-              invalid={errors.score !== undefined}
             />
           )}
         />
-        {score !== undefined && recommended && (
-          <Button
-            variant="ghost"
-            className="mt-1"
-            onClick={() => setValue("score", undefined, { shouldValidate: true })}
-          >
-            Clear score
-          </Button>
+        {score !== undefined && (
+          <div className="mt-1 text-center">
+            <Button variant="ghost" onClick={() => setValue("score", undefined)}>
+              Clear score
+            </Button>
+          </div>
         )}
         {score === undefined && recommended && (
-          <p className="mt-1 text-sm text-muted">No score: recommended without one.</p>
-        )}
-        {errors.score && (
-          <p role="alert" className="mt-1 text-sm text-danger">
-            {errors.score.message}
-          </p>
+          <p className="mt-1 text-center text-sm text-muted">No score: recommended without one.</p>
         )}
       </div>
 
@@ -113,7 +106,12 @@ export function RatingFormPanel({ itemId, existing, onDone }: Props) {
       )}
 
       <div className="flex gap-3">
-        <Button type="submit" className="flex-1" disabled={rate.isPending}>
+        {/* Nothing to save until there's a score, a recommendation, or a note. */}
+        <Button
+          type="submit"
+          className="flex-1"
+          disabled={rate.isPending || !hasSomething({ score, recommended, note })}
+        >
           {rate.isPending ? "Saving…" : existing ? "Update rating" : "Save rating"}
         </Button>
         {existing && (

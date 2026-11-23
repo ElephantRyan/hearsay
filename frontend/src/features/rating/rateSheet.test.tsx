@@ -53,6 +53,38 @@ describe("the book page", () => {
 });
 
 describe("the rating sheet", () => {
+  it("saves a note on its own, with no score or recommendation", async () => {
+    const sent: unknown[] = [];
+    server.use(
+      signedIn,
+      itemAnswer(),
+      http.put("/api/ratings/:itemId", async ({ request, params }) => {
+        sent.push({ itemId: params.itemId, ...((await request.json()) as object) });
+        return HttpResponse.json({});
+      }),
+    );
+    mount("/");
+
+    await userEvent.click(await screen.findByRole("button", { name: `Rate ${book.title}` }));
+    const sheet = await screen.findByRole("dialog", { name: book.title });
+    const save = await within(sheet).findByRole("button", { name: "Save rating" });
+    expect(save).toBeDisabled();
+    await userEvent.type(within(sheet).getByRole("textbox"), "Start with book two");
+    expect(save).toBeEnabled();
+    await userEvent.click(save);
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(sent).toEqual([
+      {
+        itemId: book.itemId,
+        score: null,
+        note: "Start with book two",
+        recommended: false,
+        noteShared: false,
+      },
+    ]);
+  });
+
   it("keeps a note private unless 'Share my note' is ticked", async () => {
     const sent: unknown[] = [];
     server.use(
@@ -89,7 +121,7 @@ describe("the rating sheet", () => {
     ]);
   });
 
-  it("recommends without a score, and clears a score only while recommended", async () => {
+  it("recommends without a score, and Clear score empties the slider", async () => {
     const sent: unknown[] = [];
     server.use(
       signedIn,
@@ -107,18 +139,19 @@ describe("the rating sheet", () => {
       "aria-valuetext",
       "7 out of 10",
     );
-    // a private rating needs its score, so there is nothing to clear
-    expect(within(sheet).queryByRole("button", { name: "Clear score" })).not.toBeInTheDocument();
-    await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
+    // Clear score is always there; with no score and no recommendation, Save waits
     await userEvent.click(within(sheet).getByRole("button", { name: "Clear score" }));
+    expect(within(sheet).getByRole("slider")).toHaveAttribute("aria-valuetext", "No score");
+    expect(within(sheet).getByRole("button", { name: "Update rating" })).toBeDisabled();
+    await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
     expect(within(sheet).getByText("No score: recommended without one.")).toBeInTheDocument();
+
+    expect(within(sheet).getByRole("button", { name: "Update rating" })).toBeEnabled();
 
     // taking the recommendation away again leaves nothing to save
     await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));
-    await userEvent.click(within(sheet).getByRole("button", { name: "Update rating" }));
-    expect(
-      await within(sheet).findByText("Pick a score from 1 to 10, or recommend the book."),
-    ).toBeInTheDocument();
+    expect(within(sheet).getByRole("button", { name: "Update rating" })).toBeDisabled();
+    expect(within(sheet).queryByRole("alert")).not.toBeInTheDocument();
     expect(sent).toEqual([]);
 
     await userEvent.click(within(sheet).getByRole("button", { name: "Recommend this book" }));

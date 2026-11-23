@@ -19,8 +19,8 @@ export function noteLength(note: string): number {
 }
 
 /**
- * The same rules the server enforces (backend/src/ratings/CheckRating.fiig). A recommendation may
- * go without a score; anything else needs one.
+ * The same rules the server enforces (backend/src/ratings/CheckRating.fiig). A recommendation, or
+ * a rating that is only a note, may go without a score.
  */
 export const ratingSchema = z
   .object({
@@ -36,9 +36,18 @@ export const ratingSchema = z
     recommended: z.boolean(),
     noteShared: z.boolean(),
   })
-  .refine((form) => form.score !== undefined || form.recommended, {
+  .refine((form) => hasSomething(form), {
     path: ["score"],
-    message: "Pick a score from 1 to 10, or recommend the book.",
+    message: "Pick a score, recommend the book, or write a note.",
   });
+
+/** A rating needs at least one of a score, a recommendation, or a note; a note alone is private. */
+export function hasSomething(form: {
+  score?: number | undefined;
+  recommended: boolean;
+  note: string;
+}) {
+  return form.score !== undefined || form.recommended || form.note.trim() !== "";
+}
 
 export type RatingForm = z.infer<typeof ratingSchema>;

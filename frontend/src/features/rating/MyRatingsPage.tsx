@@ -89,7 +89,7 @@ function MyRating({ row }: { row: RatingRow }) {
             on={shared}
             label={`Recommend ${row.title}`}
             // A recommendation without a score can't be made private: there would be nothing left.
-            disabled={rate.isPending || (shared && row.score == null)}
+            disabled={rate.isPending || (shared && row.score == null && row.note.trim() === "")}
             onChange={(on) =>
               rate.mutate({
                 itemId: row.itemId,
@@ -106,11 +106,19 @@ function MyRating({ row }: { row: RatingRow }) {
       meta={
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <RatingBadge score={row.score} />
+            {shared || row.score != null ? (
+              <RatingBadge score={row.score} />
+            ) : (
+              <span className="rounded-full bg-surface-2 px-2.5 py-1 text-sm text-muted">
+                Note only
+              </span>
+            )}
             <span>
               {shared
                 ? row.score == null
-                  ? "Shared with everyone; give it a score to make it private"
+                  ? row.note.trim() === ""
+                    ? "Shared with everyone; give it a score or a note to make it private"
+                    : "Shared with everyone"
                   : "Shared with everyone"
                 : "Only you"}
             </span>
