@@ -1,5 +1,6 @@
-// PATCH /api/collections/{id}: replaces the name, description and the whole
-// ordered list of books, so one call makes the collection match.
+// PATCH /api/collections/{id}: sets the name and description, and puts the
+// books already in the collection in this order. It adds and removes none:
+// that is batch/add and batch/remove (updateCollectionAsService).
 model AbsCollectionPatch {
     name: string;
     description: string;

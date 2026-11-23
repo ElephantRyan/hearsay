@@ -1,0 +1,5 @@
+// The body of POST /api/collections/{id}/batch/add and /batch/remove: library
+// item ids.
+model AbsBookIds {
+    books: List<string>;
+}

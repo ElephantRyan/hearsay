@@ -50,6 +50,49 @@ capability AbsCollections {
             return Err(absclient.AbsError.NotFound);
         }
 
+        // PATCH only reorders the books already there, so books are added and
+        // removed first, then the PATCH sets the name, description and order.
+        base = "${abs.url}/api/collections/${collectionIdSegment}";
+        current = absclient.absReply(
+            HttpClient.send(
+                absclient.absGet(
+                    abs.url,
+                    "/api/collections/${collectionIdSegment}",
+                    abs.token.reveal(),
+                ),
+            ),
+        )?;
+        held: AbsCollectionBooks = mapErr(e in json.decode(current.body)):
+                absclient.AbsError.Unreadable(failure: e)?;
+        heldIds = map(b in held.books): b.id;
+        toAdd = filter(id in bookIds): !heldIds.contains(id);
+        toRemove = filter(id in heldIds): !bookIds.contains(id);
+        if (toAdd.length() > 0) {
+            absclient.absReply(
+                HttpClient.send(
+                    absWrite(
+                        http.Method.Post,
+                        "${base}/batch/add",
+                        abs.token.reveal(),
+                        json.encode(AbsBookIds(books: toAdd)),
+                    ),
+                ),
+            )?;
+        }
+
+        if (toRemove.length() > 0) {
+            absclient.absReply(
+                HttpClient.send(
+                    absWrite(
+                        http.Method.Post,
+                        "${base}/batch/remove",
+                        abs.token.reveal(),
+                        json.encode(AbsBookIds(books: toRemove)),
+                    ),
+                ),
+            )?;
+        }
+
         body = json.encode(
             AbsCollectionPatch(name: name, description: description, books: bookIds),
         );

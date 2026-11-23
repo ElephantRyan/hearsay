@@ -1,0 +1,4 @@
+// One book in a collection, by its library item id.
+model AbsCollectionBook {
+    id: string;
+}

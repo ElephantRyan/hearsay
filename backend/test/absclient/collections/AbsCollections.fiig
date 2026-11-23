@@ -53,7 +53,36 @@ test absCollectionWritesSendExactlyWhatTheyShould {
     fake HttpClient {
         gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
             expect http.headerValue(request.headers, "authorization") == "Bearer svc";
+            sentText: string = match (request.body) {
+                None -> "",
+                sent -> sent.utf8() ?? "",
+            }
+
+            if (request.method == http.Method.Get) {
+                // the collection as ABS holds it now: b-2 and b-3
+                expect request.url == "https://abs.test/api/collections/col-1";
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: "{\"id\":\"col-1\",\"books\":[{\"id\":\"b-2\",\"media\":{}},{\"id\":\"b-3\",\"media\":{}}]}".utf8(),
+                    ),
+                );
+            }
+
             expect http.headerValue(request.headers, "content-type") == "application/json";
+            if (request.url == "https://abs.test/api/collections/col-1/batch/add") {
+                expect request.method == http.Method.Post;
+                expect sentText == "{\"books\":[\"b-1\"]}";
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"id\":\"col-1\"}".utf8()));
+            }
+
+            if (request.url == "https://abs.test/api/collections/col-1/batch/remove") {
+                expect request.method == http.Method.Post;
+                expect sentText == "{\"books\":[\"b-3\"]}";
+                return Ok(http.Reply(status: 200, headers: [], body: "{\"id\":\"col-1\"}".utf8()));
+            }
+
             if (request.method == http.Method.Post) {
                 expect request.url == "https://abs.test/api/collections";
                 match (request.body) {
@@ -87,6 +116,7 @@ test absCollectionWritesSendExactlyWhatTheyShould {
 
             if (request.method == http.Method.Patch) {
                 expect request.url == "https://abs.test/api/collections/col-1";
+                expect sentText.contains("\"books\":[\"b-1\",\"b-2\"]");
                 return Ok(http.Reply(status: 200, headers: [], body: "{\"id\":\"col-1\"}".utf8()));
             }
 
@@ -99,9 +129,12 @@ test absCollectionWritesSendExactlyWhatTheyShould {
 
     expect AbsCollections.createCollectionAsService("lib-1", "Ann Recommends", "d", ["b-2", "b-1"]) is Ok(id);
     expect id == "col-1";
-    expect AbsCollections.updateCollectionAsService("col-1", "Ann Recommends", "d", ["b-1"]) is Ok(patched);
+    // An update reads what's there, adds the new book, removes the old one,
+    // then sets the order: ABS's PATCH alone only reorders.
+    expect AbsCollections.updateCollectionAsService("col-1", "Ann Recommends", "d", ["b-1", "b-2"]) is Ok(patched);
     expect patched == 200;
+    expect calls(HttpClient.send) == 5;
     expect AbsCollections.deleteCollectionAsService("col-1") is Ok(deleted);
     expect deleted == 200;
-    expect calls(HttpClient.send) == 3;
+    expect calls(HttpClient.send) == 6;
 }

@@ -1,0 +1,6 @@
+// GET /api/collections/{id} as far as a sync reads it: the library item id of
+// each book in the collection now. ABS sends each book expanded; decoding drops
+// the rest.
+model AbsCollectionBooks {
+    books: List<AbsCollectionBook>;
+}
