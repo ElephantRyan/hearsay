@@ -1,6 +1,16 @@
+use hearsay.absclient as client;
 use hearsay.absclient.catalog;
 
-// What ABS says about a series right now.
+// What ABS says about a series right now. One it no longer has is forgotten here
+// too, ratings and all.
 activity latestSeries(seriesId: string) -> Result<catalog.CatalogSeries, SeriesError> {
-    return mapErr(e in fetchSeries(seriesId)): seriesErrorOfFault(e);
+    return match (fetchSeries(seriesId)) {
+        Ok(series) -> Ok(series),
+        Err(client.AbsFault.Missing) -> {
+            forgetSeries(seriesId);
+            return Err(SeriesError.Missing);
+        },
+
+        Err(fault) -> Err(seriesErrorOfFault(fault)),
+    }
 }

@@ -81,6 +81,25 @@ describe("a recommended series", () => {
     );
   });
 
+  it("says so when Audiobookshelf no longer has the series", async () => {
+    server.use(
+      signedIn,
+      http.get(
+        "/api/series/:seriesId",
+        () => new HttpResponse("no series with that id in Audiobookshelf", { status: 404 }),
+      ),
+      http.get("/api/libraries/:libraryId/items", () =>
+        HttpResponse.json({ total: 0, page: 0, limit: 24, items: [], authors: [], series: [] }),
+      ),
+    );
+    mount("/browse?series=gone&seriesName=Gone");
+
+    expect(
+      await screen.findByText("This series isn't in Audiobookshelf any more"),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+  });
+
   it("shows on a person's list as a stacked card", async () => {
     server.use(
       signedIn,

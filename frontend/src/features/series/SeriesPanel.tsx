@@ -1,7 +1,8 @@
+import { ApiError } from "../../api/errors";
 import { useMe, useSeries } from "../../api/hooks";
 import { RatingBadge } from "../../components/domain/RatingBadge";
 import { RecommenderChip } from "../../components/domain/RecommenderChip";
-import { ErrorState, LoadingState } from "../../components/domain/StateViews";
+import { EmptyState, ErrorState, LoadingState } from "../../components/domain/StateViews";
 import { formatDate } from "../../lib/format";
 import { RatingFormPanel } from "../rating/RatingFormPanel";
 
@@ -15,7 +16,16 @@ export function SeriesPanel({ seriesId, onDone }: { seriesId: string; onDone?: (
   const me = useMe();
 
   if (series.isPending) return <LoadingState rows={1} label="Loading the series" />;
-  if (series.isError) return <ErrorState error={series.error} onRetry={() => series.refetch()} />;
+  if (series.isError) {
+    if (series.error instanceof ApiError && series.error.status === 404) {
+      return (
+        <EmptyState title="This series isn't in Audiobookshelf any more">
+          It was removed there, so Hearsay has removed it too, with its ratings.
+        </EmptyState>
+      );
+    }
+    return <ErrorState error={series.error} onRetry={() => series.refetch()} />;
+  }
 
   const { count, average, ratings } = series.data;
   const mine = ratings.find((row) => row.userId === me.data?.userId);

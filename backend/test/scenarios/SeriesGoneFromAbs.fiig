@@ -1,0 +1,102 @@
+use hearsay.absclient as client;
+use hearsay.absclient.catalog;
+use hearsay.absclient.catalog.AbsCatalog;
+use hearsay.accounts;
+use hearsay.admin;
+use hearsay.ratings;
+use hearsay.recommendations;
+use hearsay.series;
+use hearsay.series.SeriesRatings;
+
+// A series deleted in ABS after it was rated is forgotten, ratings and all, the
+// first time Hearsay asks for it: by opening it, or by a refresh.
+test aSeriesOpenedAfterItLeftAbsIsForgotten {
+    fake AbsCatalog {
+        // ABS has the series for the ratings, and not after.
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            if (calls(AbsCatalog.seriesAsService) > 2) {
+                return Err(client.AbsError.NotFound);
+            }
+
+            return Ok(
+                catalog.CatalogSeries(
+                    seriesId: "dcc",
+                    libraryId: "lib-1",
+                    name: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    bookIds: ["dcc-1", "dcc-2"],
+                ),
+            );
+        }
+
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"));
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    bob = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);
+    expect series.putSeriesRating(ann, "dcc", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_);
+    expect series.putSeriesRating(bob, "dcc", ratings.RatingInput(score: 6, note: None, recommended: false)) is Ok(_);
+    expect series.showSeries(ann, "dcc") is Err(series.SeriesError.Missing);
+    expect SeriesRatings.byUser("u1").length() == 0;
+    expect SeriesRatings.byUser("u2").length() == 0;
+    expect SeriesRatings.recommended().length() == 0;
+    expect (filter(b in SeriesRatings.books()): b.seriesId == "dcc").length() == 0;
+    ids = map(b in recommendations.listRecommendations(bob, None, None, None)): b.seriesId ?? b.itemId;
+    expect ids.length() == 0;
+}
+
+test aRefreshForgetsASeriesThatLeftAbs {
+    fake AbsCatalog {
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            if (calls(AbsCatalog.seriesAsService) > 1) {
+                return Err(client.AbsError.NotFound);
+            }
+
+            return Ok(
+                catalog.CatalogSeries(
+                    seriesId: "dcc",
+                    libraryId: "lib-1",
+                    name: "Dungeon Crawler Carl",
+                    authors: "Matt Dinniman",
+                    bookIds: ["dcc-1"],
+                ),
+            );
+        }
+
+        gateway itemAsService(itemId: string) -> Result<catalog.Book, client.AbsError> {
+            return Ok(catalog.Book(itemId: itemId, libraryId: "lib-1", title: "T", authors: "A"));
+        }
+
+        gateway itemsAsService(itemIds: List<string>)
+                -> Result<List<catalog.Book>, client.AbsError> {
+            return Ok(
+                map(id in itemIds):
+                        catalog.Book(
+                            itemId: id,
+                            libraryId: "lib-1",
+                            title: "T",
+                            authors: "A",
+                            series: [],
+                        ),
+            );
+        }
+    }
+
+    ann = accounts.Identity(userId: "u1", username: "ann", userType: client.AbsUserType.User);
+    expect series.putSeriesRating(ann, "dcc", ratings.RatingInput(score: 9, note: None, recommended: true)) is Ok(_);
+    boss = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Admin,
+        ),
+    );
+    expect admin.refreshNow(boss) is Ok(summary);
+    expect summary.series == 0;
+    expect summary.removedSeries == 1;
+    expect SeriesRatings.byUser("u1").length() == 0;
+}

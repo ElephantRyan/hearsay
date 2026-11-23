@@ -1,0 +1,6 @@
+// What a refresh of the cached series did: how many were read again, and how
+// many were forgotten because ABS no longer has them.
+model SeriesRefreshed {
+    read: int;
+    removed: int;
+}

@@ -262,7 +262,7 @@ describe("the admin screen", () => {
     server.use(
       http.post("/api/admin/refresh", () => {
         asked += 1;
-        return HttpResponse.json({ books: 94, series: 3 });
+        return HttpResponse.json({ books: 94, series: 3, removedSeries: 0 });
       }),
     );
     mount("/admin");
@@ -270,6 +270,23 @@ describe("the admin screen", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Refresh now" }));
     expect(await screen.findByText("Read 94 books and 3 series again.")).toBeInTheDocument();
     expect(asked).toBe(1);
+  });
+
+  it("says which series a refresh removed because Audiobookshelf no longer has them", async () => {
+    serve(settingsOf("false"));
+    server.use(
+      http.post("/api/admin/refresh", () =>
+        HttpResponse.json({ books: 94, series: 2, removedSeries: 1 }),
+      ),
+    );
+    mount("/admin");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Refresh now" }));
+    expect(
+      await screen.findByText(
+        "Read 94 books and 2 series again. Removed 1 series that is no longer in Audiobookshelf, with its ratings.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("saves the daily refresh hour as soon as it is picked, in UTC", async () => {

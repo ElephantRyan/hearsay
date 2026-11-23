@@ -775,12 +775,16 @@
                     "books": {
                       "type": "integer"
                     },
+                    "removedSeries": {
+                      "type": "integer"
+                    },
                     "series": {
                       "type": "integer"
                     }
                   },
                   "required": [
                     "books",
+                    "removedSeries",
                     "series"
                   ],
                   "type": "object"

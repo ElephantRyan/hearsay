@@ -221,6 +221,8 @@ function BookDetailsCard() {
           <p role="status" className="text-sm">
             Read {refresh.data.books} {refresh.data.books === 1 ? "book" : "books"} and{" "}
             {refresh.data.series} series again.
+            {refresh.data.removedSeries > 0 &&
+              ` Removed ${refresh.data.removedSeries} series that ${refresh.data.removedSeries === 1 ? "is" : "are"} no longer in Audiobookshelf, with ${refresh.data.removedSeries === 1 ? "its" : "their"} ratings.`}
           </p>
         )}
       </div>

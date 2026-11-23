@@ -10,7 +10,13 @@ workflow refreshOnSchedule() -> Result<RefreshSummary | None, RefreshError> {
         return Ok(None);
     }
 
-    seriesCount = mapErr(e in series.refreshSeries()): RefreshError.Unavailable(detail: "${e}")?;
+    seriesDone = mapErr(e in series.refreshSeries()): RefreshError.Unavailable(detail: "${e}")?;
     bookCount = mapErr(e in books.refreshBooks()): RefreshError.Unavailable(detail: "${e}")?;
-    return Ok(RefreshSummary(books: bookCount, series: seriesCount));
+    return Ok(
+        RefreshSummary(
+            books: bookCount,
+            series: seriesDone.read,
+            removedSeries: seriesDone.removed,
+        ),
+    );
 }

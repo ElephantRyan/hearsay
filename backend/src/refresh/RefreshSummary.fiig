@@ -1,5 +1,7 @@
-// What a refresh from Audiobookshelf read again.
+// What a refresh from Audiobookshelf did: the books and series read again, and
+// the series forgotten because Audiobookshelf no longer has them.
 model RefreshSummary {
     books: int;
     series: int;
+    removedSeries: int;
 }

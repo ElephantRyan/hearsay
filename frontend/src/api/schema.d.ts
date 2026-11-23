@@ -1117,6 +1117,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         books: number;
+                        removedSeries: number;
                         series: number;
                     };
                 };

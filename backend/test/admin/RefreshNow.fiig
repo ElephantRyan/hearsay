@@ -73,6 +73,7 @@ test aRefreshReadsBooksAndSeriesAgain {
     );
     expect refreshNow(boss) is Ok(summary);
     expect summary.series == 1;
+    expect summary.removedSeries == 0;
     expect (filter(r in BookSeriesIndex.all()): r.itemId == "elantris").length() == 0;
     // Both read from the saved copy, without asking ABS for one book.
     before = calls(AbsCatalog.itemAsService);

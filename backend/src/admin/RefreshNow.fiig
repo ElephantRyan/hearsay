@@ -6,7 +6,13 @@ use hearsay.series;
 // POST /admin/refresh: the daily refresh from Audiobookshelf, now, in the same
 // order (series first, so a new book 1 is among the books fetched after).
 workflow refreshNow(admin: accounts.Admin) -> Result<refresh.RefreshSummary, AdminError> {
-    seriesCount = mapErr(e in series.refreshSeries()): adminErrorOfFault(e)?;
+    seriesDone = mapErr(e in series.refreshSeries()): adminErrorOfFault(e)?;
     bookCount = mapErr(e in books.refreshBooks()): adminErrorOfBook(e)?;
-    return Ok(refresh.RefreshSummary(books: bookCount, series: seriesCount));
+    return Ok(
+        refresh.RefreshSummary(
+            books: bookCount,
+            series: seriesDone.read,
+            removedSeries: seriesDone.removed,
+        ),
+    );
 }

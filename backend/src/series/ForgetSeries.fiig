@@ -1,0 +1,15 @@
+// Drops everything Hearsay keeps about a series ABS no longer has: its cached
+// copy and books, which books say they are in it, and every rating of it. A
+// linked server's rating that was matched to it stays, unmatched, as for a
+// series this library hasn't. Says how many ratings went with it.
+gateway forgetSeries(seriesId: string) -> int requires Database {
+    removed = Database.execute("DELETE FROM series_rating WHERE series_id = ?", seriesId);
+    Database.execute(
+        "UPDATE linked_series_rating SET series_id = NULL, matched_by = NULL WHERE series_id = ?",
+        seriesId,
+    );
+    Database.execute("DELETE FROM book_series WHERE series_id = ?", seriesId);
+    Database.execute("DELETE FROM series_book WHERE series_id = ?", seriesId);
+    Database.execute("DELETE FROM series WHERE series_id = ?", seriesId);
+    return removed;
+}

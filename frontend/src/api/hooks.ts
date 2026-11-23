@@ -534,17 +534,33 @@ export function useReorderUpNext() {
 }
 
 /** One series with its books' count and book 1, and the ratings of it I may see. */
-export const useSeries = (seriesId: string | undefined) =>
-  useQuery({
+/**
+ * One series and its ratings. A 404 means Audiobookshelf no longer has it, so the server has dropped
+ * it and its ratings: every other list is refetched to leave it out.
+ */
+export function useSeries(seriesId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useQuery({
     queryKey: keys.series(seriesId ?? ""),
     enabled: seriesId !== undefined,
-    queryFn: async () =>
-      unwrap(
-        await api.GET("/series/{seriesId}", {
-          params: { path: { seriesId: seriesId as string } },
-        }),
-      ),
+    queryFn: async () => {
+      try {
+        return unwrap(
+          await api.GET("/series/{seriesId}", {
+            params: { path: { seriesId: seriesId as string } },
+          }),
+        );
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] !== "me" && query.queryKey[0] !== "series",
+          });
+        }
+        throw error;
+      }
+    },
   });
+}
 
 /** The series one person recommends, best first. */
 export const useSeriesPicks = (userId: string) =>
