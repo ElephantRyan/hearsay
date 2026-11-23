@@ -17,6 +17,6 @@ workflow linkServer(admin: accounts.Admin, request: LinkRequest)
             readyIndex()?;
             link = takeUpInvite(invite, name, admin.identity.userId)?;
             return fetchNewLink(link.id);
-        },
+        }
     }
 }

@@ -9,7 +9,7 @@ gateway saveSeriesCache(series: catalog.CatalogSeries, now: int) -> int requires
         series.libraryId,
         series.name,
         series.authors,
-        now,
+        now
     );
     Database.execute("DELETE FROM series_book WHERE series_id = ?", series.seriesId);
     position: int = 0;
@@ -18,7 +18,7 @@ gateway saveSeriesCache(series: catalog.CatalogSeries, now: int) -> int requires
             "INSERT INTO series_book (series_id, item_id, position) VALUES (?, ?, ?) ON CONFLICT (series_id, item_id) DO NOTHING",
             series.seriesId,
             itemId,
-            position,
+            position
         );
         position = position + 1;
     }

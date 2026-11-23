@@ -8,6 +8,6 @@ gateway saveSession(tokenHash: string, identity: accounts.Identity, expiresAt: i
         identity.userId,
         identity.username,
         identity.userType,
-        expiresAt,
+        expiresAt
     );
 }

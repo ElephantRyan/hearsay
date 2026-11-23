@@ -20,8 +20,8 @@ activity fetchIfIndexed(id: string) -> int {
 
                 Ok(link) -> {
                     return link.ratings ?? 0;
-                },
+                }
             }
-        },
+        }
     }
 }

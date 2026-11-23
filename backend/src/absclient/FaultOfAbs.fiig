@@ -8,7 +8,7 @@ conversion faultOfAbs(error: AbsError) -> AbsFault {
         AbsError.Unreachable(failure) -> AbsFault.Down("Audiobookshelf is unreachable"),
         AbsError.Unreadable(failure) -> AbsFault.Down("Audiobookshelf's reply was unreadable"),
         AbsError.NotSetUp(missing) -> AbsFault.Down(
-            "this server isn't set up yet: an admin needs to enter ${missing}",
-        ),
+            "this server isn't set up yet: an admin needs to enter ${missing}"
+        )
     }
 }

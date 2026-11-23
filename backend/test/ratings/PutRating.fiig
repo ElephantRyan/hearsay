@@ -19,8 +19,8 @@ test ratingFlowCachesTheBookAndKeepsCreatedAt {
                     itemId: itemId,
                     libraryId: "lib-1",
                     title: "Dune",
-                    authors: "Frank Herbert",
-                ),
+                    authors: "Frank Herbert"
+                )
             );
         }
     }
@@ -52,8 +52,8 @@ test aBadRatingCostsNoAbsCall {
                     itemId: itemId,
                     libraryId: "lib-1",
                     title: "Dune",
-                    authors: "Frank Herbert",
-                ),
+                    authors: "Frank Herbert"
+                )
             );
         }
     }

@@ -6,5 +6,5 @@ enum PeerError {
     Unreachable(failure: http.HttpError),
     LoginPage,
     Rejected(status: int),
-    Unreadable,
+    Unreadable
 }

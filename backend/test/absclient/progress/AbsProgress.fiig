@@ -25,8 +25,8 @@ test absProgressListsStartedBooks {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"id\":\"u-1\",\"username\":\"ann\",\"mediaProgress\":[{\"id\":\"p1\",\"libraryItemId\":\"b-1\",\"mediaItemType\":\"book\",\"isFinished\":true,\"progress\":1,\"lastUpdate\":1795000000000,\"finishedAt\":1795000000000},{\"id\":\"p2\",\"libraryItemId\":\"b-2\",\"mediaItemType\":\"book\",\"isFinished\":false,\"progress\":0.6670773110970304,\"lastUpdate\":1795128758043,\"finishedAt\":null},{\"id\":\"p3\",\"libraryItemId\":\"pod-1\",\"episodeId\":\"e1\",\"mediaItemType\":\"podcastEpisode\",\"isFinished\":false,\"progress\":0.5,\"lastUpdate\":1795000000001}]}".utf8(),
-                ),
+                    body: "{\"id\":\"u-1\",\"username\":\"ann\",\"mediaProgress\":[{\"id\":\"p1\",\"libraryItemId\":\"b-1\",\"mediaItemType\":\"book\",\"isFinished\":true,\"progress\":1,\"lastUpdate\":1795000000000,\"finishedAt\":1795000000000},{\"id\":\"p2\",\"libraryItemId\":\"b-2\",\"mediaItemType\":\"book\",\"isFinished\":false,\"progress\":0.6670773110970304,\"lastUpdate\":1795128758043,\"finishedAt\":null},{\"id\":\"p3\",\"libraryItemId\":\"pod-1\",\"episodeId\":\"e1\",\"mediaItemType\":\"podcastEpisode\",\"isFinished\":false,\"progress\":0.5,\"lastUpdate\":1795000000001}]}".utf8()
+                )
             );
         }
     }

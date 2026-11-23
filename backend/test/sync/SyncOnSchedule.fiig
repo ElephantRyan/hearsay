@@ -75,8 +75,8 @@ test theScheduledSyncBringsEveryonesCollectionsUpToDate {
                             libraryId: "lib-1",
                             title: "T",
                             authors: "A",
-                            series: [],
-                        ),
+                            series: []
+                        )
             );
         }
 

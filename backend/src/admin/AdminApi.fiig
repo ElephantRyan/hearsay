@@ -7,33 +7,33 @@ adapter http adminApi {
     wire sessions.admin;
 
     GET "/admin/settings" -> showSettings(admin) produces "application/json" {
-        view -> 200 view,
+        view -> 200 view
     }
 
     PUT "/admin/settings" -> changeSettings(admin, change: settings.SettingsChange)
             consumes "application/json"
             produces "application/json" {
         Ok(view) -> 200 view,
-        Err(error) -> adminErrorResponse(error),
+        Err(error) -> adminErrorResponse(error)
     }
 
     DELETE "/admin/settings/{name}" -> resetSetting(admin, name: string)
             produces "application/json" {
         Ok(view) -> 200 view,
-        Err(error) -> adminErrorResponse(error),
+        Err(error) -> adminErrorResponse(error)
     }
 
     POST "/admin/library-index" -> rebuildIndex(admin) produces "application/json" {
         Ok(summary) -> 200 summary,
-        Err(error) -> adminErrorResponse(error),
+        Err(error) -> adminErrorResponse(error)
     }
 
     POST "/admin/refresh" -> refreshNow(admin) produces "application/json" {
         Ok(summary) -> 200 summary,
-        Err(error) -> adminErrorResponse(error),
+        Err(error) -> adminErrorResponse(error)
     }
 
     GET "/admin/status" -> showStatus(admin) produces "application/json" {
-        status -> 200 status,
+        status -> 200 status
     }
 }

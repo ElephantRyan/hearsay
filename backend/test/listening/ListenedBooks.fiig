@@ -9,7 +9,7 @@ test eachBookCarriesItsSeriesAndMyRatingOfIt {
     started = [
         progress.Progress(itemId: "hw-4", finished: true, percent: 100, lastListenedAt: 3),
         progress.Progress(itemId: "dcc-2", finished: true, percent: 100, lastListenedAt: 2),
-        progress.Progress(itemId: "alone", finished: false, percent: 10, lastListenedAt: 1),
+        progress.Progress(itemId: "alone", finished: false, percent: 10, lastListenedAt: 1)
     ];
     found = [
         catalog.Book(itemId: "hw-4", libraryId: "lib-1", title: "HWFWM 4", authors: "Shirtaloon"),
@@ -17,14 +17,14 @@ test eachBookCarriesItsSeriesAndMyRatingOfIt {
             itemId: "dcc-2",
             libraryId: "lib-1",
             title: "Carl's Doomsday Scenario",
-            authors: "Matt Dinniman",
+            authors: "Matt Dinniman"
         ),
         catalog.Book(
             itemId: "alone",
             libraryId: "lib-1",
             title: "Project Hail Mary",
-            authors: "Andy Weir",
-        ),
+            authors: "Andy Weir"
+        )
     ];
     context = SeriesContext(
         books: [
@@ -32,20 +32,20 @@ test eachBookCarriesItsSeriesAndMyRatingOfIt {
                 itemId: "hw-4",
                 seriesId: "hw",
                 name: "He Who Fights With Monsters",
-                sequence: "4",
+                sequence: "4"
             ),
             books.BookSeriesRow(
                 itemId: "hw-4",
                 seriesId: "other",
                 name: "Some Omnibus",
-                sequence: None,
+                sequence: None
             ),
             books.BookSeriesRow(
                 itemId: "dcc-2",
                 seriesId: "dcc",
                 name: "Dungeon Crawler Carl",
-                sequence: "2",
-            ),
+                sequence: "2"
+            )
         ],
         mine: [
             series.SeriesRatingRow(
@@ -63,9 +63,9 @@ test eachBookCarriesItsSeriesAndMyRatingOfIt {
                 createdAt: 1,
                 updatedAt: 1,
                 noteShared: false,
-                via: None,
-            ),
-        ],
+                via: None
+            )
+        ]
     );
     listened = listenedBooks(started, found, [], context);
     expect listened.at(0).series == ListenedSeries(seriesId: "hw", name: "He Who Fights With Monsters", sequence: "4", rated: false, myScore: None, recommended: false);

@@ -21,8 +21,8 @@ test aRecommendedSeriesStandsForItsBooks {
                             libraryId: "lib-1",
                             title: "T",
                             authors: "A",
-                            series: [],
-                        ),
+                            series: []
+                        )
             );
         }
 
@@ -38,8 +38,8 @@ test aRecommendedSeriesStandsForItsBooks {
                     libraryId: "lib-1",
                     name: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
-                    bookIds: ["dcc-1", "dcc-2", "dcc-3", "dcc-4"],
-                ),
+                    bookIds: ["dcc-1", "dcc-2", "dcc-3", "dcc-4"]
+                )
             );
         }
 
@@ -49,8 +49,8 @@ test aRecommendedSeriesStandsForItsBooks {
                     itemId: itemId,
                     libraryId: "lib-1",
                     title: "Title of ${itemId}",
-                    authors: "Matt Dinniman",
-                ),
+                    authors: "Matt Dinniman"
+                )
             );
         }
     }

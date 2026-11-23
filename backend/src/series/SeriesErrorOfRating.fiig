@@ -6,6 +6,6 @@ conversion seriesErrorOfRating(error: ratings.RatingError) -> SeriesError {
         ratings.RatingError.Invalid(field, reason) -> SeriesError.Invalid(field, reason),
         ratings.RatingError.Book(cause) -> SeriesError.Missing,
         ratings.RatingError.NoRating -> SeriesError.NoRating,
-        ratings.RatingError.Unavailable(detail) -> SeriesError.Unavailable(detail),
+        ratings.RatingError.Unavailable(detail) -> SeriesError.Unavailable(detail)
     }
 }

@@ -3,6 +3,6 @@
 activity forgetSetting(name: string, by: string) -> Result<None, SettingsChangeError> {
     return match (settingNamed(name)) {
         None -> Err(SettingsChangeError.UnknownSetting(name)),
-        known -> mapErr(e in clearSetting(known, by)): settingsChangeErrorOf(name, e),
+        known -> mapErr(e in clearSetting(known, by)): settingsChangeErrorOf(name, e)
     }
 }

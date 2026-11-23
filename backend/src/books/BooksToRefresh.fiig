@@ -2,7 +2,7 @@
 // new since the series was last read), for the refresh to fetch again.
 gateway booksToRefresh() -> List<string> requires Database idempotent {
     rows: List<BookId> = Database.queryMany(
-        "SELECT item_id FROM book UNION SELECT item_id FROM series_book WHERE position = 0",
+        "SELECT item_id FROM book UNION SELECT item_id FROM series_book WHERE position = 0"
     );
     return map(r in rows): r.itemId;
 }

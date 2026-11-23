@@ -6,6 +6,6 @@ conversion signInErrorOfAbs(error: client.AbsError) -> SignInError {
     return match (client.faultOfAbs(error)) {
         client.AbsFault.Missing -> SignInError.Refused("wrong username or password"),
         client.AbsFault.Denied -> SignInError.Refused("wrong username or password"),
-        client.AbsFault.Down(detail) -> SignInError.Unavailable(detail),
+        client.AbsFault.Down(detail) -> SignInError.Unavailable(detail)
     }
 }

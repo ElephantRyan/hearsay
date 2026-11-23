@@ -2,5 +2,5 @@
 // that does not exist.
 enum SettingsChangeError {
     Invalid(field: string, reason: string),
-    UnknownSetting(name: string),
+    UnknownSetting(name: string)
 }

@@ -11,22 +11,22 @@ adapter http federationApi {
             consumes "application/json"
             produces "application/json" {
         Ok(acceptance) -> 200 acceptance,
-        Err(error) -> federationErrorResponse(error),
+        Err(error) -> federationErrorResponse(error)
     }
 
     GET "/federation/recommendations" -> shareRecommendations(peer) produces "application/json" {
-        ratings -> 200 ratings,
+        ratings -> 200 ratings
     }
 
     GET "/federation/series" -> shareSeries(peer) produces "application/json" {
-        series -> 200 series,
+        series -> 200 series
     }
 
     POST "/federation/fetch" -> fetchForCaller(peer) produces "application/json" {
-        _ -> noContent(),
+        _ -> noContent()
     }
 
     DELETE "/federation/link" -> dropLink(peer) produces "application/json" {
-        _ -> noContent(),
+        _ -> noContent()
     }
 }

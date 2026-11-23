@@ -2,5 +2,5 @@
 enum RatingOrder {
     Score from json "score",
     Newest from json "newest",
-    Title from json "title",
+    Title from json "title"
 }

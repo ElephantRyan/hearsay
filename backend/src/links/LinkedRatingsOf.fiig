@@ -2,6 +2,6 @@
 gateway linkedRatingsOf(linkId: string) -> List<LinkedRating> requires Database idempotent {
     return Database.queryMany(
         "SELECT * FROM linked_rating WHERE link_id = ? ORDER BY username, title",
-        linkId,
+        linkId
     );
 }

@@ -9,7 +9,7 @@ activity myPicks(userId: string) -> List<rated.RatingRow> {
     folded = collapseSeries(
         RatedBooks.byUser(userId),
         SeriesRatings.recommended(),
-        SeriesRatings.books(),
+        SeriesRatings.books()
     );
     return bestFirst(folded, userId);
 }

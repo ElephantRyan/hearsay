@@ -18,7 +18,7 @@ workflow fetchOnSchedule() -> Result<int, FetchError> {
                 if (link.problem != None) {
                     failed = failed + 1;
                 }
-            },
+            }
         }
     }
 
@@ -28,7 +28,7 @@ workflow fetchOnSchedule() -> Result<int, FetchError> {
         },
 
         Ok(_) -> {
-        },
+        }
     }
 
     if (failed > 0) {

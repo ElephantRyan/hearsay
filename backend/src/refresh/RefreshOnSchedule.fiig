@@ -16,7 +16,7 @@ workflow refreshOnSchedule() -> Result<RefreshSummary | None, RefreshError> {
         RefreshSummary(
             books: bookCount,
             series: seriesDone.read,
-            removedSeries: seriesDone.removed,
-        ),
+            removedSeries: seriesDone.removed
+        )
     );
 }

@@ -2,13 +2,13 @@
 // every domain's adapter together.
 adapter http signinApi {
     GET "/auth/modes" -> showSignInModes() produces "application/json" {
-        modes -> 200 modes,
+        modes -> 200 modes
     }
 
     POST "/session" -> passwordSignIn(input: PasswordLogin)
             consumes "application/json"
             produces "application/json" {
         Ok(session) -> signedIn(session),
-        Err(error) -> loginErrorResponse(error),
+        Err(error) -> loginErrorResponse(error)
     }
 }

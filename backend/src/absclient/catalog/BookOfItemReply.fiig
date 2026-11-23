@@ -21,8 +21,8 @@ conversion bookOfItemReply(body: bytes) -> Result<Book, absclient.AbsError> {
             authors: line,
             asin: item.media.metadata.asin,
             isbn: item.media.metadata.isbn,
-            series: item.media.metadata.series ?? [],
-        ),
+            series: item.media.metadata.series ?? []
+        )
     );
 }
 

@@ -20,7 +20,7 @@ conversion peerReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Re
             }
 
             return Ok(reply);
-        },
+        }
     }
 }
 
@@ -28,7 +28,7 @@ private {
     isPage(contentType: string | None) -> bool {
         return match (contentType) {
             None -> false,
-            given -> given.lowercase().contains("text/html"),
+            given -> given.lowercase().contains("text/html")
         }
     }
 }

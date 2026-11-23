@@ -10,6 +10,6 @@ gateway saveSeriesRating(rating: SeriesRating) -> int requires Database {
         rating.noteShared,
         rating.recommended,
         rating.createdAt,
-        rating.updatedAt,
+        rating.updatedAt
     );
 }

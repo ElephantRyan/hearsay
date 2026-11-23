@@ -6,8 +6,8 @@ conversion targetOf(url: string | None, token: Secret | None) -> Result<AbsTarge
         given -> {
             return match (token) {
                 None -> Err(AbsError.NotSetUp("its Audiobookshelf token")),
-                secret -> Ok(AbsTarget(url: given, token: secret)),
+                secret -> Ok(AbsTarget(url: given, token: secret))
             }
-        },
+        }
     }
 }

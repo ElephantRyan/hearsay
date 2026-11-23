@@ -4,6 +4,6 @@
 adapter schedule refreshSchedule {
     every "1h" -> refreshOnSchedule() {
         Ok(_) -> done,
-        Err(_) -> done,
+        Err(_) -> done
     }
 }

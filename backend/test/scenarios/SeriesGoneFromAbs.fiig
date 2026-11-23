@@ -25,8 +25,8 @@ test aSeriesOpenedAfterItLeftAbsIsForgotten {
                     libraryId: "lib-1",
                     name: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
-                    bookIds: ["dcc-1", "dcc-2"],
-                ),
+                    bookIds: ["dcc-1", "dcc-2"]
+                )
             );
         }
 
@@ -62,8 +62,8 @@ test aRefreshForgetsASeriesThatLeftAbs {
                     libraryId: "lib-1",
                     name: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
-                    bookIds: ["dcc-1"],
-                ),
+                    bookIds: ["dcc-1"]
+                )
             );
         }
 
@@ -80,8 +80,8 @@ test aRefreshForgetsASeriesThatLeftAbs {
                             libraryId: "lib-1",
                             title: "T",
                             authors: "A",
-                            series: [],
-                        ),
+                            series: []
+                        )
             );
         }
     }
@@ -92,8 +92,8 @@ test aRefreshForgetsASeriesThatLeftAbs {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect admin.refreshNow(boss) is Ok(summary);
     expect summary.series == 0;

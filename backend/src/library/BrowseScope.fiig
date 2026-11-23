@@ -18,7 +18,7 @@ rule browseScope(author: string | None, series: string | None)
             }
 
             return Ok(catalog.BookScope.Author(id));
-        },
+        }
     }
 
     return match (series) {
@@ -29,6 +29,6 @@ rule browseScope(author: string | None, series: string | None)
             }
 
             return Ok(catalog.BookScope.Series(id));
-        },
+        }
     }
 }

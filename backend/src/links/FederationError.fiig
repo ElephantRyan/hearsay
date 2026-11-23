@@ -5,5 +5,5 @@ enum FederationError {
     BadInvite,
     Invalid(field: string, reason: string),
     AlreadyLinked,
-    NoServerName,
+    NoServerName
 }

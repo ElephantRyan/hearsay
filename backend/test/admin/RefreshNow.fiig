@@ -20,8 +20,8 @@ test aRefreshReadsBooksAndSeriesAgain {
                     libraryId: "lib-1",
                     title: "Elantris",
                     authors: "Brandon Sanderson",
-                    series: [catalog.SeriesRef(id: "cosmere", name: "The Cosmere", sequence: None)],
-                ),
+                    series: [catalog.SeriesRef(id: "cosmere", name: "The Cosmere", sequence: None)]
+                )
             );
         }
 
@@ -35,8 +35,8 @@ test aRefreshReadsBooksAndSeriesAgain {
                             libraryId: "lib-1",
                             title: "Now ${id}",
                             authors: "A",
-                            series: [],
-                        ),
+                            series: []
+                        )
             );
         }
 
@@ -54,8 +54,8 @@ test aRefreshReadsBooksAndSeriesAgain {
                     libraryId: "lib-1",
                     name: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
-                    bookIds: bookIds,
-                ),
+                    bookIds: bookIds
+                )
             );
         }
     }
@@ -68,8 +68,8 @@ test aRefreshReadsBooksAndSeriesAgain {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect refreshNow(boss) is Ok(summary);
     expect summary.series == 1;

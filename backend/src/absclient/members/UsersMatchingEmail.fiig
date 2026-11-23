@@ -9,7 +9,7 @@ private {
     hasEmail(candidate: string | None, wanted: string) -> bool {
         return match (candidate) {
             None -> false,
-            found -> found.equalsIgnoringCase(wanted),
+            found -> found.equalsIgnoringCase(wanted)
         }
     }
 }

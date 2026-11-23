@@ -8,28 +8,28 @@ adapter http seriesApi {
 
     GET "/series/{seriesId}" -> showSeries(me, seriesId: string) produces "application/json" {
         Ok(detail) -> 200 detail,
-        Err(error) -> seriesErrorResponse(error),
+        Err(error) -> seriesErrorResponse(error)
     }
 
     PUT "/series-ratings/{seriesId}" -> putSeriesRating(
         me,
         seriesId: string,
-        input: ratings.RatingInput,
+        input: ratings.RatingInput
     )
             consumes "application/json"
             produces "application/json" {
         Ok(rating) -> 200 rating,
-        Err(error) -> seriesErrorResponse(error),
+        Err(error) -> seriesErrorResponse(error)
     }
 
     DELETE "/series-ratings/{seriesId}" -> deleteMySeriesRating(me, seriesId: string)
             produces "application/json" {
         Ok(_) -> 204,
-        Err(error) -> seriesErrorResponse(error),
+        Err(error) -> seriesErrorResponse(error)
     }
 
     GET "/recommendations/users/{userId}/series" -> listSeriesPicksOf(me, userId: string)
             produces "application/json" {
-        rows -> 200 rows,
+        rows -> 200 rows
     }
 }

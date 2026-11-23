@@ -11,8 +11,8 @@ rule inviteCodeOf(code: string) -> Result<InviteCode, LinkError> {
         return Err(
             LinkError.Invalid(
                 "code",
-                "isn't a link code: it should start with the other server's address",
-            ),
+                "isn't a link code: it should start with the other server's address"
+            )
         );
     }
 

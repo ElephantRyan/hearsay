@@ -3,5 +3,5 @@ enum SeriesError {
     Missing,
     Unavailable(detail: string),
     Invalid(field: string, reason: string),
-    NoRating,
+    NoRating
 }

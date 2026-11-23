@@ -5,8 +5,8 @@ conversion libraryErrorOfFault(fault: client.AbsFault) -> LibraryError {
     return match (fault) {
         client.AbsFault.Missing -> LibraryError.LibraryNotFound,
         client.AbsFault.Denied -> LibraryError.Unavailable(
-            "this server's Audiobookshelf token was refused; tell the server's admin",
+            "this server's Audiobookshelf token was refused; tell the server's admin"
         ),
-        client.AbsFault.Down(detail) -> LibraryError.Unavailable(detail),
+        client.AbsFault.Down(detail) -> LibraryError.Unavailable(detail)
     }
 }

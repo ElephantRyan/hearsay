@@ -7,7 +7,7 @@ rule oidcGet(url: string, token: string) -> http.Request {
             method: http.Method.Get,
             url: url,
             headers: [http.Header(name: "Accept", value: "application/json")],
-            timeoutMillis: 10000,
+            timeoutMillis: 10000
         );
     }
 
@@ -16,8 +16,8 @@ rule oidcGet(url: string, token: string) -> http.Request {
         url: url,
         headers: [
             http.Header(name: "Accept", value: "application/json"),
-            http.Header(name: "Authorization", value: "Bearer ${token}"),
+            http.Header(name: "Authorization", value: "Bearer ${token}")
         ],
-        timeoutMillis: 10000,
+        timeoutMillis: 10000
     );
 }

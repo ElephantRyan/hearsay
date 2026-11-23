@@ -16,6 +16,6 @@ activity loadSignInModes() -> SignInModes {
 
         ready -> {
             return SignInModes(password: mode != settings.AuthMode.Oidc, oidc: true);
-        },
+        }
     }
 }

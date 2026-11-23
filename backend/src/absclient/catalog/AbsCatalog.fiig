@@ -12,7 +12,7 @@ capability AbsCatalog {
             requires HttpClient {
         itemIdSegment = absclient.absPathId(itemId)?;
         reply = absclient.absReply(
-            HttpClient.send(absclient.absGet(url, "/api/items/${itemIdSegment}", accessToken)),
+            HttpClient.send(absclient.absGet(url, "/api/items/${itemIdSegment}", accessToken))
         )?;
         return bookOfItemReply(reply.body);
     }
@@ -22,8 +22,8 @@ capability AbsCatalog {
         itemIdSegment = absclient.absPathId(itemId)?;
         reply = absclient.absReply(
             HttpClient.send(
-                absclient.absGet(abs.url, "/api/items/${itemIdSegment}", abs.token.reveal()),
-            ),
+                absclient.absGet(abs.url, "/api/items/${itemIdSegment}", abs.token.reveal())
+            )
         )?;
         return bookOfItemReply(reply.body);
     }
@@ -37,7 +37,7 @@ capability AbsCatalog {
         }
 
         reply = absclient.absReply(
-            HttpClient.send(absBatchGet(abs.url, itemIds, abs.token.reveal())),
+            HttpClient.send(absBatchGet(abs.url, itemIds, abs.token.reveal()))
         )?;
         return booksOfBatchReply(reply.body);
     }
@@ -46,7 +46,7 @@ capability AbsCatalog {
             requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         reply = absclient.absReply(
-            HttpClient.send(absclient.absGet(abs.url, "/api/libraries", abs.token.reveal())),
+            HttpClient.send(absclient.absGet(abs.url, "/api/libraries", abs.token.reveal()))
         )?;
         found: AbsLibrariesReply = mapErr(e in json.decode(reply.body)):
                 absclient.AbsError.Unreadable(failure: e)?;
@@ -67,7 +67,7 @@ capability AbsCatalog {
         scopeId = match (scope) {
             BookScope.All -> "all",
             BookScope.Author(id) -> id,
-            BookScope.Series(id) -> id,
+            BookScope.Series(id) -> id
         }
 
         if (!absclient.validId(scopeId)) {
@@ -79,9 +79,9 @@ capability AbsCatalog {
                 absclient.absGet(
                     abs.url,
                     absListPath(libraryIdSegment, page, size, order, scope),
-                    abs.token.reveal(),
-                ),
-            ),
+                    abs.token.reveal()
+                )
+            )
         )?;
         return bookPageOfListing(reply.body);
     }
@@ -96,9 +96,9 @@ capability AbsCatalog {
                 absclient.absGet(
                     abs.url,
                     absSearchPath(libraryIdSegment, query, size),
-                    abs.token.reveal(),
-                ),
-            ),
+                    abs.token.reveal()
+                )
+            )
         )?;
         return searchHitsOf(reply.body, size);
     }
@@ -110,8 +110,8 @@ capability AbsCatalog {
         itemIdSegment = absclient.absPathId(itemId)?;
         reply = absclient.absReply(
             HttpClient.send(
-                absclient.absGet(abs.url, "/api/items/${itemIdSegment}", abs.token.reveal()),
-            ),
+                absclient.absGet(abs.url, "/api/items/${itemIdSegment}", abs.token.reveal())
+            )
         )?;
         return seriesRefsOfItemReply(reply.body);
     }
@@ -124,8 +124,8 @@ capability AbsCatalog {
         seriesIdSegment = absclient.absPathId(seriesId)?;
         found = absclient.absReply(
             HttpClient.send(
-                absclient.absGet(abs.url, "/api/series/${seriesIdSegment}", abs.token.reveal()),
-            ),
+                absclient.absGet(abs.url, "/api/series/${seriesIdSegment}", abs.token.reveal())
+            )
         )?;
         series: AbsSeriesReply = mapErr(e in json.decode(found.body)):
                 absclient.AbsError.Unreadable(failure: e)?;
@@ -139,16 +139,16 @@ capability AbsCatalog {
                         0,
                         100,
                         BookOrder.SeriesOrder,
-                        BookScope.Series(series.id),
+                        BookScope.Series(series.id)
                     ),
-                    abs.token.reveal(),
-                ),
-            ),
+                    abs.token.reveal()
+                )
+            )
         )?;
         page = bookPageOfListing(listed.body)?;
         authors = match (page.books.firstOrNone()) {
             None -> "",
-            first -> first.authors,
+            first -> first.authors
         }
 
         return Ok(
@@ -157,8 +157,8 @@ capability AbsCatalog {
                 libraryId: series.libraryId,
                 name: series.name,
                 authors: authors,
-                bookIds: map(b in page.books): b.itemId,
-            ),
+                bookIds: map(b in page.books): b.itemId
+            )
         );
     }
 }

@@ -6,5 +6,5 @@ enum RatingError {
     Invalid(field: string, reason: string),
     Book(cause: books.BookError),
     NoRating,
-    Unavailable(detail: string),
+    Unavailable(detail: string)
 }

@@ -11,7 +11,7 @@ private {
     matches(value: string, wanted: string | None) -> bool {
         return match (wanted) {
             None -> true,
-            given -> value == given,
+            given -> value == given
         }
     }
 }

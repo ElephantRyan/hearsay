@@ -4,7 +4,7 @@ conversion settingsChangeErrorOf(field: string, error: SettingError) -> Settings
         SettingError.Invalid(reason) -> SettingsChangeError.Invalid(field, reason),
         SettingError.SetByDeployment -> SettingsChangeError.Invalid(
             field,
-            "is set by this server's environment",
-        ),
+            "is set by this server's environment"
+        )
     }
 }

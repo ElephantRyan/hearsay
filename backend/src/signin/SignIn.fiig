@@ -18,9 +18,9 @@ activity signIn(attempt: accounts.SignInAttempt)
                 accounts.SignInServer(
                     absUrl: url,
                     serviceToken: settings.serviceToken(),
-                    oidc: settings.oidcSettingsOf(),
-                ),
+                    oidc: settings.oidcSettingsOf()
+                )
             );
-        },
+        }
     }
 }

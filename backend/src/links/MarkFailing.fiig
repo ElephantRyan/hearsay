@@ -5,6 +5,6 @@ gateway markFailing(id: string, now: int, problem: string) -> int requires Datab
         "UPDATE linked_server SET not_answering_since = COALESCE(not_answering_since, ?), problem = ? WHERE id = ?",
         now,
         problem,
-        id,
+        id
     );
 }

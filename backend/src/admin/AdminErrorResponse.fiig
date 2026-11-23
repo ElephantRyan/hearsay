@@ -4,12 +4,12 @@ conversion adminErrorResponse(error: AdminError) -> HttpResponse<string> {
         AdminError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}"),
         AdminError.UnknownSetting(name) -> HttpResponse(
             status: 404,
-            body: "no setting called ${name}",
+            body: "no setting called ${name}"
         ),
         AdminError.LibraryNotFound -> HttpResponse(
             status: 404,
-            body: "no library in Audiobookshelf that it listed",
+            body: "no library in Audiobookshelf that it listed"
         ),
-        AdminError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
+        AdminError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
     }
 }

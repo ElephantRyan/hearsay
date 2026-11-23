@@ -6,6 +6,6 @@ conversion sourceText(source: SettingSource) -> string {
         SettingSource.Pending -> "saved",
         SettingSource.Deployment -> "environment",
         SettingSource.Default -> "environment",
-        SettingSource.Unset -> "unset",
+        SettingSource.Unset -> "unset"
     }
 }

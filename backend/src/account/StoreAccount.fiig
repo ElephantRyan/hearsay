@@ -13,7 +13,7 @@ activity storeAccount(
         username: me.username,
         displayName: displayName ?? current.displayName,
         shareNotesByDefault: shareNotesByDefault ?? current.shareNotesByDefault,
-        skipRatedSeriesBooks: skipRatedSeriesBooks ?? current.skipRatedSeriesBooks,
+        skipRatedSeriesBooks: skipRatedSeriesBooks ?? current.skipRatedSeriesBooks
     );
     saveAccount(me, account);
     return account;

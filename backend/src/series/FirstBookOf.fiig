@@ -6,7 +6,7 @@ use hearsay.books;
 activity firstBookOf(series: catalog.CatalogSeries) -> catalog.Book | None {
     return match (series.bookIds.firstOrNone()) {
         None -> None,
-        itemId -> bookOrNone(itemId),
+        itemId -> bookOrNone(itemId)
     }
 }
 
@@ -14,7 +14,7 @@ private {
     bookOrNone(itemId: string) -> catalog.Book | None {
         return match (books.latestBook(itemId)) {
             Ok(book) -> book,
-            Err(_) -> None,
+            Err(_) -> None
         }
     }
 }

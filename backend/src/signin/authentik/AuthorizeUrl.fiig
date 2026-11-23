@@ -17,8 +17,8 @@ conversion authorizeUrl(
             http.Header(name: "scope", value: "openid email profile"),
             http.Header(name: "state", value: state),
             http.Header(name: "code_challenge", value: challenge),
-            http.Header(name: "code_challenge_method", value: "S256"),
-        ],
+            http.Header(name: "code_challenge_method", value: "S256")
+        ]
     );
     return "${endpoint}?${query}";
 }
@@ -27,7 +27,7 @@ private {
     queryOf(fields: List<http.Header>) -> string {
         return match (http.formEncode(fields).utf8()) {
             None -> "",
-            text -> text,
+            text -> text
         }
     }
 }

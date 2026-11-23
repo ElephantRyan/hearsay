@@ -14,8 +14,8 @@ capability AbsProgress {
         userIdSegment = absclient.absPathId(userId)?;
         reply = absclient.absReply(
             HttpClient.send(
-                absclient.absGet(abs.url, "/api/users/${userIdSegment}", abs.token.reveal()),
-            ),
+                absclient.absGet(abs.url, "/api/users/${userIdSegment}", abs.token.reveal())
+            )
         )?;
         return progressOfUserReply(reply.body);
     }

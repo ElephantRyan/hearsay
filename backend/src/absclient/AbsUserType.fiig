@@ -3,5 +3,5 @@ enum AbsUserType {
     Root from json "root",
     Admin from json "admin",
     User from json "user",
-    Guest from json "guest",
+    Guest from json "guest"
 }

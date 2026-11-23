@@ -22,7 +22,7 @@ activity storeSeriesRating(
         noteShared: checked.noteShared,
         recommended: checked.recommended,
         createdAt: now,
-        updatedAt: now,
+        updatedAt: now
     );
     transaction Database {
         upsertSeriesUser(user.userId, user.username, now);
@@ -33,7 +33,7 @@ activity storeSeriesRating(
 
             book -> {
                 BookCache.save(book, now);
-            },
+            }
         }
 
         saveSeriesRating(rating);

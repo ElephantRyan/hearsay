@@ -64,14 +64,14 @@ test oidcCallbackChecksStateBeforeExchanging {
                         accounts.Identity(
                             userId: "u1",
                             username: "ann",
-                            userType: client.AbsUserType.User,
-                        ),
+                            userType: client.AbsUserType.User
+                        )
                     );
                 },
 
                 accounts.SignInAttempt.Password(username, password) -> {
                     return Err(accounts.SignInError.WrongMethod);
-                },
+                }
             }
         }
     }
@@ -86,7 +86,7 @@ test oidcCallbackChecksStateBeforeExchanging {
         opened -> {
             expect sessions.signedIn(opened.token) is Ok(me);
             expect me.userId == "u1";
-        },
+        }
     }
 
     expect finishSignIn("code-1", "WRONG", None, "st-1.ver-1").location == "https://app.test/sign-in?error=state";

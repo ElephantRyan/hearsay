@@ -56,10 +56,10 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
                             title: "Dune",
                             authors: "Frank Herbert",
                             asin: "B0DUNE",
-                            isbn: None,
-                        ),
-                    ],
-                ),
+                            isbn: None
+                        )
+                    ]
+                )
             );
         }
     }
@@ -84,15 +84,15 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
                         expect decoded is Ok(offer);
                         expect offer == LinkOffer(secret: "s".padRight(43, "s"), name: "Alex's library", address: "https://alex.test", key: offer.key);
                         expect offer.key.length() == 43;
-                    },
+                    }
                 }
 
                 return Ok(
                     http.Reply(
                         status: 200,
                         headers: [http.Header(name: "Content-Type", value: "application/json")],
-                        body: json.encode(LinkAcceptance(name: "The family library", key: key)),
-                    ),
+                        body: json.encode(LinkAcceptance(name: "The family library", key: key))
+                    )
                 );
             }
 
@@ -113,11 +113,11 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
                                     authors: "Frank Herbert",
                                     score: 9,
                                     note: "great",
-                                    updatedAt: 1,
-                                ),
-                            ],
-                        ),
-                    ),
+                                    updatedAt: 1
+                                )
+                            ]
+                        )
+                    )
                 );
             }
 
@@ -136,8 +136,8 @@ test aCodeLinksFetchesAtOnceAndUnlinkTellsTheOther {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Root,
-        ),
+            userType: client.AbsUserType.Root
+        )
     );
     code = "  https://family.test/#${"s".padRight(43, "s")} ";
     expect linkServer(admin, LinkRequest(code: code)) is Ok(link);
@@ -203,10 +203,10 @@ test aLoginPageOrARefusalKeepsNothing {
                             title: "Dune",
                             authors: "Frank Herbert",
                             asin: "B0DUNE",
-                            isbn: None,
-                        ),
-                    ],
-                ),
+                            isbn: None
+                        )
+                    ]
+                )
             );
         }
     }
@@ -223,8 +223,8 @@ test aLoginPageOrARefusalKeepsNothing {
                     http.Reply(
                         status: 302,
                         headers: [http.Header(name: "Location", value: "https://auth.test/flow")],
-                        body: "".utf8(),
-                    ),
+                        body: "".utf8()
+                    )
                 );
             }
 
@@ -233,10 +233,10 @@ test aLoginPageOrARefusalKeepsNothing {
                     http.Reply(
                         status: 200,
                         headers: [
-                            http.Header(name: "Content-Type", value: "text/html; charset=utf-8"),
+                            http.Header(name: "Content-Type", value: "text/html; charset=utf-8")
                         ],
-                        body: "<html></html>".utf8(),
-                    ),
+                        body: "<html></html>".utf8()
+                    )
                 );
             }
 
@@ -245,8 +245,8 @@ test aLoginPageOrARefusalKeepsNothing {
                     http.Reply(
                         status: 403,
                         headers: [http.Header(name: "Content-Type", value: "text/plain")],
-                        body: "this link code is used, expired, or wrong".utf8(),
-                    ),
+                        body: "this link code is used, expired, or wrong".utf8()
+                    )
                 );
             }
 
@@ -258,8 +258,8 @@ test aLoginPageOrARefusalKeepsNothing {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     secret = "s".padRight(43, "s");
     expect linkServer(admin, LinkRequest(code: "https://login.test#${secret}")) is Err(LinkError.PeerLoginPage);
@@ -325,8 +325,8 @@ test linkingWaitsForTheLibraryIndex {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Err(LinkError.IndexUnavailable(_));
     expect calls(HttpClient.send) == 0;
@@ -383,9 +383,9 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
                         status: 200,
                         headers: [],
                         body: json.encode(
-                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k")),
-                        ),
-                    ),
+                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k"))
+                        )
+                    )
                 );
             }
 
@@ -397,8 +397,8 @@ test aSilentServerStaysLinkedAndUnlinkingStillForgetsIt {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
     expect link.problem == "it didn't answer";

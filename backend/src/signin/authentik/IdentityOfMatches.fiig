@@ -13,8 +13,8 @@ conversion identityOfMatches(matches: List<members.AbsUserEntry>)
     if (matches.length() > 1) {
         return Err(
             accounts.SignInError.Refused(
-                "more than one Audiobookshelf account has your email; ask the server's admin",
-            ),
+                "more than one Audiobookshelf account has your email; ask the server's admin"
+            )
         );
     }
 

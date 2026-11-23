@@ -14,7 +14,7 @@ capability BookCache {
             book.authors,
             book.asin,
             book.isbn,
-            now,
+            now
         );
         match (book.series) {
             None -> {
@@ -28,12 +28,12 @@ capability BookCache {
                         book.itemId,
                         ref.id,
                         ref.name,
-                        ref.sequence,
+                        ref.sequence
                     );
                 }
 
                 Database.execute("UPDATE book SET series_known = 1 WHERE item_id = ?", book.itemId);
-            },
+            }
         }
 
         return saved;

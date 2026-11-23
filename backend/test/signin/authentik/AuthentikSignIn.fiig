@@ -28,8 +28,8 @@ test authenticateFindsTheAbsUserByEmail {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8(),
-                    ),
+                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()
+                    )
                 );
             }
 
@@ -52,17 +52,17 @@ test authenticateFindsTheAbsUserByEmail {
                                 expect form.contains("code_verifier=verifier-1");
                                 expect form.contains("client_id=cid");
                                 expect form.contains("client_secret=csec");
-                            },
+                            }
                         }
-                    },
+                    }
                 }
 
                 return Ok(
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"access_token\":\"at-1\",\"token_type\":\"Bearer\",\"id_token\":\"ignored\"}".utf8(),
-                    ),
+                        body: "{\"access_token\":\"at-1\",\"token_type\":\"Bearer\",\"id_token\":\"ignored\"}".utf8()
+                    )
                 );
             }
 
@@ -72,8 +72,8 @@ test authenticateFindsTheAbsUserByEmail {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"sub\":\"s-1\",\"email\":\"Ryan@Example.com\",\"email_verified\":false,\"preferred_username\":\"ryan\"}".utf8(),
-                    ),
+                        body: "{\"sub\":\"s-1\",\"email\":\"Ryan@Example.com\",\"email_verified\":false,\"preferred_username\":\"ryan\"}".utf8()
+                    )
                 );
             }
 
@@ -83,8 +83,8 @@ test authenticateFindsTheAbsUserByEmail {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"users\":[{\"id\":\"u-9\",\"username\":\"someone\",\"type\":\"user\",\"email\":null,\"token\":\"never-printed\"},{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"email\":\"ryan@example.com\",\"token\":\"never-printed\"}]}".utf8(),
-                    ),
+                        body: "{\"users\":[{\"id\":\"u-9\",\"username\":\"someone\",\"type\":\"user\",\"email\":null,\"token\":\"never-printed\"},{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"email\":\"ryan@example.com\",\"token\":\"never-printed\"}]}".utf8()
+                    )
                 );
             }
 
@@ -97,7 +97,7 @@ test authenticateFindsTheAbsUserByEmail {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Ok(identity);
     expect identity == accounts.Identity(userId: "u-1", username: "ryan", userType: client.AbsUserType.Admin);
@@ -123,8 +123,8 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8(),
-                    ),
+                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()
+                    )
                 );
             }
 
@@ -133,8 +133,8 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"access_token\":\"at-1\"}".utf8(),
-                    ),
+                        body: "{\"access_token\":\"at-1\"}".utf8()
+                    )
                 );
             }
 
@@ -143,8 +143,8 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8(),
-                    ),
+                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()
+                    )
                 );
             }
 
@@ -156,7 +156,7 @@ test absRefusingTheServiceTokenIsOurProblemNotThePersons {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Unavailable(detail));
     expect detail.contains("token was refused");
@@ -182,8 +182,8 @@ test twoAbsAccountsWithOneEmailIsRefused {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8(),
-                    ),
+                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()
+                    )
                 );
             }
 
@@ -192,8 +192,8 @@ test twoAbsAccountsWithOneEmailIsRefused {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"access_token\":\"at-1\"}".utf8(),
-                    ),
+                        body: "{\"access_token\":\"at-1\"}".utf8()
+                    )
                 );
             }
 
@@ -202,8 +202,8 @@ test twoAbsAccountsWithOneEmailIsRefused {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8(),
-                    ),
+                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()
+                    )
                 );
             }
 
@@ -211,8 +211,8 @@ test twoAbsAccountsWithOneEmailIsRefused {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"a\",\"type\":\"user\",\"email\":\"ryan@example.com\"},{\"id\":\"u-2\",\"username\":\"b\",\"type\":\"user\",\"email\":\"RYAN@example.com\"}]}".utf8(),
-                ),
+                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"a\",\"type\":\"user\",\"email\":\"ryan@example.com\"},{\"id\":\"u-2\",\"username\":\"b\",\"type\":\"user\",\"email\":\"RYAN@example.com\"}]}".utf8()
+                )
             );
         }
     }
@@ -221,7 +221,7 @@ test twoAbsAccountsWithOneEmailIsRefused {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why));
     expect why.contains("more than one");
@@ -246,8 +246,8 @@ test noAbsAccountMeansSignInToAbsFirst {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8(),
-                    ),
+                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()
+                    )
                 );
             }
 
@@ -256,8 +256,8 @@ test noAbsAccountMeansSignInToAbsFirst {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"access_token\":\"at-1\"}".utf8(),
-                    ),
+                        body: "{\"access_token\":\"at-1\"}".utf8()
+                    )
                 );
             }
 
@@ -266,8 +266,8 @@ test noAbsAccountMeansSignInToAbsFirst {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"sub\":\"s-2\",\"email\":\"new@example.com\"}".utf8(),
-                    ),
+                        body: "{\"sub\":\"s-2\",\"email\":\"new@example.com\"}".utf8()
+                    )
                 );
             }
 
@@ -275,8 +275,8 @@ test noAbsAccountMeansSignInToAbsFirst {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8(),
-                ),
+                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()
+                )
             );
         }
     }
@@ -285,7 +285,7 @@ test noAbsAccountMeansSignInToAbsFirst {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.NoAccount);
 }
@@ -309,8 +309,8 @@ test noEmailFromTheProviderIsRefused {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8(),
-                    ),
+                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()
+                    )
                 );
             }
 
@@ -319,8 +319,8 @@ test noEmailFromTheProviderIsRefused {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"access_token\":\"at-1\"}".utf8(),
-                    ),
+                        body: "{\"access_token\":\"at-1\"}".utf8()
+                    )
                 );
             }
 
@@ -332,8 +332,8 @@ test noEmailFromTheProviderIsRefused {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8(),
-                ),
+                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()
+                )
             );
         }
     }
@@ -342,7 +342,7 @@ test noEmailFromTheProviderIsRefused {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why));
     expect why.contains("no email");
@@ -371,7 +371,7 @@ test passwordAttemptIsTheWrongMethod {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.WrongMethod);
     expect calls(HttpClient.send) == 0;
@@ -396,8 +396,8 @@ test providerOutageIsUnavailable {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8(),
-                    ),
+                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()
+                    )
                 );
             }
 
@@ -406,8 +406,8 @@ test providerOutageIsUnavailable {
                     http.Reply(
                         status: 503,
                         headers: [],
-                        body: "{\"access_token\":\"at-1\"}".utf8(),
-                    ),
+                        body: "{\"access_token\":\"at-1\"}".utf8()
+                    )
                 );
             }
 
@@ -416,8 +416,8 @@ test providerOutageIsUnavailable {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8(),
-                    ),
+                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()
+                    )
                 );
             }
 
@@ -425,8 +425,8 @@ test providerOutageIsUnavailable {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8(),
-                ),
+                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()
+                )
             );
         }
     }
@@ -435,7 +435,7 @@ test providerOutageIsUnavailable {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Unavailable(detail));
     expect detail == "the identity provider answered 503";
@@ -460,8 +460,8 @@ test rejectedCodeIsRefused {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8(),
-                    ),
+                        body: "{\"authorization_endpoint\":\"a\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\"}".utf8()
+                    )
                 );
             }
 
@@ -470,8 +470,8 @@ test rejectedCodeIsRefused {
                     http.Reply(
                         status: 400,
                         headers: [],
-                        body: "{\"access_token\":\"at-1\"}".utf8(),
-                    ),
+                        body: "{\"access_token\":\"at-1\"}".utf8()
+                    )
                 );
             }
 
@@ -480,8 +480,8 @@ test rejectedCodeIsRefused {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8(),
-                    ),
+                        body: "{\"sub\":\"s-1\",\"email\":\"ryan@example.com\"}".utf8()
+                    )
                 );
             }
 
@@ -489,8 +489,8 @@ test rejectedCodeIsRefused {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8(),
-                ),
+                    body: "{\"users\":[{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"user\",\"email\":\"ryan@example.com\"}]}".utf8()
+                )
             );
         }
     }
@@ -499,7 +499,7 @@ test rejectedCodeIsRefused {
     server = accounts.SignInServer(
         absUrl: "https://abs.test",
         serviceToken: settings.serviceToken(),
-        oidc: settings.oidcSettingsOf(),
+        oidc: settings.oidcSettingsOf()
     );
     expect AuthentikSignIn.authenticate(attempt, server) is Err(accounts.SignInError.Refused(why));
     expect why == "the identity provider did not accept this sign-in";
@@ -520,8 +520,8 @@ test beginUrlCarriesStateAndTheS256Challenge {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"authorization_endpoint\":\"https://idp.test/application/o/authorize/\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\",\"issuer\":\"x\"}".utf8(),
-                ),
+                    body: "{\"authorization_endpoint\":\"https://idp.test/application/o/authorize/\",\"token_endpoint\":\"https://idp.test/application/o/token/\",\"userinfo_endpoint\":\"https://idp.test/application/o/userinfo/\",\"issuer\":\"x\"}".utf8()
+                )
             );
         }
     }
@@ -541,6 +541,6 @@ test beginUrlCarriesStateAndTheS256Challenge {
             expect url.contains("state=st-1");
             expect url.contains("code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM");
             expect url.contains("code_challenge_method=S256");
-        },
+        }
     }
 }

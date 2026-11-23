@@ -4,5 +4,5 @@
 enum AuthMode {
     Abs from json "abs",
     Oidc from json "oidc",
-    Both from json "both",
+    Both from json "both"
 }

@@ -6,12 +6,12 @@ conversion peerRefused(error: PeerRefusal) -> HttpResponse<string> {
         PeerRefusal.NoKey -> HttpResponse(
             status: 401,
             headers: ["WWW-Authenticate": "Bearer"],
-            body: "a linked server's key is needed",
+            body: "a linked server's key is needed"
         ),
         PeerRefusal.UnknownKey -> HttpResponse(
             status: 401,
             headers: ["WWW-Authenticate": "Bearer"],
-            body: "that key belongs to no linked server",
-        ),
+            body: "that key belongs to no linked server"
+        )
     }
 }

@@ -7,6 +7,6 @@ activity peerToFetch(id: string) -> Result<PeerKey, LinkError> {
 
         peer -> {
             return Ok(peer);
-        },
+        }
     }
 }

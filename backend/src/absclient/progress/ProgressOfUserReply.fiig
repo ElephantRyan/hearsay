@@ -12,8 +12,8 @@ conversion progressOfUserReply(body: bytes) -> Result<List<Progress>, absclient.
                     itemId: p.libraryItemId,
                     finished: p.isFinished,
                     percent: math.roundToInt(p.progress * 100.0),
-                    lastListenedAt: p.lastUpdate,
-                ),
+                    lastListenedAt: p.lastUpdate
+                )
     );
 }
 

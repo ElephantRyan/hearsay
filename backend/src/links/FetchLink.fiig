@@ -17,7 +17,7 @@ activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
             matched: List<LinkedRating> = [];
             for (rating in ratings) {
                 local = matching.matchBook(
-                    matching.keysOf(rating.asin, rating.isbn, rating.title, rating.authors),
+                    matching.keysOf(rating.asin, rating.isbn, rating.title, rating.authors)
                 );
                 matched = append(matched, withMatch(peer.id, rating, local));
             }
@@ -25,13 +25,13 @@ activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
             found = filter(rating in matched): rating.itemId != None;
             sharedSeries: List<SharedSeries> = match (PeerServer.series(peer.address, peer.keyOut)) {
                 Ok(list) -> list,
-                Err(_) -> [],
+                Err(_) -> []
             }
 
             seriesMatched: List<LinkedSeriesRating> = [];
             for (shared in sharedSeries) {
                 local = matching.matchBook(
-                    matching.keysOf(shared.asin, shared.isbn, shared.firstTitle, shared.authors),
+                    matching.keysOf(shared.asin, shared.isbn, shared.firstTitle, shared.authors)
                 );
                 seriesMatched = append(seriesMatched, withSeriesMatch(peer.id, shared, local));
             }
@@ -48,7 +48,7 @@ activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
 
                 markFetched(peer.id, now, matched.length(), found.length());
             }
-        },
+        }
     }
 
     return match (linkById(peer.id)) {
@@ -58,7 +58,7 @@ activity fetchLink(peer: PeerKey) -> Result<LinkedServer, LinkError> {
 
         link -> {
             return Ok(link);
-        },
+        }
     }
 }
 
@@ -80,7 +80,7 @@ private {
                     updatedAt: rating.updatedAt,
                     itemId: None,
                     libraryId: None,
-                    matchedBy: None,
+                    matchedBy: None
                 );
             },
 
@@ -98,9 +98,9 @@ private {
                     updatedAt: rating.updatedAt,
                     itemId: found.itemId,
                     libraryId: found.libraryId,
-                    matchedBy: found.how,
+                    matchedBy: found.how
                 );
-            },
+            }
         }
     }
 
@@ -108,12 +108,12 @@ private {
             -> LinkedSeriesRating {
         found: string | None = match (local) {
             None -> None,
-            book -> series.localSeriesOf(book.itemId, shared.seriesName),
+            book -> series.localSeriesOf(book.itemId, shared.seriesName)
         }
 
         bookHow: string | None = match (local) {
             None -> None,
-            book -> book.how,
+            book -> book.how
         }
 
         // How it was recognised, only when it was.
@@ -135,7 +135,7 @@ private {
             note: shared.note,
             updatedAt: shared.updatedAt,
             seriesId: found,
-            matchedBy: how,
+            matchedBy: how
         );
     }
 }

@@ -34,14 +34,14 @@ private {
     hourText(hour: int | None) -> string | None {
         return match (hour) {
             None -> None,
-            given -> "${given}",
+            given -> "${given}"
         }
     }
 
     saveGiven(name: SettingName, text: string | None, by: string) -> Result<None, SettingError> {
         return match (text) {
             None -> Ok(None),
-            given -> saveSetting(name, given, by),
+            given -> saveSetting(name, given, by)
         }
     }
 
@@ -49,14 +49,14 @@ private {
         return match (on) {
             None -> None,
             true -> "true",
-            false -> "false",
+            false -> "false"
         }
     }
 
     modeText(mode: AuthMode | None) -> string | None {
         return match (mode) {
             None -> None,
-            given -> authModeText(given),
+            given -> authModeText(given)
         }
     }
 }

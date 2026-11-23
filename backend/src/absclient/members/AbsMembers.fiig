@@ -25,7 +25,7 @@ capability AbsMembers {
     gateway meAsService() -> Result<AbsUser, absclient.AbsError> requires HttpClient {
         abs = absclient.targetOf(Abs.url, AbsService.token)?;
         reply = absclient.absReply(
-            HttpClient.send(absclient.absGet(abs.url, "/api/me", abs.token.reveal())),
+            HttpClient.send(absclient.absGet(abs.url, "/api/me", abs.token.reveal()))
         )?;
         user: AbsUser = mapErr(e in json.decode(reply.body)):
                 absclient.AbsError.Unreadable(failure: e)?;

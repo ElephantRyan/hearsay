@@ -8,5 +8,5 @@ enum AbsError {
     NotFound,
     Rejected(status: int),
     Unreadable(failure: JsonError),
-    NotSetUp(missing: string),
+    NotSetUp(missing: string)
 }

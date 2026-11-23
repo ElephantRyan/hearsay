@@ -5,7 +5,7 @@ rule preview(plans: List<SyncPlan>) -> List<SyncResult> {
                 libraryId: p.libraryId,
                 action: wouldDo(p.action),
                 books: p.bookIds.length(),
-                error: None,
+                error: None
             );
 }
 
@@ -15,7 +15,7 @@ private {
             SyncAction.Create -> SyncOutcome.WouldCreate,
             SyncAction.Update -> SyncOutcome.WouldUpdate,
             SyncAction.Recreate -> SyncOutcome.WouldRecreate,
-            SyncAction.Remove -> SyncOutcome.WouldRemove,
+            SyncAction.Remove -> SyncOutcome.WouldRemove
         }
     }
 }

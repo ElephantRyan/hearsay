@@ -19,7 +19,7 @@ activity loadAllSyncPlans() -> List<SyncPlan> {
     folded = recommendations.collapseSeries(
         links.everyRecommendation(),
         picks,
-        SeriesRatings.books(),
+        SeriesRatings.books()
     );
     recommendedIds = map(r in filter(r in folded): r.recommended): r.itemId;
     // If ABS can't be asked, the books not known stay out of the standalones.
@@ -28,7 +28,7 @@ activity loadAllSyncPlans() -> List<SyncPlan> {
         },
 
         Err(_) -> {
-        },
+        }
     }
 
     inSeries = map(b in BookSeriesIndex.all()): b.itemId;
@@ -38,7 +38,7 @@ activity loadAllSyncPlans() -> List<SyncPlan> {
         recommendations.sortRanked(recommendations.rankRecommendations(standalones)),
         states,
         settings.topSeries(),
-        settings.topStandalones(),
+        settings.topStandalones()
     );
     return withTopFirst(top, people);
 }

@@ -13,8 +13,8 @@ activity checkSignInStaysPossible(change: SettingsChange) -> Result<int, Setting
         return Err(
             SettingsChangeError.Invalid(
                 "authMode",
-                "can be Authentik only once every Authentik setting is filled in",
-            ),
+                "can be Authentik only once every Authentik setting is filled in"
+            )
         );
     }
 
@@ -34,7 +34,7 @@ private {
 
             given -> {
                 return true;
-            },
+            }
         }
     }
 }

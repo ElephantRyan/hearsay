@@ -6,6 +6,6 @@ adapter http ratedApi {
 
     GET "/ratings/mine?sort={sort}" -> listMyRatings(me, sort: RatingOrder | None)
             produces "application/json" {
-        rows -> 200 rows,
+        rows -> 200 rows
     }
 }

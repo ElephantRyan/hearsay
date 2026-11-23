@@ -13,6 +13,6 @@ gateway saveLinkedSeriesRating(rating: LinkedSeriesRating) -> int requires Datab
         rating.note,
         rating.updatedAt,
         rating.seriesId,
-        rating.matchedBy,
+        rating.matchedBy
     );
 }

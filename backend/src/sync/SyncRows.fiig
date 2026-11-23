@@ -11,7 +11,7 @@ activity syncRows() -> List<rated.RatingRow> {
     folded = recommendations.collapseSeries(
         links.everyRecommendation(),
         picks,
-        SeriesRatings.books(),
+        SeriesRatings.books()
     );
     return folded.concat(seriesRows(picks));
 }

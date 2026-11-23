@@ -4,16 +4,16 @@ conversion syncErrorResponse(error: SyncError) -> HttpResponse<string> {
     return match (error) {
         SyncError.MirroringOff -> HttpResponse(
             status: 404,
-            body: "no collection mirroring on this server",
+            body: "no collection mirroring on this server"
         ),
         SyncError.NotAllowed -> HttpResponse(
             status: 403,
-            body: "only an admin can sync someone else's list",
+            body: "only an admin can sync someone else's list"
         ),
         SyncError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
         SyncError.SomeWritesFailed(failed, total) -> HttpResponse(
             status: 503,
-            body: "${failed} of ${total} collection writes failed",
-        ),
+            body: "${failed} of ${total} collection writes failed"
+        )
     }
 }

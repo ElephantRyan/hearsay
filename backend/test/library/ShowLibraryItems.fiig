@@ -33,13 +33,13 @@ test browseListsSearchesAndMarksMyScores {
                 catalog.BookOrder.TitleDescending -> 1,
                 catalog.BookOrder.AuthorAscending -> 2,
                 catalog.BookOrder.AuthorDescending -> 4,
-                catalog.BookOrder.SeriesOrder -> 8,
+                catalog.BookOrder.SeriesOrder -> 8
             }
 
             byScope = match (scope) {
                 catalog.BookScope.All -> 0,
                 catalog.BookScope.Author(id) -> 100,
-                catalog.BookScope.Series(id) -> 1000,
+                catalog.BookScope.Series(id) -> 1000
             }
 
             total = byOrder + byScope;
@@ -53,11 +53,11 @@ test browseListsSearchesAndMarksMyScores {
                             itemId: "a",
                             libraryId: "lib-1",
                             title: "Alpha",
-                            authors: "A. Author",
+                            authors: "A. Author"
                         ),
-                        catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: ""),
-                    ],
-                ),
+                        catalog.Book(itemId: "b", libraryId: "lib-1", title: "Beta", authors: "")
+                    ]
+                )
             );
         }
 
@@ -77,23 +77,23 @@ test browseListsSearchesAndMarksMyScores {
                                 itemId: "b",
                                 libraryId: "lib-1",
                                 title: "beta",
-                                authors: "Zed",
+                                authors: "Zed"
                             ),
                             catalog.Book(
                                 itemId: "a",
                                 libraryId: "lib-1",
                                 title: "Alpha",
-                                authors: "A. Author",
+                                authors: "A. Author"
                             ),
                             catalog.Book(
                                 itemId: "c",
                                 libraryId: "lib-1",
                                 title: "Gamma",
-                                authors: "a. author",
-                            ),
-                        ],
-                    ),
-                ),
+                                authors: "a. author"
+                            )
+                        ]
+                    )
+                )
             );
         }
 
@@ -103,8 +103,8 @@ test browseListsSearchesAndMarksMyScores {
                     itemId: itemId,
                     libraryId: "lib-1",
                     title: "Alpha",
-                    authors: "A. Author",
-                ),
+                    authors: "A. Author"
+                )
             );
         }
     }

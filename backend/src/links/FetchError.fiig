@@ -2,5 +2,5 @@
 // the old index was used, or the other servers were fetched.
 enum FetchError {
     IndexNotRebuilt(problem: string),
-    SomeServersSilent(failed: int, of: int),
+    SomeServersSilent(failed: int, of: int)
 }

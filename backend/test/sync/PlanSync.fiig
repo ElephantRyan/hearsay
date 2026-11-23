@@ -14,7 +14,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 1,
             updatedAt: 1,
-            noteShared: false,
+            noteShared: false
         ),
         rated.RatingRow(
             userId: "u1",
@@ -28,7 +28,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 2,
             updatedAt: 2,
-            noteShared: false,
+            noteShared: false
         ),
         rated.RatingRow(
             userId: "u1",
@@ -42,7 +42,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: false,
             createdAt: 3,
             updatedAt: 3,
-            noteShared: false,
+            noteShared: false
         ),
         rated.RatingRow(
             userId: "u1",
@@ -56,7 +56,7 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 4,
             updatedAt: 4,
-            noteShared: false,
+            noteShared: false
         ),
         rated.RatingRow(
             userId: "u1",
@@ -70,8 +70,8 @@ test planSyncCreatesUpdatesAndRemoves {
             recommended: true,
             createdAt: 5,
             updatedAt: 5,
-            noteShared: false,
-        ),
+            noteShared: false
+        )
     ];
     states = [
         SyncState(
@@ -79,22 +79,22 @@ test planSyncCreatesUpdatesAndRemoves {
             libraryId: "lib-2",
             collectionId: "col-2",
             lastSyncedAt: 1,
-            lastError: None,
+            lastError: None
         ),
         SyncState(
             userId: "u1",
             libraryId: "lib-3",
             collectionId: "col-3",
             lastSyncedAt: 1,
-            lastError: None,
+            lastError: None
         ),
         SyncState(
             userId: "u9",
             libraryId: "lib-1",
             collectionId: "col-9",
             lastSyncedAt: 1,
-            lastError: None,
-        ),
+            lastError: None
+        )
     ];
     plans = planSync(rows, states, ["u1"]);
     expect plans.length() == 3;

@@ -15,8 +15,8 @@ rule checkSettingsChange(change: SettingsChange) -> Result<SettingsChange, Setti
             oidcClientId: checkText("oidcClientId", change.oidcClientId)?,
             oidcClientSecret: checkText("oidcClientSecret", change.oidcClientSecret)?,
             oidcRedirectUri: checkUrl("oidcRedirectUri", change.oidcRedirectUri)?,
-            serverName: checkText("serverName", change.serverName)?,
-        ),
+            serverName: checkText("serverName", change.serverName)?
+        )
     );
 }
 
@@ -29,13 +29,13 @@ private {
                     return Err(
                         SettingsChangeError.Invalid(
                             field: field,
-                            reason: "must be an hour from 0 to 23",
-                        ),
+                            reason: "must be an hour from 0 to 23"
+                        )
                     );
                 }
 
                 return Ok(hour);
-            },
+            }
         }
     }
 
@@ -49,7 +49,7 @@ private {
                 url = text.trim().removeSuffix("/");
                 if (!url.startsWith("https://") && !url.startsWith("http://")) {
                     return Err(
-                        SettingsChangeError.Invalid(field, "must start with https:// or http://"),
+                        SettingsChangeError.Invalid(field, "must start with https:// or http://")
                     );
                 }
 
@@ -58,7 +58,7 @@ private {
                 }
 
                 return Ok(url);
-            },
+            }
         }
     }
 
@@ -74,7 +74,7 @@ private {
                 }
 
                 return Ok(text.trim());
-            },
+            }
         }
     }
 }

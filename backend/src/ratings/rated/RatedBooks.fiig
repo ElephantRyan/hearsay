@@ -7,7 +7,7 @@ capability RatedBooks {
     gateway byUser(userId: string) -> List<RatingRow> requires Database idempotent {
         return Database.queryMany(
             "SELECT * FROM rating_row WHERE user_id = ? ORDER BY updated_at DESC",
-            userId,
+            userId
         );
     }
 
@@ -16,7 +16,7 @@ capability RatedBooks {
     // a note only when its writer shared it.
     gateway recommended() -> List<RatingRow> requires Database idempotent {
         return Database.queryMany(
-            "SELECT user_id, username, item_id, library_id, title, authors, score, CASE WHEN note_shared = 1 THEN note ELSE '' END AS note, recommended, created_at, updated_at, via, matched_by, note_shared FROM rating_row WHERE recommended = 1",
+            "SELECT user_id, username, item_id, library_id, title, authors, score, CASE WHEN note_shared = 1 THEN note ELSE '' END AS note, recommended, created_at, updated_at, via, matched_by, note_shared FROM rating_row WHERE recommended = 1"
         );
     }
 
@@ -38,7 +38,7 @@ capability RatedBooks {
             viewerId,
             viewerId,
             itemId,
-            viewerId,
+            viewerId
         );
     }
 }

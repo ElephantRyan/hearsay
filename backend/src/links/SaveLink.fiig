@@ -7,6 +7,6 @@ gateway saveLink(link: LinkedServer, keyOut: string, keyInHash: string) -> int r
         keyOut,
         keyInHash,
         link.linkedAt,
-        link.linkedBy,
+        link.linkedBy
     );
 }

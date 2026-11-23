@@ -16,8 +16,8 @@ workflow callingServer(key: string | None) -> Result<LinkedServer, PeerRefusal> 
 
                 link -> {
                     return Ok(link);
-                },
+                }
             }
-        },
+        }
     }
 }

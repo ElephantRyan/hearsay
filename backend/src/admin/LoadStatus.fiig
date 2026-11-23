@@ -24,15 +24,15 @@ private {
                             "unreachable",
                             None,
                             None,
-                            "Audiobookshelf didn't answer at that address.",
+                            "Audiobookshelf didn't answer at that address."
                         );
                     },
 
                     Ok(_) -> {
                         return withAccount(url);
-                    },
+                    }
                 }
-            },
+            }
         }
     }
 
@@ -50,9 +50,9 @@ private {
 
                     Err(error) -> {
                         return status("reachable", None, None, tokenProblem(error));
-                    },
+                    }
                 }
-            },
+            }
         }
     }
 
@@ -70,9 +70,9 @@ private {
 
                     Err(_) -> {
                         return "not answering";
-                    },
+                    }
                 }
-            },
+            }
         }
     }
 
@@ -87,7 +87,7 @@ private {
             authentik: "not set up",
             serviceAccount: account,
             serviceAccountType: accountType,
-            problem: problem,
+            problem: problem
         );
     }
 
@@ -97,7 +97,7 @@ private {
             authentik: authentik,
             serviceAccount: found.serviceAccount,
             serviceAccountType: found.serviceAccountType,
-            problem: found.problem,
+            problem: found.problem
         );
     }
 
@@ -109,7 +109,7 @@ private {
             client.AbsError.Rejected(status) -> "Audiobookshelf answered ${status} to the token.",
             client.AbsError.Unreachable(failure) -> "Audiobookshelf stopped answering.",
             client.AbsError.Unreadable(failure) -> "Audiobookshelf's answer couldn't be read.",
-            client.AbsError.NotSetUp(missing) -> "No Audiobookshelf token is set.",
+            client.AbsError.NotSetUp(missing) -> "No Audiobookshelf token is set."
         }
     }
 }

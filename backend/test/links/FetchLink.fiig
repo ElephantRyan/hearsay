@@ -57,7 +57,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                             title: "Dune",
                             authors: "Frank Herbert",
                             asin: "B0DUNE",
-                            isbn: None,
+                            isbn: None
                         ),
                         catalog.Book(
                             itemId: "hobbit-here",
@@ -65,10 +65,10 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                             title: "The Hobbit",
                             authors: "J. R. R. Tolkien",
                             asin: None,
-                            isbn: None,
-                        ),
-                    ],
-                ),
+                            isbn: None
+                        )
+                    ]
+                )
             );
         }
     }
@@ -87,9 +87,9 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                         status: 200,
                         headers: [],
                         body: json.encode(
-                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k")),
-                        ),
-                    ),
+                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k"))
+                        )
+                    )
                 );
             }
 
@@ -119,7 +119,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                                     authors: "Frank Herbert",
                                     score: 9,
                                     note: "great",
-                                    updatedAt: 1,
+                                    updatedAt: 1
                                 ),
                                 SharedRating(
                                     personId: "p1",
@@ -130,7 +130,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                                     authors: "J.R.R. Tolkien",
                                     score: None,
                                     note: "",
-                                    updatedAt: 2,
+                                    updatedAt: 2
                                 ),
                                 SharedRating(
                                     personId: "p2",
@@ -141,11 +141,11 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                                     authors: "Nobody",
                                     score: 7,
                                     note: "",
-                                    updatedAt: 3,
-                                ),
-                            ],
-                        ),
-                    ),
+                                    updatedAt: 3
+                                )
+                            ]
+                        )
+                    )
                 );
             }
 
@@ -165,11 +165,11 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                                     authors: "Frank Herbert",
                                     score: 10,
                                     note: "even better",
-                                    updatedAt: 4,
-                                ),
-                            ],
-                        ),
-                    ),
+                                    updatedAt: 4
+                                )
+                            ]
+                        )
+                    )
                 );
             }
 
@@ -177,8 +177,8 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
                 http.Reply(
                     status: 401,
                     headers: [http.Header(name: "Content-Type", value: "text/plain")],
-                    body: "that key belongs to no linked server".utf8(),
-                ),
+                    body: "that key belongs to no linked server".utf8()
+                )
             );
         }
     }
@@ -187,8 +187,8 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
     // Linking builds the empty index, then fetches at once.
@@ -223,7 +223,7 @@ test aFetchMatchesEachBookAndReplacesWhatWasHeld {
 
         problem -> {
             expect problem.contains("may have unlinked");
-        },
+        }
     }
 
     expect linkedRatingsOf(link.id).length() == 1;
@@ -286,10 +286,10 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
                             title: "Dune",
                             authors: "Frank Herbert",
                             asin: "B0DUNE",
-                            isbn: None,
-                        ),
-                    ],
-                ),
+                            isbn: None
+                        )
+                    ]
+                )
             );
         }
     }
@@ -307,9 +307,9 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
                         status: 200,
                         headers: [],
                         body: json.encode(
-                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k")),
-                        ),
-                    ),
+                            LinkAcceptance(name: "The family library", key: "k".padRight(43, "k"))
+                        )
+                    )
                 );
             }
 
@@ -332,11 +332,11 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
                                 authors: "Frank Herbert",
                                 score: 9,
                                 note: "",
-                                updatedAt: 1,
-                            ),
-                        ],
-                    ),
-                ),
+                                updatedAt: 1
+                            )
+                        ]
+                    )
+                )
             );
         }
     }
@@ -348,8 +348,8 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
     expect fetchOnSchedule() is Err(FetchError.IndexNotRebuilt(problem));

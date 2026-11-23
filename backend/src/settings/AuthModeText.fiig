@@ -3,6 +3,6 @@ conversion authModeText(mode: AuthMode) -> string {
     return match (mode) {
         AuthMode.Abs -> "abs",
         AuthMode.Oidc -> "oidc",
-        AuthMode.Both -> "both",
+        AuthMode.Both -> "both"
     }
 }

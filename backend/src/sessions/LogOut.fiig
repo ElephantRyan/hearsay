@@ -6,6 +6,6 @@ activity logOut(token: string | None) -> int {
 
         found -> {
             return deleteSession(tokenHash(found));
-        },
+        }
     }
 }

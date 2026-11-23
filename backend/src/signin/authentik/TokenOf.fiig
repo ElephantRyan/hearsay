@@ -6,12 +6,12 @@ rule tokenOf(server: accounts.SignInServer) -> Result<Secret, accounts.SignInErr
     return match (server.serviceToken) {
         None -> {
             return Err(
-                accounts.SignInError.Unavailable("this server has no Audiobookshelf token yet"),
+                accounts.SignInError.Unavailable("this server has no Audiobookshelf token yet")
             );
         },
 
         token -> {
             return Ok(token);
-        },
+        }
     }
 }

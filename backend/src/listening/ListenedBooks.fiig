@@ -58,10 +58,10 @@ rule listenedBooks(
                         recommended: recommendedOf(rating),
                         myNote: noteOf(rating),
                         myNoteShared: noteSharedOf(rating),
-                        series: listenedSeriesOf(seriesOf.atOrNone(book.itemId), mySeries),
-                    ),
+                        series: listenedSeriesOf(seriesOf.atOrNone(book.itemId), mySeries)
+                    )
                 );
-            },
+            }
         }
     }
 
@@ -81,51 +81,51 @@ private {
                     sequence: found.sequence,
                     rated: rating != None,
                     myScore: seriesScoreOf(rating),
-                    recommended: seriesRecommendedOf(rating),
+                    recommended: seriesRecommendedOf(rating)
                 );
-            },
+            }
         }
     }
 
     seriesScoreOf(rating: series.SeriesRatingRow | None) -> int | None {
         return match (rating) {
             None -> None,
-            row -> row.score,
+            row -> row.score
         }
     }
 
     seriesRecommendedOf(rating: series.SeriesRatingRow | None) -> bool {
         return match (rating) {
             None -> false,
-            row -> row.recommended,
+            row -> row.recommended
         }
     }
 
     scoreOf(rating: rated.RatingRow | None) -> int | None {
         return match (rating) {
             None -> None,
-            row -> row.score,
+            row -> row.score
         }
     }
 
     noteOf(rating: rated.RatingRow | None) -> string {
         return match (rating) {
             None -> "",
-            row -> row.note,
+            row -> row.note
         }
     }
 
     noteSharedOf(rating: rated.RatingRow | None) -> bool {
         return match (rating) {
             None -> false,
-            row -> row.noteShared,
+            row -> row.noteShared
         }
     }
 
     recommendedOf(rating: rated.RatingRow | None) -> bool {
         return match (rating) {
             None -> false,
-            row -> row.recommended,
+            row -> row.recommended
         }
     }
 }

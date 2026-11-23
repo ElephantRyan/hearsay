@@ -12,10 +12,10 @@ activity keepLink(offer: LinkOffer, name: string) -> Result<LinkAcceptance, Fede
             name: offer.name,
             address: offer.address,
             linkedAt: Clock.now(),
-            linkedBy: "invite",
+            linkedBy: "invite"
         ),
         offer.key,
-        keyHash(keyIn),
+        keyHash(keyIn)
     );
     return Ok(LinkAcceptance(name: name, key: keyIn));
 }

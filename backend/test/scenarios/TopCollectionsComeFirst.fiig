@@ -39,8 +39,8 @@ test topSeriesAndStandalonesComeFirstAndGoWhenTurnedOff {
                     libraryId: "lib-1",
                     title: "T",
                     authors: "A",
-                    series: [],
-                ),
+                    series: []
+                )
             );
         }
 
@@ -53,8 +53,8 @@ test topSeriesAndStandalonesComeFirstAndGoWhenTurnedOff {
                             libraryId: "lib-1",
                             title: "T",
                             authors: "A",
-                            series: [],
-                        ),
+                            series: []
+                        )
             );
         }
 
@@ -66,8 +66,8 @@ test topSeriesAndStandalonesComeFirstAndGoWhenTurnedOff {
                     libraryId: "lib-1",
                     name: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
-                    bookIds: ["dcc-1", "dcc-2"],
-                ),
+                    bookIds: ["dcc-1", "dcc-2"]
+                )
             );
         }
     }

@@ -15,8 +15,8 @@ test aChosenNameIsWhatEveryoneSees {
                     itemId: itemId,
                     libraryId: "lib-1",
                     title: "Dune",
-                    authors: "Frank Herbert",
-                ),
+                    authors: "Frank Herbert"
+                )
             );
         }
     }
@@ -24,7 +24,7 @@ test aChosenNameIsWhatEveryoneSees {
     me = accounts.Identity(
         userId: "u1",
         username: "ElephantRyan",
-        userType: client.AbsUserType.User,
+        userType: client.AbsUserType.User
     );
     expect showAccount(me) == Account(username: "ElephantRyan", displayName: "ElephantRyan", shareNotesByDefault: false, skipRatedSeriesBooks: false);
     expect changeAccount(me, AccountChange(displayName: "  Ryan  ")) is Ok(changed);
@@ -44,7 +44,7 @@ test aBlankOrLongNameIsRefused {
     me = accounts.Identity(
         userId: "u1",
         username: "ElephantRyan",
-        userType: client.AbsUserType.User,
+        userType: client.AbsUserType.User
     );
     expect changeAccount(me, AccountChange(displayName: "   ")) is Err(AccountError.Invalid("displayName", _));
     expect changeAccount(me, AccountChange(displayName: "x".repeat(41))) is Err(AccountError.Invalid("displayName", _));
@@ -58,7 +58,7 @@ test settingsAreSavedOneAtATime {
     me = accounts.Identity(
         userId: "u1",
         username: "ElephantRyan",
-        userType: client.AbsUserType.User,
+        userType: client.AbsUserType.User
     );
     expect changeAccount(me, AccountChange(skipRatedSeriesBooks: true)) is Ok(one);
     expect one.skipRatedSeriesBooks;

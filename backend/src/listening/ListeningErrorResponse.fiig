@@ -5,9 +5,9 @@ conversion listeningErrorResponse(error: ListeningError) -> HttpResponse<string>
     return match (error) {
         ListeningError.AccountNotFound -> HttpResponse(
             status: 404,
-            body: "no Audiobookshelf account for you",
+            body: "no Audiobookshelf account for you"
         ),
         ListeningError.Book(cause) -> books.bookErrorResponse(cause),
-        ListeningError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
+        ListeningError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
     }
 }

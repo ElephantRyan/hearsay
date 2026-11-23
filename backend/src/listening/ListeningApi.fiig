@@ -7,6 +7,6 @@ adapter http listeningApi {
 
     GET "/me/listening" -> showMyListening(me) produces "application/json" {
         Ok(books) -> 200 books,
-        Err(error) -> listeningErrorResponse(error),
+        Err(error) -> listeningErrorResponse(error)
     }
 }

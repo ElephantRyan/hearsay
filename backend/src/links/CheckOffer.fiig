@@ -15,6 +15,6 @@ rule checkOffer(offer: LinkOffer) -> Result<LinkOffer, FederationError> {
     }
 
     return Ok(
-        LinkOffer(secret: offer.secret, name: offer.name.trim(), address: address, key: offer.key),
+        LinkOffer(secret: offer.secret, name: offer.name.trim(), address: address, key: offer.key)
     );
 }

@@ -4,19 +4,19 @@ gateway indexedBy(column: string, value: string) -> IndexEntry | None requires D
     if (column == "asin") {
         return Database.queryOne(
             "SELECT item_id, library_id, asin, isbn, title_key FROM library_index WHERE asin = ? ORDER BY item_id LIMIT 1",
-            value,
+            value
         );
     }
 
     if (column == "isbn") {
         return Database.queryOne(
             "SELECT item_id, library_id, asin, isbn, title_key FROM library_index WHERE isbn = ? ORDER BY item_id LIMIT 1",
-            value,
+            value
         );
     }
 
     return Database.queryOne(
         "SELECT item_id, library_id, asin, isbn, title_key FROM library_index WHERE title_key = ? ORDER BY item_id LIMIT 1",
-        value,
+        value
     );
 }

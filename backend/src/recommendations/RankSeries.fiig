@@ -21,8 +21,8 @@ rule rankSeries(picks: List<series.SeriesRatingRow>) -> List<RecommendedBook> {
                 count: group.length(),
                 latest: max(p in group): p.updatedAt,
                 seriesId: seriesId,
-                seriesBooks: first.books,
-            ),
+                seriesBooks: first.books
+            )
         );
     }
 

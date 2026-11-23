@@ -20,7 +20,7 @@ activity refreshSeries() -> Result<SeriesRefreshed, absclient.AbsFault> {
 
             Err(fault) -> {
                 return Err(fault);
-            },
+            }
         }
     }
 

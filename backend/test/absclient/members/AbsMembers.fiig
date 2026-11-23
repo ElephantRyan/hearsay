@@ -13,8 +13,8 @@ test absLoginReadsTheRealReplyShape {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"user\":{\"id\":\"u-1\",\"username\":\"ryan\",\"email\":null,\"type\":\"user\",\"token\":\"legacy\",\"mediaProgress\":[],\"permissions\":{\"download\":true},\"accessToken\":\"acc\",\"refreshToken\":\"ref\"},\"userDefaultLibraryId\":\"lib-1\",\"Source\":\"docker\"}".utf8(),
-                ),
+                    body: "{\"user\":{\"id\":\"u-1\",\"username\":\"ryan\",\"email\":null,\"type\":\"user\",\"token\":\"legacy\",\"mediaProgress\":[],\"permissions\":{\"download\":true},\"accessToken\":\"acc\",\"refreshToken\":\"ref\"},\"userDefaultLibraryId\":\"lib-1\",\"Source\":\"docker\"}".utf8()
+                )
             );
         }
     }
@@ -32,8 +32,8 @@ test absMeSendsTheToken {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"permissions\":{}}".utf8(),
-                ),
+                    body: "{\"id\":\"u-1\",\"username\":\"ryan\",\"type\":\"admin\",\"permissions\":{}}".utf8()
+                )
             );
         }
     }
@@ -51,8 +51,8 @@ test absMemberRefusalsAreValues {
                     http.Reply(
                         status: 401,
                         headers: [],
-                        body: "Invalid username or password".utf8(),
-                    ),
+                        body: "Invalid username or password".utf8()
+                    )
                 );
             }
 
@@ -62,7 +62,7 @@ test absMemberRefusalsAreValues {
 
             if (request.url == "https://abs.test/api/items/odd") {
                 return Ok(
-                    http.Reply(status: 200, headers: [], body: "<html>not json</html>".utf8()),
+                    http.Reply(status: 200, headers: [], body: "<html>not json</html>".utf8())
                 );
             }
 

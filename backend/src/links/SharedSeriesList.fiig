@@ -13,6 +13,6 @@ activity sharedSeriesList() -> List<SharedSeries> {
                 isbn: row.isbn,
                 score: row.score,
                 note: row.note,
-                updatedAt: row.updatedAt,
+                updatedAt: row.updatedAt
             );
 }

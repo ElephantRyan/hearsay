@@ -17,8 +17,8 @@ test aListKeepsTheOrderItIsGiven {
                     itemId: itemId,
                     libraryId: "lib-1",
                     title: "Title of ${itemId}",
-                    authors: "An Author",
-                ),
+                    authors: "An Author"
+                )
             );
         }
     }

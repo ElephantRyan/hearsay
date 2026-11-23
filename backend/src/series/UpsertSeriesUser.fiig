@@ -6,6 +6,6 @@ gateway upsertSeriesUser(userId: string, username: string, now: int) -> int requ
         userId,
         username,
         username,
-        now,
+        now
     );
 }

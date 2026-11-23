@@ -15,7 +15,7 @@ activity takeUpInvite(invite: InviteCode, name: string, by: string)
 
         existing -> {
             return Err(LinkError.AlreadyLinked(existing.name));
-        },
+        }
     }
 
     keyIn = newKey();
@@ -30,7 +30,7 @@ activity takeUpInvite(invite: InviteCode, name: string, by: string)
         name: accepted.name.trim(),
         address: invite.address,
         linkedAt: Clock.now(),
-        linkedBy: by,
+        linkedBy: by
     );
     saveLink(link, accepted.key, keyHash(keyIn));
     return Ok(link);

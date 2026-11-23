@@ -2,6 +2,6 @@ gateway deleteSeriesRating(userId: string, seriesId: string) -> int requires Dat
     return Database.execute(
         "DELETE FROM series_rating WHERE user_id = ? AND series_id = ?",
         userId,
-        seriesId,
+        seriesId
     );
 }

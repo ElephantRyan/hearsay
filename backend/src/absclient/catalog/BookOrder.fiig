@@ -5,5 +5,5 @@ enum BookOrder {
     TitleDescending,
     AuthorAscending,
     AuthorDescending,
-    SeriesOrder,
+    SeriesOrder
 }

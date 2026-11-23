@@ -8,13 +8,13 @@ activity loadAccount(me: accounts.Identity) -> Account {
             username: me.username,
             displayName: me.username,
             shareNotesByDefault: false,
-            skipRatedSeriesBooks: false,
+            skipRatedSeriesBooks: false
         ),
         row -> Account(
             username: me.username,
             displayName: row.displayName,
             shareNotesByDefault: row.shareNotesDefault,
-            skipRatedSeriesBooks: row.skipRatedSeries,
-        ),
+            skipRatedSeriesBooks: row.skipRatedSeries
+        )
     }
 }

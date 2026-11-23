@@ -12,7 +12,7 @@ formulas scores {
 
                 score -> {
                     scored = append(scored, score);
-                },
+                }
             }
         }
 
@@ -24,7 +24,7 @@ formulas scores {
             math.toDecimal(sum(s in scored): s),
             math.toDecimal(scored.length()),
             places: 2,
-            rounding: Rounding.HalfUp,
+            rounding: Rounding.HalfUp
         );
     }
 
@@ -38,7 +38,7 @@ formulas scores {
 
                 value -> {
                     scored = append(scored, value);
-                },
+                }
             }
         }
 
@@ -50,7 +50,7 @@ formulas scores {
             math.toDecimal(sum(s in scored): s),
             math.toDecimal(scored.length()),
             places: 2,
-            rounding: Rounding.HalfUp,
+            rounding: Rounding.HalfUp
         );
     }
 }

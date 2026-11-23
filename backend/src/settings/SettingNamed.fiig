@@ -14,6 +14,6 @@ conversion settingNamed(name: string) -> SettingName | None {
         "oidcClientSecret" -> SettingName.OidcClientSecret,
         "oidcRedirectUri" -> SettingName.OidcRedirectUri,
         "serverName" -> SettingName.ServerName,
-        _ -> None,
+        _ -> None
     }
 }

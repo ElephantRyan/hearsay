@@ -3,29 +3,29 @@ conversion linkErrorResponse(error: LinkError) -> HttpResponse<string> {
     return match (error) {
         LinkError.NoServerName -> HttpResponse(
             status: 409,
-            body: "give this server a name first, in Settings",
+            body: "give this server a name first, in Settings"
         ),
         LinkError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}"),
         LinkError.AlreadyLinked(name) -> HttpResponse(
             status: 409,
-            body: "already linked to ${name}",
+            body: "already linked to ${name}"
         ),
         LinkError.UnknownLink -> HttpResponse(status: 404, body: "no such linked server"),
         LinkError.PeerUnreachable -> HttpResponse(
             status: 502,
-            body: "the other server didn't answer at that address",
+            body: "the other server didn't answer at that address"
         ),
         LinkError.PeerLoginPage -> HttpResponse(
             status: 502,
-            body: "the other server answered with a login page: its login must let /api/federation/ through (LINKED.md section 4)",
+            body: "the other server answered with a login page: its login must let /api/federation/ through (LINKED.md section 4)"
         ),
         LinkError.PeerRefused(reason) -> HttpResponse(
             status: 502,
-            body: "the other server refused: ${reason}",
+            body: "the other server refused: ${reason}"
         ),
         LinkError.IndexUnavailable(detail) -> HttpResponse(
             status: 503,
-            body: "this server's library couldn't be indexed to match books against: ${detail}",
-        ),
+            body: "this server's library couldn't be indexed to match books against: ${detail}"
+        )
     }
 }

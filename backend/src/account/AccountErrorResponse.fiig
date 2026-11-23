@@ -3,7 +3,7 @@ conversion accountErrorResponse(error: AccountError) -> HttpResponse<string> {
     return match (error) {
         AccountError.Invalid(field, reason) -> HttpResponse(
             status: 400,
-            body: "${field} ${reason}",
-        ),
+            body: "${field} ${reason}"
+        )
     }
 }

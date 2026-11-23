@@ -10,8 +10,8 @@ conversion sessionOfLoginReply(body: bytes) -> Result<AbsSession, absclient.AbsE
             username: reply.user.username,
             userType: reply.user.type,
             accessToken: reply.user.accessToken,
-            refreshToken: reply.user.refreshToken,
-        ),
+            refreshToken: reply.user.refreshToken
+        )
     );
 }
 

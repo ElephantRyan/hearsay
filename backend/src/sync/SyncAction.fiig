@@ -3,5 +3,5 @@ enum SyncAction {
     Create,
     Update,
     Recreate,
-    Remove,
+    Remove
 }

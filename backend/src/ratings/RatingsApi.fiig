@@ -9,11 +9,11 @@ adapter http ratingsApi {
             consumes "application/json"
             produces "application/json" {
         Ok(rating) -> 200 rating,
-        Err(error) -> ratingErrorResponse(error),
+        Err(error) -> ratingErrorResponse(error)
     }
 
     DELETE "/ratings/{itemId}" -> deleteMyRating(me, itemId: string) produces "application/json" {
         Ok(_) -> 204,
-        Err(error) -> ratingErrorResponse(error),
+        Err(error) -> ratingErrorResponse(error)
     }
 }

@@ -21,8 +21,8 @@ rule planTopSync(
             topList.standalonesSize(),
             standalones,
             states,
-            standalonesOn,
-        ),
+            standalonesOn
+        )
     );
     retired = filter(s in states): topList.isTop(s.userId) && s.userId != topList.seriesId() && s.userId != topList.standalonesId();
     return current.concat(map(s in retired): removeOf(s));
@@ -52,8 +52,8 @@ private {
                         description: "Maintained by Hearsay. Edits here are overwritten on the next sync.",
                         bookIds: once.unique(map(b in books): b.itemId).take(size),
                         collectionId: existing,
-                        action: createOrUpdate(existing),
-                    ),
+                        action: createOrUpdate(existing)
+                    )
                 );
             }
         }
@@ -75,7 +75,7 @@ private {
             description: "",
             bookIds: [],
             collectionId: state.collectionId,
-            action: SyncAction.Remove,
+            action: SyncAction.Remove
         );
     }
 
@@ -83,14 +83,14 @@ private {
         found = filter(s in theirs): s.libraryId == libraryId;
         return match (found.firstOrNone()) {
             None -> None,
-            state -> state.collectionId,
+            state -> state.collectionId
         }
     }
 
     createOrUpdate(existing: string | None) -> SyncAction {
         return match (existing) {
             None -> SyncAction.Create,
-            id -> SyncAction.Update,
+            id -> SyncAction.Update
         }
     }
 }

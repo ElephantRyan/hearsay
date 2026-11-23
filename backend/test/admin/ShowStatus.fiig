@@ -53,10 +53,10 @@ test statusSaysWhoTheTokenBelongsTo {
                         members.AbsUser(
                             id: "bot",
                             username: "recommendation-bot",
-                            type: client.AbsUserType.Admin,
-                        ),
+                            type: client.AbsUserType.Admin
+                        )
                     );
-                },
+                }
             }
         }
     }
@@ -65,8 +65,8 @@ test statusSaysWhoTheTokenBelongsTo {
         identity: accounts.Identity(
             userId: "a1",
             username: "boss",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     good = showStatus(admin);
     expect good == AdminStatus(abs: "reachable", authentik: "answering", serviceAccount: "recommendation-bot", serviceAccountType: client.AbsUserType.Admin, problem: None);
@@ -104,8 +104,8 @@ test statusSaysWhenNoTokenIsSet {
         identity: accounts.Identity(
             userId: "a1",
             username: "boss",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect showStatus(admin) == AdminStatus(abs: "reachable", authentik: "not set up", serviceAccount: None, serviceAccountType: None, problem: "No Audiobookshelf token is set.");
 }

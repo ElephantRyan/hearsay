@@ -4,10 +4,10 @@ use hearsay.settings;
 conversion syncErrorOfSettings(error: settings.SettingsError) -> SyncError {
     return match (error) {
         settings.SettingsError.NoAbsUrl -> SyncError.Unavailable(
-            "this server isn't set up yet: an admin needs to enter the Audiobookshelf address",
+            "this server isn't set up yet: an admin needs to enter the Audiobookshelf address"
         ),
         settings.SettingsError.NoServiceToken -> SyncError.Unavailable(
-            "this server isn't set up yet: an admin needs to enter its Audiobookshelf token",
-        ),
+            "this server isn't set up yet: an admin needs to enter its Audiobookshelf token"
+        )
     }
 }

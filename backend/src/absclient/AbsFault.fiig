@@ -5,5 +5,5 @@
 enum AbsFault {
     Missing,
     Denied,
-    Down(detail: string),
+    Down(detail: string)
 }

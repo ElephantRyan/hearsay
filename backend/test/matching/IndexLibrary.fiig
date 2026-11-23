@@ -9,8 +9,8 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
             return Ok(
                 [
                     catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book"),
-                    catalog.AbsLibrary(id: "pod-1", name: "Podcasts", mediaType: "podcast"),
-                ],
+                    catalog.AbsLibrary(id: "pod-1", name: "Podcasts", mediaType: "podcast")
+                ]
             );
         }
 
@@ -40,8 +40,8 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
                             title: "Number ${n}",
                             authors: "Counter",
                             asin: "N${n}",
-                            isbn: None,
-                        ),
+                            isbn: None
+                        )
                     );
                     n = n + 1;
                 }
@@ -61,7 +61,7 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
                             title: "Dune",
                             authors: "Frank Herbert",
                             asin: "b0dune",
-                            isbn: None,
+                            isbn: None
                         ),
                         catalog.Book(
                             itemId: "isbn-only",
@@ -69,7 +69,7 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
                             title: "Isbn Only",
                             authors: "A",
                             asin: None,
-                            isbn: "978-1",
+                            isbn: "978-1"
                         ),
                         catalog.Book(
                             itemId: "hobbit",
@@ -77,10 +77,10 @@ test theIndexMatchesByAsinThenIsbnThenTitle {
                             title: "The Hobbit",
                             authors: "J. R. R. Tolkien",
                             asin: None,
-                            isbn: None,
-                        ),
-                    ],
-                ),
+                            isbn: None
+                        )
+                    ]
+                )
             );
         }
     }

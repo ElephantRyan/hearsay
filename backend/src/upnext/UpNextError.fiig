@@ -4,5 +4,5 @@ use hearsay.books;
 enum UpNextError {
     Book(cause: books.BookError),
     NotOnList,
-    Invalid(field: string, reason: string),
+    Invalid(field: string, reason: string)
 }

@@ -31,8 +31,8 @@ test signInUsesTheChosenProvider {
                 accounts.Identity(
                     userId: "u-pw",
                     username: "ryan",
-                    userType: client.AbsUserType.User,
-                ),
+                    userType: client.AbsUserType.User
+                )
             );
         }
     }
@@ -49,8 +49,8 @@ test signInUsesTheChosenProvider {
                 accounts.Identity(
                     userId: "u-oidc",
                     username: "ryan",
-                    userType: client.AbsUserType.User,
-                ),
+                    userType: client.AbsUserType.User
+                )
             );
         }
     }

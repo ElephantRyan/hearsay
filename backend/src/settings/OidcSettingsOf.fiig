@@ -30,14 +30,14 @@ activity oidcSettingsOf() -> accounts.OidcSettings | None {
                                         issuer: issuer,
                                         clientId: clientId,
                                         clientSecret: clientSecret,
-                                        redirectUri: redirectUri,
+                                        redirectUri: redirectUri
                                     );
-                                },
+                                }
                             }
-                        },
+                        }
                     }
-                },
+                }
             }
-        },
+        }
     }
 }

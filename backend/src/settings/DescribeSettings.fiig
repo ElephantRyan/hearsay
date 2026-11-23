@@ -13,7 +13,7 @@ activity describeSettings() -> SettingsView {
         oidcClientId: shown(Oidc.clientId, SettingName.OidcClientId),
         oidcClientSecret: hidden(SettingName.OidcClientSecret),
         oidcRedirectUri: shown(Oidc.redirectUri, SettingName.OidcRedirectUri),
-        serverName: shown(ServerConfig.name, SettingName.ServerName),
+        serverName: shown(ServerConfig.name, SettingName.ServerName)
     );
 }
 

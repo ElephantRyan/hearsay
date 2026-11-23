@@ -18,7 +18,7 @@ activity storeRating(user: accounts.Identity, book: catalog.Book, checked: Check
         noteShared: checked.noteShared,
         recommended: checked.recommended,
         createdAt: now,
-        updatedAt: now,
+        updatedAt: now
     );
     transaction Database {
         upsertUser(user.userId, user.username, now);
@@ -32,7 +32,7 @@ activity storeRating(user: accounts.Identity, book: catalog.Book, checked: Check
 
             saved -> {
                 return saved;
-            },
+            }
         }
     }
 }

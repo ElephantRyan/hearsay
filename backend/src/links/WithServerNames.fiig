@@ -29,9 +29,9 @@ private {
                         }
 
                         return copy(row, username: "${row.username} · ${server}");
-                    },
+                    }
                 }
-            },
+            }
         }
     }
 }

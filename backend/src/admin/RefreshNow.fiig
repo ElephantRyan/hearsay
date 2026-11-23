@@ -12,7 +12,7 @@ workflow refreshNow(admin: accounts.Admin) -> Result<refresh.RefreshSummary, Adm
         refresh.RefreshSummary(
             books: bookCount,
             series: seriesDone.read,
-            removedSeries: seriesDone.removed,
-        ),
+            removedSeries: seriesDone.removed
+        )
     );
 }

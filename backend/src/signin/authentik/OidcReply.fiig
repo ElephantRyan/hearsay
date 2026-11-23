@@ -8,7 +8,7 @@ conversion oidcReply(sent: Result<http.Reply, http.HttpError>)
         -> Result<http.Reply, accounts.SignInError> {
     return match (sent) {
         Err(failure) -> Err(
-            accounts.SignInError.Unavailable("the identity provider is unreachable"),
+            accounts.SignInError.Unavailable("the identity provider is unreachable")
         ),
         Ok(reply) -> {
             if (reply.status == 200) {
@@ -18,14 +18,14 @@ conversion oidcReply(sent: Result<http.Reply, http.HttpError>)
             if (reply.status == 400 || reply.status == 401 || reply.status == 403) {
                 return Err(
                     accounts.SignInError.Refused(
-                        "the identity provider did not accept this sign-in",
-                    ),
+                        "the identity provider did not accept this sign-in"
+                    )
                 );
             }
 
             return Err(
-                accounts.SignInError.Unavailable("the identity provider answered ${reply.status}"),
+                accounts.SignInError.Unavailable("the identity provider answered ${reply.status}")
             );
-        },
+        }
     }
 }

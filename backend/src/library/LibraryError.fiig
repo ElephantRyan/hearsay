@@ -6,5 +6,5 @@ enum LibraryError {
     Invalid(field: string, reason: string),
     LibraryNotFound,
     Book(cause: books.BookError),
-    Unavailable(detail: string),
+    Unavailable(detail: string)
 }

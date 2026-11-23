@@ -9,7 +9,7 @@ capability BookSeriesIndex {
     // The books whose series are known, in a series or not.
     gateway known() -> List<string> requires Database idempotent {
         rows: List<KnownBook> = Database.queryMany(
-            "SELECT item_id FROM book WHERE series_known = 1",
+            "SELECT item_id FROM book WHERE series_known = 1"
         );
         return map(r in rows): r.itemId;
     }

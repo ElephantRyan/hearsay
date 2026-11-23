@@ -6,9 +6,9 @@ conversion setupErrorOfFault(fault: client.AbsFault) -> SetupError {
     return match (fault) {
         client.AbsFault.Missing -> SetupError.Invalid(
             "absUrl",
-            "doesn't look like an Audiobookshelf server",
+            "doesn't look like an Audiobookshelf server"
         ),
         client.AbsFault.Denied -> SetupError.WrongLogin,
-        client.AbsFault.Down(detail) -> SetupError.Invalid("absUrl", detail),
+        client.AbsFault.Down(detail) -> SetupError.Invalid("absUrl", detail)
     }
 }

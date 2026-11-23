@@ -16,7 +16,7 @@ test syncTargetsAreSelfUnlessAdmin {
             recommended: true,
             createdAt: 1,
             updatedAt: 1,
-            noteShared: false,
+            noteShared: false
         ),
         rated.RatingRow(
             userId: "u2",
@@ -30,8 +30,8 @@ test syncTargetsAreSelfUnlessAdmin {
             recommended: false,
             createdAt: 1,
             updatedAt: 1,
-            noteShared: false,
-        ),
+            noteShared: false
+        )
     ];
     states = [
         SyncState(
@@ -39,8 +39,8 @@ test syncTargetsAreSelfUnlessAdmin {
             libraryId: "l",
             collectionId: "c",
             lastSyncedAt: 1,
-            lastError: None,
-        ),
+            lastError: None
+        )
     ];
     ann = accounts.Identity(userId: "u1", username: "Ann", userType: client.AbsUserType.User);
     boss = accounts.Identity(userId: "u0", username: "Boss", userType: client.AbsUserType.Admin);

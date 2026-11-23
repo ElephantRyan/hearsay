@@ -5,8 +5,8 @@ conversion listeningErrorOfFault(fault: client.AbsFault) -> ListeningError {
     return match (fault) {
         client.AbsFault.Missing -> ListeningError.AccountNotFound,
         client.AbsFault.Denied -> ListeningError.Unavailable(
-            "this server's Audiobookshelf token was refused; tell the server's admin",
+            "this server's Audiobookshelf token was refused; tell the server's admin"
         ),
-        client.AbsFault.Down(detail) -> ListeningError.Unavailable(detail),
+        client.AbsFault.Down(detail) -> ListeningError.Unavailable(detail)
     }
 }

@@ -5,6 +5,6 @@ gateway saveSyncState(state: SyncState) -> int requires Database {
         state.libraryId,
         state.collectionId,
         state.lastSyncedAt,
-        state.lastError,
+        state.lastError
     );
 }

@@ -10,5 +10,5 @@ enum LinkError {
     PeerUnreachable,
     PeerLoginPage,
     PeerRefused(reason: string),
-    IndexUnavailable(detail: string),
+    IndexUnavailable(detail: string)
 }

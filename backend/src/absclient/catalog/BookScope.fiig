@@ -3,5 +3,5 @@
 enum BookScope {
     All,
     Author(id: string),
-    Series(id: string),
+    Series(id: string)
 }

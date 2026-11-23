@@ -10,9 +10,9 @@ rule absWrite(method: http.Method, url: string, token: string, body: bytes | Non
         headers: [
             http.Header(name: "Authorization", value: "Bearer ${token}"),
             http.Header(name: "Content-Type", value: "application/json"),
-            http.Header(name: "Accept", value: "application/json"),
+            http.Header(name: "Accept", value: "application/json")
         ],
         body: body,
-        timeoutMillis: 20000,
+        timeoutMillis: 20000
     );
 }

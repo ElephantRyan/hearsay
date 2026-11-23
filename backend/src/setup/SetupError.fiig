@@ -3,5 +3,5 @@ enum SetupError {
     Invalid(field: string, reason: string),
     AlreadySetUp,
     WrongLogin,
-    NotAdmin,
+    NotAdmin
 }

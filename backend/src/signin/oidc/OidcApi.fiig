@@ -4,16 +4,16 @@ use hearsay.signin;
 adapter http oidcApi {
     GET "/auth/login" -> startOidc() produces "application/json" {
         Ok(start) -> redirectToIdp(start),
-        Err(error) -> signin.loginErrorResponse(error),
+        Err(error) -> signin.loginErrorResponse(error)
     }
 
     GET "/auth/callback?code={code}&state={state}&error={error}" -> finishOidc(
         code: string | None,
         state: string | None,
         error: string | None,
-        pending: string | None from cookie "oidc",
+        pending: string | None from cookie "oidc"
     )
             produces "application/json" {
-        landing -> landed(landing),
+        landing -> landed(landing)
     }
 }

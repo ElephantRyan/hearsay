@@ -8,6 +8,6 @@ gateway findSession(tokenHash: string, now: int) -> accounts.Identity | None
     return Database.queryOne(
         "SELECT user_id, username, user_type FROM session WHERE token_hash = ? AND expires_at > ?",
         tokenHash,
-        now,
+        now
     );
 }

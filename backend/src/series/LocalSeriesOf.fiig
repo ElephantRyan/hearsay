@@ -7,13 +7,13 @@ use hearsay.absclient.catalog;
 activity localSeriesOf(itemId: string, name: string) -> string | None {
     refs: List<catalog.SeriesRef> = match (fetchItemSeriesRefs(itemId)) {
         Ok(found) -> found,
-        Err(_) -> [],
+        Err(_) -> []
     }
 
     named = filter(r in refs): r.name.lowercase() == name.lowercase();
     return match (named.firstOrNone() ?? refs.firstOrNone()) {
         None -> None,
-        chosen -> cachedSeriesId(chosen.id),
+        chosen -> cachedSeriesId(chosen.id)
     }
 }
 
@@ -25,7 +25,7 @@ private {
                 return series.seriesId;
             },
 
-            Err(_) -> None,
+            Err(_) -> None
         }
     }
 }

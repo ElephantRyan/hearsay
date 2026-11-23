@@ -5,5 +5,5 @@ enum BrowseOrder {
     TitleDescending from json "title-desc",
     AuthorAscending from json "author",
     AuthorDescending from json "author-desc",
-    SeriesOrder from json "series",
+    SeriesOrder from json "series"
 }

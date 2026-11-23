@@ -20,7 +20,7 @@ activity applyPlan(plan: SyncPlan, now: int) -> SyncResult {
             }
 
             return updateFor(plan, existing, now);
-        },
+        }
     }
 }
 
@@ -32,8 +32,8 @@ private {
                 libraryId: plan.libraryId,
                 collectionId: collectionId,
                 lastSyncedAt: now,
-                lastError: None,
-            ),
+                lastError: None
+            )
         );
     }
 
@@ -46,7 +46,7 @@ private {
 
             Err(error) -> {
                 return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
-            },
+            }
         }
     }
 
@@ -64,7 +64,7 @@ private {
                 }
 
                 return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
-            },
+            }
         }
     }
 
@@ -80,7 +80,7 @@ private {
                 if (error != client.AbsError.NotFound) {
                     return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
                 }
-            },
+            }
         }
 
         deleteSyncState(plan.userId, plan.libraryId);
@@ -106,7 +106,7 @@ private {
                 }
 
                 return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
-            },
+            }
         }
     }
 
@@ -115,7 +115,7 @@ private {
         return match (client.faultOfAbs(error)) {
             client.AbsFault.Missing -> "Audiobookshelf has no such collection or library",
             client.AbsFault.Denied -> "Audiobookshelf refused the server's token",
-            client.AbsFault.Down(detail) -> detail,
+            client.AbsFault.Down(detail) -> detail
         }
     }
 
@@ -125,7 +125,7 @@ private {
             libraryId: plan.libraryId,
             action: action,
             books: plan.bookIds.length(),
-            error: error,
+            error: error
         );
     }
 }

@@ -9,6 +9,6 @@ use hearsay.signin.password.AbsPasswordSignIn;
 rule signInProvider(attempt: accounts.SignInAttempt) -> accounts.SignIn {
     return match (attempt) {
         accounts.SignInAttempt.Password(username, password) -> AbsPasswordSignIn,
-        accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> AuthentikSignIn,
+        accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> AuthentikSignIn
     }
 }

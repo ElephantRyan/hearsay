@@ -5,12 +5,12 @@ rule oidcOf(server: accounts.SignInServer) -> Result<accounts.OidcSettings, acco
     return match (server.oidc) {
         None -> {
             return Err(
-                accounts.SignInError.Unavailable("Authentik sign-in isn't set up on this server"),
+                accounts.SignInError.Unavailable("Authentik sign-in isn't set up on this server")
             );
         },
 
         oidc -> {
             return Ok(oidc);
-        },
+        }
     }
 }

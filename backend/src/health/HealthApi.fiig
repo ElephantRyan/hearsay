@@ -2,6 +2,6 @@
 // every domain's adapter together.
 adapter http healthApi {
     GET "/health" -> healthCheck() produces "application/json" {
-        status -> 200 status,
+        status -> 200 status
     }
 }

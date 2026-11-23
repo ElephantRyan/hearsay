@@ -5,6 +5,6 @@ rule canAdminister(type: AbsUserType) -> bool {
         AbsUserType.Root -> true,
         AbsUserType.Admin -> true,
         AbsUserType.User -> false,
-        AbsUserType.Guest -> false,
+        AbsUserType.Guest -> false
     }
 }

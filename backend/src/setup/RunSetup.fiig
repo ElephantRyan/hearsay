@@ -29,6 +29,6 @@ workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
             mapErr(e in settings.applySettingsChange(settings.SettingsChange(absUrl: url, frontendUrl: checked.frontendUrl), identity.userId)):
                     setupErrorOfChange(e)?;
             return Ok(sessions.startSession(identity));
-        },
+        }
     }
 }

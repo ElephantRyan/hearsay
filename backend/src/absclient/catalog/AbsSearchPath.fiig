@@ -10,7 +10,7 @@ private {
     queryString(encoded: bytes) -> string {
         return match (encoded.utf8()) {
             None -> "",
-            text -> text,
+            text -> text
         }
     }
 }

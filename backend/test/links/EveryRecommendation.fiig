@@ -35,8 +35,8 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
                     title: "Dune",
                     authors: "Frank Herbert",
                     asin: "B0DUNE",
-                    isbn: None,
-                ),
+                    isbn: None
+                )
             );
         }
     }
@@ -50,10 +50,10 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
             name: "Alex's library",
             address: "https://alex.test",
             linkedAt: 1,
-            linkedBy: "invite",
+            linkedBy: "invite"
         ),
         "key-out-1",
-        "hash-1",
+        "hash-1"
     );
     saveLink(
         LinkedServer(
@@ -61,10 +61,10 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
             name: "Sam's place",
             address: "https://sam.test",
             linkedAt: 1,
-            linkedBy: "invite",
+            linkedBy: "invite"
         ),
         "key-out-2",
-        "hash-2",
+        "hash-2"
     );
     saveLinkedRating(
         LinkedRating(
@@ -80,8 +80,8 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
             updatedAt: 5,
             itemId: "dune",
             libraryId: "lib-1",
-            matchedBy: "asin",
-        ),
+            matchedBy: "asin"
+        )
     );
     saveLinkedRating(
         LinkedRating(
@@ -97,8 +97,8 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
             updatedAt: 6,
             itemId: "dune",
             libraryId: "lib-1",
-            matchedBy: "title",
-        ),
+            matchedBy: "title"
+        )
     );
     saveLinkedRating(
         LinkedRating(
@@ -114,8 +114,8 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
             updatedAt: 7,
             itemId: None,
             libraryId: None,
-            matchedBy: None,
-        ),
+            matchedBy: None
+        )
     );
     saveLinkedRating(
         LinkedRating(
@@ -131,8 +131,8 @@ test linkedRatingsCountEverywhereAndClashingNamesAreMarked {
             updatedAt: 8,
             itemId: "hobbit",
             libraryId: "lib-1",
-            matchedBy: "isbn",
-        ),
+            matchedBy: "isbn"
+        )
     );
     everyone = everyRecommendation();
     expect everyone.length() == 4;
@@ -210,10 +210,10 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
             name: "Alex's library",
             address: "https://alex.test",
             linkedAt: 1,
-            linkedBy: "invite",
+            linkedBy: "invite"
         ),
         "key-out",
-        "hash",
+        "hash"
     );
     saveLinkedRating(
         LinkedRating(
@@ -229,8 +229,8 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
             updatedAt: 6,
             itemId: "dune",
             libraryId: "lib-1",
-            matchedBy: "asin",
-        ),
+            matchedBy: "asin"
+        )
     );
     saveLinkedRating(
         LinkedRating(
@@ -246,8 +246,8 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
             updatedAt: 7,
             itemId: "hobbit",
             libraryId: "lib-1",
-            matchedBy: "asin",
-        ),
+            matchedBy: "asin"
+        )
     );
     saveLinkedRating(
         LinkedRating(
@@ -263,8 +263,8 @@ test linkedPeopleGetCollectionsThatGoWhenUnlinked {
             updatedAt: 8,
             itemId: None,
             libraryId: None,
-            matchedBy: None,
-        ),
+            matchedBy: None
+        )
     );
     plans = sync.loadAllSyncPlans();
     expect plans.length() == 1;

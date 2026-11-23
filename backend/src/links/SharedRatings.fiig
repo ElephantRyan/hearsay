@@ -12,6 +12,6 @@ activity sharedRatings() -> List<SharedRating> {
                 authors: row.authors,
                 score: row.score,
                 note: row.note,
-                updatedAt: row.updatedAt,
+                updatedAt: row.updatedAt
             );
 }

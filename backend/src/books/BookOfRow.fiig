@@ -8,6 +8,6 @@ conversion bookOfRow(row: CachedBookRow) -> catalog.Book {
         title: row.title,
         authors: row.authors,
         asin: row.asin,
-        isbn: row.isbn,
+        isbn: row.isbn
     );
 }

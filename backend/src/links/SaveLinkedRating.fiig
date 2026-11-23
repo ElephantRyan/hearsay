@@ -13,6 +13,6 @@ gateway saveLinkedRating(rating: LinkedRating) -> int requires Database {
         rating.updatedAt,
         rating.itemId,
         rating.libraryId,
-        rating.matchedBy,
+        rating.matchedBy
     );
 }

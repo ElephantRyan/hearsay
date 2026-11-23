@@ -4,7 +4,7 @@ conversion linkErrorOfPeer(error: PeerError) -> LinkError {
         PeerError.Unreachable(failure) -> LinkError.PeerUnreachable,
         PeerError.LoginPage -> LinkError.PeerLoginPage,
         PeerError.Unreadable -> LinkError.PeerLoginPage,
-        PeerError.Rejected(status) -> LinkError.PeerRefused(refusalOf(status)),
+        PeerError.Rejected(status) -> LinkError.PeerRefused(refusalOf(status))
     }
 }
 

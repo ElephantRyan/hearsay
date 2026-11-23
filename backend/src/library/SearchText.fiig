@@ -3,7 +3,7 @@
 rule searchText(q: string | None) -> Result<string | None, LibraryError> {
     return match (q) {
         None -> Ok(None),
-        typed -> checkTyped(typed.trim()),
+        typed -> checkTyped(typed.trim())
     }
 }
 

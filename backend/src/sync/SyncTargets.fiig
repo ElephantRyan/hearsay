@@ -25,6 +25,6 @@ rule syncTargets(
             }
 
             return Ok([named]);
-        },
+        }
     }
 }

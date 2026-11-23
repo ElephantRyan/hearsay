@@ -14,6 +14,6 @@ gateway settingSourceOf(name: SettingName) -> SettingSource requires Settings id
         SettingName.OidcClientId -> Settings.source("oidc.clientId"),
         SettingName.OidcClientSecret -> Settings.source("oidc.clientSecret"),
         SettingName.OidcRedirectUri -> Settings.source("oidc.redirectUri"),
-        SettingName.ServerName -> Settings.source("server.name"),
+        SettingName.ServerName -> Settings.source("server.name")
     }
 }

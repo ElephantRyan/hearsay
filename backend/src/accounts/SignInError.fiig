@@ -4,5 +4,5 @@ enum SignInError {
     WrongMethod,
     NoAccount,
     Refused(reason: string),
-    Unavailable(detail: string),
+    Unavailable(detail: string)
 }

@@ -32,7 +32,7 @@ test anAdminSavesSettingsOverTheEnvironmentAndCanGoBack {
     change = settings.SettingsChange(
         absUrl: "https://abs.home.test/",
         serviceToken: "new-token",
-        serverName: "The family library",
+        serverName: "The family library"
     );
     expect changeSettings(root, change) is Ok(after);
     expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved");
@@ -62,7 +62,7 @@ test anAdminSavesSettingsAndCanForgetThem {
         absUrl: "  https://abs.home.test/ ",
         serviceToken: "new-token",
         mirrorEnabled: true,
-        serverName: " The family library ",
+        serverName: " The family library "
     );
     expect changeSettings(root, change) is Ok(after);
     expect after.absUrl == settings.SettingValue(value: "https://abs.home.test", source: "saved");
@@ -110,14 +110,14 @@ test switchingToAuthentikTurnsPasswordSignInOff {
     admin = adminOf("a1", "boss", client.AbsUserType.Admin);
     authentik = settings.SettingsChange(
         oidcIssuer: "https://idp.test/application/o/abs/",
-        oidcClientId: "cid",
+        oidcClientId: "cid"
     );
     expect changeSettings(admin, authentik) is Ok(_);
     expect signin.loadSignInModes() == signin.SignInModes(password: true, oidc: false);
     change = settings.SettingsChange(
         authMode: settings.AuthMode.Oidc,
         oidcClientSecret: "new-secret",
-        oidcRedirectUri: "https://app.home.test/api/auth/callback/",
+        oidcRedirectUri: "https://app.home.test/api/auth/callback/"
     );
     expect changeSettings(admin, change) is Ok(view);
     expect view.authMode == settings.SettingValue(value: "oidc", source: "saved");
@@ -141,7 +141,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
     allButIssuer = settings.SettingsChange(
         oidcClientId: "cid",
         oidcClientSecret: "csec",
-        oidcRedirectUri: "https://app.test/api/auth/callback",
+        oidcRedirectUri: "https://app.test/api/auth/callback"
     );
     expect changeSettings(admin, allButIssuer) is Err(AdminError.Invalid("authMode", _));
     expect showSettings(admin).oidcClientId == settings.SettingValue(value: None, source: "unset");
@@ -149,7 +149,7 @@ test authentikOnlyWaitsForEveryAuthentikSetting {
         oidcIssuer: "https://idp.test/application/o/abs/",
         oidcClientId: "cid",
         oidcClientSecret: "csec",
-        oidcRedirectUri: "https://app.test/api/auth/callback",
+        oidcRedirectUri: "https://app.test/api/auth/callback"
     );
     expect changeSettings(admin, every) is Ok(_);
     expect signin.loadSignInModes() == signin.SignInModes(password: false, oidc: true);
@@ -162,7 +162,7 @@ test authentikOnlyWaitsForTheClientSecret {
     allButSecret = settings.SettingsChange(
         oidcIssuer: "https://idp.test/application/o/abs/",
         oidcClientId: "cid",
-        oidcRedirectUri: "https://app.test/api/auth/callback",
+        oidcRedirectUri: "https://app.test/api/auth/callback"
     );
     expect changeSettings(admin, allButSecret) is Ok(_);
     expect changeSettings(admin, settings.SettingsChange(authMode: settings.AuthMode.Oidc)) is Err(AdminError.Invalid("authMode", _));
@@ -175,14 +175,14 @@ test authentikOnlyWaitsForTheClientSecret {
 private {
     adminOf(userId: string, username: string, type: client.AbsUserType) -> accounts.Admin {
         return accounts.Admin(
-            identity: accounts.Identity(userId: userId, username: username, userType: type),
+            identity: accounts.Identity(userId: userId, username: username, userType: type)
         );
     }
 
     tokenIs(expected: string) -> bool {
         return match (settings.serviceToken()) {
             None -> false,
-            token -> token.matches(expected),
+            token -> token.matches(expected)
         }
     }
 }

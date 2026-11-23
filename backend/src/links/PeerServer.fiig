@@ -13,9 +13,9 @@ capability PeerServer {
                     http.Method.Post,
                     "${address}/api/federation/link",
                     None,
-                    json.encode(offer),
-                ),
-            ),
+                    json.encode(offer)
+                )
+            )
         )?;
         accepted: LinkAcceptance = mapErr(e in json.decode(reply.body)): PeerError.Unreadable?;
         return Ok(accepted);
@@ -30,9 +30,9 @@ capability PeerServer {
                     http.Method.Get,
                     "${address}/api/federation/recommendations",
                     key.reveal(),
-                    None,
-                ),
-            ),
+                    None
+                )
+            )
         )?;
         ratings: List<SharedRating> = mapErr(e in json.decode(reply.body)): PeerError.Unreadable?;
         return Ok(ratings);
@@ -48,9 +48,9 @@ capability PeerServer {
                     http.Method.Get,
                     "${address}/api/federation/series",
                     key.reveal(),
-                    None,
-                ),
-            ),
+                    None
+                )
+            )
         )?;
         shared: List<SharedSeries> = mapErr(e in json.decode(reply.body)): PeerError.Unreadable?;
         return Ok(shared);
@@ -64,9 +64,9 @@ capability PeerServer {
                     http.Method.Post,
                     "${address}/api/federation/fetch",
                     key.reveal(),
-                    None,
-                ),
-            ),
+                    None
+                )
+            )
         )?;
         return Ok(reply.status);
     }
@@ -79,9 +79,9 @@ capability PeerServer {
                     http.Method.Delete,
                     "${address}/api/federation/link",
                     key.reveal(),
-                    None,
-                ),
-            ),
+                    None
+                )
+            )
         )?;
         return Ok(reply.status);
     }

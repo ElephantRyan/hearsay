@@ -4,6 +4,6 @@ gateway useInvite(secretHash: string, now: int) -> int requires Database {
     return Database.execute(
         "DELETE FROM link_invite WHERE secret_hash = ? AND expires_at > ?",
         secretHash,
-        now,
+        now
     );
 }

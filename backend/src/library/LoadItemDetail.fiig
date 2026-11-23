@@ -11,7 +11,7 @@ activity loadItemDetail(userId: string, book: catalog.Book) -> ItemDetail {
     // Which series it's in is a nicety: the page shows without it if ABS can't say.
     series: List<catalog.SeriesRef> = match (fetchItemSeries(book.itemId)) {
         Ok(refs) -> refs,
-        Err(_) -> [],
+        Err(_) -> []
     }
 
     return ItemDetail(
@@ -19,6 +19,6 @@ activity loadItemDetail(userId: string, book: catalog.Book) -> ItemDetail {
         average: scores.average(filter(r in rows): r.recommended),
         count: count(r in rows): r.recommended,
         ratings: rows,
-        series: series,
+        series: series
     );
 }

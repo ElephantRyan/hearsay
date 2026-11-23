@@ -9,5 +9,5 @@ enum SyncOutcome {
     Updated from json "updated",
     Recreated from json "recreated",
     Removed from json "removed",
-    Failed from json "failed",
+    Failed from json "failed"
 }

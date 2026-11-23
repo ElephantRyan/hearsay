@@ -15,6 +15,6 @@ gateway saveSetting(name: SettingName, text: string, by: string) -> Result<None,
         SettingName.OidcClientId -> Settings.save("oidc.clientId", text, by: by),
         SettingName.OidcClientSecret -> Settings.save("oidc.clientSecret", text, by: by),
         SettingName.OidcRedirectUri -> Settings.save("oidc.redirectUri", text, by: by),
-        SettingName.ServerName -> Settings.save("server.name", text, by: by),
+        SettingName.ServerName -> Settings.save("server.name", text, by: by)
     }
 }

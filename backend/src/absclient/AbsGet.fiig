@@ -8,8 +8,8 @@ rule absGet(base: string, path: string, accessToken: string) -> http.Request {
         url: "${base}${path}",
         headers: [
             http.Header(name: "Authorization", value: "Bearer ${accessToken}"),
-            http.Header(name: "Accept", value: "application/json"),
+            http.Header(name: "Accept", value: "application/json")
         ],
-        timeoutMillis: 10000,
+        timeoutMillis: 10000
     );
 }

@@ -26,8 +26,8 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"libraries\":[{\"id\":\"lib-1\",\"name\":\"Audiobooks\",\"mediaType\":\"book\",\"folders\":[]},{\"id\":\"lib-2\",\"name\":\"Podcasts\",\"mediaType\":\"podcast\"}]}".utf8(),
-                    ),
+                        body: "{\"libraries\":[{\"id\":\"lib-1\",\"name\":\"Audiobooks\",\"mediaType\":\"book\",\"folders\":[]},{\"id\":\"lib-2\",\"name\":\"Podcasts\",\"mediaType\":\"podcast\"}]}".utf8()
+                    )
                 );
             }
 
@@ -36,8 +36,8 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"results\":[{\"id\":\"it-1\",\"libraryId\":\"lib-1\",\"size\":1,\"media\":{\"metadata\":{\"title\":\"Dune\",\"authorName\":\"Frank Herbert\",\"subtitle\":null}}},{\"id\":\"it-2\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"Anon\",\"authorName\":null}}}],\"total\":1117,\"limit\":2,\"page\":2,\"sortBy\":\"media.metadata.title\"}".utf8(),
-                    ),
+                        body: "{\"results\":[{\"id\":\"it-1\",\"libraryId\":\"lib-1\",\"size\":1,\"media\":{\"metadata\":{\"title\":\"Dune\",\"authorName\":\"Frank Herbert\",\"subtitle\":null}}},{\"id\":\"it-2\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"Anon\",\"authorName\":null}}}],\"total\":1117,\"limit\":2,\"page\":2,\"sortBy\":\"media.metadata.title\"}".utf8()
+                    )
                 );
             }
 
@@ -46,8 +46,8 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"results\":[],\"total\":1117,\"limit\":2,\"page\":0}".utf8(),
-                    ),
+                        body: "{\"results\":[],\"total\":1117,\"limit\":2,\"page\":0}".utf8()
+                    )
                 );
             }
 
@@ -58,8 +58,8 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"results\":[],\"total\":3,\"limit\":2,\"page\":0}".utf8(),
-                    ),
+                        body: "{\"results\":[],\"total\":3,\"limit\":2,\"page\":0}".utf8()
+                    )
                 );
             }
 
@@ -68,8 +68,8 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"results\":[],\"total\":4,\"limit\":2,\"page\":0}".utf8(),
-                    ),
+                        body: "{\"results\":[],\"total\":4,\"limit\":2,\"page\":0}".utf8()
+                    )
                 );
             }
 
@@ -78,8 +78,8 @@ test absBrowseReadsLibrariesPagesAndSearchHits {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"book\":[{\"libraryItem\":{\"id\":\"it-9\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"War and Peace\",\"authorName\":\"Leo Tolstoy\"}}},\"matchKey\":\"title\"}],\"series\":[{\"series\":{\"id\":\"se-1\",\"name\":\"War Stories\"},\"books\":[{\"id\":\"it-9\"},{\"id\":\"it-10\"}]}],\"authors\":[{\"id\":\"au-1\",\"name\":\"Leo Tolstoy\",\"numBooks\":4}],\"narrators\":[],\"tags\":[],\"genres\":[]}".utf8(),
-                    ),
+                        body: "{\"book\":[{\"libraryItem\":{\"id\":\"it-9\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"War and Peace\",\"authorName\":\"Leo Tolstoy\"}}},\"matchKey\":\"title\"}],\"series\":[{\"series\":{\"id\":\"se-1\",\"name\":\"War Stories\"},\"books\":[{\"id\":\"it-9\"},{\"id\":\"it-10\"}]}],\"authors\":[{\"id\":\"au-1\",\"name\":\"Leo Tolstoy\",\"numBooks\":4}],\"narrators\":[],\"tags\":[],\"genres\":[]}".utf8()
+                    )
                 );
             }
 
@@ -152,8 +152,8 @@ test absItemBecomesABook {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"id\":\"it-1\",\"libraryId\":\"lib-1\",\"path\":\"/audiobooks/x\",\"media\":{\"coverPath\":\"/c.webp\",\"metadata\":{\"title\":\"After the Rabbit\",\"subtitle\":null,\"authors\":[{\"id\":\"a-1\",\"name\":\"Nelson Chereta\"}],\"series\":[],\"genres\":[\"Fantasy\"],\"publishedYear\":\"2017\"},\"tags\":[]}}".utf8(),
-                ),
+                    body: "{\"id\":\"it-1\",\"libraryId\":\"lib-1\",\"path\":\"/audiobooks/x\",\"media\":{\"coverPath\":\"/c.webp\",\"metadata\":{\"title\":\"After the Rabbit\",\"subtitle\":null,\"authors\":[{\"id\":\"a-1\",\"name\":\"Nelson Chereta\"}],\"series\":[],\"genres\":[\"Fantasy\"],\"publishedYear\":\"2017\"},\"tags\":[]}}".utf8()
+                )
             );
         }
     }
@@ -171,8 +171,8 @@ test absCatalogRefusalsAreValues {
                     http.Reply(
                         status: 401,
                         headers: [],
-                        body: "Invalid username or password".utf8(),
-                    ),
+                        body: "Invalid username or password".utf8()
+                    )
                 );
             }
 
@@ -182,7 +182,7 @@ test absCatalogRefusalsAreValues {
 
             if (request.url == "https://abs.test/api/items/odd") {
                 return Ok(
-                    http.Reply(status: 200, headers: [], body: "<html>not json</html>".utf8()),
+                    http.Reply(status: 200, headers: [], body: "<html>not json</html>".utf8())
                 );
             }
 
@@ -215,8 +215,8 @@ test absBatchLooksUpManyBooksInOneCall {
                 http.Reply(
                     status: 200,
                     headers: [],
-                    body: "{\"libraryItems\":[{\"id\":\"b-1\",\"libraryId\":\"lib-1\",\"libraryFiles\":[],\"media\":{\"metadata\":{\"title\":\"Alpha\",\"authorName\":\"A. Author, B. Author\",\"authors\":[{\"id\":\"a1\",\"name\":\"A. Author\"}]},\"chapters\":[]}},{\"id\":\"b-2\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"Beta\",\"authorName\":null}}}]}".utf8(),
-                ),
+                    body: "{\"libraryItems\":[{\"id\":\"b-1\",\"libraryId\":\"lib-1\",\"libraryFiles\":[],\"media\":{\"metadata\":{\"title\":\"Alpha\",\"authorName\":\"A. Author, B. Author\",\"authors\":[{\"id\":\"a1\",\"name\":\"A. Author\"}]},\"chapters\":[]}},{\"id\":\"b-2\",\"libraryId\":\"lib-1\",\"media\":{\"metadata\":{\"title\":\"Beta\",\"authorName\":null}}}]}".utf8()
+                )
             );
         }
     }

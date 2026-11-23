@@ -6,6 +6,6 @@ gateway markFetched(id: string, now: int, ratings: int, matched: int) -> int req
         now,
         ratings,
         matched,
-        id,
+        id
     );
 }

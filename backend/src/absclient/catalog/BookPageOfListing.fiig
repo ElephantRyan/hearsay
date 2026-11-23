@@ -9,8 +9,8 @@ conversion bookPageOfListing(body: bytes) -> Result<BookPage, absclient.AbsError
             total: found.total,
             page: found.page,
             limit: found.limit,
-            books: map(item in found.results): bookOfListed(item),
-        ),
+            books: map(item in found.results): bookOfListed(item)
+        )
     );
 }
 

@@ -8,7 +8,7 @@ gateway indexedBooks() -> int requires Database idempotent {
 
         counted -> {
             return counted.books;
-        },
+        }
     }
 }
 

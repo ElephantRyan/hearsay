@@ -1,4 +1,4 @@
 // Why a refresh stopped: Audiobookshelf couldn't be asked.
 enum RefreshError {
-    Unavailable(detail: string),
+    Unavailable(detail: string)
 }

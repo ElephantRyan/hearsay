@@ -7,7 +7,7 @@ adapter http libraryApi {
 
     GET "/libraries" -> showLibraries(me) produces "application/json" {
         Ok(libraries) -> 200 libraries,
-        Err(error) -> libraryErrorResponse(error),
+        Err(error) -> libraryErrorResponse(error)
     }
 
     GET "/libraries/{libraryId}/items?page={page}&size={size}&q={q}&sort={sort}&author={author}&series={series}" -> showLibraryItems(
@@ -18,19 +18,19 @@ adapter http libraryApi {
         q: string | None,
         sort: BrowseOrder | None,
         author: string | None,
-        series: string | None,
+        series: string | None
     )
             produces "application/json" {
         Ok(result) -> 200 result,
-        Err(error) -> libraryErrorResponse(error),
+        Err(error) -> libraryErrorResponse(error)
     }
 
     GET "/abs" -> showAbsAddress(me) produces "application/json" {
-        address -> 200 address,
+        address -> 200 address
     }
 
     GET "/items/{itemId}" -> showItem(me, itemId: string) produces "application/json" {
         Ok(detail) -> 200 detail,
-        Err(error) -> libraryErrorResponse(error),
+        Err(error) -> libraryErrorResponse(error)
     }
 }

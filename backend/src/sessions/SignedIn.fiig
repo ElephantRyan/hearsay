@@ -16,8 +16,8 @@ workflow signedIn(token: string | None) -> Result<accounts.Identity, IdentityErr
 
                 identity -> {
                     return Ok(identity);
-                },
+                }
             }
-        },
+        }
     }
 }

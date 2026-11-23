@@ -10,6 +10,6 @@ activity cachedBook(itemId: string) -> Result<catalog.Book, BookError> {
 
         cached -> {
             return Ok(cached);
-        },
+        }
     }
 }

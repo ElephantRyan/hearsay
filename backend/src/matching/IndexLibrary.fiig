@@ -33,9 +33,9 @@ activity indexLibrary() -> Result<IndexSummary, absclient.AbsFault> {
                 libraryId: book.libraryId,
                 asin: keys.asin,
                 isbn: keys.isbn,
-                titleKey: keys.titleKey,
+                titleKey: keys.titleKey
             ),
-            now,
+            now
         );
         if (keys.asin != None) {
             withAsin = withAsin + 1;
@@ -49,7 +49,7 @@ activity indexLibrary() -> Result<IndexSummary, absclient.AbsFault> {
             books: books.length(),
             withAsin: withAsin,
             withIsbn: withIsbn,
-            titleOnly: books.length() - withAsin - withIsbn,
-        ),
+            titleOnly: books.length() - withAsin - withIsbn
+        )
     );
 }

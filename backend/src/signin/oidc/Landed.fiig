@@ -6,7 +6,7 @@ conversion landed(landing: Landing) -> HttpResponse<None> {
             return HttpResponse(
                 status: 302,
                 headers: ["Location": landing.location, "Cache-Control": "no-store"],
-                cookies: [Cookie(name: "oidc", value: "", maxAge: 0)],
+                cookies: [Cookie(name: "oidc", value: "", maxAge: 0)]
             );
         },
 
@@ -16,9 +16,9 @@ conversion landed(landing: Landing) -> HttpResponse<None> {
                 headers: ["Location": landing.location, "Cache-Control": "no-store"],
                 cookies: [
                     Cookie(name: "sid", value: session.token, maxAge: session.maxAge),
-                    Cookie(name: "oidc", value: "", maxAge: 0),
-                ],
+                    Cookie(name: "oidc", value: "", maxAge: 0)
+                ]
             );
-        },
+        }
     }
 }

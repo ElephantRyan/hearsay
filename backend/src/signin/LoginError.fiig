@@ -5,5 +5,5 @@ enum LoginError {
     PasswordNotOffered,
     OidcNotOffered,
     Refused(reason: string),
-    Unavailable(detail: string),
+    Unavailable(detail: string)
 }

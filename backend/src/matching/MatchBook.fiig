@@ -14,11 +14,11 @@ activity matchBook(keys: BookKeys) -> LocalMatch | None {
                     return LocalMatch(
                         itemId: found.itemId,
                         libraryId: found.libraryId,
-                        how: "asin",
+                        how: "asin"
                     );
-                },
+                }
             }
-        },
+        }
     }
 
     match (keys.isbn) {
@@ -34,11 +34,11 @@ activity matchBook(keys: BookKeys) -> LocalMatch | None {
                     return LocalMatch(
                         itemId: found.itemId,
                         libraryId: found.libraryId,
-                        how: "isbn",
+                        how: "isbn"
                     );
-                },
+                }
             }
-        },
+        }
     }
 
     return match (indexedBy("title_key", keys.titleKey)) {
@@ -48,6 +48,6 @@ activity matchBook(keys: BookKeys) -> LocalMatch | None {
 
         found -> {
             return LocalMatch(itemId: found.itemId, libraryId: found.libraryId, how: "title");
-        },
+        }
     }
 }

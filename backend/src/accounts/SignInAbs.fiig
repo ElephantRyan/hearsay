@@ -7,6 +7,6 @@ conversion signInAbs(answer: Result<http.Reply, client.AbsError>)
         -> Result<http.Reply, SignInError> {
     return match (answer) {
         Err(error) -> Err(signInErrorOfAbs(error)),
-        Ok(reply) -> Ok(reply),
+        Ok(reply) -> Ok(reply)
     }
 }

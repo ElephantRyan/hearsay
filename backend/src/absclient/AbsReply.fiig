@@ -11,7 +11,7 @@ conversion absReply(sent: Result<http.Reply, http.HttpError>) -> Result<http.Rep
             }
 
             return Ok(reply);
-        },
+        }
     }
 }
 

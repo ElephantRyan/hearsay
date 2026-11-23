@@ -6,6 +6,6 @@ gateway saveIndexEntry(entry: IndexEntry, now: int) -> int requires Database {
         entry.asin,
         entry.isbn,
         entry.titleKey,
-        now,
+        now
     );
 }

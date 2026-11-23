@@ -9,8 +9,8 @@ rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, Ra
                 return Err(
                     RatingError.Invalid(
                         "score",
-                        "is needed unless the book is recommended or has a note",
-                    ),
+                        "is needed unless the book is recommended or has a note"
+                    )
                 );
             }
         },
@@ -19,7 +19,7 @@ rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, Ra
             if (score < 1 || score > 10) {
                 return Err(RatingError.Invalid("score", "must be from 1 to 10"));
             }
-        },
+        }
     }
 
     if (note.length() > 280) {
@@ -36,7 +36,7 @@ rule checkRating(itemId: string, input: RatingInput) -> Result<CheckedRating, Ra
             score: input.score,
             note: note,
             noteShared: input.noteShared ?? false,
-            recommended: input.recommended,
-        ),
+            recommended: input.recommended
+        )
     );
 }

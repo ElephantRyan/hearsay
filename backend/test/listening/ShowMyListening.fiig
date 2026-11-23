@@ -25,21 +25,21 @@ test myListeningIsMostRecentFirstWithMyScores {
                         itemId: "a",
                         finished: true,
                         percent: 100,
-                        lastListenedAt: 100,
+                        lastListenedAt: 100
                     ),
                     progress.Progress(
                         itemId: "b",
                         finished: false,
                         percent: 25,
-                        lastListenedAt: 300,
+                        lastListenedAt: 300
                     ),
                     progress.Progress(
                         itemId: "gone",
                         finished: false,
                         percent: 50,
-                        lastListenedAt: 200,
-                    ),
-                ],
+                        lastListenedAt: 200
+                    )
+                ]
             );
         }
     }
@@ -52,8 +52,8 @@ test myListeningIsMostRecentFirstWithMyScores {
                     libraryId: "lib-1",
                     title: "Alpha",
                     authors: "A. Author",
-                    series: [],
-                ),
+                    series: []
+                )
             );
         }
 
@@ -67,9 +67,9 @@ test myListeningIsMostRecentFirstWithMyScores {
                         libraryId: "lib-1",
                         title: "Beta",
                         authors: "B. Author",
-                        series: [],
-                    ),
-                ],
+                        series: []
+                    )
+                ]
             );
         }
     }
@@ -90,7 +90,7 @@ test myListeningCachesWhatItLooksUp {
         gateway progressAsService(userId: string)
                 -> Result<List<progress.Progress>, client.AbsError> {
             return Ok(
-                [progress.Progress(itemId: "b", finished: false, percent: 25, lastListenedAt: 300)],
+                [progress.Progress(itemId: "b", finished: false, percent: 25, lastListenedAt: 300)]
             );
         }
     }
@@ -106,9 +106,9 @@ test myListeningCachesWhatItLooksUp {
                         libraryId: "lib-1",
                         title: "Beta",
                         authors: "B. Author",
-                        series: [],
-                    ),
-                ],
+                        series: []
+                    )
+                ]
             );
         }
     }

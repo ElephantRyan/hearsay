@@ -4,5 +4,5 @@ enum AdminError {
     Invalid(field: string, reason: string),
     UnknownSetting(name: string),
     LibraryNotFound,
-    Unavailable(detail: string),
+    Unavailable(detail: string)
 }

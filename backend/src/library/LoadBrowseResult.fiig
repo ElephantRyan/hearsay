@@ -26,8 +26,8 @@ activity loadBrowseResult(
             limit: found.page.limit,
             items: withMyScores(found.page.books, mine),
             authors: map(a in found.authors): BrowseMatch(id: a.id, name: a.name, books: a.books),
-            series: map(s in found.series): BrowseMatch(id: s.id, name: s.name, books: s.books),
-        ),
+            series: map(s in found.series): BrowseMatch(id: s.id, name: s.name, books: s.books)
+        )
     );
 }
 
@@ -56,13 +56,13 @@ private {
                             total: hits.page.total,
                             page: hits.page.page,
                             limit: hits.page.limit,
-                            books: sortHits(hits.page.books, order),
+                            books: sortHits(hits.page.books, order)
                         ),
                         authors: hits.authors,
-                        series: hits.series,
-                    ),
+                        series: hits.series
+                    )
                 );
-            },
+            }
         }
     }
 
@@ -78,12 +78,12 @@ private {
             rating = ratings.atOrNone(book.itemId);
             myScore: int | None = match (rating) {
                 None -> None,
-                row -> row.score,
+                row -> row.score
             }
 
             myRecommended = match (rating) {
                 None -> false,
-                row -> row.recommended,
+                row -> row.recommended
             }
 
             items = append(
@@ -94,8 +94,8 @@ private {
                     title: book.title,
                     authors: book.authors,
                     myScore: myScore,
-                    myRecommended: myRecommended,
-                ),
+                    myRecommended: myRecommended
+                )
             );
         }
 

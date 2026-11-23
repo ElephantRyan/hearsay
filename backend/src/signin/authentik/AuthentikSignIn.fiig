@@ -25,8 +25,8 @@ capability AuthentikSignIn provides accounts.SignIn {
                 oidc.clientId,
                 oidc.redirectUri,
                 state,
-                pkceChallenge(codeVerifier),
-            ),
+                pkceChallenge(codeVerifier)
+            )
         );
     }
 
@@ -35,7 +35,7 @@ capability AuthentikSignIn provides accounts.SignIn {
             requires HttpClient {
         return match (attempt) {
             accounts.SignInAttempt.Password(username, password) -> Err(
-                accounts.SignInError.WrongMethod,
+                accounts.SignInError.WrongMethod
             ),
             accounts.SignInAttempt.AuthorizationCode(code, codeVerifier) -> {
                 oidc = oidcOf(server)?;
@@ -50,14 +50,14 @@ capability AuthentikSignIn provides accounts.SignIn {
                             codeVerifier,
                             oidc.redirectUri,
                             oidc.clientId,
-                            oidc.clientSecret.reveal(),
-                        ),
-                    ),
+                            oidc.clientSecret.reveal()
+                        )
+                    )
                 )?;
                 token: OidcTokenReply = mapErr(e in json.decode(exchanged.body)):
                         unreadable("token reply")?;
                 profile = oidcReply(
-                    HttpClient.send(oidcGet(endpoints.userinfoEndpoint, token.accessToken)),
+                    HttpClient.send(oidcGet(endpoints.userinfoEndpoint, token.accessToken))
                 )?;
                 info: OidcUserInfo = mapErr(e in json.decode(profile.body)):
                         unreadable("user info")?;
@@ -66,14 +66,14 @@ capability AuthentikSignIn provides accounts.SignIn {
                 listed = serviceReply(
                     client.absReply(
                         HttpClient.send(
-                            client.absGet(server.absUrl, "/api/users", serviceToken.reveal()),
-                        ),
-                    ),
+                            client.absGet(server.absUrl, "/api/users", serviceToken.reveal())
+                        )
+                    )
                 )?;
                 everyone: members.AbsUsersReply = mapErr(e in json.decode(listed.body)):
                         unreadable("list of Audiobookshelf users")?;
                 return identityOfMatches(members.usersMatchingEmail(everyone.users, email));
-            },
+            }
         }
     }
 

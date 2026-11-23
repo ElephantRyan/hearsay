@@ -7,6 +7,6 @@ gateway saveInvite(secretHash: string, expiresAt: int, now: int, by: string) -> 
         secretHash,
         expiresAt,
         now,
-        by,
+        by
     );
 }

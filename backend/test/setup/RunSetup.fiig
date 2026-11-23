@@ -30,8 +30,8 @@ test aNewServerIsClaimedByAnAbsAdmin {
                         username: "reader",
                         userType: client.AbsUserType.User,
                         accessToken: "t",
-                        refreshToken: "r",
-                    ),
+                        refreshToken: "r"
+                    )
                 );
             }
 
@@ -41,8 +41,8 @@ test aNewServerIsClaimedByAnAbsAdmin {
                     username: "owner",
                     userType: client.AbsUserType.Root,
                     accessToken: "t",
-                    refreshToken: "r",
-                ),
+                    refreshToken: "r"
+                )
             );
         }
     }

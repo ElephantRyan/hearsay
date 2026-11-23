@@ -12,7 +12,7 @@ rule recommendersOf(rows: List<rated.RatingRow>, picks: List<series.SeriesRating
     for (userId, group in groups) {
         seriesCount = match (seriesGroups.atOrNone(userId)) {
             None -> 0,
-            theirs -> theirs.length(),
+            theirs -> theirs.length()
         }
 
         people = append(
@@ -21,8 +21,8 @@ rule recommendersOf(rows: List<rated.RatingRow>, picks: List<series.SeriesRating
                 userId: userId,
                 username: group.at(0).username,
                 count: group.length() + seriesCount,
-                via: group.at(0).via,
-            ),
+                via: group.at(0).via
+            )
         );
     }
 
@@ -35,8 +35,8 @@ rule recommendersOf(rows: List<rated.RatingRow>, picks: List<series.SeriesRating
                     userId: userId,
                     username: group.at(0).username,
                     count: group.length(),
-                    via: None,
-                ),
+                    via: None
+                )
             );
         }
     }

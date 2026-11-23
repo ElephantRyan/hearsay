@@ -9,7 +9,7 @@ activity removeLink(id: string) -> Result<Unlinked, LinkError> {
         },
 
         Err(_) -> {
-        },
+        }
     }
 
     deleteLink(id);

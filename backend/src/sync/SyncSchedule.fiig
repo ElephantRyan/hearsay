@@ -5,6 +5,6 @@
 adapter schedule syncSchedule {
     every "1h" -> syncOnSchedule() {
         Ok(_) -> done,
-        Err(_) -> done,
+        Err(_) -> done
     }
 }

@@ -4,7 +4,7 @@ conversion problemOfPeer(error: PeerError) -> string {
         PeerError.Unreachable(failure) -> "it didn't answer",
         PeerError.LoginPage -> "it answered with a login page: its login must let /api/federation/ through",
         PeerError.Unreadable -> "its answer couldn't be read",
-        PeerError.Rejected(status) -> rejection(status),
+        PeerError.Rejected(status) -> rejection(status)
     }
 }
 

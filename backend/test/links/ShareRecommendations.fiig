@@ -38,8 +38,8 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
                         title: "Dune",
                         authors: "Frank Herbert",
                         asin: "B0DUNE",
-                        isbn: None,
-                    ),
+                        isbn: None
+                    )
                 );
             }
 
@@ -50,8 +50,8 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
                     title: "Book ${itemId}",
                     authors: "Someone",
                     asin: None,
-                    isbn: None,
-                ),
+                    isbn: None
+                )
             );
         }
 
@@ -78,10 +78,10 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
                             title: "Book old",
                             authors: "Someone",
                             asin: "b0old",
-                            isbn: "978-0-1",
-                        ),
-                    ],
-                ),
+                            isbn: "978-0-1"
+                        )
+                    ]
+                )
             );
         }
     }
@@ -96,8 +96,8 @@ test aLinkedServerSeesOnlyRecommendationsWithTheirBookKeys {
         identity: accounts.Identity(
             userId: "a1",
             username: "ryan",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect inviteServer(admin) is Ok(invite);
     expect inviteCodeOf(invite.code) is Ok(code);

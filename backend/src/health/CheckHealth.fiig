@@ -17,8 +17,8 @@ activity checkHealth() -> Health {
 
                 Err(_) -> {
                     return Health(ok: true, abs: "unreachable");
-                },
+                }
             }
-        },
+        }
     }
 }

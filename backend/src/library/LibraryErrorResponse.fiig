@@ -5,10 +5,10 @@ conversion libraryErrorResponse(error: LibraryError) -> HttpResponse<string> {
     return match (error) {
         LibraryError.Invalid(field, reason) -> HttpResponse(
             status: 400,
-            body: "${field} ${reason}",
+            body: "${field} ${reason}"
         ),
         LibraryError.LibraryNotFound -> HttpResponse(status: 404, body: "no library with that id"),
         LibraryError.Book(cause) -> books.bookErrorResponse(cause),
-        LibraryError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
+        LibraryError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
     }
 }

@@ -9,22 +9,22 @@ test retiredTopCollectionsAreRemoved {
             libraryId: "lib-1",
             collectionId: "old-1",
             lastSyncedAt: 1,
-            lastError: None,
+            lastError: None
         ),
         SyncState(
             userId: "top-rated",
             libraryId: "lib-1",
             collectionId: "old-2",
             lastSyncedAt: 1,
-            lastError: None,
+            lastError: None
         ),
         SyncState(
             userId: "u1",
             libraryId: "lib-1",
             collectionId: "mine",
             lastSyncedAt: 1,
-            lastError: None,
-        ),
+            lastError: None
+        )
     ];
     book = recommendations.RecommendedBook(
         itemId: "a",
@@ -34,7 +34,7 @@ test retiredTopCollectionsAreRemoved {
         average: None,
         count: 1,
         latest: 1,
-        seriesBooks: 0,
+        seriesBooks: 0
     );
     plans = planTopSync([], [book], states, false, true);
     removed = map(p in filter(p in plans): p.action == SyncAction.Remove): p.collectionId ?? "";

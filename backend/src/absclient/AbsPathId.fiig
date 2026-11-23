@@ -11,6 +11,6 @@ conversion absPathId(id: string) -> Result<string, AbsError> {
 
     return match (http.pathSegment(id)) {
         None -> Err(AbsError.NotFound),
-        safe -> Ok(safe),
+        safe -> Ok(safe)
     }
 }

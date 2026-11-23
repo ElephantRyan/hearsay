@@ -14,6 +14,6 @@ gateway clearSetting(name: SettingName, by: string) -> Result<None, SettingError
         SettingName.OidcClientId -> Settings.clear("oidc.clientId", by: by),
         SettingName.OidcClientSecret -> Settings.clear("oidc.clientSecret", by: by),
         SettingName.OidcRedirectUri -> Settings.clear("oidc.redirectUri", by: by),
-        SettingName.ServerName -> Settings.clear("server.name", by: by),
+        SettingName.ServerName -> Settings.clear("server.name", by: by)
     }
 }

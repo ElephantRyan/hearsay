@@ -4,5 +4,5 @@ enum SyncError {
     MirroringOff,
     NotAllowed,
     Unavailable(detail: string),
-    SomeWritesFailed(failed: int, total: int),
+    SomeWritesFailed(failed: int, total: int)
 }

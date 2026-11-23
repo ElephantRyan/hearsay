@@ -11,7 +11,7 @@ activity beginSignIn() -> Result<OidcStart, accounts.SignInError> {
 
         oidc -> {
             return beginWith(oidc);
-        },
+        }
     }
 }
 

@@ -55,7 +55,7 @@ test absCollectionWritesSendExactlyWhatTheyShould {
             expect http.headerValue(request.headers, "authorization") == "Bearer svc";
             sentText: string = match (request.body) {
                 None -> "",
-                sent -> sent.utf8() ?? "",
+                sent -> sent.utf8() ?? ""
             }
 
             if (request.method == http.Method.Get) {
@@ -65,8 +65,8 @@ test absCollectionWritesSendExactlyWhatTheyShould {
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"id\":\"col-1\",\"books\":[{\"id\":\"b-2\",\"media\":{}},{\"id\":\"b-3\",\"media\":{}}]}".utf8(),
-                    ),
+                        body: "{\"id\":\"col-1\",\"books\":[{\"id\":\"b-2\",\"media\":{}},{\"id\":\"b-3\",\"media\":{}}]}".utf8()
+                    )
                 );
             }
 
@@ -100,17 +100,17 @@ test absCollectionWritesSendExactlyWhatTheyShould {
                                 expect text.contains("\"libraryId\":\"lib-1\"");
                                 expect text.contains("\"name\":\"Ann Recommends\"");
                                 expect text.contains("\"books\":[\"b-2\",\"b-1\"]");
-                            },
+                            }
                         }
-                    },
+                    }
                 }
 
                 return Ok(
                     http.Reply(
                         status: 200,
                         headers: [],
-                        body: "{\"id\":\"col-1\",\"libraryId\":\"lib-1\",\"name\":\"Ann Recommends\",\"books\":[],\"lastUpdate\":1}".utf8(),
-                    ),
+                        body: "{\"id\":\"col-1\",\"libraryId\":\"lib-1\",\"name\":\"Ann Recommends\",\"books\":[],\"lastUpdate\":1}".utf8()
+                    )
                 );
             }
 

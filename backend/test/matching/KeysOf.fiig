@@ -3,7 +3,7 @@ test keysIgnoreCasePunctuationAndALeadingArticle {
         " b00abc123 ",
         "978-0-14-311852-7",
         "The Hobbit: There and Back Again",
-        "J. R. R. Tolkien, Rob Inglis",
+        "J. R. R. Tolkien, Rob Inglis"
     );
     expect tolkien == BookKeys(asin: "B00ABC123", isbn: "9780143118527", titleKey: "hobbit there and back again|j r r tolkien");
     // Another server's copy, written differently: same title key.

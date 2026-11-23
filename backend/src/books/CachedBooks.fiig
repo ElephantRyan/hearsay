@@ -14,7 +14,7 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookEr
 
             cached -> {
                 found = found.put(itemId, cached);
-            },
+            }
         }
     }
 
@@ -34,7 +34,7 @@ activity cachedBooks(itemIds: List<string>) -> Result<List<catalog.Book>, BookEr
 
             book -> {
                 books = append(books, book);
-            },
+            }
         }
     }
 

@@ -8,7 +8,7 @@ rule peerRequest(method: http.Method, url: string, key: string | None, body: byt
         url: url,
         headers: peerHeaders(key, body != None),
         body: body,
-        timeoutMillis: 10000,
+        timeoutMillis: 10000
     );
 }
 
@@ -22,9 +22,9 @@ private {
             given -> {
                 headers = append(
                     headers,
-                    http.Header(name: "Authorization", value: "Bearer ${given}"),
+                    http.Header(name: "Authorization", value: "Bearer ${given}")
                 );
-            },
+            }
         }
 
         if (hasBody) {

@@ -11,6 +11,6 @@ activity latestSeries(seriesId: string) -> Result<catalog.CatalogSeries, SeriesE
             return Err(SeriesError.Missing);
         },
 
-        Err(fault) -> Err(seriesErrorOfFault(fault)),
+        Err(fault) -> Err(seriesErrorOfFault(fault))
     }
 }

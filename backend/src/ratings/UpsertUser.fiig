@@ -6,6 +6,6 @@ gateway upsertUser(userId: string, username: string, now: int) -> int requires D
         userId,
         username,
         username,
-        now,
+        now
     );
 }

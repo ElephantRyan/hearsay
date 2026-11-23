@@ -10,6 +10,6 @@ gateway saveAccount(user: accounts.Identity, account: Account) -> int requires D
         account.displayName,
         Clock.now(),
         account.shareNotesByDefault,
-        account.skipRatedSeriesBooks,
+        account.skipRatedSeriesBooks
     );
 }

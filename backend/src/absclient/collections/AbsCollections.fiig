@@ -24,13 +24,13 @@ capability AbsCollections {
                 libraryId: libraryId,
                 name: name,
                 description: description,
-                books: bookIds,
-            ),
+                books: bookIds
+            )
         );
         reply = absclient.absReply(
             HttpClient.send(
-                absWrite(http.Method.Post, "${abs.url}/api/collections", abs.token.reveal(), body),
-            ),
+                absWrite(http.Method.Post, "${abs.url}/api/collections", abs.token.reveal(), body)
+            )
         )?;
         created: AbsCollection = mapErr(e in json.decode(reply.body)):
                 absclient.AbsError.Unreadable(failure: e)?;
@@ -58,9 +58,9 @@ capability AbsCollections {
                 absclient.absGet(
                     abs.url,
                     "/api/collections/${collectionIdSegment}",
-                    abs.token.reveal(),
-                ),
-            ),
+                    abs.token.reveal()
+                )
+            )
         )?;
         held: AbsCollectionBooks = mapErr(e in json.decode(current.body)):
                 absclient.AbsError.Unreadable(failure: e)?;
@@ -74,9 +74,9 @@ capability AbsCollections {
                         http.Method.Post,
                         "${base}/batch/add",
                         abs.token.reveal(),
-                        json.encode(AbsBookIds(books: toAdd)),
-                    ),
-                ),
+                        json.encode(AbsBookIds(books: toAdd))
+                    )
+                )
             )?;
         }
 
@@ -87,14 +87,14 @@ capability AbsCollections {
                         http.Method.Post,
                         "${base}/batch/remove",
                         abs.token.reveal(),
-                        json.encode(AbsBookIds(books: toRemove)),
-                    ),
-                ),
+                        json.encode(AbsBookIds(books: toRemove))
+                    )
+                )
             )?;
         }
 
         body = json.encode(
-            AbsCollectionPatch(name: name, description: description, books: bookIds),
+            AbsCollectionPatch(name: name, description: description, books: bookIds)
         );
         reply = absclient.absReply(
             HttpClient.send(
@@ -102,9 +102,9 @@ capability AbsCollections {
                     http.Method.Patch,
                     "${abs.url}/api/collections/${collectionIdSegment}",
                     abs.token.reveal(),
-                    body,
-                ),
-            ),
+                    body
+                )
+            )
         )?;
         return Ok(reply.status);
     }
@@ -119,9 +119,9 @@ capability AbsCollections {
                     http.Method.Delete,
                     "${abs.url}/api/collections/${collectionIdSegment}",
                     abs.token.reveal(),
-                    None,
-                ),
-            ),
+                    None
+                )
+            )
         )?;
         return Ok(reply.status);
     }

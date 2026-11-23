@@ -5,6 +5,6 @@ conversion indexProblemOfFault(fault: client.AbsFault) -> string {
     return match (fault) {
         client.AbsFault.Missing -> "a library Audiobookshelf listed has gone",
         client.AbsFault.Denied -> "Audiobookshelf refused this server's token",
-        client.AbsFault.Down(detail) -> detail,
+        client.AbsFault.Down(detail) -> detail
     }
 }

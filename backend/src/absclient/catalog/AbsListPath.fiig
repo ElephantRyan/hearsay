@@ -16,7 +16,7 @@ private {
             BookOrder.TitleDescending -> "sort=media.metadata.title&desc=1",
             BookOrder.AuthorAscending -> "sort=media.metadata.authorName",
             BookOrder.AuthorDescending -> "sort=media.metadata.authorName&desc=1",
-            BookOrder.SeriesOrder -> "sort=sequence",
+            BookOrder.SeriesOrder -> "sort=sequence"
         }
     }
 
@@ -24,7 +24,7 @@ private {
         return match (scope) {
             BookScope.All -> "",
             BookScope.Author(id) -> "&filter=authors.${id.utf8().toBase64Url()}",
-            BookScope.Series(id) -> "&filter=series.${id.utf8().toBase64Url()}",
+            BookScope.Series(id) -> "&filter=series.${id.utf8().toBase64Url()}"
         }
     }
 }

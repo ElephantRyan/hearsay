@@ -5,6 +5,6 @@ conversion redirectToIdp(start: OidcStart) -> HttpResponse<None> {
     return HttpResponse(
         status: 302,
         headers: ["Location": start.url, "Cache-Control": "no-store"],
-        cookies: [Cookie(name: "oidc", value: start.pending, maxAge: 600)],
+        cookies: [Cookie(name: "oidc", value: start.pending, maxAge: 600)]
     );
 }

@@ -12,13 +12,13 @@ conversion searchHitsOf(body: bytes, size: int) -> Result<SearchHits, absclient.
                 total: found.book.length(),
                 page: 0,
                 limit: size,
-                books: map(hit in found.book): bookOfListed(hit.libraryItem),
+                books: map(hit in found.book): bookOfListed(hit.libraryItem)
             ),
             authors: map(a in found.authors ?? []):
                     CatalogMatch(id: a.id, name: a.name, books: a.numBooks ?? 0),
             series: map(s in found.series ?? []):
-                    CatalogMatch(id: s.series.id, name: s.series.name, books: s.books.length()),
-        ),
+                    CatalogMatch(id: s.series.id, name: s.series.name, books: s.books.length())
+        )
     );
 }
 

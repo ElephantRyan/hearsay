@@ -4,6 +4,6 @@
 rule atLeast(books: List<RecommendedBook>, minScore: int | None) -> List<RecommendedBook> {
     return match (minScore) {
         None -> books,
-        bar -> filter(b in books): (b.average ?? math.toDecimal(0)) >= math.toDecimal(bar),
+        bar -> filter(b in books): (b.average ?? math.toDecimal(0)) >= math.toDecimal(bar)
     }
 }

@@ -25,7 +25,7 @@ activity finishSignIn(
 
         denied -> {
             return failedLanding("denied");
-        },
+        }
     }
 }
 
@@ -33,7 +33,7 @@ private {
     failedLanding(reason: string) -> Landing {
         return Landing(
             location: "${settings.frontendUrl()}/sign-in?error=${reason}",
-            session: None,
+            session: None
         );
     }
 
@@ -56,9 +56,9 @@ private {
                         }
 
                         return exchange(given, parts.verifier);
-                    },
+                    }
                 }
-            },
+            }
         }
     }
 
@@ -72,7 +72,7 @@ private {
             Ok(identity) -> {
                 session = sessions.startSession(identity);
                 return Landing(location: settings.frontendUrl(), session: session);
-            },
+            }
         }
     }
 
@@ -80,7 +80,7 @@ private {
     readPendingParts(pending: string | None) -> PendingParts | None {
         return match (pending) {
             None -> None,
-            text -> partsOf(text.split(".")),
+            text -> partsOf(text.split("."))
         }
     }
 
@@ -99,7 +99,7 @@ private {
             accounts.SignInError.WrongMethod -> "method",
             accounts.SignInError.NoAccount -> "no-account",
             accounts.SignInError.Refused(reason) -> "refused",
-            accounts.SignInError.Unavailable(detail) -> "unavailable",
+            accounts.SignInError.Unavailable(detail) -> "unavailable"
         }
     }
 }

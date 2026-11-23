@@ -24,8 +24,8 @@ test aRecommendationWithoutAScoreCountsButHasNoAverage {
                     itemId: itemId,
                     libraryId: "lib-1",
                     title: "Dune",
-                    authors: "Frank Herbert",
-                ),
+                    authors: "Frank Herbert"
+                )
             );
         }
     }

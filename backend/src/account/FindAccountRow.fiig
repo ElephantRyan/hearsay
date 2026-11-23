@@ -3,6 +3,6 @@
 gateway findAccountRow(userId: string) -> AccountRow | None requires Database idempotent {
     return Database.queryOne(
         "SELECT display_name, share_notes_default, skip_rated_series FROM app_user WHERE user_id = ?",
-        userId,
+        userId
     );
 }

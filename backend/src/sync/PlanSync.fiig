@@ -26,8 +26,8 @@ rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: Lis
                     description: descriptionFor(group.at(0).via),
                     bookIds: once.unique(map(r in ordered): r.itemId),
                     collectionId: existing,
-                    action: createOrUpdate(existing),
-                ),
+                    action: createOrUpdate(existing)
+                )
             );
         }
 
@@ -42,8 +42,8 @@ rule planSync(rows: List<rated.RatingRow>, states: List<SyncState>, userIds: Lis
                         description: "",
                         bookIds: [],
                         collectionId: state.collectionId,
-                        action: SyncAction.Remove,
-                    ),
+                        action: SyncAction.Remove
+                    )
                 );
             }
         }
@@ -57,21 +57,21 @@ private {
         found = filter(s in theirs): s.libraryId == libraryId;
         return match (found.firstOrNone()) {
             None -> None,
-            state -> state.collectionId,
+            state -> state.collectionId
         }
     }
 
     descriptionFor(via: string | None) -> string {
         return match (via) {
             None -> "Maintained by Hearsay. Edits here are overwritten on the next sync.",
-            server -> "Recommended on ${server}. Maintained by Hearsay. Edits here are overwritten on the next sync.",
+            server -> "Recommended on ${server}. Maintained by Hearsay. Edits here are overwritten on the next sync."
         }
     }
 
     createOrUpdate(existing: string | None) -> SyncAction {
         return match (existing) {
             None -> SyncAction.Create,
-            id -> SyncAction.Update,
+            id -> SyncAction.Update
         }
     }
 }

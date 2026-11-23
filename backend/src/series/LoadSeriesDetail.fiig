@@ -14,6 +14,6 @@ activity loadSeriesDetail(viewerId: string, series: catalog.CatalogSeries) -> Se
         firstItemId: series.bookIds.firstOrNone(),
         average: scores.averageOf(map(r in recommended): r.score),
         count: recommended.length(),
-        ratings: rows,
+        ratings: rows
     );
 }

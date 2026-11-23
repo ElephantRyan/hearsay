@@ -4,12 +4,12 @@ use hearsay.accounts;
 conversion loginErrorOfSignIn(error: accounts.SignInError) -> LoginError {
     return match (error) {
         accounts.SignInError.WrongMethod -> LoginError.Refused(
-            "this server does not sign people in that way",
+            "this server does not sign people in that way"
         ),
         accounts.SignInError.NoAccount -> LoginError.Refused(
-            "no Audiobookshelf account has your email; sign in to Audiobookshelf once first",
+            "no Audiobookshelf account has your email; sign in to Audiobookshelf once first"
         ),
         accounts.SignInError.Refused(reason) -> LoginError.Refused(reason),
-        accounts.SignInError.Unavailable(detail) -> LoginError.Unavailable(detail),
+        accounts.SignInError.Unavailable(detail) -> LoginError.Unavailable(detail)
     }
 }

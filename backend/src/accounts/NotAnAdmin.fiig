@@ -1,6 +1,6 @@
 // What a signed-in person who isn't an admin is told.
 conversion notAnAdmin(error: AdminRefusal) -> HttpResponse<string> {
     return match (error) {
-        AdminRefusal.NotAnAdmin -> HttpResponse(status: 403, body: "only an admin can do this"),
+        AdminRefusal.NotAnAdmin -> HttpResponse(status: 403, body: "only an admin can do this")
     }
 }

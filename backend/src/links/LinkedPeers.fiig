@@ -1,7 +1,7 @@
 // Every linked server with the key to call it, for fetching.
 gateway linkedPeers() -> List<PeerKey> requires Database idempotent {
     found: List<PeerKeyRow> = Database.queryMany(
-        "SELECT id, name, address, key_out FROM linked_server ORDER BY name",
+        "SELECT id, name, address, key_out FROM linked_server ORDER BY name"
     );
     peers: List<PeerKey> = [];
     for (row in found) {
@@ -11,8 +11,8 @@ gateway linkedPeers() -> List<PeerKey> requires Database idempotent {
                 id: row.id,
                 name: row.name,
                 address: row.address,
-                keyOut: row.keyOut.toSecret("linked server key"),
-            ),
+                keyOut: row.keyOut.toSecret("linked server key")
+            )
         );
     }
 

@@ -9,7 +9,7 @@ conversion serviceReply(answer: Result<http.Reply, client.AbsError>)
         -> Result<http.Reply, accounts.SignInError> {
     return match (answer) {
         Ok(reply) -> Ok(reply),
-        Err(error) -> Err(serviceFailure(error)),
+        Err(error) -> Err(serviceFailure(error))
     }
 }
 
@@ -17,12 +17,12 @@ private {
     serviceFailure(error: client.AbsError) -> accounts.SignInError {
         return match (client.faultOfAbs(error)) {
             client.AbsFault.Missing -> accounts.SignInError.Unavailable(
-                "Audiobookshelf has no user list at the expected address",
+                "Audiobookshelf has no user list at the expected address"
             ),
             client.AbsFault.Denied -> accounts.SignInError.Unavailable(
-                "this server's Audiobookshelf token was refused; tell the server's admin",
+                "this server's Audiobookshelf token was refused; tell the server's admin"
             ),
-            client.AbsFault.Down(detail) -> accounts.SignInError.Unavailable(detail),
+            client.AbsFault.Down(detail) -> accounts.SignInError.Unavailable(detail)
         }
     }
 }

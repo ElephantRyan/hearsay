@@ -9,7 +9,7 @@ activity fetchNewLink(id: string) -> Result<LinkedServer, LinkError> {
         },
 
         Err(_) -> {
-        },
+        }
     }
 
     // Its hourly fetch catches up.

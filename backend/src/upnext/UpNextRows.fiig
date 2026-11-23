@@ -4,7 +4,7 @@ capability UpNextRows {
     gateway listOf(userId: string) -> List<UpNextBook> requires Database idempotent {
         return Database.queryMany(
             "SELECT u.item_id, b.library_id, b.title, b.authors, u.position, u.added_at FROM up_next u JOIN book b ON b.item_id = u.item_id WHERE u.user_id = ? ORDER BY u.position, u.added_at",
-            userId,
+            userId
         );
     }
 
@@ -15,7 +15,7 @@ capability UpNextRows {
             userId,
             itemId,
             userId,
-            now,
+            now
         );
     }
 
@@ -23,7 +23,7 @@ capability UpNextRows {
         return Database.execute(
             "DELETE FROM up_next WHERE user_id = ? AND item_id = ?",
             userId,
-            itemId,
+            itemId
         );
     }
 
@@ -32,7 +32,7 @@ capability UpNextRows {
             "UPDATE up_next SET position = ? WHERE user_id = ? AND item_id = ?",
             position,
             userId,
-            itemId,
+            itemId
         );
     }
 }

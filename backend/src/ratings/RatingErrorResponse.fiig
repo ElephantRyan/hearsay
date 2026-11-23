@@ -6,6 +6,6 @@ conversion ratingErrorResponse(error: RatingError) -> HttpResponse<string> {
         RatingError.Invalid(field, reason) -> HttpResponse(status: 400, body: "${field} ${reason}"),
         RatingError.Book(cause) -> books.bookErrorResponse(cause),
         RatingError.NoRating -> HttpResponse(status: 404, body: "no rating of yours for that book"),
-        RatingError.Unavailable(detail) -> HttpResponse(status: 503, body: detail),
+        RatingError.Unavailable(detail) -> HttpResponse(status: 503, body: detail)
     }
 }

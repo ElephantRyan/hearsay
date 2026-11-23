@@ -3,6 +3,6 @@
 adapter schedule linksSchedule {
     every "1h" -> fetchOnSchedule() {
         Ok(_) -> done,
-        Err(_) -> done,
+        Err(_) -> done
     }
 }

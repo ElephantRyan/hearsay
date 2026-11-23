@@ -6,7 +6,7 @@ conversion setupErrorOfChange(error: settings.SettingsChangeError) -> SetupError
         settings.SettingsChangeError.Invalid(field, reason) -> SetupError.Invalid(field, reason),
         settings.SettingsChangeError.UnknownSetting(name) -> SetupError.Invalid(
             name,
-            "is not a setting",
-        ),
+            "is not a setting"
+        )
     }
 }

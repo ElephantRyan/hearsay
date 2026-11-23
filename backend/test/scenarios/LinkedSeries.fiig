@@ -24,8 +24,8 @@ test aRecommendedSeriesIsSharedByItsBookOne {
                     libraryId: "lib-1",
                     name: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
-                    bookIds: ["dcc-1", "dcc-2"],
-                ),
+                    bookIds: ["dcc-1", "dcc-2"]
+                )
             );
         }
 
@@ -38,8 +38,8 @@ test aRecommendedSeriesIsSharedByItsBookOne {
                     title: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
                     asin: "B08BX5DHWW",
-                    isbn: None,
-                ),
+                    isbn: None
+                )
             );
         }
     }
@@ -95,10 +95,10 @@ test aLinkedServersSeriesIsMatchedThroughItsBookOne {
                             title: "Dungeon Crawler Carl",
                             authors: "Matt Dinniman",
                             asin: "B08BX5DHWW",
-                            isbn: None,
-                        ),
-                    ],
-                ),
+                            isbn: None
+                        )
+                    ]
+                )
             );
         }
 
@@ -106,7 +106,7 @@ test aLinkedServersSeriesIsMatchedThroughItsBookOne {
                 -> Result<List<catalog.SeriesRef>, client.AbsError> {
             expect itemId == "dcc-1-here";
             return Ok(
-                [catalog.SeriesRef(id: "dcc-here", name: "Dungeon Crawler Carl", sequence: "1")],
+                [catalog.SeriesRef(id: "dcc-here", name: "Dungeon Crawler Carl", sequence: "1")]
             );
         }
 
@@ -119,8 +119,8 @@ test aLinkedServersSeriesIsMatchedThroughItsBookOne {
                     libraryId: "lib-1",
                     name: "Dungeon Crawler Carl",
                     authors: "Matt Dinniman",
-                    bookIds: ["dcc-1-here", "dcc-2-here", "dcc-3-here"],
-                ),
+                    bookIds: ["dcc-1-here", "dcc-2-here", "dcc-3-here"]
+                )
             );
         }
     }
@@ -135,10 +135,10 @@ test aLinkedServersSeriesIsMatchedThroughItsBookOne {
                         body: json.encode(
                             links.LinkAcceptance(
                                 name: "The family library",
-                                key: "k".padRight(43, "k"),
-                            ),
-                        ),
-                    ),
+                                key: "k".padRight(43, "k")
+                            )
+                        )
+                    )
                 );
             }
 
@@ -159,7 +159,7 @@ test aLinkedServersSeriesIsMatchedThroughItsBookOne {
                                     isbn: None,
                                     score: 10,
                                     note: "read them all",
-                                    updatedAt: 5,
+                                    updatedAt: 5
                                 ),
                                 links.SharedSeries(
                                     personId: "p1",
@@ -171,11 +171,11 @@ test aLinkedServersSeriesIsMatchedThroughItsBookOne {
                                     isbn: None,
                                     score: None,
                                     note: "",
-                                    updatedAt: 6,
-                                ),
-                            ],
-                        ),
-                    ),
+                                    updatedAt: 6
+                                )
+                            ]
+                        )
+                    )
                 );
             }
 
@@ -191,8 +191,8 @@ test aLinkedServersSeriesIsMatchedThroughItsBookOne {
         identity: accounts.Identity(
             userId: "a1",
             username: "alex",
-            userType: client.AbsUserType.Admin,
-        ),
+            userType: client.AbsUserType.Admin
+        )
     );
     expect links.linkServer(admin, links.LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(link);
     bob = accounts.Identity(userId: "u2", username: "bob", userType: client.AbsUserType.User);

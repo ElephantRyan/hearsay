@@ -11,7 +11,7 @@ workflow changeAccount(me: accounts.Identity, change: AccountChange)
 
         given -> {
             name = checkDisplayName(given)?;
-        },
+        }
     }
 
     return Ok(storeAccount(me, name, change.shareNotesByDefault, change.skipRatedSeriesBooks));

@@ -9,10 +9,10 @@ rule absLoginRequest(base: string, username: string, password: string) -> http.R
         headers: [
             http.Header(name: "Content-Type", value: "application/json"),
             http.Header(name: "Accept", value: "application/json"),
-            http.Header(name: "x-return-tokens", value: "true"),
+            http.Header(name: "x-return-tokens", value: "true")
         ],
         body: json.encode(AbsLoginBody(username: username, password: password)),
-        timeoutMillis: 10000,
+        timeoutMillis: 10000
     );
 }
 

@@ -5,5 +5,5 @@ use hearsay.books;
 enum ListeningError {
     AccountNotFound,
     Book(cause: books.BookError),
-    Unavailable(detail: string),
+    Unavailable(detail: string)
 }
