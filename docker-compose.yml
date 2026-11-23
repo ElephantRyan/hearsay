@@ -11,7 +11,7 @@
 # than the one the server saves) and FIIG_IMAGE (the fiig release the backend
 # runs on, pinned below) can go in a .env file next to this one.
 #
-# Point your reverse proxy (with HTTPS) at port 8080; that is the only port
+# Point your reverse proxy (with HTTPS) at port 47281; that is the only port
 # published. The API and worker are reachable only from the web container.
 name: hearsay
 
@@ -46,7 +46,7 @@ services:
         VITE_ABS_URL: ${ABS_PUBLIC_URL:-}
     image: hearsay-web
     ports:
-      - "${HEARSAY_PORT:-8080}:80"
+      - "${HEARSAY_PORT:-47281}:80"
     depends_on:
       - api
     restart: unless-stopped

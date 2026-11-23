@@ -100,7 +100,7 @@ any of it from the environment instead, copy `hearsay.env.example` to `hearsay.e
 - Covers load straight from Audiobookshelf, at the address saved in setup. If browsers reach ABS
   at a different address (setup was given a Docker-internal one, say), set `ABS_PUBLIC_URL` to
   theirs and rebuild with `docker compose up -d --build`.
-- Only port 8080 (`HEARSAY_PORT`) is published. Put your reverse proxy, with HTTPS, in front of
+- Only port 47281 (`HEARSAY_PORT`) is published. Put your reverse proxy, with HTTPS, in front of
   it, and do the first-run setup through it: setup saves the address it was opened at as the app's
   own, for link codes and Authentik redirects. Sign-in cookies are `Secure`, so outside
   `localhost` the app needs HTTPS.
