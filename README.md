@@ -95,7 +95,7 @@ admin's login, which claims the server. The token, sign-in modes, Authentik, mir
 server's name are on the admin screen after that. Nothing needs configuring beforehand; to set
 any of it from the environment instead, copy `hearsay.env.example` to `hearsay.env`.
 
-- The backend runs on fiig `v0.1.0-alpha.3` (`ghcr.io/elephantryan/fiig:v0.1.0-alpha.3`), the
+- The backend runs on fiig `v0.1.0-alpha.4` (`ghcr.io/elephantryan/fiig:v0.1.0-alpha.4`), the
   release it is tested on. Set `FIIG_IMAGE` to try another.
 - Covers load straight from Audiobookshelf, at the address saved in setup. If browsers reach ABS
   at a different address (setup was given a Docker-internal one, say), set `ABS_PUBLIC_URL` to

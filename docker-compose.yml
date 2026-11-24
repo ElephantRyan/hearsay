@@ -19,7 +19,7 @@ x-backend: &backend
   build:
     context: ./backend
     args:
-      FIIG_IMAGE: ${FIIG_IMAGE:-ghcr.io/elephantryan/fiig:v0.1.0-alpha.3}
+      FIIG_IMAGE: ${FIIG_IMAGE:-ghcr.io/elephantryan/fiig:v0.1.0-alpha.4}
   image: hearsay-backend
   env_file:
     - path: hearsay.env
