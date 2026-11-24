@@ -9,12 +9,7 @@ workflow acceptLink(offer: LinkOffer) -> Result<LinkAcceptance, FederationError>
     }
 
     return match (settings.serverName()) {
-        None -> {
-            return Err(FederationError.NoServerName);
-        },
-
-        name -> {
-            return keepLink(checkOffer(offer)?, name);
-        }
+        None -> Err(FederationError.NoServerName),
+        name -> keepLink(checkOffer(offer)?, name)
     }
 }

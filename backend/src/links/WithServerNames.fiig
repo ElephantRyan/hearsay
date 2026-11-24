@@ -13,16 +13,10 @@ rule withServerNames(rows: List<rated.RatingRow>, everyone: List<rated.RatingRow
 private {
     named(row: rated.RatingRow, sameName: List<rated.RatingRow> | None) -> rated.RatingRow {
         return match (row.via) {
-            None -> {
-                return row;
-            },
-
+            None -> row,
             server -> {
                 return match (sameName) {
-                    None -> {
-                        return row;
-                    },
-
+                    None -> row,
                     others -> {
                         if ((filter(o in others): o.userId != row.userId).length() == 0) {
                             return row;

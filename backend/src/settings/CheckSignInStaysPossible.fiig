@@ -28,13 +28,8 @@ private {
         }
 
         return match (Oidc.clientSecret) {
-            None -> {
-                return false;
-            },
-
-            given -> {
-                return true;
-            }
+            None -> false,
+            given -> true
         }
     }
 }

@@ -19,13 +19,8 @@ activity finishSignIn(
     }
 
     return match (error) {
-        None -> {
-            return landAfterExchange(code, state, pending);
-        },
-
-        denied -> {
-            return failedLanding("denied");
-        }
+        None -> landAfterExchange(code, state, pending),
+        denied -> failedLanding("denied")
     }
 }
 
@@ -40,16 +35,10 @@ private {
     landAfterExchange(code: string | None, state: string | None, pending: string | None)
             -> Landing {
         return match (code) {
-            None -> {
-                return failedLanding("missing");
-            },
-
+            None -> failedLanding("missing"),
             given -> {
                 return match (readPendingParts(pending)) {
-                    None -> {
-                        return failedLanding("state");
-                    },
-
+                    None -> failedLanding("state"),
                     parts -> {
                         if (state != parts.state) {
                             return failedLanding("state");
@@ -65,10 +54,7 @@ private {
     exchange(code: string, verifier: string) -> Landing {
         proven = signin.signIn(accounts.SignInAttempt.AuthorizationCode(code, verifier));
         return match (proven) {
-            Err(failure) -> {
-                return failedLanding(refusalCode(failure));
-            },
-
+            Err(failure) -> failedLanding(refusalCode(failure)),
             Ok(identity) -> {
                 session = sessions.startSession(identity);
                 return Landing(location: settings.frontendUrl(), session: session);

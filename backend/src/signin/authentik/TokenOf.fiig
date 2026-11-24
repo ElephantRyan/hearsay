@@ -4,14 +4,9 @@ use hearsay.accounts;
 // Without one, Authentik sign-in can't finish.
 rule tokenOf(server: accounts.SignInServer) -> Result<Secret, accounts.SignInError> {
     return match (server.serviceToken) {
-        None -> {
-            return Err(
-                accounts.SignInError.Unavailable("this server has no Audiobookshelf token yet")
-            );
-        },
-
-        token -> {
-            return Ok(token);
-        }
+        None -> Err(
+            accounts.SignInError.Unavailable("this server has no Audiobookshelf token yet")
+        ),
+        token -> Ok(token)
     }
 }

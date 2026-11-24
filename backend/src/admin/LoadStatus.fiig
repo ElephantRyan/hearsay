@@ -13,24 +13,16 @@ activity loadStatus() -> AdminStatus {
 private {
     absStatus() -> AdminStatus {
         return match (settings.absUrl()) {
-            None -> {
-                return status("not set up", None, None, "No Audiobookshelf address is set.");
-            },
-
+            None -> status("not set up", None, None, "No Audiobookshelf address is set."),
             url -> {
                 return match (AbsServer.status(url)) {
-                    Err(_) -> {
-                        return status(
-                            "unreachable",
-                            None,
-                            None,
-                            "Audiobookshelf didn't answer at that address."
-                        );
-                    },
-
-                    Ok(_) -> {
-                        return withAccount(url);
-                    }
+                    Err(_) -> status(
+                        "unreachable",
+                        None,
+                        None,
+                        "Audiobookshelf didn't answer at that address."
+                    ),
+                    Ok(_) -> withAccount(url)
                 }
             }
         }
@@ -38,19 +30,11 @@ private {
 
     withAccount(url: string) -> AdminStatus {
         return match (settings.serviceToken()) {
-            None -> {
-                return status("reachable", None, None, "No Audiobookshelf token is set.");
-            },
-
+            None -> status("reachable", None, None, "No Audiobookshelf token is set."),
             token -> {
                 return match (AbsMembers.meAsService()) {
-                    Ok(user) -> {
-                        return status("reachable", user.username, user.type, None);
-                    },
-
-                    Err(error) -> {
-                        return status("reachable", None, None, tokenProblem(error));
-                    }
+                    Ok(user) -> status("reachable", user.username, user.type, None),
+                    Err(error) -> status("reachable", None, None, tokenProblem(error))
                 }
             }
         }
@@ -58,19 +42,11 @@ private {
 
     authentikStatus() -> string {
         return match (settings.oidcSettingsOf()) {
-            None -> {
-                return "not set up";
-            },
-
+            None -> "not set up",
             oidc -> {
                 return match (AuthentikSignIn.discover(oidc)) {
-                    Ok(_) -> {
-                        return "answering";
-                    },
-
-                    Err(_) -> {
-                        return "not answering";
-                    }
+                    Ok(_) -> "answering",
+                    Err(_) -> "not answering"
                 }
             }
         }

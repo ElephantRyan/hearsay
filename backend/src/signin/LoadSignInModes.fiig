@@ -10,12 +10,7 @@ activity loadSignInModes() -> SignInModes {
     }
 
     return match (settings.oidcSettingsOf()) {
-        None -> {
-            return SignInModes(password: true, oidc: false);
-        },
-
-        ready -> {
-            return SignInModes(password: mode != settings.AuthMode.Oidc, oidc: true);
-        }
+        None -> SignInModes(password: true, oidc: false),
+        ready -> SignInModes(password: mode != settings.AuthMode.Oidc, oidc: true)
     }
 }

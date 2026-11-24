@@ -48,13 +48,8 @@ activity keepFetched(peer: PeerKey, fetched: Result<FetchedFromPeer, PeerError>)
     }
 
     return match (linkById(peer.id)) {
-        None -> {
-            return Err(LinkError.UnknownLink);
-        },
-
-        link -> {
-            return Ok(link);
-        }
+        None -> Err(LinkError.UnknownLink),
+        link -> Ok(link)
     }
 }
 
@@ -62,41 +57,36 @@ private {
     withMatch(linkId: string, rating: SharedRating, local: matching.LocalMatch | None)
             -> LinkedRating {
         return match (local) {
-            None -> {
-                return LinkedRating(
-                    linkId: linkId,
-                    personId: rating.personId,
-                    username: rating.username,
-                    asin: rating.asin,
-                    isbn: rating.isbn,
-                    title: rating.title,
-                    authors: rating.authors,
-                    score: rating.score,
-                    note: rating.note,
-                    updatedAt: rating.updatedAt,
-                    itemId: None,
-                    libraryId: None,
-                    matchedBy: None
-                );
-            },
-
-            found -> {
-                return LinkedRating(
-                    linkId: linkId,
-                    personId: rating.personId,
-                    username: rating.username,
-                    asin: rating.asin,
-                    isbn: rating.isbn,
-                    title: rating.title,
-                    authors: rating.authors,
-                    score: rating.score,
-                    note: rating.note,
-                    updatedAt: rating.updatedAt,
-                    itemId: found.itemId,
-                    libraryId: found.libraryId,
-                    matchedBy: found.how
-                );
-            }
+            None -> LinkedRating(
+                linkId: linkId,
+                personId: rating.personId,
+                username: rating.username,
+                asin: rating.asin,
+                isbn: rating.isbn,
+                title: rating.title,
+                authors: rating.authors,
+                score: rating.score,
+                note: rating.note,
+                updatedAt: rating.updatedAt,
+                itemId: None,
+                libraryId: None,
+                matchedBy: None
+            ),
+            found -> LinkedRating(
+                linkId: linkId,
+                personId: rating.personId,
+                username: rating.username,
+                asin: rating.asin,
+                isbn: rating.isbn,
+                title: rating.title,
+                authors: rating.authors,
+                score: rating.score,
+                note: rating.note,
+                updatedAt: rating.updatedAt,
+                itemId: found.itemId,
+                libraryId: found.libraryId,
+                matchedBy: found.how
+            )
         }
     }
 

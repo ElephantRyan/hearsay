@@ -8,19 +8,11 @@ activity fetchIfIndexed(id: string) -> int {
     }
 
     return match (peerKeyOf(id)) {
-        None -> {
-            return 0;
-        },
-
+        None -> 0,
         peer -> {
             return match (fetchLink(peer)) {
-                Err(_) -> {
-                    return 0;
-                },
-
-                Ok(link) -> {
-                    return link.ratings ?? 0;
-                }
+                Err(_) -> 0,
+                Ok(link) -> link.ratings ?? 0
             }
         }
     }

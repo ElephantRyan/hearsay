@@ -7,10 +7,7 @@ use hearsay.settings;
 activity signIn(attempt: accounts.SignInAttempt)
         -> Result<accounts.Identity, accounts.SignInError> {
     return match (settings.absUrl()) {
-        None -> {
-            return Err(accounts.SignInError.Unavailable("this server isn't set up yet"));
-        },
-
+        None -> Err(accounts.SignInError.Unavailable("this server isn't set up yet")),
         url -> {
             Provider = signInProvider(attempt);
             return Provider.authenticate(

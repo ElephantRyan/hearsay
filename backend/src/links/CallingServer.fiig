@@ -4,19 +4,11 @@
 // missing or isn't a bearer key arrives as None and is refused before any lookup.
 workflow callingServer(key: string | None) -> Result<LinkedServer, PeerRefusal> {
     return match (key) {
-        None -> {
-            return Err(PeerRefusal.NoKey);
-        },
-
+        None -> Err(PeerRefusal.NoKey),
         given -> {
             return match (linkWithKey(given)) {
-                None -> {
-                    return Err(PeerRefusal.UnknownKey);
-                },
-
-                link -> {
-                    return Ok(link);
-                }
+                None -> Err(PeerRefusal.UnknownKey),
+                link -> Ok(link)
             }
         }
     }

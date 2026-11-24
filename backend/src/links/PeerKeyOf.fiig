@@ -6,18 +6,13 @@ gateway peerKeyOf(id: string) -> PeerKey | None requires Database idempotent {
         id
     );
     return match (found) {
-        None -> {
-            return None;
-        },
-
-        row -> {
-            return PeerKey(
-                id: row.id,
-                name: row.name,
-                address: row.address,
-                keyOut: row.keyOut.toSecret("linked server key")
-            );
-        }
+        None -> None,
+        row -> PeerKey(
+            id: row.id,
+            name: row.name,
+            address: row.address,
+            keyOut: row.keyOut.toSecret("linked server key")
+        )
     }
 }
 

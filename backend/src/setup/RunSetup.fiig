@@ -11,10 +11,7 @@ workflow runSetup(input: SetupInput) -> Result<sessions.Session, SetupError> {
     checked = mapErr(e in settings.checkSettingsChange(settings.SettingsChange(absUrl: input.absUrl, frontendUrl: input.frontendUrl))):
             setupErrorOfChange(e)?;
     return match (checked.absUrl) {
-        None -> {
-            return Err(SetupError.Invalid("absUrl", "is missing"));
-        },
-
+        None -> Err(SetupError.Invalid("absUrl", "is missing")),
         url -> {
             if (settings.absUrl() != None) {
                 return Err(SetupError.AlreadySetUp);

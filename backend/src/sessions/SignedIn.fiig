@@ -4,19 +4,11 @@ use hearsay.accounts;
 // before the request is read. No token and no live session are the same answer.
 workflow signedIn(token: string | None) -> Result<accounts.Identity, IdentityError> {
     return match (token) {
-        None -> {
-            return Err(IdentityError.NotSignedIn);
-        },
-
+        None -> Err(IdentityError.NotSignedIn),
         found -> {
             return match (liveSession(found)) {
-                None -> {
-                    return Err(IdentityError.NotSignedIn);
-                },
-
-                identity -> {
-                    return Ok(identity);
-                }
+                None -> Err(IdentityError.NotSignedIn),
+                identity -> Ok(identity)
             }
         }
     }

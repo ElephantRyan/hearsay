@@ -3,36 +3,22 @@ use hearsay.accounts;
 // The Authentik application; None until all four parts are there.
 activity oidcSettingsOf() -> accounts.OidcSettings | None {
     return match (Oidc.issuer) {
-        None -> {
-            return None;
-        },
-
+        None -> None,
         issuer -> {
             return match (Oidc.clientId) {
-                None -> {
-                    return None;
-                },
-
+                None -> None,
                 clientId -> {
                     return match (Oidc.redirectUri) {
-                        None -> {
-                            return None;
-                        },
-
+                        None -> None,
                         redirectUri -> {
                             return match (Oidc.clientSecret) {
-                                None -> {
-                                    return None;
-                                },
-
-                                clientSecret -> {
-                                    return accounts.OidcSettings(
-                                        issuer: issuer,
-                                        clientId: clientId,
-                                        clientSecret: clientSecret,
-                                        redirectUri: redirectUri
-                                    );
-                                }
+                                None -> None,
+                                clientSecret -> accounts.OidcSettings(
+                                    issuer: issuer,
+                                    clientId: clientId,
+                                    clientSecret: clientSecret,
+                                    redirectUri: redirectUri
+                                )
                             }
                         }
                     }

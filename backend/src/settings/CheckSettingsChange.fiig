@@ -41,10 +41,7 @@ private {
 
     checkUrl(field: string, given: string | None) -> Result<string | None, SettingsChangeError> {
         return match (given) {
-            None -> {
-                return Ok(None);
-            },
-
+            None -> Ok(None),
             text -> {
                 url = text.trim().removeSuffix("/");
                 if (!url.startsWith("https://") && !url.startsWith("http://")) {
@@ -64,10 +61,7 @@ private {
 
     checkText(field: string, given: string | None) -> Result<string | None, SettingsChangeError> {
         return match (given) {
-            None -> {
-                return Ok(None);
-            },
-
+            None -> Ok(None),
             text -> {
                 if (text.isBlank()) {
                     return Err(SettingsChangeError.Invalid(field, "is blank"));

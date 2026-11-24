@@ -8,10 +8,7 @@ use hearsay.settings;
 workflow linkServer(admin: accounts.Admin, request: LinkRequest)
         -> Result<LinkedServer, LinkError> {
     return match (settings.serverName()) {
-        None -> {
-            return Err(LinkError.NoServerName);
-        },
-
+        None -> Err(LinkError.NoServerName),
         name -> {
             invite = inviteCodeOf(request.code)?;
             readyIndex()?;

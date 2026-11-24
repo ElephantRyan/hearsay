@@ -1,12 +1,7 @@
 // A linked server with the key to call it, or UnknownLink.
 activity peerToFetch(id: string) -> Result<PeerKey, LinkError> {
     return match (peerKeyOf(id)) {
-        None -> {
-            return Err(LinkError.UnknownLink);
-        },
-
-        peer -> {
-            return Ok(peer);
-        }
+        None -> Err(LinkError.UnknownLink),
+        peer -> Ok(peer)
     }
 }

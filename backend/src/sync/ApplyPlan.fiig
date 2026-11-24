@@ -6,10 +6,7 @@ use hearsay.absclient.collections.AbsCollections;
 
 activity applyPlan(plan: SyncPlan, now: int) -> SyncResult {
     return match (plan.collectionId) {
-        None -> {
-            return createFor(plan, now);
-        },
-
+        None -> createFor(plan, now),
         existing -> {
             if (plan.action == SyncAction.Remove) {
                 return removeFor(plan, existing);
@@ -44,9 +41,7 @@ private {
                 return syncResultOf(plan, SyncOutcome.Created, None);
             },
 
-            Err(error) -> {
-                return syncResultOf(plan, SyncOutcome.Failed, failedText(error));
-            }
+            Err(error) -> syncResultOf(plan, SyncOutcome.Failed, failedText(error))
         }
     }
 

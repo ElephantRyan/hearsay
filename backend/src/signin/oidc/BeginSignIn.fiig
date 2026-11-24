@@ -5,13 +5,8 @@ use hearsay.settings;
 // bits each, ADR 0068), and the URL to send the browser to.
 activity beginSignIn() -> Result<OidcStart, accounts.SignInError> {
     return match (settings.oidcSettingsOf()) {
-        None -> {
-            return Err(accounts.SignInError.WrongMethod);
-        },
-
-        oidc -> {
-            return beginWith(oidc);
-        }
+        None -> Err(accounts.SignInError.WrongMethod),
+        oidc -> beginWith(oidc)
     }
 }
 

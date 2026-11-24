@@ -42,12 +42,7 @@ activity matchBook(keys: BookKeys) -> LocalMatch | None {
     }
 
     return match (indexedBy("title_key", keys.titleKey)) {
-        None -> {
-            return None;
-        },
-
-        found -> {
-            return LocalMatch(itemId: found.itemId, libraryId: found.libraryId, how: "title");
-        }
+        None -> None,
+        found -> LocalMatch(itemId: found.itemId, libraryId: found.libraryId, how: "title")
     }
 }
