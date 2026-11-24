@@ -1,5 +1,5 @@
 {
-  "toolchain": "dev",
+  "toolchain": "v0.1.0-alpha.4.1",
   "dependencies": [
     {
       "path": "fiig.http",

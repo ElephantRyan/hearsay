@@ -4,7 +4,7 @@
 #
 # FIIG_IMAGE is fiig's runtime image, pinned to the release Hearsay is tested
 # on.
-ARG FIIG_IMAGE=ghcr.io/elephantryan/fiig:v0.1.0-alpha.4
+ARG FIIG_IMAGE=ghcr.io/elephantryan/fiig:v0.1.0-alpha.4.1
 
 # distroless has no shell to make a directory with, so /data is made here, owned
 # by distroless's nonroot user, and a new volume mounted there takes that owner.
