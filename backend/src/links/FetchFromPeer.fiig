@@ -1,0 +1,11 @@
+// Asks one linked server for what it shares, and nothing more: no matching and
+// no saving, so the hourly fetch can ask every server at once.
+activity fetchFromPeer(peer: PeerKey) -> Result<FetchedFromPeer, PeerError> {
+    ratings = PeerServer.recommendations(peer.address, peer.keyOut)?;
+    series: List<SharedSeries> = match (PeerServer.series(peer.address, peer.keyOut)) {
+        Ok(list) -> list,
+        Err(_) -> []
+    }
+
+    return Ok(FetchedFromPeer(ratings: ratings, series: series));
+}

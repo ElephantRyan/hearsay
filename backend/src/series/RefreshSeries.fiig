@@ -2,14 +2,18 @@ use hearsay.absclient;
 
 // Reads every cached series from ABS again: its name, author line, and books in
 // order (so its book 1 too). One ABS no longer has is forgotten, ratings and
-// all; if ABS can't be asked at all, the refresh stops there.
+// all; if ABS can't be asked at all, the refresh stops there. The calls go four
+// at a time (fiig ADR 0148); the saves follow one by one, as SQLite takes one
+// writer.
 activity refreshSeries() -> Result<SeriesRefreshed, absclient.AbsFault> {
+    now = Clock.now();
     read: int = 0;
     removed: int = 0;
-    for (seriesId in cachedSeriesIds()) {
-        match (fetchSeries(seriesId)) {
+    fetched = concurrent(seriesId in cachedSeriesIds(), limit: 4): fetchSeries(seriesId);
+    for (seriesId, outcome in fetched) {
+        match (outcome) {
             Ok(series) -> {
-                saveSeriesCache(series, Clock.now());
+                saveSeriesCache(series, now);
                 read = read + 1;
             },
 

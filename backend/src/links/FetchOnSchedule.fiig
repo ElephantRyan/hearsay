@@ -1,6 +1,8 @@
 // The hourly fetch (LINKED.md section 5): the library index rebuilt, so books
 // added since can match, then every linked server fetched. With no links it
-// does nothing at all.
+// does nothing at all. The servers are asked four at a time (fiig ADR 0148), so
+// a slow one holds up only its own; what they shared is kept one by one, as
+// SQLite takes one writer.
 workflow fetchOnSchedule() -> Result<int, FetchError> {
     peers = linksToFetch();
     if (peers.length() == 0) {
@@ -8,9 +10,10 @@ workflow fetchOnSchedule() -> Result<int, FetchError> {
     }
 
     indexed = rebuildIndex();
+    fetched = concurrent(peer in peers, limit: 4): fetchFromPeer(peer);
     failed: int = 0;
-    for (peer in peers) {
-        match (fetchLink(peer)) {
+    for (peer, outcome in fetched) {
+        match (keepFetched(peer, outcome)) {
             Err(_) -> {
             },
 

@@ -361,3 +361,152 @@ test theScheduledFetchRunsEvenWhenTheIndexCantBeRebuilt {
     expect held.length() == 1;
     expect held.first().itemId == "dune-here";
 }
+
+// The scheduled fetch asks every linked server at once (fiig ADR 0148), and
+// keeps each answer for the server that gave it: one behind a proxy that
+// answers 503 is marked as not answering, and the other's books still arrive.
+test theScheduledFetchKeepsEachServersAnswerForThatServer {
+    fake ServerConfig {
+        name: "Alex's library";
+    }
+
+    fake SignInConfig {
+        authMode: settings.AuthMode.Abs;
+        frontendUrl: "https://alex.test";
+    }
+
+    fake AbsCatalog {
+        gateway itemSeriesAsService(itemId: string)
+                -> Result<List<catalog.SeriesRef>, client.AbsError> {
+            return Ok([]);
+        }
+
+        gateway seriesAsService(seriesId: string)
+                -> Result<catalog.CatalogSeries, client.AbsError> {
+            return Err(client.AbsError.NotFound);
+        }
+
+        gateway librariesAsService() -> Result<List<catalog.AbsLibrary>, client.AbsError> {
+            return Ok([catalog.AbsLibrary(id: "lib-1", name: "Audiobooks", mediaType: "book")]);
+        }
+
+        gateway pageAsService(
+            libraryId: string,
+            page: int,
+            size: int,
+            order: catalog.BookOrder,
+            scope: catalog.BookScope)
+                -> Result<catalog.BookPage, client.AbsError> {
+            return Ok(
+                catalog.BookPage(
+                    total: 1,
+                    page: 0,
+                    limit: size,
+                    books: [
+                        catalog.Book(
+                            itemId: "dune-here",
+                            libraryId: "lib-1",
+                            title: "Dune",
+                            authors: "Frank Herbert",
+                            asin: "B0DUNE",
+                            isbn: None
+                        )
+                    ]
+                )
+            );
+        }
+    }
+
+    fake HttpClient {
+        gateway send(request: http.Request) -> Result<http.Reply, http.HttpError> {
+            if (request.url.endsWith("/api/federation/series")) {
+                return Ok(http.Reply(status: 200, headers: [], body: "[]".utf8()));
+            }
+
+            if (request.url.endsWith("/api/federation/link")) {
+                return Ok(
+                    http.Reply(
+                        status: 200,
+                        headers: [],
+                        body: json.encode(
+                            LinkAcceptance(name: request.url, key: "k".padRight(43, "k"))
+                        )
+                    )
+                );
+            }
+
+            if (request.url.endsWith("/api/federation/fetch")) {
+                return Ok(http.Reply(status: 204, headers: [], body: "".utf8()));
+            }
+
+            if (request.url == "https://quiet.test/api/federation/recommendations") {
+                return Ok(http.Reply(status: 503, headers: [], body: "".utf8()));
+            }
+
+            expect request.url == "https://family.test/api/federation/recommendations";
+            return Ok(
+                http.Reply(
+                    status: 200,
+                    headers: [],
+                    body: json.encode(
+                        [
+                            SharedRating(
+                                personId: "p1",
+                                username: "ryan",
+                                asin: "B0DUNE",
+                                isbn: None,
+                                title: "Dune",
+                                authors: "Frank Herbert",
+                                score: 9,
+                                note: "",
+                                updatedAt: 1
+                            )
+                        ]
+                    )
+                )
+            );
+        }
+    }
+
+    admin = accounts.Admin(
+        identity: accounts.Identity(
+            userId: "a1",
+            username: "alex",
+            userType: client.AbsUserType.Admin
+        )
+    );
+    expect linkServer(admin, LinkRequest(code: "https://family.test#${"s".padRight(43, "s")}")) is Ok(family);
+    expect linkServer(admin, LinkRequest(code: "https://quiet.test#${"q".padRight(43, "q")}")) is Ok(quiet);
+    expect fetchOnSchedule() is Err(FetchError.SomeServersSilent(1, 2));
+    expect linkedRatingsOf(family.id).length() == 1;
+    expect linkedRatingsOf(family.id).first().itemId == "dune-here";
+    expect linkedRatingsOf(quiet.id).length() == 0;
+    match (linkById(quiet.id)) {
+        None -> {
+            expect false;
+        },
+
+        link -> {
+            expect link.notAnsweringSince != None;
+            match (link.problem) {
+                None -> {
+                    expect false;
+                },
+
+                problem -> {
+                    expect problem.contains("503");
+                }
+            }
+        }
+    }
+
+    match (linkById(family.id)) {
+        None -> {
+            expect false;
+        },
+
+        link -> {
+            expect link.problem == None;
+        }
+    }
+}

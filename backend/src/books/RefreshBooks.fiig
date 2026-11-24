@@ -1,9 +1,10 @@
 // Fetches every cached book from ABS again, 50 to a call, and saves what it
 // says now: title, authors, ASIN, ISBN and series. A book ABS no longer has
-// keeps its copy. Says how many were refreshed.
+// keeps its copy. Says how many were refreshed. The calls go four at a time
+// (fiig ADR 0148); the saves follow one by one, as SQLite takes one writer.
 activity refreshBooks() -> Result<int, BookError> {
     ids = booksToRefresh();
-    refreshed: int = 0;
+    chunks: List<List<string>> = [];
     start: int = 0;
     while (start < ids.length()) {
         end: int = start + 50;
@@ -11,13 +12,18 @@ activity refreshBooks() -> Result<int, BookError> {
             end = ids.length();
         }
 
-        now = Clock.now();
-        for (book in fetchBooks(ids.slice(start, end))?) {
+        chunks = append(chunks, ids.slice(start, end));
+        start = end;
+    }
+
+    fetched = concurrent(chunk in chunks, limit: 4): fetchBooks(chunk);
+    now = Clock.now();
+    refreshed: int = 0;
+    for (_, outcome in fetched) {
+        for (book in outcome?) {
             BookCache.save(book, now);
             refreshed = refreshed + 1;
         }
-
-        start = end;
     }
 
     return Ok(refreshed);

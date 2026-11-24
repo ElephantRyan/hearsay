@@ -1,0 +1,137 @@
+use hearsay.matching;
+use hearsay.series;
+
+// Keeps what one server shared (fetchFromPeer): matches each book against the
+// library index, then its recommended series, each recognised by its book 1 and
+// then by which local series that book is in. A fetch that worked replaces
+// everything held from that server in one transaction; one that didn't keeps
+// it and records why.
+activity keepFetched(peer: PeerKey, fetched: Result<FetchedFromPeer, PeerError>)
+        -> Result<LinkedServer, LinkError> {
+    now = Clock.now();
+    match (fetched) {
+        Err(error) -> {
+            markFailing(peer.id, now, problemOfPeer(error));
+        },
+
+        Ok(shared) -> {
+            matched: List<LinkedRating> = [];
+            for (rating in shared.ratings) {
+                local = matching.matchBook(
+                    matching.keysOf(rating.asin, rating.isbn, rating.title, rating.authors)
+                );
+                matched = append(matched, withMatch(peer.id, rating, local));
+            }
+
+            found = filter(rating in matched): rating.itemId != None;
+            seriesMatched: List<LinkedSeriesRating> = [];
+            for (one in shared.series) {
+                local = matching.matchBook(
+                    matching.keysOf(one.asin, one.isbn, one.firstTitle, one.authors)
+                );
+                seriesMatched = append(seriesMatched, withSeriesMatch(peer.id, one, local));
+            }
+
+            transaction Database {
+                clearLinkedRatings(peer.id);
+                for (rating in matched) {
+                    saveLinkedRating(rating);
+                }
+
+                for (rating in seriesMatched) {
+                    saveLinkedSeriesRating(rating);
+                }
+
+                markFetched(peer.id, now, matched.length(), found.length());
+            }
+        }
+    }
+
+    return match (linkById(peer.id)) {
+        None -> {
+            return Err(LinkError.UnknownLink);
+        },
+
+        link -> {
+            return Ok(link);
+        }
+    }
+}
+
+private {
+    withMatch(linkId: string, rating: SharedRating, local: matching.LocalMatch | None)
+            -> LinkedRating {
+        return match (local) {
+            None -> {
+                return LinkedRating(
+                    linkId: linkId,
+                    personId: rating.personId,
+                    username: rating.username,
+                    asin: rating.asin,
+                    isbn: rating.isbn,
+                    title: rating.title,
+                    authors: rating.authors,
+                    score: rating.score,
+                    note: rating.note,
+                    updatedAt: rating.updatedAt,
+                    itemId: None,
+                    libraryId: None,
+                    matchedBy: None
+                );
+            },
+
+            found -> {
+                return LinkedRating(
+                    linkId: linkId,
+                    personId: rating.personId,
+                    username: rating.username,
+                    asin: rating.asin,
+                    isbn: rating.isbn,
+                    title: rating.title,
+                    authors: rating.authors,
+                    score: rating.score,
+                    note: rating.note,
+                    updatedAt: rating.updatedAt,
+                    itemId: found.itemId,
+                    libraryId: found.libraryId,
+                    matchedBy: found.how
+                );
+            }
+        }
+    }
+
+    withSeriesMatch(linkId: string, shared: SharedSeries, local: matching.LocalMatch | None)
+            -> LinkedSeriesRating {
+        found: string | None = match (local) {
+            None -> None,
+            book -> series.localSeriesOf(book.itemId, shared.seriesName)
+        }
+
+        bookHow: string | None = match (local) {
+            None -> None,
+            book -> book.how
+        }
+
+        // How it was recognised, only when it was.
+        how: string | None = None;
+        if (found != None) {
+            how = bookHow;
+        }
+
+        return LinkedSeriesRating(
+            linkId: linkId,
+            personId: shared.personId,
+            username: shared.username,
+            seriesName: shared.seriesName,
+            authors: shared.authors,
+            firstTitle: shared.firstTitle,
+            asin: shared.asin,
+            isbn: shared.isbn,
+            score: shared.score,
+            note: shared.note,
+            updatedAt: shared.updatedAt,
+            seriesId: found,
+            matchedBy: how
+        );
+    }
+}

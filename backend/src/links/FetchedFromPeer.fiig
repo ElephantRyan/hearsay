@@ -1,0 +1,6 @@
+// What a linked server shares: its recommendations, and its recommended series
+// (none from a server that doesn't share series yet).
+model FetchedFromPeer {
+    ratings: List<SharedRating>;
+    series: List<SharedSeries>;
+}
