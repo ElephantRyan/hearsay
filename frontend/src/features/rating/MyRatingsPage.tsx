@@ -30,10 +30,12 @@ export function MyRatingsPage() {
   return (
     <div className="space-y-5">
       <h1 className="text-xl font-semibold">My books</h1>
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      {/* The label sits beside the select, not above it, so this row is no taller than the
+          tabs alone and they don't move from where the other Mine tabs have them. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <MineTabs />
-        <div>
-          <label htmlFor={sortId} className="mb-1 block text-sm font-medium">
+        <div className="flex items-center gap-2">
+          <label htmlFor={sortId} className="text-sm font-medium">
             Sort by
           </label>
           <select
